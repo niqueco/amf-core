@@ -1,11 +1,12 @@
 package amf.core.model.domain
 
+import amf.core.annotations.Inferred
 import amf.core.metamodel.domain.LinkableElementModel
 import amf.core.model.{BoolField, StrField}
 import amf.core.parser.{Annotations, DeclarationPromise, Fields, ParserContext}
-import org.yaml.model.YPart
 import amf.core.utils._
 import amf.plugins.features.validation.CoreValidations.UnresolvedReference
+import org.yaml.model.YPart
 
 trait Linkable extends AmfObject { this: DomainElement with Linkable =>
 
@@ -28,19 +29,30 @@ trait Linkable extends AmfObject { this: DomainElement with Linkable =>
   def linkCopy(): Linkable
 
   def withLinkTarget(target: DomainElement): this.type = {
-    fields.setWithoutId(LinkableElementModel.Target, target)
-    set(LinkableElementModel.TargetId, target.id)
+    fields.setWithoutId(LinkableElementModel.Target, target, Annotations(Inferred()))
+    set(LinkableElementModel.TargetId, AmfScalar(target.id), Annotations.synthesized())
   }
-  def withLinkLabel(label: String): this.type              = set(LinkableElementModel.Label, label)
-  def withSupportsRecursion(recursive: Boolean): this.type = set(LinkableElementModel.SupportsRecursion, recursive)
+
+  def withLinkLabel(label: String, annotations: Annotations = Annotations()): this.type =
+    set(LinkableElementModel.Label, AmfScalar(label, annotations), Annotations.inferred())
+  def withSupportsRecursion(recursive: Boolean): this.type =
+    set(LinkableElementModel.SupportsRecursion, AmfScalar(recursive), Annotations.synthesized())
 
   def link[T](label: String, annotations: Annotations = Annotations()): T = {
+    link(AmfScalar(label), annotations, Annotations())
+  }
+
+  private[amf] def link[T](label: amf.core.parser.ScalarNode, annotations: Annotations): T = {
+    link(label.text(), annotations, Annotations.inferred())
+  }
+
+  private[amf] def link[T](label: AmfScalar, annotations: Annotations, fieldAnn: Annotations): T = {
     val copied = linkCopy()
-    val hash   = buildLinkHash(label, annotations)
+    val hash   = buildLinkHash(Option(label.value).map(_.toString).getOrElse(""), annotations) // todo: label.value is sometimes null!
     copied
       .withId(s"${copied.id}/link-$hash")
       .withLinkTarget(this)
-      .withLinkLabel(label)
+      .set(LinkableElementModel.Label, label, fieldAnn)
       .add(annotations)
       .asInstanceOf[T]
   }
@@ -67,7 +79,7 @@ trait Linkable extends AmfObject { this: DomainElement with Linkable =>
                                  supportsRecursion: Boolean): T = {
     if (unresolved.asInstanceOf[Linkable].shouldLink) {
 
-      val linked: T = link(label, annotations)
+      val linked: T = link(AmfScalar(label), annotations, Annotations.synthesized())
       if (supportsRecursion && linked.isInstanceOf[Linkable])
         linked.asInstanceOf[Linkable].withSupportsRecursion(supportsRecursion)
       linked
@@ -99,17 +111,17 @@ trait Linkable extends AmfObject { this: DomainElement with Linkable =>
     refCtx match {
       case Some(ctx) =>
         ctx.futureDeclarations.futureRef(
-          id,
-          refName,
-          DeclarationPromise(
-            resolve,
-            () =>
-              if (unresolvedSeverity == "warning") {
-                ctx.eh.warning(UnresolvedReference, id, s"Unresolved reference '$refName'", refAst.get)
-              } else {
-                ctx.eh.violation(UnresolvedReference, id, s"Unresolved reference '$refName'", refAst.get)
-            }
-          )
+            id,
+            refName,
+            DeclarationPromise(
+                resolve,
+                () =>
+                  if (unresolvedSeverity == "warning") {
+                    ctx.eh.warning(UnresolvedReference, id, s"Unresolved reference '$refName'", refAst.get)
+                  } else {
+                    ctx.eh.violation(UnresolvedReference, id, s"Unresolved reference '$refName'", refAst.get)
+                }
+            )
         )
       case _ => throw new Exception("Cannot create unresolved reference with missing parsing context")
     }
