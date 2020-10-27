@@ -18,6 +18,7 @@ object Vendor {
       case Amf.name        => Some(Amf)
       case Payload.name    => Some(Payload)
       case Aml.name        => Some(Aml)
+      case JsonSchema.name => Some(JsonSchema)
       case _               => None
     }
   }
@@ -39,6 +40,7 @@ object Vendor {
   val AMF: Vendor     = Amf
   val PAYLOAD: Vendor = Payload
   val AML: Vendor     = Aml
+  val JSONSCHEMA: Vendor = JsonSchema
 }
 
 sealed trait Vendor {
