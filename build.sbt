@@ -60,7 +60,7 @@ lazy val workspaceDirectory: File =
     case _ => Path.userHome / "mulesoft"
   }
 
-val syamlVersion = "1.0.289"
+val syamlVersion = "1.0.298"
 
 lazy val syamlJVMRef = ProjectRef(workspaceDirectory / "syaml", "syamlJVM")
 lazy val syamlJSRef = ProjectRef(workspaceDirectory / "syaml", "syamlJS")
