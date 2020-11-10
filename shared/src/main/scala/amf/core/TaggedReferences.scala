@@ -27,9 +27,6 @@ object TaggedReferences {
 
   }
 
-  def taggedReferences(location: String, r: Reference): Map[String, Range] = {
-    r.refs.map { rfs =>
-      location -> rfs.reduceToLocation
-    }.toMap
-  }
+  def taggedReferences(location: String, r: Reference): Map[String, Seq[Range]] =
+    Map(location -> r.refs.map(_.reduceToLocation()))
 }
