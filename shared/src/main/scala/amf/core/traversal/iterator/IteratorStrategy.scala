@@ -7,11 +7,11 @@ trait IteratorStrategy {
 }
 
 object AmfElementStrategy extends IteratorStrategy {
-  override def iterator(elements: List[AmfElement], visited: VisitedCollector): AmfIterator =
+  override def iterator(elements: List[AmfElement], visited: VisitedCollector = IdCollector()): AmfIterator =
     AmfElementIterator(elements, visited)
 }
 
 object DomainElementStrategy extends IteratorStrategy {
-  override def iterator(elements: List[AmfElement], visited: VisitedCollector): AmfIterator =
+  override def iterator(elements: List[AmfElement], visited: VisitedCollector = IdCollector()): AmfIterator =
     DomainElementIterator(elements, visited)
 }
