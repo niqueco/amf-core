@@ -50,4 +50,11 @@ object DataNodes {
     .withEncodes(name)
     .withDeclares(Seq(age, happy))
     .withReferences(Seq(document))
+
+  val duplicateIds: Document = Document()
+    .withId("amf://duplicate")
+    .withEncodes(
+        ObjectNode()
+          .withId("amf://duplicate")
+          .addProperty("name", ScalarNode("name", Some(DataType.String)).withId("amf://duplicate")))
 }

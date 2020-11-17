@@ -3,12 +3,7 @@ import amf.core.model.domain.{AmfArray, AmfElement, AmfObject, DomainElement}
 
 import scala.collection.mutable
 
-class DomainElementIterator(var buffer: List[AmfElement], visited: mutable.Set[String]) extends AmfIterator {
-
-  def this(elements: List[AmfElement]) = {
-    this(elements, mutable.Set())
-    advance()
-  }
+case class DomainElementIterator private (var buffer: List[AmfElement], visited: VisitedCollector) extends AmfIterator {
 
   override def hasNext: Boolean = buffer.nonEmpty
 
@@ -23,13 +18,14 @@ class DomainElementIterator(var buffer: List[AmfElement], visited: mutable.Set[S
     if(buffer.nonEmpty) {
       val current = buffer.head
       buffer = buffer.tail
-      current match {
-        case obj: AmfObject =>
-          if (visited.contains(obj.id)) {
-            advance()
-          } else {
+      if (visited.visited(current)) {
+        advance()
+      }
+      else {
+        current match {
+          case obj: AmfObject =>
             val elements = obj.fields.fields().map(_.element).toList
-            visited += obj.id
+            visited += obj
             obj match {
               case domain: DomainElement =>
                 buffer = domain :: elements ++ buffer
@@ -38,14 +34,24 @@ class DomainElementIterator(var buffer: List[AmfElement], visited: mutable.Set[S
                 buffer = elements ++ buffer
                 advance()
             }
-          }
-        case arr: AmfArray =>
-          buffer = arr.values.toList ++ buffer
-          advance()
-        case _ =>
-          advance()
+          case arr: AmfArray =>
+            buffer = arr.values.toList ++ buffer
+            advance()
+          case _ =>
+            advance()
+        }
       }
     }
+  }
+
+}
+
+object DomainElementIterator {
+
+  def apply(elements: List[AmfElement], visited: VisitedCollector = IdCollector()): DomainElementIterator = {
+    val iterator = new DomainElementIterator(elements, visited)
+    iterator.advance()
+    iterator
   }
 
 }

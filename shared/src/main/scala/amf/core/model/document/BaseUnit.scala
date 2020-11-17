@@ -15,7 +15,7 @@ import amf.core.parser.{FieldEntry, ParserContext, ReferenceCollector, Value}
 import amf.core.rdf.{RdfModel, RdfModelParser}
 import amf.core.remote.Vendor
 import amf.core.traversal.{DomainElementSelectorAdapter, DomainElementTransformationAdapter, TransformationData, TransformationTraversal}
-import amf.core.traversal.iterator.{AmfIterator, DomainElementStrategy, IteratorStrategy}
+import amf.core.traversal.iterator.{AmfIterator, DomainElementStrategy, IdCollector, IteratorStrategy, VisitedCollector}
 import amf.core.unsafe.PlatformSecrets
 import amf.plugins.features.validation.CoreValidations.RecursiveShapeSpecification
 
@@ -87,8 +87,8 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
   def addReference(newRef: BaseUnit): Unit = synchronized(withReferences(references :+ newRef))
 
   /** Returns Unit iterator for specified strategy and scope. */
-  def iterator(strategy: IteratorStrategy = DomainElementStrategy, fieldsFilter: FieldsFilter = Local): AmfIterator =
-    strategy.iterator(fieldsFilter.filter(fields))
+  def iterator(strategy: IteratorStrategy = DomainElementStrategy, fieldsFilter: FieldsFilter = Local, visited: VisitedCollector = IdCollector()): AmfIterator =
+    strategy.iterator(fieldsFilter.filter(fields), visited)
 
   /**
     * Finds first domain element with the requested id
