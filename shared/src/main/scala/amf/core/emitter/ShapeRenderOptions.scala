@@ -11,6 +11,7 @@ class ShapeRenderOptions {
 
   private var documentation: Boolean = true
   private var compactedEmission: Boolean = false
+  private var emitWarningForUnsupportedValidationFacets: Boolean = false
   private var schema: JSONSchemaVersion = JSONSchemaVersions.UNSPECIFIED
 
   private var eh: ErrorHandler       = UnhandledErrorHandler
@@ -27,6 +28,11 @@ class ShapeRenderOptions {
     this
   }
 
+  def withEmitWarningForUnsupportedValidationFacets(value: Boolean): ShapeRenderOptions = {
+    emitWarningForUnsupportedValidationFacets = value
+    this
+  }
+
   def withErrorHandler(errorHandler: ErrorHandler): ShapeRenderOptions = {
     eh = errorHandler
     this
@@ -39,6 +45,7 @@ class ShapeRenderOptions {
 
   def isWithDocumentation: Boolean = documentation
   def isWithCompactedEmission: Boolean = compactedEmission
+  def shouldEmitWarningForUnsupportedValidationFacets: Boolean = emitWarningForUnsupportedValidationFacets
   def errorHandler: ErrorHandler   = eh
   def schemaVersion: JSONSchemaVersion = schema
 }
