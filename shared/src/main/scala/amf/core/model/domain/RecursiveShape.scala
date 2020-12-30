@@ -1,6 +1,8 @@
 package amf.core.model.domain
 
+import amf.client.execution.BaseExecutionEnvironment
 import amf.core.errorhandling.ErrorHandler
+import amf.core.execution.ExecutionEnvironment
 import amf.core.metamodel.Obj
 import amf.core.metamodel.domain.RecursiveShapeModel
 import amf.core.metamodel.domain.RecursiveShapeModel._
@@ -8,8 +10,12 @@ import amf.core.model.StrField
 import amf.core.parser.{Annotations, Fields}
 import amf.core.traversal.ModelTraversalRegistry
 import amf.core.utils.AmfStrings
+import amf.core.validation.PayloadValidator
+import amf.internal.environment.Environment
 
-class RecursiveShape(override val fields: Fields, override val annotations: Annotations) extends Shape {
+class RecursiveShape(override val fields: Fields, override val annotations: Annotations)
+    extends Shape
+    with ValidatorAware {
 
   private var internalFixpointTarget: Option[Shape] = None
 
@@ -39,7 +45,8 @@ class RecursiveShape(override val fields: Fields, override val annotations: Anno
   override def meta: Obj = RecursiveShapeModel
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  override def componentId: String = name.option().map(name => s"/${name.urlComponentEncoded}").getOrElse("") + "/recursive"
+  override def componentId: String =
+    name.option().map(name => s"/${name.urlComponentEncoded}").getOrElse("") + "/recursive"
 
   /** apply method for create a new instance with fields and annotations. Aux method for copy */
   override protected def classConstructor: (Fields, Annotations) => Linkable with DomainElement = RecursiveShape.apply
@@ -50,6 +57,23 @@ class RecursiveShape(override val fields: Fields, override val annotations: Anno
     val copy = super.copyShape().withId(id)
     fixpointTarget.foreach(copy.withFixpointTarget)
     copy
+  }
+
+  override def payloadValidator(mediaType: String, exec: BaseExecutionEnvironment): Option[PayloadValidator] =
+    internalFixpointTarget.flatMap(asValidatorAware).flatMap(_.payloadValidator(mediaType, exec))
+
+  override def payloadValidator(mediaType: String, env: Environment = Environment()): Option[PayloadValidator] =
+    internalFixpointTarget.flatMap(asValidatorAware).flatMap(_.payloadValidator(mediaType, env))
+
+  override def parameterValidator(mediaType: String, exec: BaseExecutionEnvironment): Option[PayloadValidator] =
+    internalFixpointTarget.flatMap(asValidatorAware).flatMap(_.parameterValidator(mediaType, exec))
+
+  override def parameterValidator(mediaType: String, env: Environment = Environment()): Option[PayloadValidator] =
+    internalFixpointTarget.flatMap(asValidatorAware).flatMap(_.parameterValidator(mediaType, env))
+
+  private def asValidatorAware(s: Shape): Option[ValidatorAware] = s match {
+    case aware: ValidatorAware => Some(aware)
+    case _                     => None
   }
 }
 

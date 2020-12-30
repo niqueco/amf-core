@@ -27,10 +27,11 @@ import amf.client.model.{
   IntField => ClientIntField,
   StrField => ClientStrField
 }
+import amf.client.reference.{CachedReference => ClientCachedReference, ReferenceResolver => ClientReferenceResolver}
 import amf.client.remote.Content
 import amf.client.resource.{ResourceLoader => ClientResourceLoader}
-import amf.client.reference.{CachedReference => ClientCachedReference, ReferenceResolver => ClientReferenceResolver}
 import amf.client.validate.{
+  PayloadValidator => ClientInternalPayloadValidator,
   ValidationCandidate => ClientValidationCandidate,
   ValidationReport => ClientValidatorReport,
   ValidationResult => ClientValidationResult,
@@ -44,14 +45,13 @@ import amf.core.model.domain.templates.{AbstractDeclaration, ParametrizedDeclara
 import amf.core.parser.Annotations
 import amf.core.remote.Vendor
 import amf.core.unsafe.PlatformSecrets
-import amf.core.validation.{AMFValidationReport, AMFValidationResult, ValidationCandidate, ValidationShapeSet}
+import amf.core.validation._
 import amf.internal.reference.{CachedReference, ReferenceResolver, ReferenceResolverAdapter}
 import amf.internal.resource.{ResourceLoader, ResourceLoaderAdapter}
 
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
-import scala.language.higherKinds
-import scala.language.implicitConversions
+import scala.language.{higherKinds, implicitConversions}
 
 trait CoreBaseConverter
     extends PlatformSecrets
@@ -75,7 +75,8 @@ trait CoreBaseConverter
     with ValidationShapeSetConverter
     with PayloadFragmentConverter
     with CachedReferenceConverter
-    with ReferenceResolverConverter {
+    with ReferenceResolverConverter
+    with PayloadValidatorConverter {
 
   implicit def asClient[Internal, Client](from: Internal)(implicit m: InternalClientMatcher[Internal, Client]): Client =
     m.asClient(from)
@@ -195,9 +196,9 @@ trait CollectionConverter {
   }
 
   implicit class ClientMapOps[Internal, Client](from: ClientMap[Client])(
-    implicit m: ClientInternalMatcher[Client, Internal]
+      implicit m: ClientInternalMatcher[Client, Internal]
   ) {
-    def asInternal: Map[String,Internal] = asInternalMap(from, m)
+    def asInternal: Map[String, Internal] = asInternalMap(from, m)
   }
 
   //  implicit class ClientOptionOpsWithEC[Client](from: ClientOption[Client])(
@@ -269,9 +270,8 @@ trait CollectionConverter {
       from: ClientList[Client],
       m: ClientInternalMatcherWithEC[Client, Internal])(implicit executionContext: ExecutionContext): Seq[Internal]
 
-  protected def asInternalMap[Client, Internal](
-      from: ClientMap[Client],
-       m: ClientInternalMatcher[Client, Internal]): Map[String, Internal]
+  protected def asInternalMap[Client, Internal](from: ClientMap[Client],
+                                                m: ClientInternalMatcher[Client, Internal]): Map[String, Internal]
 
 }
 
@@ -529,5 +529,16 @@ trait ValidationShapeSetConverter {
     override def asClient(from: ValidationShapeSet): ClientValidationShapeSet = ClientValidationShapeSet(from)
 
     override def asInternal(from: ClientValidationShapeSet): ValidationShapeSet = from._internal
+  }
+}
+
+trait PayloadValidatorConverter {
+
+  implicit object PayloadValidatorMatcher
+      extends BidirectionalMatcher[PayloadValidator, ClientInternalPayloadValidator] {
+    override def asClient(from: PayloadValidator): ClientInternalPayloadValidator =
+      new ClientInternalPayloadValidator(from)
+
+    override def asInternal(from: ClientInternalPayloadValidator): PayloadValidator = from._internal
   }
 }
