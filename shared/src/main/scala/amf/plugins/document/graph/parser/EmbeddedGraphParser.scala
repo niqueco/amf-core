@@ -127,6 +127,20 @@ class EmbeddedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
                   }
                 })
 
+                val extendedFields = extendedFieldsFrom(model)
+                extendedFields.foreach { f =>
+                  val k = compactUriFromContext(f.value.iri())
+                  map.key(k) match {
+                    case Some(entry) =>
+                      val collector = ObjectNode()
+                      traverse(collector, f, value(f.`type`, entry.value), sources, k)
+                      collector.fields.fields().foreach { f =>
+                        instance.extendedFields.setWithoutId(f.field, f.value.value, f.value.annotations)
+                      }
+                    case _            => // ignore
+                  }
+                }
+
                 // parsing custom extensions
                 instance match {
                   case l: DomainElement with Linkable =>

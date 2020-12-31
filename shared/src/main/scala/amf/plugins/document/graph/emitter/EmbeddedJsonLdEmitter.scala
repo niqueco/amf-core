@@ -122,13 +122,17 @@ class EmbeddedJsonLdEmitter[T](val builder: DocBuilder[T], val options: RenderOp
     }
 
     modelFields.foreach { f =>
-      emitStaticField(f, element, id, sources, b)
+      emitStaticField(element.fields, f, element, id, sources, b)
+    }
+
+    getExtendedFields(element).foreach { f =>
+      emitStaticField(element.extendedFields, f, element, id, sources, b)
     }
 
   }
 
-  private def emitStaticField(field: Field, element: AmfObject, id: String, sources: SourceMap, b: Entry[T]): Unit = {
-    element.fields.entryJsonld(field) match {
+  private def emitStaticField(fields: Fields, field: Field, element: AmfObject, id: String, sources: SourceMap, b: Entry[T]): Unit = {
+    fields.entryJsonld(field) match {
       case Some(FieldEntry(f, v)) =>
         val url = ctx.emitIri(f.value.iri())
         b.entry(

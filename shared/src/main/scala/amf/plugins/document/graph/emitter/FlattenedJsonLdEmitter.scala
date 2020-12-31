@@ -189,10 +189,10 @@ class FlattenedJsonLdEmitter[T](val builder: DocBuilder[T], val options: RenderO
           val sources = SourceMap(id, unit)
 
           // Emit both unit and unit.encodes fields to the same node
-          emitFields(id, u.encodes, sources, b, getMetaModelFields(u.encodes, encodedObj))
+          emitFields(id, u.encodes, sources, b, getMetaModelFields(u.encodes, encodedObj), u.encodes.fields)
 
           pending.skip(id) // Skip emitting encodes node (since it is the same as this node)
-          emitFields(id, u, sources, b, getMetaModelFields(u, unitObj))
+          emitFields(id, u, sources, b, getMetaModelFields(u, unitObj), u.fields)
 
           createCustomExtensions(u, b)
 
@@ -270,7 +270,9 @@ class FlattenedJsonLdEmitter[T](val builder: DocBuilder[T], val options: RenderO
       case _ => // Nothing to do
     }
 
-    emitFields(id, element, sources, b, modelFields)
+    emitFields(id, element, sources, b, modelFields, element.fields)
+
+    emitFields(id, element, sources, b, getExtendedFields(element), element.extendedFields)
 
   }
 
@@ -280,12 +282,12 @@ class FlattenedJsonLdEmitter[T](val builder: DocBuilder[T], val options: RenderO
                          b: Entry[T],
                          modelFields: Seq[Field]): Unit = {
     modelFields.foreach { f =>
-      emitStaticField(f, element, id, sources, b)
+      emitStaticField(fields, f, element, id, sources, b)
     }
   }
 
-  private def emitStaticField(field: Field, element: AmfObject, id: String, sources: SourceMap, b: Entry[T]): Unit = {
-    element.fields.entryJsonld(field) match {
+  private def emitStaticField(fields: Fields, field: Field, element: AmfObject, id: String, sources: SourceMap, b: Entry[T]): Unit = {
+    fields.entryJsonld(field) match {
       case Some(FieldEntry(f, v)) =>
         val url = ctx.emitIri(f.value.iri())
         b.entry(
