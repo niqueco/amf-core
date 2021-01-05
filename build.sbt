@@ -46,8 +46,7 @@ val settings = Common.settings ++ Common.publish ++ Seq(
   resolvers += "jitpack" at "https://jitpack.io",
   credentials ++= Common.credentials(),
   libraryDependencies ++= Seq(
-    "org.scalatest" %%% "scalatest" % "3.0.5" % Test,
-    "com.github.scopt" %%% "scopt" % "3.7.0"
+    "org.scalatest" %%% "scalatest" % "3.0.5" % Test
   )
 )
 
