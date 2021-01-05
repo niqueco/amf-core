@@ -14,12 +14,13 @@ import org.mulesoft.common.time.SimpleDateTime
 import org.yaml.convert.YRead.SeqNodeYRead
 import org.yaml.model._
 import amf.core.model.DataType
+import amf.core.parser.errorhandler.ParserErrorHandler
 
 import scala.collection.{immutable, mutable}
 
 trait GraphParserHelpers extends GraphContextHelper {
 
-  protected def float(node: YNode): AmfScalar = {
+  protected def float(node: YNode)(implicit errorHandler: IllegalTypeHandler): AmfScalar = {
     val value = node.tagType match {
       case YType.Map =>
         node.as[YMap].entries.find(_.key.as[String] == "@value") match {
@@ -32,9 +33,9 @@ trait GraphParserHelpers extends GraphContextHelper {
     AmfScalar(value)
   }
 
-  protected def str(node: YNode): AmfScalar = AmfScalar(stringValue(node))
+  protected def str(node: YNode)(implicit errorHandler: IllegalTypeHandler): AmfScalar = AmfScalar(stringValue(node))
 
-  private def stringValue(node: YNode): String =
+  private def stringValue(node: YNode)(implicit errorHandler: IllegalTypeHandler): String =
     node.tagType match {
       case YType.Map =>
         node.as[YMap].entries.find(_.key.as[String] == "@value") match {
@@ -52,19 +53,19 @@ trait GraphParserHelpers extends GraphContextHelper {
     AmfScalar(transformed)
   }
 
-  protected def bool(node: YNode): AmfScalar = {
+  protected def bool(node: YNode)(implicit errorHandler: IllegalTypeHandler): AmfScalar = {
     val value = node.tagType match {
       case YType.Map =>
         node.as[YMap].entries.find(_.key.as[String] == "@value") match {
           case Some(entry) => entry.value.as[YScalar].text.toBoolean
           case _           => node.as[YScalar].text.toBoolean
         }
-      case _ => node.as[YScalar].text.toBoolean
+      case _ => node.as[Boolean]
     }
     AmfScalar(value)
   }
 
-  protected def int(node: YNode): AmfScalar = {
+  protected def int(node: YNode)(implicit errorHandler: IllegalTypeHandler): AmfScalar = {
     val value = node.tagType match {
       case YType.Map =>
         node.as[YMap].entries.find(_.key.as[String] == "@value") match {
@@ -76,7 +77,7 @@ trait GraphParserHelpers extends GraphContextHelper {
     AmfScalar(value)
   }
 
-  protected def double(node: YNode): AmfScalar = {
+  protected def double(node: YNode)(implicit errorHandler: IllegalTypeHandler): AmfScalar = {
     val value = node.tagType match {
       case YType.Map =>
         node.as[YMap].entries.find(_.key.as[String] == "@value") match {
@@ -88,7 +89,7 @@ trait GraphParserHelpers extends GraphContextHelper {
     AmfScalar(value)
   }
 
-  protected def date(node: YNode): AmfScalar = {
+  protected def date(node: YNode)(implicit errorHandler: IllegalTypeHandler): AmfScalar = {
     val value = node.tagType match {
       case YType.Map =>
         node.as[YMap].entries.find(_.key.as[String] == "@value") match {
@@ -243,6 +244,8 @@ trait GraphParserHelpers extends GraphContextHelper {
   }
 
   protected def retrieveId(map: YMap, ctx: ParserContext): Option[String] = {
+    implicit val errorHandler: ParserErrorHandler = ctx.eh
+
     map.key("@id") match {
       case Some(entry) => Some(entry.value.as[YScalar].text)
       case _ =>
@@ -263,7 +266,7 @@ trait GraphParserHelpers extends GraphContextHelper {
       .getOrElse(SourceMap.empty)
   }
 
-  protected def value(t: Type, node: YNode): YNode = {
+  protected def value(t: Type, node: YNode)(implicit eh: IllegalTypeHandler): YNode = {
     node.tagType match {
       case YType.Seq =>
         t match {
