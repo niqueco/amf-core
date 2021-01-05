@@ -11,6 +11,7 @@ import amf.core.model.document._
 import amf.core.model.domain._
 import amf.core.model.domain.extensions.{CustomDomainProperty, DomainExtension}
 import amf.core.parser._
+import amf.core.parser.errorhandler.ParserErrorHandler
 import amf.core.registries.AMFDomainRegistry
 import amf.core.remote.Platform
 import amf.core.unsafe.TrunkPlatform
@@ -18,12 +19,7 @@ import amf.core.vocabulary.Namespace.XsdTypes.xsdBoolean
 import amf.core.vocabulary.{Namespace, ValueType}
 import amf.plugins.document.graph.MetaModelHelper._
 import amf.plugins.document.graph.parser.FlattenedGraphParser.isRootNode
-import amf.plugins.features.validation.CoreValidations.{
-  NodeNotFound,
-  NotLinkable,
-  UnableToParseDocument,
-  UnableToParseNode
-}
+import amf.plugins.features.validation.CoreValidations.{NodeNotFound, NotLinkable, UnableToParseDocument, UnableToParseNode}
 import org.mulesoft.common.time.SimpleDateTime
 import org.yaml.model._
 
@@ -543,10 +539,8 @@ class FlattenedGraphParser()(implicit val ctx: GraphParserContext) extends Graph
 }
 
 object FlattenedGraphParser extends GraphContextHelper with GraphParserHelpers {
-  def apply(): FlattenedGraphParser =
-    new FlattenedGraphParser()(
-        new GraphParserContext(eh = DefaultParserErrorHandler.withRun())
-    )
+  def apply(errorHandler: ParserErrorHandler): FlattenedGraphParser =
+    new FlattenedGraphParser()(new GraphParserContext(eh = errorHandler))
 
   /**
     * Returns true if `document` contains a @graph node which in turn must contain a Root node.

@@ -1,11 +1,21 @@
 package amf.plugins.document.graph.parser
 
-import org.yaml.model.{YMap, YMapEntry, YNode, YSequence, YType}
+import org.yaml.model.{IllegalTypeHandler, YMap, YMapEntry, YNode, YSequence, YType}
 import amf.core.parser.YMapOps
 
 case class JsonLdGraphContextParser(node: YNode, context: GraphContext = GraphContext()) {
 
-  def parseMap(map: YMap): GraphContext = {
+  def parse()(implicit errorHandler: IllegalTypeHandler): GraphContext = {
+    node.tagType match {
+      case YType.Map => parseMap(node.value.asInstanceOf[YMap])
+      case YType.Str => parseRemoteContext(node.as[String])
+      case _         =>
+        // TODO: throw error
+        context
+    }
+  }
+
+  private def parseMap(map: YMap)(implicit errorHandler: IllegalTypeHandler): GraphContext = {
 
     map.entries.foreach { entry =>
       val key       = entry.key.as[String]
@@ -20,7 +30,7 @@ case class JsonLdGraphContextParser(node: YNode, context: GraphContext = GraphCo
     context
   }
 
-  private def parseExpandedTermEntry(entry: YMapEntry, term: String): Unit = {
+  private def parseExpandedTermEntry(entry: YMapEntry, term: String)(implicit errorHandler: IllegalTypeHandler): Unit = {
     val termMap = entry.value.value.asInstanceOf[YMap]
 
     val id     = termMap.key("@id").map(_.value.as[String])
@@ -28,20 +38,10 @@ case class JsonLdGraphContextParser(node: YNode, context: GraphContext = GraphCo
 
     context.withTerm(term, id, `type`)
   }
-  private def parseSimpleTermEntry(entry: YMapEntry, term: String): Unit = {
+  private def parseSimpleTermEntry(entry: YMapEntry, term: String)(implicit errorHandler: IllegalTypeHandler): Unit = {
     val namespace = entry.value.as[String]
     context.withTerm(term, namespace)
   }
-  def parseRemoteContext(str: String): GraphContext = throw new NotImplementedError("Remote contexts are not supported")
 
-  def parse(): GraphContext = {
-    node.tagType match {
-      case YType.Map => parseMap(node.value.asInstanceOf[YMap])
-      case YType.Str => parseRemoteContext(node.as[String])
-      case _         =>
-        // throw error
-        context
-    }
-  }
-
+  private def parseRemoteContext(str: String): GraphContext = throw new NotImplementedError("Remote contexts are not supported")
 }

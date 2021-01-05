@@ -1,6 +1,5 @@
 package amf.plugins.document.graph.parser
 
-import amf.client.parse.DefaultParserErrorHandler
 import amf.core.annotations.DomainExtensionAnnotation
 import amf.core.metamodel.Type.{Array, Bool, Iri, LiteralUri, RegExp, SortedArray, Str}
 import amf.core.metamodel._
@@ -8,22 +7,14 @@ import amf.core.metamodel.document.BaseUnitModel.Location
 import amf.core.metamodel.document._
 import amf.core.metamodel.domain._
 import amf.core.metamodel.domain.extensions.DomainExtensionModel
-import amf.core.model.DataType
 import amf.core.model.document._
 import amf.core.model.domain._
 import amf.core.model.domain.extensions.{CustomDomainProperty, DomainExtension}
+import amf.core.parser.errorhandler.{AmfParserErrorHandler, ParserErrorHandler}
 import amf.core.parser.{Annotations, _}
 import amf.core.registries.AMFDomainRegistry
-import amf.core.remote.Platform
-import amf.core.unsafe.TrunkPlatform
 import amf.core.vocabulary.Namespace
-import amf.plugins.features.validation.CoreValidations.{
-  NodeNotFound,
-  NotLinkable,
-  UnableToParseDocument,
-  UnableToParseNode
-}
-import org.mulesoft.common.time.SimpleDateTime
+import amf.plugins.features.validation.CoreValidations.{NodeNotFound, NotLinkable, UnableToParseDocument, UnableToParseNode}
 import org.yaml.convert.YRead.SeqNodeYRead
 import org.yaml.model._
 
@@ -288,9 +279,7 @@ class ExpandedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
       if (assertFieldTypeWithContext(f)(ctx)) {
         doTraverse(instance, f, node, sources, key)
       }
-      else {
-        instance
-      }
+      else instance
     }
 
     private def doTraverse(instance: AmfObject, f: Field, node: YNode, sources: SourceMap, key: String) = {
@@ -370,8 +359,8 @@ class ExpandedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
 }
 
 object ExpandedGraphParser {
-  def apply(): ExpandedGraphParser =
-    new ExpandedGraphParser()(new GraphParserContext(eh = DefaultParserErrorHandler.withRun()))
+  def apply(errorHandler: ParserErrorHandler): ExpandedGraphParser =
+    new ExpandedGraphParser()(new GraphParserContext(eh = errorHandler))
 
   def canParse(document: SyamlParsedDocument): Boolean = {
     val maybeMaps = document.document.node.toOption[Seq[YMap]]
@@ -386,10 +375,12 @@ object ExpandedGraphParser {
         val acceptedTypes = types ++ types.map(Namespace.compact)
         acceptedKeys.exists(m.key(_).isDefined) ||
         m.key("@type").exists { typesEntry =>
-          val retrievedTypes = typesEntry.value.asOption[YSequence].map(_.nodes.map(node => node.as[YScalar].value))
+          val retrievedTypes = typesEntry.value.asOption[YSequence].map(stringNodesFrom)
           retrievedTypes.exists(acceptedTypes.intersect(_).nonEmpty)
         }
       case _ => false
     }
   }
+
+  private def stringNodesFrom(seq: YSequence) = seq.nodes.flatMap(node => node.asOption[YScalar]).map(_.value)
 }
