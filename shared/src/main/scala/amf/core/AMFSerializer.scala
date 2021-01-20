@@ -1,7 +1,6 @@
 package amf.core
 
 import java.io.StringWriter
-
 import amf.client.plugins.AMFDocumentPlugin
 import amf.core.benchmark.ExecutionLog
 import amf.core.emitter.{RenderOptions, ShapeRenderOptions}
@@ -12,14 +11,14 @@ import amf.core.registries.AMFPluginsRegistry
 import amf.core.remote.{Platform, Vendor}
 import amf.core.services.RuntimeSerializer
 import amf.plugins.document.graph.AMFGraphPlugin.platform
-import amf.plugins.document.graph.emitter.{FlattenedJsonLdEmitter, JsonLdEmitter}
-import amf.plugins.document.graph.parser.{
-  ExpandedForm,
+import amf.plugins.document.graph.{
+  EmbeddedForm,
   FlattenedForm,
   JsonLdDocumentForm,
   JsonLdSerialization,
   RdfSerialization
 }
+import amf.plugins.document.graph.emitter.{EmbeddedJsonLdEmitter, FlattenedJsonLdEmitter}
 import amf.plugins.syntax.RdfSyntaxPlugin
 import org.mulesoft.common.io.Output
 import org.mulesoft.common.io.Output._
@@ -48,7 +47,7 @@ class AMFSerializer(unit: BaseUnit,
       case Vendor.AMF.name =>
         options.toGraphSerialization match {
           case JsonLdSerialization(FlattenedForm) => FlattenedJsonLdEmitter.emit(unit, builder, options)
-          case JsonLdSerialization(ExpandedForm)  => JsonLdEmitter.emit(unit, builder, options)
+          case JsonLdSerialization(EmbeddedForm)  => EmbeddedJsonLdEmitter.emit(unit, builder, options)
         }
     }
   }
@@ -86,7 +85,7 @@ class AMFSerializer(unit: BaseUnit,
     val b = JsonOutputBuilder[W](writer, options.isPrettyPrint)
     form match {
       case FlattenedForm => FlattenedJsonLdEmitter.emit(unit, b, options)
-      case ExpandedForm  => JsonLdEmitter.emit(unit, b, options)
+      case EmbeddedForm  => EmbeddedJsonLdEmitter.emit(unit, b, options)
       case _             => // Ignore
     }
   }

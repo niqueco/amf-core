@@ -14,8 +14,8 @@ import amf.core.rdf.{RdfModelDocument, RdfModelParser}
 import amf.core.remote.{Amf, Platform}
 import amf.core.resolution.pipelines.{BasicResolutionPipeline, ResolutionPipeline}
 import amf.core.unsafe.PlatformSecrets
-import amf.plugins.document.graph.emitter.JsonLdEmitter
-import amf.plugins.document.graph.parser.{ExpandedGraphParser, FlattenedGraphParser, GraphDependenciesReferenceHandler}
+import amf.plugins.document.graph.emitter.EmbeddedJsonLdEmitter
+import amf.plugins.document.graph.parser.{EmbeddedGraphParser, FlattenedGraphParser, GraphDependenciesReferenceHandler}
 import org.yaml.builder.DocBuilder
 import org.yaml.model.YDocument
 
@@ -31,25 +31,25 @@ object AMFGraphPlugin extends AMFDocumentPlugin with PlatformSecrets {
   val vendors: Seq[String] = Seq(Amf.name)
 
   override def modelEntities: Seq[Obj] = Seq(
-      ObjectNodeModel,
-      ScalarNodeModel,
-      ArrayNodeModel,
-      LinkNodeModel,
-      RecursiveShapeModel
+    ObjectNodeModel,
+    ScalarNodeModel,
+    ArrayNodeModel,
+    LinkNodeModel,
+    RecursiveShapeModel
   )
 
   override def serializableAnnotations(): Map[String, AnnotationGraphLoader] = Map.empty
 
   override def documentSyntaxes: Seq[String] = Seq(
-      "application/ld+json",
-      "application/json",
-      "application/amf+json"
+    "application/ld+json",
+    "application/json",
+    "application/amf+json"
   )
 
   override def canParse(root: Root): Boolean = {
     root.parsed match {
       case parsed: SyamlParsedDocument =>
-        FlattenedGraphParser.canParse(parsed) || ExpandedGraphParser.canParse(parsed)
+        FlattenedGraphParser.canParse(parsed) || EmbeddedGraphParser.canParse(parsed)
       case _: RdfModelDocument => true
 
       case _ => false
@@ -60,8 +60,8 @@ object AMFGraphPlugin extends AMFDocumentPlugin with PlatformSecrets {
     root.parsed match {
       case parsed: SyamlParsedDocument if FlattenedGraphParser.canParse(parsed) =>
         Some(FlattenedGraphParser(ctx.eh).parse(parsed.document, effectiveUnitUrl(root.location, options)))
-      case parsed: SyamlParsedDocument if ExpandedGraphParser.canParse(parsed) =>
-        Some(ExpandedGraphParser(ctx.eh).parse(parsed.document, effectiveUnitUrl(root.location, options)))
+      case parsed: SyamlParsedDocument if EmbeddedGraphParser.canParse(parsed) =>
+        Some(EmbeddedGraphParser(ctx.eh).parse(parsed.document, effectiveUnitUrl(root.location, options)))
       case parsed: RdfModelDocument =>
         Some(RdfModelParser(ctx.eh).parse(parsed.model, effectiveUnitUrl(root.location, options)))
       case _ =>
@@ -74,7 +74,7 @@ object AMFGraphPlugin extends AMFDocumentPlugin with PlatformSecrets {
                        builder: DocBuilder[T],
                        renderOptions: RenderOptions,
                        shapeRenderOptions: ShapeRenderOptions = ShapeRenderOptions()): Boolean =
-    JsonLdEmitter.emit(unit, builder, renderOptions)
+    EmbeddedJsonLdEmitter.emit(unit, builder, renderOptions)
 
   override protected def unparseAsYDocument(
       unit: BaseUnit,

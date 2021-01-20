@@ -4,8 +4,8 @@ import amf.client.render.{RenderOptions => ClientRenderOptions}
 import amf.client.resolve.ClientErrorHandlerConverter._
 import amf.core.errorhandling.{ErrorHandler, UnhandledErrorHandler}
 import amf.core.metamodel.Field
-import amf.plugins.document.graph.parser.{
-  ExpandedForm,
+import amf.plugins.document.graph.{
+  EmbeddedForm,
   FlattenedForm,
   GraphSerialization,
   JsonLdSerialization,
@@ -39,7 +39,6 @@ class RenderOptions {
     compactedEmission = false
     this
   }
-
 
   def withPrettyPrint: RenderOptions = {
     prettyPrint = true
@@ -150,7 +149,7 @@ class RenderOptions {
       if (isFlattenedJsonLd) {
         JsonLdSerialization(FlattenedForm)
       } else {
-        JsonLdSerialization(ExpandedForm)
+        JsonLdSerialization(EmbeddedForm)
       }
     } else {
       RdfSerialization()

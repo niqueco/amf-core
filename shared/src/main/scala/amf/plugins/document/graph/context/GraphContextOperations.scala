@@ -1,4 +1,4 @@
-package amf.plugins.document.graph.parser
+package amf.plugins.document.graph.context
 
 import scala.annotation.tailrec
 

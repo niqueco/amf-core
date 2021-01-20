@@ -7,13 +7,13 @@ import amf.client.model.domain.{ScalarNode => Scalar}
 import amf.client.parse.AmfGraphParser
 import amf.core.io.FileAssertionTest
 import amf.core.render.ElementsFixture
-import amf.plugins.document.graph.parser.ExpandedGraphParser
+import amf.plugins.document.graph.parser.EmbeddedGraphParser
 import org.scalatest.{AsyncFunSuite, Matchers}
 import org.yaml.model.YDocument
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait ExpandedGraphParserTest
+trait EmbeddedGraphParserTest
     extends AsyncFunSuite
     with NativeOps
     with FileAssertionTest
@@ -41,15 +41,14 @@ trait ExpandedGraphParserTest
 
   test("Test that file with '@type' cannot be parsed by expanded parser") {
     Core.init().asFuture.flatMap { _ =>
-      val doc = YDocument.parseJson(
-        """
+      val doc       = YDocument.parseJson("""
           |[{
           |  "id": "id",
           |  "@type": "some type"
           |}]
           |""".stripMargin)
       val parsedDoc = SyamlParsedDocument(doc)
-      ExpandedGraphParser.canParse(parsedDoc) shouldBe false
+      EmbeddedGraphParser.canParse(parsedDoc) shouldBe false
     }
   }
 

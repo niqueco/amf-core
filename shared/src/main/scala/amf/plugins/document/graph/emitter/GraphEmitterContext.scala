@@ -5,16 +5,16 @@ import amf.core.model.document.{BaseUnit, Fragment, Module}
 import amf.core.model.domain.{AmfElement, DomainElement}
 import amf.core.utils.IdCounter
 import amf.core.vocabulary.Namespace
+import amf.plugins.document.graph.JsonLdKeywords
 import org.yaml.builder.DocBuilder.Entry
-import org.yaml.model.YDocument.EntryBuilder
 
 import scala.collection.mutable
 
-class EmissionContext(val prefixes: mutable.Map[String, String],
-                      var base: String,
-                      val options: RenderOptions,
-                      var emittingDeclarations: Boolean = false,
-                      var emittingReferences: Boolean = false) {
+class GraphEmitterContext(val prefixes: mutable.Map[String, String],
+                          var base: String,
+                          val options: RenderOptions,
+                          var emittingDeclarations: Boolean = false,
+                          var emittingReferences: Boolean = false) {
   var counter: Int = 1
 
   private val declarations: mutable.LinkedHashSet[AmfElement] = mutable.LinkedHashSet.empty
@@ -98,8 +98,7 @@ class EmissionContext(val prefixes: mutable.Map[String, String],
       if (uri.startsWith(base)) uri.replace(base, "")
       else if (uri.startsWith(baseParent)) uri.replace(s"$baseParent/", "./")
       else uri
-    }
-    else uri
+    } else uri
   }
 
   private def baseParent: String = {
@@ -112,37 +111,23 @@ class EmissionContext(val prefixes: mutable.Map[String, String],
       base = if (location.replace("://", "").contains("/")) {
         val basePre = if (location.contains("#")) {
           location.split("#").head
-        }
-        else {
+        } else {
           location
         }
         val parts = basePre.split("/").dropRight(1)
         parts.mkString("/")
-      }
-      else {
+      } else {
         location.split("#").head
       }
-    }
-    else {
+    } else {
       base = ""
     }
   }
 
   def emitContext[T](b: Entry[T]): Unit = {
     if (shouldCompact)
-      b.entry("@context", _.obj { b =>
-        b.entry("@base", base)
-        prefixes.foreach {
-          case (p, v) =>
-            b.entry(p, v)
-        }
-      })
-  }
-
-  def emitContext(b: EntryBuilder): Unit = {
-    if (shouldCompact)
-      b.entry("@context", _.obj { b =>
-        b.entry("@base", base)
+      b.entry(JsonLdKeywords.Context, _.obj { b =>
+        b.entry(JsonLdKeywords.Base, base)
         prefixes.foreach {
           case (p, v) =>
             b.entry(p, v)
@@ -151,20 +136,20 @@ class EmissionContext(val prefixes: mutable.Map[String, String],
   }
 }
 
-object EmissionContext {
+object GraphEmitterContext {
   def apply(unit: BaseUnit, options: RenderOptions) =
-    new EmissionContext(mutable.Map(), unit.id, options)
+    new GraphEmitterContext(mutable.Map(), unit.id, options)
 }
 
-class FlattenedEmissionContext(prefixes: mutable.Map[String, String],
-                               base: String,
-                               options: RenderOptions,
-                               emittingDeclarations: Boolean = false)
-    extends EmissionContext(prefixes, base, options, emittingDeclarations) {
+class FlattenedGraphEmitterContext(prefixes: mutable.Map[String, String],
+                                   base: String,
+                                   options: RenderOptions,
+                                   emittingDeclarations: Boolean = false)
+    extends GraphEmitterContext(prefixes, base, options, emittingDeclarations) {
   override def canGenerateLink(e: AmfElement): Boolean = false
 }
 
-object FlattenedEmissionContext {
+object FlattenedGraphEmitterContext {
   def apply(unit: BaseUnit, options: RenderOptions) =
-    new FlattenedEmissionContext(mutable.Map(), unit.id, options)
+    new FlattenedGraphEmitterContext(mutable.Map(), unit.id, options)
 }
