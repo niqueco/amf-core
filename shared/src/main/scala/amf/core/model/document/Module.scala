@@ -28,7 +28,7 @@ trait DeclaresModel extends AmfObject {
   /** Declared DomainElements that can be re-used from other documents. */
   def declares: Seq[DomainElement]
 
-  def withDeclares(declarations: Seq[DomainElement]): this.type = setArrayWithoutId(Declares, declarations)
+  def withDeclares(declarations: Seq[DomainElement], annotations: Annotations = Annotations()): this.type = setArrayWithoutId(Declares, declarations, annotations)
 
   def withDeclaredElement(element: DomainElement): this.type = add(Declares, element)
 }
