@@ -369,8 +369,8 @@ object EmbeddedGraphParser {
         val keys                                  = Seq("encodes", "declares", "references").map(toDocumentNamespace)
         val types                                 = Seq("Document", "Fragment", "Module", "Unit").map(toDocumentNamespace)
 
-        val acceptedKeys  = keys ++ keys.map(Namespace.compact)
-        val acceptedTypes = types ++ types.map(Namespace.compact)
+        val acceptedKeys  = keys ++ keys.map(Namespace.staticAliases.compact)
+        val acceptedTypes = types ++ types.map(Namespace.staticAliases.compact)
         acceptedKeys.exists(m.key(_).isDefined) ||
         m.key(JsonLdKeywords.Type).exists { typesEntry =>
           val retrievedTypes = typesEntry.value.asOption[YSequence].map(stringNodesFrom)

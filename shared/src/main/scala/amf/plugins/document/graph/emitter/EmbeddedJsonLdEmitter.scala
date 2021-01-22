@@ -13,7 +13,7 @@ import amf.core.model.domain.DataNodeOps.adoptTree
 import amf.core.model.domain._
 import amf.core.model.domain.extensions.DomainExtension
 import amf.core.parser.{Annotations, FieldEntry, Value}
-import amf.core.vocabulary.{Namespace, ValueType}
+import amf.core.vocabulary.{Namespace, NamespaceAliases, ValueType}
 import amf.plugins.document.graph.JsonLdKeywords
 import org.mulesoft.common.time.SimpleDateTime
 import org.yaml.builder.DocBuilder
@@ -24,8 +24,8 @@ import scala.collection.mutable.ListBuffer
 
 object EmbeddedJsonLdEmitter {
 
-  def emit[T](unit: BaseUnit, builder: DocBuilder[T], renderOptions: RenderOptions = RenderOptions()): Boolean = {
-    implicit val ctx: GraphEmitterContext = GraphEmitterContext(unit, renderOptions)
+  def emit[T](unit: BaseUnit, builder: DocBuilder[T], renderOptions: RenderOptions = RenderOptions(), namespaceAliases: NamespaceAliases = Namespace.staticAliases): Boolean = {
+    implicit val ctx: GraphEmitterContext = GraphEmitterContext(unit, renderOptions, namespaceAliases = namespaceAliases)
     new EmbeddedJsonLdEmitter[T](builder, renderOptions).root(unit)
     true
   }

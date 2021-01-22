@@ -146,7 +146,7 @@ case class ValidationSpecification(name: String,
     if (name.startsWith("http://") || name.startsWith("https://") || name.startsWith("file:")) {
       name
     } else {
-      Namespace.expand(name).iri() match {
+      Namespace.staticAliases.expand(name).iri() match {
         case s if s.startsWith("http://") || s.startsWith("https://") || s.startsWith("file:") => s
         case s                                                                                 => (Namespace.Data + s).iri()
       }

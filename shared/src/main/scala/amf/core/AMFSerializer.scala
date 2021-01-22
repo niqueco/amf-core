@@ -10,6 +10,7 @@ import amf.core.rdf.RdfModelDocument
 import amf.core.registries.AMFPluginsRegistry
 import amf.core.remote.{Platform, Vendor}
 import amf.core.services.RuntimeSerializer
+import amf.core.vocabulary.Namespace
 import amf.plugins.document.graph.AMFGraphPlugin.platform
 import amf.plugins.document.graph.{
   EmbeddedForm,
@@ -45,11 +46,19 @@ class AMFSerializer(unit: BaseUnit,
   def renderToBuilder[T](builder: DocBuilder[T])(implicit executor: ExecutionContext): Future[Unit] = Future {
     vendor match {
       case Vendor.AMF.name =>
+        val namespaceAliases = generateNamespaceAliasesFromPlugins
         options.toGraphSerialization match {
-          case JsonLdSerialization(FlattenedForm) => FlattenedJsonLdEmitter.emit(unit, builder, options)
-          case JsonLdSerialization(EmbeddedForm)  => EmbeddedJsonLdEmitter.emit(unit, builder, options)
+          case JsonLdSerialization(FlattenedForm) => FlattenedJsonLdEmitter.emit(unit, builder, options, namespaceAliases)
+          case JsonLdSerialization(EmbeddedForm)  => EmbeddedJsonLdEmitter.emit(unit, builder, options, namespaceAliases)
         }
     }
+  }
+
+  private def generateNamespaceAliasesFromPlugins[T] = {
+    AMFPluginsRegistry.documentPlugins
+      .find(_.canGenerateNamespaceAliases(unit))
+      .map(_.generateNamespaceAliases(unit))
+      .getOrElse(Namespace.staticAliases)
   }
 
   /** Print ast to writer. */
@@ -83,9 +92,10 @@ class AMFSerializer(unit: BaseUnit,
 
   private def emitJsonLd[W: Output](writer: W, form: JsonLdDocumentForm): Unit = {
     val b = JsonOutputBuilder[W](writer, options.isPrettyPrint)
+    val namespaceAliases = generateNamespaceAliasesFromPlugins
     form match {
-      case FlattenedForm => FlattenedJsonLdEmitter.emit(unit, b, options)
-      case EmbeddedForm  => EmbeddedJsonLdEmitter.emit(unit, b, options)
+      case FlattenedForm => FlattenedJsonLdEmitter.emit(unit, b, options, namespaceAliases)
+      case EmbeddedForm  => EmbeddedJsonLdEmitter.emit(unit, b, options, namespaceAliases)
       case _             => // Ignore
     }
   }

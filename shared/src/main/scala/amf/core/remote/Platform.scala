@@ -175,7 +175,7 @@ trait Platform extends FileMediaType {
   def normalizePath(url: String): String
 
   /** Register an alias for a namespace */
-  def registerNamespace(alias: String, prefix: String): Option[Namespace] = Namespace.registerNamespace(alias, prefix)
+  def registerNamespace(alias: String, prefix: String): Option[Namespace] = Namespace.staticAliases.registerNamespace(alias, prefix)
 
   // Optional RdfFramework
   var rdfFramework: Option[RdfFramework] = None

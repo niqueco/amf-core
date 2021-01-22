@@ -4,7 +4,7 @@ import amf.core.emitter.RenderOptions
 import amf.core.model.document.{BaseUnit, Fragment, Module}
 import amf.core.model.domain.{AmfElement, DomainElement}
 import amf.core.utils.IdCounter
-import amf.core.vocabulary.Namespace
+import amf.core.vocabulary.{Namespace, NamespaceAliases}
 import amf.plugins.document.graph.JsonLdKeywords
 import org.yaml.builder.DocBuilder.Entry
 
@@ -14,7 +14,8 @@ class GraphEmitterContext(val prefixes: mutable.Map[String, String],
                           var base: String,
                           val options: RenderOptions,
                           var emittingDeclarations: Boolean = false,
-                          var emittingReferences: Boolean = false) {
+                          var emittingReferences: Boolean = false,
+                          val namespaceAliases: NamespaceAliases = Namespace.staticAliases) {
   var counter: Int = 1
 
   private val declarations: mutable.LinkedHashSet[AmfElement] = mutable.LinkedHashSet.empty
@@ -89,7 +90,7 @@ class GraphEmitterContext(val prefixes: mutable.Map[String, String],
 
   def shouldCompact: Boolean = options.isCompactUris
 
-  protected def compactAndCollect(uri: String): String = Namespace.compactAndCollect(uri, prefixes)
+  protected def compactAndCollect(uri: String): String = namespaceAliases.compactAndCollect(uri, prefixes)
 
   def emitIri(uri: String): String = if (shouldCompact) compactAndCollect(uri) else uri
 
@@ -98,7 +99,8 @@ class GraphEmitterContext(val prefixes: mutable.Map[String, String],
       if (uri.startsWith(base)) uri.replace(base, "")
       else if (uri.startsWith(baseParent)) uri.replace(s"$baseParent/", "./")
       else uri
-    } else uri
+    }
+    else uri
   }
 
   private def baseParent: String = {
@@ -111,15 +113,18 @@ class GraphEmitterContext(val prefixes: mutable.Map[String, String],
       base = if (location.replace("://", "").contains("/")) {
         val basePre = if (location.contains("#")) {
           location.split("#").head
-        } else {
+        }
+        else {
           location
         }
         val parts = basePre.split("/").dropRight(1)
         parts.mkString("/")
-      } else {
+      }
+      else {
         location.split("#").head
       }
-    } else {
+    }
+    else {
       base = ""
     }
   }
@@ -137,19 +142,20 @@ class GraphEmitterContext(val prefixes: mutable.Map[String, String],
 }
 
 object GraphEmitterContext {
-  def apply(unit: BaseUnit, options: RenderOptions) =
-    new GraphEmitterContext(mutable.Map(), unit.id, options)
+  def apply(unit: BaseUnit, options: RenderOptions, namespaceAliases: NamespaceAliases = Namespace.staticAliases) =
+    new GraphEmitterContext(mutable.Map(), unit.id, options, namespaceAliases = namespaceAliases)
 }
 
 class FlattenedGraphEmitterContext(prefixes: mutable.Map[String, String],
                                    base: String,
                                    options: RenderOptions,
-                                   emittingDeclarations: Boolean = false)
-    extends GraphEmitterContext(prefixes, base, options, emittingDeclarations) {
+                                   emittingDeclarations: Boolean = false,
+                                   namespaceAliases: NamespaceAliases = Namespace.staticAliases)
+    extends GraphEmitterContext(prefixes, base, options, emittingDeclarations, namespaceAliases = namespaceAliases) {
   override def canGenerateLink(e: AmfElement): Boolean = false
 }
 
 object FlattenedGraphEmitterContext {
-  def apply(unit: BaseUnit, options: RenderOptions) =
-    new FlattenedGraphEmitterContext(mutable.Map(), unit.id, options)
+  def apply(unit: BaseUnit, options: RenderOptions, namespaceAliases: NamespaceAliases = Namespace.staticAliases) =
+    new FlattenedGraphEmitterContext(mutable.Map(), unit.id, options, namespaceAliases = namespaceAliases)
 }

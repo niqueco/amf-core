@@ -13,7 +13,7 @@ import amf.core.model.domain.DataNodeOps.adoptTree
 import amf.core.model.domain._
 import amf.core.model.domain.extensions.DomainExtension
 import amf.core.parser.{Annotations, FieldEntry, Value}
-import amf.core.vocabulary.{Namespace, ValueType}
+import amf.core.vocabulary.{Namespace, NamespaceAliases, ValueType}
 import amf.plugins.document.graph.JsonLdKeywords
 import amf.plugins.document.graph.emitter.flattened.utils.{Emission, EmissionQueue, Metadata}
 import org.mulesoft.common.time.SimpleDateTime
@@ -26,8 +26,8 @@ import scala.language.implicitConversions
 
 object FlattenedJsonLdEmitter {
 
-  def emit[T](unit: BaseUnit, builder: DocBuilder[T], renderOptions: RenderOptions = RenderOptions()): Boolean = {
-    implicit val ctx: GraphEmitterContext = FlattenedGraphEmitterContext(unit, renderOptions)
+  def emit[T](unit: BaseUnit, builder: DocBuilder[T], renderOptions: RenderOptions = RenderOptions(), namespaceAliases: NamespaceAliases = Namespace.staticAliases): Boolean = {
+    implicit val ctx: GraphEmitterContext = FlattenedGraphEmitterContext(unit, renderOptions, namespaceAliases = namespaceAliases)
     new FlattenedJsonLdEmitter[T](builder, renderOptions).root(unit)
     true
   }

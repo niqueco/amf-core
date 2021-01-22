@@ -1,5 +1,7 @@
 package amf.core.vocabulary
 
+import amf.core.annotations.Aliases
+
 import scala.collection.mutable
 
 /**
@@ -11,80 +13,102 @@ case class Namespace(base: String) {
 
 object Namespace {
 
-  val Document = Namespace("http://a.ml/vocabularies/document#")
+  val Document: Namespace         = Namespace("http://a.ml/vocabularies/document#")
+  val ApiContract: Namespace      = Namespace("http://a.ml/vocabularies/apiContract#")
+  val ApiBinding: Namespace       = Namespace("http://a.ml/vocabularies/apiBinding#")
+  val Security: Namespace         = Namespace("http://a.ml/vocabularies/security#")
+  val Shapes: Namespace           = Namespace("http://a.ml/vocabularies/shapes#")
+  val Data: Namespace             = Namespace("http://a.ml/vocabularies/data#")
+  val SourceMaps: Namespace       = Namespace("http://a.ml/vocabularies/document-source-maps#")
+  val Shacl: Namespace            = Namespace("http://www.w3.org/ns/shacl#")
+  val Core: Namespace             = Namespace("http://a.ml/vocabularies/core#")
+  val Xsd: Namespace              = Namespace("http://www.w3.org/2001/XMLSchema#")
+  val AnonShapes: Namespace       = Namespace("http://a.ml/vocabularies/shapes/anon#")
+  val Rdf: Namespace              = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+  val WihtoutNamespace: Namespace = Namespace("")
+  val Meta: Namespace             = Namespace("http://a.ml/vocabularies/meta#")
+  val Owl: Namespace              = Namespace("http://www.w3.org/2002/07/owl#")
+  val Rdfs: Namespace             = Namespace("http://www.w3.org/2000/01/rdf-schema#")
+  val AmfCore: Namespace          = Namespace("http://a.ml/vocabularies/amf/core#")
+  val AmfAml: Namespace           = Namespace("http://a.ml/vocabularies/amf/aml#")
+  val AmfParser: Namespace        = Namespace("http://a.ml/vocabularies/amf/parser#")
+  val AmfResolution: Namespace    = Namespace("http://a.ml/vocabularies/amf/resolution#")
+  val AmfValidation: Namespace    = Namespace("http://a.ml/vocabularies/amf/validation#")
+  val AmfRender: Namespace        = Namespace("http://a.ml/vocabularies/amf/render#")
 
-  val ApiContract = Namespace("http://a.ml/vocabularies/apiContract#")
+  def find(uri: String): Option[Namespace] = uri match {
+    case "http://a.ml/vocabularies/document"             => Some(Document)
+    case "http://a.ml/vocabularies/apiContract"          => Some(ApiContract)
+    case "http://a.ml/vocabularies/apiBinding"           => Some(ApiBinding)
+    case "http://a.ml/vocabularies/security"             => Some(Security)
+    case "http://a.ml/vocabularies/shapes"               => Some(Shapes)
+    case "http://a.ml/vocabularies/data"                 => Some(Data)
+    case "http://a.ml/vocabularies/document-source-maps" => Some(SourceMaps)
+    case "http://www.w3.org/ns/shacl"                    => Some(Shacl)
+    case "http://a.ml/vocabularies/core#"                => Some(Core)
+    case "http://www.w3.org/2001/XMLSchema"              => Some(Xsd)
+    case "http://a.ml/vocabularies/shapes/anon"          => Some(AnonShapes)
+    case "http://www.w3.org/1999/02/22-rdf-syntax-ns"    => Some(Rdf)
+    case ""                                              => Some(WihtoutNamespace)
+    case "http://a.ml/vocabularies/meta"                 => Some(Meta)
+    case "http://www.w3.org/2002/07/owl"                 => Some(Owl)
+    case "http://www.w3.org/2000/01/rdf-schema"          => Some(Rdfs)
+    case "http://a.ml/vocabularies/amf/parser"           => Some(AmfParser)
+    case _                                               => None
+  }
 
-  val ApiBinding = Namespace("http://a.ml/vocabularies/apiBinding#")
+  object XsdTypes {
+    val xsdString: ValueType  = Namespace.Xsd + "string"
+    val xsdInteger: ValueType = Namespace.Xsd + "integer"
+    val xsdFloat: ValueType   = Namespace.Xsd + "float"
+    val amlNumber: ValueType  = Namespace.Shapes + "number"
+    val amlLink: ValueType    = Namespace.Shapes + "link"
+    val xsdDouble: ValueType  = Namespace.Xsd + "double"
+    val xsdBoolean: ValueType = Namespace.Xsd + "boolean"
+    val xsdNil: ValueType     = Namespace.Xsd + "nil"
+    val xsdUri: ValueType     = Namespace.Xsd + "anyURI"
+    val xsdAnyType: ValueType = Namespace.Xsd + "anyType"
+    val amlAnyNode: ValueType = Namespace.Meta + "anyNode"
+  }
 
-  val Security = Namespace("http://a.ml/vocabularies/security#")
+  val staticAliases: NamespaceAliases = NamespaceAliases()
+}
 
-  val Shapes = Namespace("http://a.ml/vocabularies/shapes#")
-
-  val Data = Namespace("http://a.ml/vocabularies/data#")
-
-  val SourceMaps = Namespace("http://a.ml/vocabularies/document-source-maps#")
-
-  val Shacl = Namespace("http://www.w3.org/ns/shacl#")
-
-  val Core = Namespace("http://a.ml/vocabularies/core#")
-
-  val Xsd = Namespace("http://www.w3.org/2001/XMLSchema#")
-
-  val AnonShapes = Namespace("http://a.ml/vocabularies/shapes/anon#")
-
-  val Rdf = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
-
-  // To build full URIs without namespace
-  val WihtoutNamespace = Namespace("")
-
-  val Meta = Namespace("http://a.ml/vocabularies/meta#")
-
-  val Owl = Namespace("http://www.w3.org/2002/07/owl#")
-
-  val Rdfs = Namespace("http://www.w3.org/2000/01/rdf-schema#")
-
-  val AmfCore = Namespace("http://a.ml/vocabularies/amf/core#")
-
-  val AmfAml = Namespace("http://a.ml/vocabularies/amf/aml#")
-
-  val AmfParser = Namespace("http://a.ml/vocabularies/amf/parser#")
-
-  val AmfResolution = Namespace("http://a.ml/vocabularies/amf/resolution#")
-
-  val AmfValidation = Namespace("http://a.ml/vocabularies/amf/validation#")
-
-  val AmfRender = Namespace("http://a.ml/vocabularies/amf/render#")
-
-  val ns: mutable.HashMap[String, Namespace] = mutable.HashMap(
-    "rdf"            -> Rdf,
-    "sh"             -> Shacl,
-    "shacl"          -> Shacl,
-    "security"       -> Security,
-    "core"           -> Core,
-    "raml-doc"       -> Document,
-    "doc"            -> Document,
-    "xsd"            -> Xsd,
-    "amf-parser"     -> AmfParser,
-    "amf-core"       -> AmfCore,
-    "apiContract"    -> ApiContract,
-    "apiBinding"     -> ApiBinding,
-    "amf-resolution" -> AmfResolution,
-    "amf-validation" -> AmfValidation,
-    "amf-render"     -> AmfRender,
-    "raml-shapes"    -> Shapes,
-    "shapes"         -> Shapes,
-    "data"           -> Data,
-    "sourcemaps"     -> SourceMaps,
-    "meta"           -> Meta,
-    "owl"            -> Owl,
-    "rdfs"           -> Rdfs
+case class NamespaceAliases() {
+  private val knownAliases: mutable.HashMap[String, Namespace] = mutable.HashMap(
+      "rdf"            -> Namespace.Rdf,
+      "sh"             -> Namespace.Shacl,
+      "shacl"          -> Namespace.Shacl,
+      "security"       -> Namespace.Security,
+      "core"           -> Namespace.Core,
+      "raml-doc"       -> Namespace.Document,
+      "doc"            -> Namespace.Document,
+      "xsd"            -> Namespace.Xsd,
+      "amf-parser"     -> Namespace.AmfParser,
+      "amf-core"       -> Namespace.AmfCore,
+      "apiContract"    -> Namespace.ApiContract,
+      "apiBinding"     -> Namespace.ApiBinding,
+      "amf-resolution" -> Namespace.AmfResolution,
+      "amf-validation" -> Namespace.AmfValidation,
+      "amf-render"     -> Namespace.AmfRender,
+      "raml-shapes"    -> Namespace.Shapes,
+      "shapes"         -> Namespace.Shapes,
+      "data"           -> Namespace.Data,
+      "sourcemaps"     -> Namespace.SourceMaps,
+      "meta"           -> Namespace.Meta,
+      "owl"            -> Namespace.Owl,
+      "rdfs"           -> Namespace.Rdfs
   )
+
+  def reset(): Unit = ns = knownAliases
+
+  var ns: mutable.HashMap[Aliases.Alias, Namespace] = knownAliases
 
   def uri(s: String): ValueType = {
     if (s.indexOf(":") > -1) {
       expand(s)
-    } else {
+    }
+    else {
       ns.values.find(n => s.indexOf(n.base) == 0) match {
         case Some(foundNs) => ValueType(foundNs, s.split(foundNs.base).last)
         case _             => ValueType(s)
@@ -97,7 +121,8 @@ object Namespace {
   def expand(uri: String): ValueType = {
     if (uri.startsWith("http://")) { // we have http: as  a valid prefix, we need to disambiguate
       ValueType(uri)
-    } else {
+    }
+    else {
       uri.split(":") match {
         case Array(prefix, postfix) =>
           resolve(prefix) match {
@@ -132,85 +157,5 @@ object Namespace {
     }
   }
 
-  def find(uri: String): Option[Namespace] = uri match {
-    case "http://a.ml/vocabularies/document" => Some(Document)
-
-    case "http://a.ml/vocabularies/apiContract" => Some(ApiContract)
-
-    case "http://a.ml/vocabularies/apiBinding" => Some(ApiBinding)
-
-    case "http://a.ml/vocabularies/security" => Some(Security)
-
-    case "http://a.ml/vocabularies/shapes" => Some(Shapes)
-
-    case "http://a.ml/vocabularies/data" => Some(Data)
-
-    case "http://a.ml/vocabularies/document-source-maps" => Some(SourceMaps)
-
-    case "http://www.w3.org/ns/shacl" => Some(Shacl)
-
-    case "http://a.ml/vocabularies/core#" => Some(Core)
-
-    case "http://www.w3.org/2001/XMLSchema" => Some(Xsd)
-
-    case "http://a.ml/vocabularies/shapes/anon" => Some(AnonShapes)
-
-    case "http://www.w3.org/1999/02/22-rdf-syntax-ns" => Some(Rdf)
-
-    // To build full URIs without namespace
-    case "" => Some(WihtoutNamespace)
-
-    case "http://a.ml/vocabularies/meta" => Some(Meta)
-
-    case "http://www.w3.org/2002/07/owl" => Some(Owl)
-
-    case "http://www.w3.org/2000/01/rdf-schema" => Some(Rdfs)
-
-    case "http://a.ml/vocabularies/amf/parser" => Some(AmfParser)
-
-    case _ => None
-  }
-
   private def resolve(prefix: String): Option[Namespace] = ns.get(prefix)
-
-  object XsdTypes {
-    val xsdString: ValueType  = Namespace.Xsd + "string"
-    val xsdInteger: ValueType = Namespace.Xsd + "integer"
-    val xsdFloat: ValueType   = Namespace.Xsd + "float"
-    val amlNumber: ValueType  = Namespace.Shapes + "number"
-    val amlLink: ValueType    = Namespace.Shapes + "link"
-    val xsdDouble: ValueType  = Namespace.Xsd + "double"
-    val xsdBoolean: ValueType = Namespace.Xsd + "boolean"
-    val xsdNil: ValueType     = Namespace.Xsd + "nil"
-    val xsdUri: ValueType     = Namespace.Xsd + "anyURI"
-    val xsdAnyType: ValueType = Namespace.Xsd + "anyType"
-    val amlAnyNode: ValueType = Namespace.Meta + "anyNode"
-  }
-
-}
-
-/** Value type. */
-case class ValueType(ns: Namespace, name: String) {
-  def iri(): String = ns.base + name
-}
-
-class UriType(id: String) extends ValueType(Namespace.Document, "") {
-  override def iri(): String = id
-}
-
-object ValueType {
-  def apply(ns: Namespace, name: String) = new ValueType(ns, name)
-  def apply(iri: String): ValueType =
-    if (iri.contains("#")) {
-      val pair = iri.split("#")
-      val name = pair.last
-      val ns   = pair.head + "#"
-      new ValueType(Namespace(ns), name)
-    } else if (iri.replace("://", "_").contains("/")) {
-      val name = iri.split("/").last
-      val ns   = iri.replace(name, "")
-      new ValueType(Namespace(ns), name)
-    } else {
-      new ValueType(Namespace(iri), "")
-    }
 }
