@@ -1,14 +1,16 @@
 package amf.plugins.document.graph.parser
 
-import org.yaml.model.{IllegalTypeHandler, YMap, YMapEntry, YNode, YSequence, YType}
 import amf.core.parser.YMapOps
+import amf.plugins.document.graph.JsonLdKeywords
+import amf.plugins.document.graph.context.GraphContext
+import org.yaml.model._
 
 case class JsonLdGraphContextParser(node: YNode, context: GraphContext = GraphContext()) {
 
   def parse()(implicit errorHandler: IllegalTypeHandler): GraphContext = {
     node.tagType match {
       case YType.Map => parseMap(node.value.asInstanceOf[YMap])
-      case YType.Str => parseRemoteContext(node.as[String])
+      case YType.Str => parseRemoteContext()
       case _         =>
         // TODO: throw error
         context
@@ -21,20 +23,21 @@ case class JsonLdGraphContextParser(node: YNode, context: GraphContext = GraphCo
       val key       = entry.key.as[String]
       val valueType = entry.value.tagType
       (key, valueType) match {
-        case ("@base", YType.Str) => context.withBase(entry.value.as[String])
-        case (term, YType.Str)    => parseSimpleTermEntry(entry, term)
-        case (term, YType.Map)    => parseExpandedTermEntry(entry, term)
-        case _                    => // Ignore
+        case (JsonLdKeywords.Base, YType.Str) => context.withBase(entry.value.as[String])
+        case (term, YType.Str)                => parseSimpleTermEntry(entry, term)
+        case (term, YType.Map)                => parseExpandedTermEntry(entry, term)
+        case _                                => // Ignore
       }
     }
     context
   }
 
-  private def parseExpandedTermEntry(entry: YMapEntry, term: String)(implicit errorHandler: IllegalTypeHandler): Unit = {
+  private def parseExpandedTermEntry(entry: YMapEntry, term: String)(
+      implicit errorHandler: IllegalTypeHandler): Unit = {
     val termMap = entry.value.value.asInstanceOf[YMap]
 
-    val id     = termMap.key("@id").map(_.value.as[String])
-    val `type` = termMap.key("@type").map(_.value.as[String])
+    val id     = termMap.key(JsonLdKeywords.Id).map(_.value.as[String])
+    val `type` = termMap.key(JsonLdKeywords.Type).map(_.value.as[String])
 
     context.withTerm(term, id, `type`)
   }
@@ -43,5 +46,6 @@ case class JsonLdGraphContextParser(node: YNode, context: GraphContext = GraphCo
     context.withTerm(term, namespace)
   }
 
-  private def parseRemoteContext(str: String): GraphContext = throw new NotImplementedError("Remote contexts are not supported")
+  private def parseRemoteContext(): GraphContext =
+    throw new NotImplementedError("Remote contexts are not supported")
 }

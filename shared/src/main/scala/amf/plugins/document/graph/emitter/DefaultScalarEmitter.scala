@@ -1,5 +1,6 @@
 package amf.plugins.document.graph.emitter
 
+import amf.plugins.document.graph.JsonLdKeywords
 import org.yaml.model.YDocument.PartBuilder
 import org.yaml.model._
 
@@ -13,7 +14,7 @@ object DefaultScalarEmitter {
 
       val tg: YType = fixTagIfNeeded(tag, content)
 
-      b.obj(_.entry("@value", raw(_, content, tg)))
+      b.obj(_.entry(JsonLdKeywords.Value, raw(_, content, tg)))
     }
 
     if (inArray) emit(b) else b.list(emit)
@@ -24,8 +25,7 @@ object DefaultScalarEmitter {
       case YType.Bool =>
         if (content != "true" && content != "false") {
           YType.Str
-        }
-        else {
+        } else {
           tag
         }
       case YType.Int =>

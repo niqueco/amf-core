@@ -1,4 +1,5 @@
-package amf.plugins.document.graph.parser
+package amf.plugins.document.graph.context
+
 import scala.collection.mutable
 
 // This class represents a simplified version of an rdf graph context such as JSON-LD's @context

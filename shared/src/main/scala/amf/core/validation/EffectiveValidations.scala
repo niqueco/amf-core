@@ -69,7 +69,7 @@ class EffectiveValidations(val effective: mutable.HashMap[String, ValidationSpec
 
   private def toIri(id: String): ValidationIri = {
     if (!isIri(id)) {
-      Namespace.expand(id.replace(".", ":")).iri()
+      Namespace.staticAliases.expand(id.replace(".", ":")).iri()
     }
     else {
       id

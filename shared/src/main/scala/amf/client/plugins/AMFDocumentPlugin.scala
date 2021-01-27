@@ -11,6 +11,8 @@ import amf.core.parser.{ParserContext, RefContainer, ReferenceHandler, Reference
 import amf.core.registries.AMFDomainEntityResolver
 import amf.core.remote.{Platform, Vendor}
 import amf.core.resolution.pipelines.ResolutionPipeline
+import amf.core.vocabulary.{Namespace, NamespaceAliases}
+import amf.plugins.document.graph.context.GraphContext
 import org.yaml.builder.{DocBuilder, YDocumentBuilder}
 import org.yaml.model.{YDocument, YNode}
 
@@ -74,7 +76,6 @@ abstract class AMFDocumentPlugin extends AMFPlugin {
     */
   def parse(document: Root, ctx: ParserContext, platform: Platform, options: ParsingOptions): Option[BaseUnit]
 
-
   /**
     * Emit an Output for a given base unit
     * The type of Output is Managed by the DocBuilder
@@ -112,6 +113,10 @@ abstract class AMFDocumentPlugin extends AMFPlugin {
     * the instance type and properties
     */
   def canUnparse(unit: BaseUnit): Boolean
+
+  def canGenerateNamespaceAliases(unit: BaseUnit): Boolean = false
+
+  def generateNamespaceAliases(unit: BaseUnit): NamespaceAliases = Namespace.staticAliases
 
   def referenceHandler(eh: ErrorHandler): ReferenceHandler
 }

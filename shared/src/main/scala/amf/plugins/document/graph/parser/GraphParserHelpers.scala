@@ -1,32 +1,37 @@
 package amf.plugins.document.graph.parser
 
-import amf.core.metamodel.{Field, Obj, Type}
 import amf.core.metamodel.Type._
 import amf.core.metamodel.document.{ExtensionLikeModel, SourceMapModel}
-import amf.core.metamodel.domain.{DomainElementModel, ExternalSourceElementModel, LinkableElementModel, RecursiveShapeModel}
+import amf.core.metamodel.domain.{
+  DomainElementModel,
+  ExternalSourceElementModel,
+  LinkableElementModel,
+  RecursiveShapeModel
+}
+import amf.core.metamodel.{Field, Obj, Type}
+import amf.core.model.DataType
 import amf.core.model.document.SourceMap
 import amf.core.model.domain.{AmfElement, AmfScalar, Annotation}
+import amf.core.parser.errorhandler.ParserErrorHandler
 import amf.core.parser.{Annotations, _}
-import amf.core.vocabulary.{Namespace, ValueType}
 import amf.core.vocabulary.Namespace.SourceMaps
-import amf.plugins.features.validation.CoreValidations.{MissingIdInNode, MissingTypeInNode, namespace}
+import amf.core.vocabulary.{Namespace, ValueType}
+import amf.plugins.document.graph.JsonLdKeywords
+import amf.plugins.document.graph.context.{ExpandedTermDefinition, GraphContextOperations, TermDefinition}
+import amf.plugins.features.validation.CoreValidations.{MissingIdInNode, MissingTypeInNode}
 import org.mulesoft.common.time.SimpleDateTime
 import org.yaml.convert.YRead.SeqNodeYRead
 import org.yaml.model._
-import amf.core.model.DataType
-import amf.core.parser.errorhandler.ParserErrorHandler
 
 import scala.collection.{immutable, mutable}
 
 trait GraphParserHelpers extends GraphContextHelper {
-
-  protected def float(node: YNode)(implicit errorHandler: IllegalTypeHandler): AmfScalar = {
+  protected def double(node: YNode)(implicit errorHandler: IllegalTypeHandler): AmfScalar = {
     val value = node.tagType match {
       case YType.Map =>
-        node.as[YMap].entries.find(_.key.as[String] == "@value") match {
-          case Some(entry) =>
-            entry.value.as[YScalar].text.toDouble
-          case _ => node.as[YScalar].text.toDouble
+        node.as[YMap].entries.find(_.key.as[String] == JsonLdKeywords.Value) match {
+          case Some(entry) => entry.value.as[YScalar].text.toDouble
+          case _           => node.as[YScalar].text.toDouble
         }
       case _ => node.as[YScalar].text.toDouble
     }
@@ -38,25 +43,28 @@ trait GraphParserHelpers extends GraphContextHelper {
   private def stringValue(node: YNode)(implicit errorHandler: IllegalTypeHandler): String =
     node.tagType match {
       case YType.Map =>
-        node.as[YMap].entries.find(_.key.as[String] == "@value") match {
+        node.as[YMap].entries.find(_.key.as[String] == JsonLdKeywords.Value) match {
           case Some(entry) => entry.value.as[YScalar].text
           case _           => node.as[YScalar].text
         }
       case _ => node.as[YScalar].text
     }
 
-  val fieldsWithId = Set(RecursiveShapeModel.FixPoint, LinkableElementModel.TargetId, ExternalSourceElementModel.ReferenceId, ExtensionLikeModel.Extends)
+  val fieldsWithId = Set(RecursiveShapeModel.FixPoint,
+                         LinkableElementModel.TargetId,
+                         ExternalSourceElementModel.ReferenceId,
+                         ExtensionLikeModel.Extends)
 
   protected def iri(node: YNode, field: Field)(implicit ctx: GraphParserContext): AmfScalar = {
-    val uri = stringValue(node)
-    val transformed = if(fieldsWithId.contains(field)) transformIdFromContext(uri) else uri
+    val uri         = stringValue(node)
+    val transformed = if (fieldsWithId.contains(field)) transformIdFromContext(uri) else uri
     AmfScalar(transformed)
   }
 
   protected def bool(node: YNode)(implicit errorHandler: IllegalTypeHandler): AmfScalar = {
     val value = node.tagType match {
       case YType.Map =>
-        node.as[YMap].entries.find(_.key.as[String] == "@value") match {
+        node.as[YMap].entries.find(_.key.as[String] == JsonLdKeywords.Value) match {
           case Some(entry) => entry.value.as[YScalar].text.toBoolean
           case _           => node.as[YScalar].text.toBoolean
         }
@@ -68,7 +76,7 @@ trait GraphParserHelpers extends GraphContextHelper {
   protected def int(node: YNode)(implicit errorHandler: IllegalTypeHandler): AmfScalar = {
     val value = node.tagType match {
       case YType.Map =>
-        node.as[YMap].entries.find(_.key.as[String] == "@value") match {
+        node.as[YMap].entries.find(_.key.as[String] == JsonLdKeywords.Value) match {
           case Some(entry) => entry.value.as[YScalar].text.toInt
           case _           => node.as[YScalar].text.toInt
         }
@@ -77,22 +85,10 @@ trait GraphParserHelpers extends GraphContextHelper {
     AmfScalar(value)
   }
 
-  protected def double(node: YNode)(implicit errorHandler: IllegalTypeHandler): AmfScalar = {
-    val value = node.tagType match {
-      case YType.Map =>
-        node.as[YMap].entries.find(_.key.as[String] == "@value") match {
-          case Some(entry) => entry.value.as[YScalar].text.toDouble
-          case _           => node.as[YScalar].text.toDouble
-        }
-      case _ => node.as[YScalar].text.toDouble
-    }
-    AmfScalar(value)
-  }
-
   protected def date(node: YNode)(implicit errorHandler: IllegalTypeHandler): AmfScalar = {
     val value = node.tagType match {
       case YType.Map =>
-        node.as[YMap].entries.find(_.key.as[String] == "@value") match {
+        node.as[YMap].entries.find(_.key.as[String] == JsonLdKeywords.Value) match {
           case Some(entry) =>
             SimpleDateTime.parse(entry.value.as[YScalar].text).right.get
           case _ => SimpleDateTime.parse(node.as[YScalar].text).right.get
@@ -106,11 +102,11 @@ trait GraphParserHelpers extends GraphContextHelper {
     node.tagType match {
       case YType.Map =>
         val nodeValue =
-          node.as[YMap].entries.find(_.key.as[String] == "@value") match {
+          node.as[YMap].entries.find(_.key.as[String] == JsonLdKeywords.Value) match {
             case Some(entry) => entry.value.as[YScalar].text
             case _           => node.as[YScalar].text
           }
-        node.as[YMap].entries.find(_.key.as[String] == "@type") match {
+        node.as[YMap].entries.find(_.key.as[String] == JsonLdKeywords.Type) match {
           case Some(typeEntry) =>
             val typeUri     = typeEntry.value.as[YScalar].text
             val expandedUri = expandUriFromContext(typeUri)
@@ -163,7 +159,7 @@ trait GraphParserHelpers extends GraphContextHelper {
   protected def nodeIsOfType(node: YNode, obj: Obj)(implicit ctx: GraphParserContext): Boolean = {
     node.value match {
       case map: YMap =>
-        map.key("@type").exists { entry =>
+        map.key(JsonLdKeywords.Type).exists { entry =>
           val types = entry.value.as[YSequence].nodes.flatMap(_.asScalar)
           types.exists(`type` => {
             val typeIri = expandUriFromContext(`type`.text)
@@ -201,15 +197,15 @@ trait GraphParserHelpers extends GraphContextHelper {
   // declared so they can be referenced from the retrieveType* functions
   val amlDocumentIris: Seq[ValueType] =
     asIris(
-        Namespace.Meta,
-        Seq("DialectInstance",
-            "DialectInstanceFragment",
-            "DialectInstanceLibrary",
-            "DialectInstancePatch",
-            "DialectLibrary",
-            "DialectFragment",
-            "Dialect",
-            "Vocabulary")
+      Namespace.Meta,
+      Seq("DialectInstance",
+          "DialectInstanceFragment",
+          "DialectInstanceLibrary",
+          "DialectInstancePatch",
+          "DialectLibrary",
+          "DialectFragment",
+          "Dialect",
+          "Vocabulary")
     )
 
   val coreDocumentIris: Seq[ValueType] =
@@ -230,7 +226,7 @@ trait GraphParserHelpers extends GraphContextHelper {
 
     val documentTypesSet: Set[String] = (documentExpandedIris ++ documentCompactIris).toSet
 
-    map.key("@type") match {
+    map.key(JsonLdKeywords.Type) match {
       case Some(entry) =>
         val allTypes         = entry.value.toOption[Seq[YNode]].getOrElse(Nil).flatMap(v => v.toOption[YScalar].map(_.text))
         val nonDocumentTypes = allTypes.filter(t => !documentTypesSet.contains(t))
@@ -238,7 +234,7 @@ trait GraphParserHelpers extends GraphContextHelper {
         nonDocumentTypes ++ documentTypes
 
       case _ =>
-        ctx.eh.violation(MissingTypeInNode, id, s"No @type declaration on node $map", map) // todo : review with pedro
+        ctx.eh.violation(MissingTypeInNode, id, s"No @type declaration on node $map", map)
         Nil
     }
   }
@@ -246,7 +242,7 @@ trait GraphParserHelpers extends GraphContextHelper {
   protected def retrieveId(map: YMap, ctx: ParserContext): Option[String] = {
     implicit val errorHandler: ParserErrorHandler = ctx.eh
 
-    map.key("@id") match {
+    map.key(JsonLdKeywords.Id) match {
       case Some(entry) => Some(entry.value.as[YScalar].text)
       case _ =>
         ctx.eh.violation(MissingIdInNode, "", s"No @id declaration on node $map", map)
@@ -256,7 +252,7 @@ trait GraphParserHelpers extends GraphContextHelper {
 
   protected def contentOfNode(n: YNode): Option[YMap] = n.toOption[YMap]
 
-  protected def retrieveSources(id: String, map: YMap)(implicit ctx: GraphParserContext): SourceMap = {
+  protected def retrieveSources(map: YMap)(implicit ctx: GraphParserContext): SourceMap = {
     map
       .key(compactUriFromContext(DomainElementModel.Sources.value.iri()))
       .flatMap { entry =>
@@ -276,8 +272,8 @@ trait GraphParserHelpers extends GraphContextHelper {
       case YType.Map =>
         val m: YMap = node.as[YMap]
         t match {
-          case Iri                                       => m.key("@id").get.value
-          case Str | RegExp | Bool | Type.Int | Type.Any => m.key("@value").get.value
+          case Iri                                       => m.key(JsonLdKeywords.Id).get.value
+          case Str | RegExp | Bool | Type.Int | Type.Any => m.key(JsonLdKeywords.Value).get.value
           case _                                         => node
         }
       case _ => node

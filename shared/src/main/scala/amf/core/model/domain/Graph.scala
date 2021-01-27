@@ -19,7 +19,7 @@ case class Graph(e: DomainElement) {
 
   def scalarByProperty(propertyId: String): Seq[Any] = {
     e.fields.fields().find { f: FieldEntry =>
-      f.field.value.iri() == Namespace.uri(propertyId).iri()
+      f.field.value.iri() == Namespace.staticAliases.uri(propertyId).iri()
     } match {
       case Some(fieldEntry) =>
         fieldEntry.element match {
@@ -33,7 +33,7 @@ case class Graph(e: DomainElement) {
 
   def getObjectByPropertyId(propertyId: String): Seq[DomainElement] = {
     e.fields.fields().find { f: FieldEntry =>
-      f.field.value.iri() == Namespace.uri(propertyId).iri()
+      f.field.value.iri() == Namespace.staticAliases.uri(propertyId).iri()
     } match {
       case Some(fieldEntry) =>
         fieldEntry.element match {

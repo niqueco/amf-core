@@ -4,17 +4,18 @@ import amf.core.emitter.RenderOptions
 import amf.core.model.document.{BaseUnit, Fragment, Module}
 import amf.core.model.domain.{AmfElement, DomainElement}
 import amf.core.utils.IdCounter
-import amf.core.vocabulary.Namespace
+import amf.core.vocabulary.{Namespace, NamespaceAliases}
+import amf.plugins.document.graph.JsonLdKeywords
 import org.yaml.builder.DocBuilder.Entry
-import org.yaml.model.YDocument.EntryBuilder
 
 import scala.collection.mutable
 
-class EmissionContext(val prefixes: mutable.Map[String, String],
-                      var base: String,
-                      val options: RenderOptions,
-                      var emittingDeclarations: Boolean = false,
-                      var emittingReferences: Boolean = false) {
+class GraphEmitterContext(val prefixes: mutable.Map[String, String],
+                          var base: String,
+                          val options: RenderOptions,
+                          var emittingDeclarations: Boolean = false,
+                          var emittingReferences: Boolean = false,
+                          val namespaceAliases: NamespaceAliases = Namespace.staticAliases) {
   var counter: Int = 1
 
   private val declarations: mutable.LinkedHashSet[AmfElement] = mutable.LinkedHashSet.empty
@@ -89,7 +90,7 @@ class EmissionContext(val prefixes: mutable.Map[String, String],
 
   def shouldCompact: Boolean = options.isCompactUris
 
-  protected def compactAndCollect(uri: String): String = Namespace.compactAndCollect(uri, prefixes)
+  protected def compactAndCollect(uri: String): String = namespaceAliases.compactAndCollect(uri, prefixes)
 
   def emitIri(uri: String): String = if (shouldCompact) compactAndCollect(uri) else uri
 
@@ -130,19 +131,8 @@ class EmissionContext(val prefixes: mutable.Map[String, String],
 
   def emitContext[T](b: Entry[T]): Unit = {
     if (shouldCompact)
-      b.entry("@context", _.obj { b =>
-        b.entry("@base", base)
-        prefixes.foreach {
-          case (p, v) =>
-            b.entry(p, v)
-        }
-      })
-  }
-
-  def emitContext(b: EntryBuilder): Unit = {
-    if (shouldCompact)
-      b.entry("@context", _.obj { b =>
-        b.entry("@base", base)
+      b.entry(JsonLdKeywords.Context, _.obj { b =>
+        b.entry(JsonLdKeywords.Base, base)
         prefixes.foreach {
           case (p, v) =>
             b.entry(p, v)
@@ -151,20 +141,21 @@ class EmissionContext(val prefixes: mutable.Map[String, String],
   }
 }
 
-object EmissionContext {
-  def apply(unit: BaseUnit, options: RenderOptions) =
-    new EmissionContext(mutable.Map(), unit.id, options)
+object GraphEmitterContext {
+  def apply(unit: BaseUnit, options: RenderOptions, namespaceAliases: NamespaceAliases = Namespace.staticAliases) =
+    new GraphEmitterContext(mutable.Map(), unit.id, options, namespaceAliases = namespaceAliases)
 }
 
-class FlattenedEmissionContext(prefixes: mutable.Map[String, String],
-                               base: String,
-                               options: RenderOptions,
-                               emittingDeclarations: Boolean = false)
-    extends EmissionContext(prefixes, base, options, emittingDeclarations) {
+class FlattenedGraphEmitterContext(prefixes: mutable.Map[String, String],
+                                   base: String,
+                                   options: RenderOptions,
+                                   emittingDeclarations: Boolean = false,
+                                   namespaceAliases: NamespaceAliases = Namespace.staticAliases)
+    extends GraphEmitterContext(prefixes, base, options, emittingDeclarations, namespaceAliases = namespaceAliases) {
   override def canGenerateLink(e: AmfElement): Boolean = false
 }
 
-object FlattenedEmissionContext {
-  def apply(unit: BaseUnit, options: RenderOptions) =
-    new FlattenedEmissionContext(mutable.Map(), unit.id, options)
+object FlattenedGraphEmitterContext {
+  def apply(unit: BaseUnit, options: RenderOptions, namespaceAliases: NamespaceAliases = Namespace.staticAliases) =
+    new FlattenedGraphEmitterContext(mutable.Map(), unit.id, options, namespaceAliases = namespaceAliases)
 }

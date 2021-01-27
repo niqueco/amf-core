@@ -4,17 +4,22 @@ import amf.core.annotations.DomainExtensionAnnotation
 import amf.core.metamodel.Type.{Array, Bool, Iri, LiteralUri, RegExp, SortedArray, Str}
 import amf.core.metamodel._
 import amf.core.metamodel.document.BaseUnitModel.Location
-import amf.core.metamodel.document._
 import amf.core.metamodel.domain._
 import amf.core.metamodel.domain.extensions.DomainExtensionModel
 import amf.core.model.document._
 import amf.core.model.domain._
 import amf.core.model.domain.extensions.{CustomDomainProperty, DomainExtension}
-import amf.core.parser.errorhandler.{AmfParserErrorHandler, ParserErrorHandler}
+import amf.core.parser.errorhandler.ParserErrorHandler
 import amf.core.parser.{Annotations, _}
 import amf.core.registries.AMFDomainRegistry
 import amf.core.vocabulary.Namespace
-import amf.plugins.features.validation.CoreValidations.{NodeNotFound, NotLinkable, UnableToParseDocument, UnableToParseNode}
+import amf.plugins.document.graph.JsonLdKeywords
+import amf.plugins.features.validation.CoreValidations.{
+  NodeNotFound,
+  NotLinkable,
+  UnableToParseDocument,
+  UnableToParseNode
+}
 import org.yaml.convert.YRead.SeqNodeYRead
 import org.yaml.model._
 
@@ -24,9 +29,9 @@ import scala.collection.mutable.ListBuffer
 /**
   * AMF Graph parser
   */
-class ExpandedGraphParser()(implicit val ctx: GraphParserContext) extends GraphParserHelpers with GraphParser {
+class EmbeddedGraphParser()(implicit val ctx: GraphParserContext) extends GraphParserHelpers with GraphParser {
 
-  override def canParse(document: SyamlParsedDocument): Boolean = ExpandedGraphParser.canParse(document)
+  override def canParse(document: SyamlParsedDocument): Boolean = EmbeddedGraphParser.canParse(document)
 
   override def parse(document: YDocument, location: String): BaseUnit = {
     val parser = Parser(Map())
@@ -45,7 +50,7 @@ class ExpandedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
         seq  <- document.node.toOption[Seq[YMap]]
         head <- seq.headOption
         parsed <- {
-          head.key("@context", e => JsonLdGraphContextParser(e.value, ctx.graphContext).parse())
+          head.key(JsonLdKeywords.Context, e => JsonLdGraphContextParser(e.value, ctx.graphContext).parse())
           parse(head)
         }
       } yield {
@@ -70,7 +75,7 @@ class ExpandedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
       }
     }
 
-    private def parseList(id: String, listElement: Type, node: YMap): Seq[AmfElement] = {
+    private def parseList(listElement: Type, node: YMap): Seq[AmfElement] = {
       val buffer = ListBuffer[YNode]()
       node.entries.sortBy(_.key.as[String]).foreach { entry =>
         if (entry.key.as[String].startsWith(compactUriFromContext((Namespace.Rdfs + "_").iri()))) {
@@ -88,12 +93,12 @@ class ExpandedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
       }
     }
 
-    private def parse(map: YMap): Option[AmfObject] = { // todo fix uses
+    private def parse(map: YMap): Option[AmfObject] = {
       retrieveId(map, ctx)
         .flatMap(value => retrieveType(value, map).map(value2 => (value, value2)))
         .flatMap {
           case (id, model) =>
-            val sources               = retrieveSources(id, map)
+            val sources               = retrieveSources(map)
             val transformedId: String = transformIdFromContext(id)
 
             buildType(transformedId, map, model)(annotations(nodes, sources, transformedId)) match {
@@ -107,8 +112,8 @@ class ExpandedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
                 val modelFields = model match {
                   case shapeModel: ShapeModel =>
                     shapeModel.fields ++ Seq(
-                        ShapeModel.CustomShapePropertyDefinitions,
-                        ShapeModel.CustomShapeProperties
+                      ShapeModel.CustomShapePropertyDefinitions,
+                      ShapeModel.CustomShapeProperties
                     )
                   case _ => model.fields
                 }
@@ -196,7 +201,7 @@ class ExpandedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
           entry.value
             .toOption[Seq[YNode]]
             .flatMap(nodes => nodes.head.toOption[YMap])
-            .flatMap(map => map.key("@value"))
+            .flatMap(map => map.key(JsonLdKeywords.Value))
             .flatMap(_.value.toOption[YScalar].map(_.text))
         })
         .foreach(s => instance.withLinkLabel(s))
@@ -230,7 +235,7 @@ class ExpandedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
                 extension.withExtension(pn)
               }
 
-              val sources = retrieveSources(extension.id, map)
+              val sources = retrieveSources(map)
               extension.annotations ++= annotations(nodes, sources, extension.id)
 
               extension
@@ -264,7 +269,8 @@ class ExpandedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
       map.entries.foreach { entry =>
         val uri = expandUriFromContext(entry.key.as[String])
         val v   = entry.value
-        if (uri != "@type" && uri != "@id" && uri != DomainElementModel.Sources.value.iri() && uri != "smaps" &&
+        if (uri != JsonLdKeywords.Type && uri != JsonLdKeywords.Id && uri != DomainElementModel.Sources.value
+              .iri() && uri != "smaps" &&
             uri != (Namespace.Core + "extensionName").iri() && !fields
               .exists(_.value.iri() == uri)) { // we do this to prevent parsing name of annotations
           v.as[Seq[YMap]]
@@ -278,8 +284,7 @@ class ExpandedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
     private def traverse(instance: AmfObject, f: Field, node: YNode, sources: SourceMap, key: String) = {
       if (assertFieldTypeWithContext(f)(ctx)) {
         doTraverse(instance, f, node, sources, key)
-      }
-      else instance
+      } else instance
     }
 
     private def doTraverse(instance: AmfObject, f: Field, node: YNode, sources: SourceMap, key: String) = {
@@ -296,7 +301,7 @@ class ExpandedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
         case Type.Int =>
           instance.setWithoutId(f, int(node), annotations(nodes, sources, key))
         case Type.Float =>
-          instance.setWithoutId(f, float(node), annotations(nodes, sources, key))
+          instance.setWithoutId(f, double(node), annotations(nodes, sources, key))
         case Type.Double =>
           instance.setWithoutId(f, double(node), annotations(nodes, sources, key))
         case Type.DateTime =>
@@ -306,21 +311,14 @@ class ExpandedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
         case Type.Any =>
           instance.setWithoutId(f, any(node), annotations(nodes, sources, key))
         case l: SortedArray =>
-          instance.setArrayWithoutId(f, parseList(instance.id, l.element, node.as[YMap]), annotations(nodes, sources, key))
+          instance.setArrayWithoutId(f, parseList(l.element, node.as[YMap]), annotations(nodes, sources, key))
         case a: Array =>
           val items = node.as[Seq[YNode]]
           val values: Seq[AmfElement] = a.element match {
             case _: Obj    => items.flatMap(n => parse(n.as[YMap]))
             case Str | Iri => items.map(n => str(value(a.element, n)))
           }
-          a.element match {
-            case _: DomainElementModel if f == DocumentModel.Declares =>
-              instance.setArrayWithoutId(f, values, annotations(nodes, sources, key))
-            case _: BaseUnitModel =>
-              instance.setArrayWithoutId(f, values, annotations(nodes, sources, key))
-            case _ =>
-              instance.setArrayWithoutId(f, values, annotations(nodes, sources, key))
-          }
+          instance.setArrayWithoutId(f, values, annotations(nodes, sources, key))
       }
     }
   }
@@ -358,9 +356,9 @@ class ExpandedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
 
 }
 
-object ExpandedGraphParser {
-  def apply(errorHandler: ParserErrorHandler): ExpandedGraphParser =
-    new ExpandedGraphParser()(new GraphParserContext(eh = errorHandler))
+object EmbeddedGraphParser {
+  def apply(errorHandler: ParserErrorHandler): EmbeddedGraphParser =
+    new EmbeddedGraphParser()(new GraphParserContext(eh = errorHandler))
 
   def canParse(document: SyamlParsedDocument): Boolean = {
     val maybeMaps = document.document.node.toOption[Seq[YMap]]
@@ -371,10 +369,10 @@ object ExpandedGraphParser {
         val keys                                  = Seq("encodes", "declares", "references").map(toDocumentNamespace)
         val types                                 = Seq("Document", "Fragment", "Module", "Unit").map(toDocumentNamespace)
 
-        val acceptedKeys  = keys ++ keys.map(Namespace.compact)
-        val acceptedTypes = types ++ types.map(Namespace.compact)
+        val acceptedKeys  = keys ++ keys.map(Namespace.staticAliases.compact)
+        val acceptedTypes = types ++ types.map(Namespace.staticAliases.compact)
         acceptedKeys.exists(m.key(_).isDefined) ||
-        m.key("@type").exists { typesEntry =>
+        m.key(JsonLdKeywords.Type).exists { typesEntry =>
           val retrievedTypes = typesEntry.value.asOption[YSequence].map(stringNodesFrom)
           retrievedTypes.exists(acceptedTypes.intersect(_).nonEmpty)
         }

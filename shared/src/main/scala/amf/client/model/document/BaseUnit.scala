@@ -67,10 +67,10 @@ trait BaseUnit extends AmfObjectWrapper with PlatformSecrets {
     _internal.toNativeRdfModel(coreOptions)
   }
 
-  def findById(id: String): ClientOption[DomainElement] = _internal.findById(Namespace.uri(id).iri()).asClient
+  def findById(id: String): ClientOption[DomainElement] = _internal.findById(Namespace.staticAliases.uri(id).iri()).asClient
 
   def findByType(typeId: String): ClientList[DomainElement] =
-    _internal.findByType(Namespace.expand(typeId).iri()).asClient
+    _internal.findByType(Namespace.staticAliases.expand(typeId).iri()).asClient
 
   def sourceVendor: ClientOption[Vendor] = _internal.sourceVendor.asClient
 
