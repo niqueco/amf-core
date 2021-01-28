@@ -17,19 +17,22 @@ case class RefContainer(linkType: ReferenceKind, node: YNode, fragment: Option[S
     node.asOption[YScalar] match {
       case Some(s)  =>
         reduceStringLength(s, fragment.map(l => l.length + 1).getOrElse(0), if(s.mark.plain) 0  else 1)
+      case _ if node.isInstanceOf[MutRef] =>
+        val mutRef = node.asInstanceOf[MutRef]
+        Range(mutRef.origValue.range)
       case _ => Range(node.location.inputRange)
     }
   }
 
-  private def reduceStringLength(s:YScalar, fragmentLenght:Int, markSize:Int = 0): Range = {
-    val inputRange = if(node.location.inputRange.columnTo < fragmentLenght && node.location.inputRange.lineFrom< node.location.inputRange.lineTo) {
+  private def reduceStringLength(s:YScalar, fragmentLength: Int, markSize:Int = 0): Range = {
+    val inputRange = if(node.location.inputRange.columnTo < fragmentLength && node.location.inputRange.lineFrom< node.location.inputRange.lineTo) {
       val lines = s.text.split('\n')
       lines.find(_.contains('#')) match {
         case Some(line)  => node.location.inputRange.copy(lineTo = node.location.inputRange.lineFrom + lines.indexOf(line), columnTo = line.indexOf('#') -1 )
         case _ => node.location.inputRange
       }
     }else {
-      getRefValue.location.inputRange.copy(columnTo = node.location.inputRange.columnTo - fragmentLenght)
+      getRefValue.location.inputRange.copy(columnTo = node.location.inputRange.columnTo - fragmentLength)
     }
     Range((inputRange.lineFrom, inputRange.columnFrom + markSize), (inputRange.lineTo, inputRange.columnTo-markSize))
   }
