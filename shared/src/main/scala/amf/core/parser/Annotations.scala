@@ -88,7 +88,7 @@ object Annotations {
   def apply(ast: YPart): Annotations = {
     val annotations = new Annotations() ++= Set(LexicalInformation(Range(ast.range)),
                                                 SourceAST(ast),
-                                                AmfSourceLocation(ast.sourceName))
+                                                AmfSourceLocation(ast))
     ast match {
       case node: YNode      => annotations += SourceNode(node)
       case entry: YMapEntry => annotations += SourceNode(entry.value)
