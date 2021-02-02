@@ -107,28 +107,43 @@ package object BaseEmitters {
 
     private def simpleScalar(b: EntryBuilder): Unit = {
 
-      val value = dataType match {
+      val (value, finalTag) = dataType match {
         case Some(YType.Int)   => integerValue(f.scalar.value.toString)
         case Some(YType.Float) => floatValue(f.scalar.value.toString)
-        case _ => f.scalar.value
+        case _ => (f.scalar.value, tag)
       }
 
       b.entry(
         key,
-        YNode(YScalar(value), dataType.getOrElse(tag))
+        YNode(YScalar(value), finalTag)
       )
     }
 
-    private def integerValue(text: String) = BigDecimal(text).setScale(0, BigDecimal.RoundingMode.FLOOR).toString
+    private def integerValue(text: String) =
+      try {
+        val result = BigDecimal(text).setScale(0, BigDecimal.RoundingMode.FLOOR).toString
+        (result, YType.Int)
+      }
+      catch {
+        case _ : NumberFormatException => (text, YType.Str)
+      }
 
     // Hack to fix difference in float emittion between JS and Java (Java prints '.0')
     private def floatValue(text: String) = {
-      val removeLeadingZeros = BigDecimal(text).toString()
-      removeLeadingZeros match {
-        case e if e.endsWith(".0") => e.substring(0, e.indexOf(".0"))
-        case o => o
+      try formatFloatValue(text)
+      catch {
+        case _ : NumberFormatException => (text, YType.Str)
       }
     }
+  }
+
+  private def formatFloatValue(text: String) = {
+    val removeLeadingZeros = BigDecimal(text).toString()
+    val result = removeLeadingZeros match {
+      case e if e.endsWith(".0") => e.substring(0, e.indexOf(".0"))
+      case o => o
+    }
+    (result, YType.Float)
   }
 
   object RawValueEmitter {
