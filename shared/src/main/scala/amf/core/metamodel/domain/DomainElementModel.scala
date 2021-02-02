@@ -46,7 +46,7 @@ object ExternalModelVocabularies {
   *
   * Base class for any element describing a domain model. Domain Elements are encoded into fragments
   */
-trait DomainElementModel extends Obj with ModelDefaultBuilder {
+trait DomainElementModel extends Obj with ModelDefaultBuilder with CustomizableElementModel {
 
   /**
     * Entity that is going to be extended overlaying or adding additional information
@@ -58,11 +58,6 @@ trait DomainElementModel extends Obj with ModelDefaultBuilder {
     * Indicates that this parsing Unit has SourceMaps
     */
   val Sources = Field(SourceMapModel, SourceMaps + "sources", ModelDoc(ModelVocabularies.AmlDoc,"source", "Indicates that this parsing Unit has SourceMaps"))
-
-  // This creates a cycle in the among DomainModels, triggering a classnotdef problem
-  // I need lazy evaluation here.
-  // It cannot even be defined in the list of fields below
-  lazy val CustomDomainProperties = Field(Array(DomainExtensionModel), Document + "customDomainProperties", ModelDoc(ModelVocabularies.AmlDoc,"customDomainProperties", "Extensions provided for a particular domain element."))
 
   /**
    * Marks this domain element as a reference to the element identified by the provide ID

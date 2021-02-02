@@ -3,12 +3,13 @@ package amf.core.model.document
 import amf.core.metamodel.document.DocumentModel.{Declares => _, Location => _, References => _, Usage => _}
 import amf.core.metamodel.document.ModuleModel
 import amf.core.metamodel.document.ModuleModel._
-import amf.core.model.domain.{AmfObject, DomainElement}
+import amf.core.metamodel.domain.CustomizableElementModel
+import amf.core.model.domain.{AmfObject, CustomizableElement, DomainElement}
 import amf.core.parser.{Annotations, Fields}
 import org.yaml.model.YDocument
 
 /** Units containing abstract fragments that can be referenced from other fragments */
-case class Module(fields: Fields, annotations: Annotations) extends BaseUnit with DeclaresModel {
+case class Module(fields: Fields, annotations: Annotations) extends BaseUnit with DeclaresModel with CustomizableElement {
 
   /** Returns the list document URIs referenced from the document that has been parsed to generate this model */
   override def references: Seq[BaseUnit] = fields(References)
