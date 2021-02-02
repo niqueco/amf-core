@@ -12,11 +12,11 @@ import scala.scalajs.js.annotation.JSExportAll
   * Domain element.
   */
 @JSExportAll
-trait DomainElement extends AmfObjectWrapper with PlatformSecrets {
+trait DomainElement extends AmfObjectWrapper with PlatformSecrets with CustomizableElement {
 
   override private[amf] val _internal: InternalDomainElement
 
-  def customDomainProperties: ClientList[DomainExtension] = _internal.customDomainProperties.asClient
+  override def customDomainProperties: ClientList[DomainExtension] = _internal.customDomainProperties.asClient
   def extendsNode: ClientList[DomainElement]              = _internal.extend.asClient
   def id: String                                          = _internal.id
   def position: Range                                     = _internal.position().map(_.range).orNull
