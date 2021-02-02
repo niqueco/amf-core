@@ -37,7 +37,7 @@ object ModuleModel extends ModuleModel with CustomizableElementModel {
 
   override val `type`: List[ValueType] = List(Document + "Module") ++ BaseUnitModel.`type`
 
-  override val fields: List[Field] = Declares :: CustomDomainProperties :: BaseUnitModel.fields
+  override val fields: List[Field] = Declares :: BaseUnitModel.fields
 
   override val doc: ModelDoc = ModelDoc(
     ModelVocabularies.AmlDoc,
