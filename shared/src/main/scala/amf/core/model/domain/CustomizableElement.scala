@@ -1,18 +1,10 @@
 package amf.core.model.domain
 
-import amf.core.metamodel.domain.DomainElementModel.CustomDomainProperties
 import amf.core.model.domain.extensions.DomainExtension
 
-import scala.scalajs.js.annotation.JSExportAll
+trait CustomizableElement {
 
-@JSExportAll
-trait CustomizableElement { element: AmfObject =>
-
-  def customDomainProperties: Seq[DomainExtension] = fields.field(CustomDomainProperties)
-  def withCustomDomainProperties(extensions: Seq[DomainExtension]): this.type =
-    setArray(CustomDomainProperties, extensions)
-
-  def withCustomDomainProperty(extensions: DomainExtension): this.type =
-    add(CustomDomainProperties, extensions)
-
+  def customDomainProperties: Seq[DomainExtension]
+  def withCustomDomainProperties(extensions: Seq[DomainExtension]): this.type
+  def withCustomDomainProperty(extensions: DomainExtension): this.type
 }

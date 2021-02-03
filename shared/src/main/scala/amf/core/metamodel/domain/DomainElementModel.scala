@@ -46,7 +46,7 @@ object ExternalModelVocabularies {
   *
   * Base class for any element describing a domain model. Domain Elements are encoded into fragments
   */
-trait DomainElementModel extends Obj with ModelDefaultBuilder with CustomizableElementModel {
+trait DomainElementModel extends Obj with ModelDefaultBuilder {
 
   /**
     * Entity that is going to be extended overlaying or adding additional information
@@ -58,6 +58,14 @@ trait DomainElementModel extends Obj with ModelDefaultBuilder with CustomizableE
     * Indicates that this parsing Unit has SourceMaps
     */
   val Sources = Field(SourceMapModel, SourceMaps + "sources", ModelDoc(ModelVocabularies.AmlDoc,"source", "Indicates that this parsing Unit has SourceMaps"))
+
+  lazy val CustomDomainProperties = Field(
+    Array(DomainExtensionModel),
+    Document + "customDomainProperties",
+    ModelDoc(ModelVocabularies.AmlDoc,
+      "customDomainProperties",
+      "Extensions provided for a particular domain element.")
+  )
 
   /**
    * Marks this domain element as a reference to the element identified by the provide ID
