@@ -108,7 +108,7 @@ trait AmfObject extends AmfElement {
     this
   }
 
-  override private[amf] def cloneElement(branch: mutable.Map[AmfObject, AmfObject]): AmfObject = {
+  override def cloneElement(branch: mutable.Map[AmfObject, AmfObject]): AmfObject = {
     branch.get(this) match {
       case Some(me) if me.meta.`type`.head.iri() == meta.`type`.head.iri() => me
       case _ =>
