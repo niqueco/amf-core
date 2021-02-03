@@ -2,7 +2,8 @@ package amf.core.metamodel.document
 
 import amf.core.metamodel.Field
 import amf.core.metamodel.Type.Array
-import amf.core.metamodel.domain.{CustomizableElementModel, DomainElementModel, ModelDoc, ModelVocabularies}
+import amf.core.metamodel.domain.extensions.DomainExtensionModel
+import amf.core.metamodel.domain.{DomainElementModel, ModelDoc, ModelVocabularies}
 import amf.core.model.document.Module
 import amf.core.model.domain.AmfObject
 import amf.core.vocabulary.Namespace.Document
@@ -30,10 +31,18 @@ trait ModuleModel extends BaseUnitModel {
     )
   )
 
+  lazy val CustomDomainProperties = Field(
+    Array(DomainExtensionModel),
+    Document + "customDomainProperties",
+    ModelDoc(ModelVocabularies.AmlDoc,
+      "customDomainProperties",
+      "Extensions provided for a particular domain element.")
+  )
+
   override def modelInstance: AmfObject = Module()
 }
 
-object ModuleModel extends ModuleModel with CustomizableElementModel {
+object ModuleModel extends ModuleModel {
 
   override val `type`: List[ValueType] = List(Document + "Module") ++ BaseUnitModel.`type`
 

@@ -3,7 +3,8 @@ package amf.core.model.document
 import amf.core.metamodel.document.DocumentModel.{Declares => _, Location => _, References => _, Usage => _}
 import amf.core.metamodel.document.ModuleModel
 import amf.core.metamodel.document.ModuleModel._
-import amf.core.metamodel.domain.CustomizableElementModel
+import amf.core.metamodel.domain.DomainElementModel.CustomDomainProperties
+import amf.core.model.domain.extensions.DomainExtension
 import amf.core.model.domain.{AmfObject, CustomizableElement, DomainElement}
 import amf.core.parser.{Annotations, Fields}
 import org.yaml.model.YDocument
@@ -22,6 +23,12 @@ case class Module(fields: Fields, annotations: Annotations) extends BaseUnit wit
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
   override def componentId: String = ""
+
+  def customDomainProperties: Seq[DomainExtension] = fields.field(CustomDomainProperties)
+
+  def withCustomDomainProperties(extensions: Seq[DomainExtension]): this.type = setArray(CustomDomainProperties, extensions)
+
+  def withCustomDomainProperty(extensions: DomainExtension): this.type = add(CustomDomainProperties, extensions)
 }
 
 trait DeclaresModel extends AmfObject {

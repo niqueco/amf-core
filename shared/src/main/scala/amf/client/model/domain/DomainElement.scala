@@ -21,7 +21,7 @@ trait DomainElement extends AmfObjectWrapper with PlatformSecrets with Customiza
   def id: String                                          = _internal.id
   def position: Range                                     = _internal.position().map(_.range).orNull
 
-  def withCustomDomainProperties(extensions: ClientList[DomainExtension]): this.type = {
+  override def withCustomDomainProperties(extensions: ClientList[DomainExtension]): this.type = {
     _internal.withCustomDomainProperties(extensions.asInternal)
     this
   }
