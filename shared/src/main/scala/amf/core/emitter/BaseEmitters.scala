@@ -1,6 +1,6 @@
 package amf.core.emitter
 
-import amf.core.annotations.{LexicalInformation, SingleValueArray, SourceLocation}
+import amf.core.annotations.{LexicalInformation, ReferenceId, SingleValueArray, SourceLocation}
 import amf.core.metamodel.{Field, Type}
 import amf.core.model.domain.{AmfElement, AmfObject, AmfScalar}
 import amf.core.parser.Position._
@@ -61,11 +61,15 @@ package object BaseEmitters {
     override def position(): Position = pos(annotations)
   }
 
-  case class TextScalarEmitter(value: String, annotations: Annotations, tag: YType = YType.Str) extends PartEmitter {
+  case class TextScalarEmitter(value: String, annotations: Annotations, tag: YType = YType.Str)(
+      implicit nodeRefIds: mutable.Map[YNode, String] = mutable.Map.empty)
+      extends PartEmitter {
     override def emit(b: PartBuilder): Unit = {
       sourceOr(
         annotations, {
-          b += YNode(YScalar.withLocation(value, tag, annotations.sourceLocation), tag)
+          val node = YNode(YScalar.withLocation(value, tag, annotations.sourceLocation), tag)
+          annotations.find(classOf[ReferenceId]).map(refId => nodeRefIds.put(node, refId.url))
+          b += node
         }
       )
 
@@ -199,7 +203,11 @@ package object BaseEmitters {
   protected[amf] def link(b: PartBuilder, id: String): Unit = b.obj(_.entry("@id", id.trim))
 
   object ArrayEmitter {
-    def apply(key: String, f: FieldEntry, ordering: SpecOrdering, forceMultiple: Boolean = false, valuesTag: YType = YType.Str) = {
+    def apply(key: String,
+              f: FieldEntry,
+              ordering: SpecOrdering,
+              forceMultiple: Boolean = false,
+              valuesTag: YType = YType.Str) = {
       val isSingleValue = isSingleValueArray(f) || isSingleValueArray(f.element)
       if (isSingleValue && !forceMultiple) SingleValueArrayEmitter(key, f, valuesTag)
       else MultipleValuesArrayEmitter(key, f, ordering, valuesTag)
@@ -210,10 +218,7 @@ package object BaseEmitters {
     private def isSingleValueArray(f: FieldEntry) = f.value.annotations.contains(classOf[SingleValueArray])
   }
 
-  case class SingleValueArrayEmitter(key: String,
-                                     f: FieldEntry,
-                                     valuesTag: YType = YType.Str)
-    extends EntryEmitter {
+  case class SingleValueArrayEmitter(key: String, f: FieldEntry, valuesTag: YType = YType.Str) extends EntryEmitter {
 
     override def emit(b: EntryBuilder): Unit = {
       sourceOr(
@@ -234,11 +239,11 @@ package object BaseEmitters {
                                         f: FieldEntry,
                                         ordering: SpecOrdering,
                                         valuesTag: YType = YType.Str)
-    extends EntryEmitter {
+      extends EntryEmitter {
 
     override def emit(b: EntryBuilder): Unit = sourceOr(
       f.value,
-     emitValues(b)
+      emitValues(b)
     )
 
     private def emitValues(b: EntryBuilder): Unit = {
