@@ -8,5 +8,5 @@ trait AMFPlugin {
 
   def dependencies(): Seq[AMFPlugin]
 
-  def init()(implicit executionContext: ExecutionContext): Future[AMFPlugin]
+  def init()(implicit executionContext: ExecutionContext): AMFPlugin
 }

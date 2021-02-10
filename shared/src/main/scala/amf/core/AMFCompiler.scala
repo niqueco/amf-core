@@ -2,6 +2,8 @@ package amf.core
 
 import java.net.URISyntaxException
 
+import amf.client.`new`.AmfRegistry
+import amf.client.`new`.amfcore.AmfParsePlugin
 import amf.client.parse.DefaultParserErrorHandler
 import amf.client.plugins.AMFDocumentPlugin
 import amf.client.remote.Content
@@ -12,15 +14,7 @@ import amf.core.exception.{CyclicReferenceException, UnsupportedMediaTypeExcepti
 import amf.core.model.document.{BaseUnit, ExternalFragment}
 import amf.core.model.domain.ExternalDomainElement
 import amf.core.parser.errorhandler.ParserErrorHandler
-import amf.core.parser.{
-  ParsedDocument,
-  ParsedReference,
-  ParserContext,
-  RefContainer,
-  ReferenceKind,
-  ReferenceResolutionResult,
-  UnspecifiedReference
-}
+import amf.core.parser.{ParsedDocument, ParsedReference, ParserContext, RefContainer, ReferenceKind, ReferenceResolutionResult, UnspecifiedReference}
 import amf.core.registries.AMFPluginsRegistry
 import amf.core.remote._
 import amf.core.services.RuntimeCompiler
@@ -48,7 +42,8 @@ class CompilerContext(url: String,
                       val parserContext: ParserContext,
                       val fileContext: Context,
                       cache: Cache,
-                      val environment: Environment)(implicit executionContext: ExecutionContext) {
+                      val environment: Environment,
+                      val registry:AmfRegistry)(implicit executionContext: ExecutionContext) {
 
   /**
     * The resolved path that result to be the normalized url
@@ -263,6 +258,18 @@ class AMFCompiler(compilerContext: CompilerContext,
   private def parseDomain(document: Root)(implicit executionContext: ExecutionContext): Future[BaseUnit] = {
     compilerContext.logForFile("AMFCompiler#parseDomain: parsing domain")
 
+    val domainPlugin = getDomainPluginFor(document)
+    compilerContext.logForFile(s"AMFCompiler#parseSyntax: parsing domain plugin ${domainPlugin.id}")
+    parseReferences(document, domainPlugin) map { documentWithReferences =>
+      val newCtx = compilerContext.parserContext.copyWithSonsReferences()
+      val baseUnit = domainPlugin.parse(documentWithReferences, newCtx)
+      if (document.location == compilerContext.fileContext.root)
+          baseUnit.withRoot(true)
+      baseUnit
+        .withRaw(document.raw)
+        .tagReferences(documentWithReferences)
+    }
+
     val domainPluginOption = getDomainPluginFor(document)
 
     val futureDocument: Future[BaseUnit] = domainPluginOption match {
@@ -311,13 +318,13 @@ class AMFCompiler(compilerContext: CompilerContext,
           .withMediaType(document.mediatype))
   }
 
-  private def getDomainPluginFor(document: Root) = {
-    vendor.fold(AMFPluginsRegistry.documentPluginForMediaType(document.mediatype).find(_.canParse(document)))({
-      AMFPluginsRegistry.documentPluginForVendor(_).find(_.canParse(document))
-    })
+  private def getDomainPluginFor(document: Root): AmfParsePlugin = {
+    vendor.fold(compilerContext.registry.plugins.getParsePluginFor(document.parsed))(v =>
+      compilerContext.registry.plugins.getParsePluginFor(document.parsed, Vendor(v))
+    )
   }
 
-  private def parseReferences(root: Root, domainPlugin: AMFDocumentPlugin)(
+  private def parseReferences(root: Root, domainPlugin: AmfParsePlugin)(
       implicit executionContext: ExecutionContext): Future[Root] = {
     val handler = domainPlugin.referenceHandler(compilerContext.parserContext.eh)
     val refs    = handler.collect(root.parsed, compilerContext.parserContext)
@@ -326,10 +333,10 @@ class AMFCompiler(compilerContext: CompilerContext,
       .filter(_.isRemote)
       .map { link =>
         val nodes = link.refs.map(_.node)
-        link.resolve(compilerContext, nodes, domainPlugin.allowRecursiveReferences, domainPlugin) flatMap {
+        link.resolve(compilerContext, nodes, domainPlugin) flatMap {
           case ReferenceResolutionResult(_, Some(unit)) =>
             verifyCrossReference(unit.sourceVendor, domainPlugin, nodes)
-            domainPlugin.verifyValidFragment(unit.sourceVendor, link.refs, compilerContext)
+            //domainPlugin.verifyValidFragment(unit.sourceVendor, link.refs, compilerContext) // podria estar en el resolve handler
             val reference = ParsedReference(unit, link)
             handler.update(reference, compilerContext).map(Some(_))
           case ReferenceResolutionResult(Some(e), _) =>
@@ -352,8 +359,8 @@ class AMFCompiler(compilerContext: CompilerContext,
 
   private def fetchContent()(implicit executionContext: ExecutionContext): Future[Content] = compilerContext.fetchContent()
 
-  private def verifyCrossReference(refVendor: Option[Vendor], domainPlugin: AMFDocumentPlugin, nodes: Seq[YNode]): Unit = {
-    val rootVendors = domainPlugin.vendors.map(Vendor.apply)
+  private def verifyCrossReference(refVendor: Option[Vendor], domainPlugin: AmfParsePlugin, nodes: Seq[YNode]): Unit = {
+    val rootVendors = domainPlugin.supportedVendors
     val validVendors = rootVendors ++ domainPlugin.validVendorsToReference
     refVendor match {
       case Some(v) if !validVendors.contains(v) && !isJsonRef(rootVendors) =>

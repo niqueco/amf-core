@@ -1,0 +1,50 @@
+#%AMFEnvironment 1.0
+resolver:
+  resourceLoaders:
+    - amf.client.resource.FileResourceLoader
+    - amf.client.resource.HttpResourceLoader
+  unitCache:
+errorHandlerProvider:
+  - amf.client.`new`.DefaultErrorHandlerProvider
+registry:
+  plugins:
+    parsePlugins:
+      -
+    resolvePlugins:
+      -
+    validatePlugins:
+      -
+    defaultPlugin:
+  entities:
+    domain:
+      http://a.ml/vocabularies/apiContract#WebAPi: amf.plugins.domain.webapi.metamodel.api.WebApiModel
+    wrapper:
+      http://aml/vocabularies/apiContract#WebAPi:
+    amlRegistry:
+      - file://dialect1.yaml
+config:
+  logger: amf.client.`new`.amfcore.MutedLogger
+  listeners:
+    -
+  platform: amf.core.remote.JvmPlatform
+  executionEnvironment:
+  idGenerator:
+
+options:
+  parsingOptions:
+    amfJsonLdSerialization: true
+    baseUnitUrl: ""
+    maxYamlReferences:
+  renderOptions:
+    compactedEmission: true
+    sources: false
+    compactUris: false
+    rawSourceMaps: false
+    validating: false
+    filterFields:
+    amfJsonLdSerialization: true
+    useJsonLdEmitter: false
+    flattenedJsonLd: false
+    eh: UnhandledErrorHandler
+    prettyPrint: false
+    emitNodeIds: false
