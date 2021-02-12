@@ -6,9 +6,9 @@ import amf.client.reference.{ReferenceResolver => ClientReferenceResolver}
 import scala.concurrent.{ExecutionContext, Future}
 
 /** Adapts a client ReferenceResolver to an internal one. */
-case class ReferenceResolverAdapter(private[amf] val adaptee: ClientReferenceResolver)(
+case class UnitCacheAdapter(private[amf] val adaptee: ClientReferenceResolver)(
     implicit executionContext: ExecutionContext)
-    extends ReferenceResolver {
+    extends UnitCache {
 
   override def fetch(url: String): Future[CachedReference] = adaptee.fetch(url).asInternal
 }

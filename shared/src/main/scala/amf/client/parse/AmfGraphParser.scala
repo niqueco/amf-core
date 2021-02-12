@@ -2,7 +2,7 @@ package amf.client.parse
 
 import amf.client.environment.Environment
 import amf.core.registries.AMFPluginsRegistry
-import amf.plugins.document.graph.AMFGraphPlugin
+import amf.plugins.document.graph.{AMFGraphParsePlugin, AMFGraphPlugin}
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
@@ -18,4 +18,6 @@ class AmfGraphParser private (private val env: Option[Environment] = None)
   def this(environment: Environment) = this(Some(environment))
 
   AMFPluginsRegistry.registerDocumentPlugin(AMFGraphPlugin)
+  AMFPluginsRegistry.registerNewInterfacePlugin(AMFGraphParsePlugin)
+
 }

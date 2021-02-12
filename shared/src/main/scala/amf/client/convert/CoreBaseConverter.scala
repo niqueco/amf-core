@@ -46,7 +46,7 @@ import amf.core.parser.Annotations
 import amf.core.remote.Vendor
 import amf.core.unsafe.PlatformSecrets
 import amf.core.validation._
-import amf.internal.reference.{CachedReference, ReferenceResolver, ReferenceResolverAdapter}
+import amf.internal.reference.{CachedReference, UnitCache, UnitCacheAdapter}
 import amf.internal.resource.{ResourceLoader, ResourceLoaderAdapter}
 
 import scala.collection.mutable
@@ -491,13 +491,13 @@ trait ReferenceResolverConverter {
   type ClientReference <: ClientReferenceResolver
 
   implicit object ReferenceResolverMatcher
-      extends BidirectionalMatcherWithEC[ReferenceResolver, ClientReferenceResolver] {
+      extends BidirectionalMatcherWithEC[UnitCache, ClientReferenceResolver] {
     override def asInternal(from: ClientReferenceResolver)(
-        implicit executionContext: ExecutionContext): ReferenceResolver = ReferenceResolverAdapter(from)
+        implicit executionContext: ExecutionContext): UnitCache = UnitCacheAdapter(from)
 
-    override def asClient(from: ReferenceResolver)(
+    override def asClient(from: UnitCache)(
         implicit executionContext: ExecutionContext): ClientReferenceResolver = from match {
-      case ReferenceResolverAdapter(adaptee) => adaptee
+      case UnitCacheAdapter(adaptee) => adaptee
     }
   }
 
