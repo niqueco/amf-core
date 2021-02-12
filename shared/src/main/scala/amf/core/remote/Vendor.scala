@@ -43,7 +43,7 @@ object Vendor {
   val JSONSCHEMA: Vendor = JsonSchema
 }
 
-sealed trait Vendor {
+trait Vendor {
   val name: String
 
   def isRaml: Boolean  = this == Raml || this == Raml10 || this == Raml08

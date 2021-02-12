@@ -1,11 +1,15 @@
 package amf.core.registries
 
+import amf.client.`new`.{AmfEnvironment, BaseEnvironment}
+import amf.client.`new`.amfcore.AmfParsePlugin
 import amf.client.plugins._
 import amf.core.validation.AMFPayloadValidationPlugin
 
 import scala.collection.mutable
 
 object AMFPluginsRegistry {
+  // all static registries will end up here, and with a mayor version release the AmfEnvironment will not be static
+  private var staticEnvironment: BaseEnvironment                                             = AmfEnvironment.default()
 
   private val syntaxPluginIDRegistry: mutable.HashMap[String, AMFSyntaxPlugin]               = mutable.HashMap()
   private val syntaxPluginRegistry: mutable.HashMap[String, AMFSyntaxPlugin]                 = mutable.HashMap()
@@ -24,6 +28,13 @@ object AMFPluginsRegistry {
     syntaxPluginIDRegistry.values ++ documentPluginIDRegistry.values ++ domainPluginRegistry.values ++ featurePluginIDRegistry.values
 
   def documentPlugins: Iterable[AMFDocumentPlugin] = documentPluginIDRegistry.values
+
+  def obtainStaticEnv(): BaseEnvironment = staticEnvironment
+
+  def registerNewInterfacePlugin(amfPlugin: AmfParsePlugin): Unit = {
+    val newEnv = staticEnvironment.withPlugin(amfPlugin)
+    staticEnvironment = newEnv
+  }
 
   def registerSyntaxPlugin(syntaxPlugin: AMFSyntaxPlugin): Unit = {
     syntaxPluginIDRegistry.get(syntaxPlugin.ID) match {
