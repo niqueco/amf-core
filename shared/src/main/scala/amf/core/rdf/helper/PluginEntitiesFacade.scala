@@ -18,7 +18,7 @@ class PluginEntitiesFacade(ctx: ParserContext) {
     typeModel.isInstanceOf[DocumentModel] || typeModel.isInstanceOf[EncodesModel] || typeModel
       .isInstanceOf[DeclaresModel] || typeModel.isInstanceOf[BaseUnitModel]
 
-  def retrieveType(id: String, node: Node, findBaseUnit: Boolean = false): Option[Obj] = {
+  def retrieveType(id: String, node: Node, findBaseUnit: Boolean = false, visitedSelfEncoded: Boolean = false): Option[Obj] = {
     val types = sorter.sortedClassesOf(node)
 
     val foundType = types.find { t =>
@@ -32,7 +32,7 @@ class PluginEntitiesFacade(ctx: ParserContext) {
     } orElse {
       // if I cannot find it, I will return the matching one directly, this is used
       // in situations where the references a reified, for example, in the canonical web api spec
-      types.find(findType(_).isDefined)
+      types.find(findType(_).isDefined && !visitedSelfEncoded)
     }
 
     foundType match {

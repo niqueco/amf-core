@@ -33,12 +33,12 @@ class ObjectParser(val rootId: String,
 
   private def isSelfEncoded(node: Node) = node.subject == rootId
 
-  def parse(node: Node, findBaseUnit: Boolean = false): Option[AmfElement] = {
+  def parse(node: Node, findBaseUnit: Boolean = false, visitedSelfEncoded: Boolean = false): Option[AmfElement] = {
     if (recursionControl.hasVisited(node) && !isSelfEncoded(node)) ctx.nodes.get(node.subject)
     else {
       recursionControl.visited(node)
       val id = node.subject
-      plugins.retrieveType(id, node, findBaseUnit) map { model =>
+      plugins.retrieveType(id, node, findBaseUnit, visitedSelfEncoded) map { model =>
         val sources  = retrieveSources(node)
         val instance = plugins.buildType(model)(annots(sources, id))
         instance.withId(id)
@@ -140,7 +140,7 @@ class ObjectParser(val rootId: String,
       case _: Obj =>
         findLink(property) match {
           case Some(node) =>
-            parse(node) match {
+            parse(node, visitedSelfEncoded = isSelfEncoded(node)) match {
               case Some(parsed) =>
                 instance.set(f, parsed, annots(sources, key))
               case _ => // ignore
