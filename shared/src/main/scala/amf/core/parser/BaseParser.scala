@@ -73,7 +73,7 @@ trait BaseArrayNode extends ArrayNode {
     nodes match {
       case (all, node) =>
         val elements = all.map(fn(_))
-        AmfArray(elements, Annotations.valueNode(node))
+        if(elements.nonEmpty) AmfArray(elements, Annotations.valueNode(node)) else AmfArray(elements)
     }
   }
 
