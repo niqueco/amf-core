@@ -30,27 +30,29 @@ object AmfPlugin {
 
 // YDocument will have to change, we need to use a container which is not attached to syaml
 // Root is has a lot of information that is not used, can be limited to YDocument and raw string
-trait AmfParsePlugin extends AmfPlugin[Root] {
+case class ParsingInfo(parsed: Root, vendor: Option[String])
+
+trait AmfParsePlugin extends AmfPlugin[ParsingInfo] {
 
 //  def parse(document:Root, ctx:ParserContext): BaseUnit // change parser for AMF context
-  def parse(document: Root, ctx: ParserContext, platform: Platform, options: ParsingOptions): Option[BaseUnit]
-
-  val supportedMediatypes: Seq[String]
-  val supportedVendors: Seq[Vendor]
-  val validVendorsToReference:Seq[Vendor]
+  def parse(document: Root, ctx: ParserContext, options: ParsingOptions): Option[BaseUnit]
 
   def referenceHandler(eh:ErrorHandler): ReferenceHandler
 
   // move to some vendor/dialect configuration?
-  def allowRecursiveReferences:Boolean
+  def allowRecursiveReferences: Boolean
 
-  // this is only used in raml, we should se if we can move from this abstraction
+  // ideally can deleted, only used in AMFCompiler::verifyCrossReference for RAML validations
+  val supportedVendors: Seq[Vendor]
+  val validVendorsToReference:Seq[Vendor]
+
+  // ideally can deleted, only used in Reference::resolveReference for RAML validations
   def verifyReferenceKind(unit: BaseUnit,
                           definedKind: ReferenceKind,
                           allKinds: Seq[ReferenceKind],
                           nodes: Seq[YNode],
                           ctx: ParserContext): Unit = Unit
-
+  // ideally can deleted, only used in Reference::parseReferences for RAML validations
   def verifyValidFragment(refVendor: Option[Vendor], refs: Seq[RefContainer], ctx: CompilerContext): Unit = Unit
 
 }

@@ -18,21 +18,6 @@ case class AmfRegistry(plugins: PluginsRegistry,
 //                       contraintsRules: Map[ProfileName, Rules],
                        /*private [amf] var env:AmfEnvironment*/) {
 
-  private val pendingDialects: mutable.Set[String] = mutable.Set.empty
-
-
-//  private[amf] def init() = {
-//    if(pendingDialects.isEmpty) Future.unit
-//    else {
-//      val instance = env.getInstance()
-//      val eventualResults = pendingDialects.map(p => instance.parse(p, Some(Aml)))
-//      Future.sequence(eventualResults).map(r => r.foreach {
-//        case d:Dialect => amlRegistry.register(d)
-//        case _ => // ignore
-//      })
-//    }
-//  }
-
   def withPlugin(amfPlugin: AmfPlugin[_]): AmfRegistry = copy(plugins = plugins + amfPlugin)
 }
 
