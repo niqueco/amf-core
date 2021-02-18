@@ -1,8 +1,7 @@
 package amf.core
 
 import java.net.URISyntaxException
-
-import amf.client.`new`.amfcore.AmfParsePlugin
+import amf.client.`new`.amfcore.{AmfParsePlugin, ParsingInfo}
 import amf.client.parse.DefaultParserErrorHandler
 import amf.client.plugins.AMFDocumentPlugin
 import amf.client.remote.Content
@@ -264,7 +263,7 @@ class AMFCompiler(compilerContext: CompilerContext,
         compilerContext.logForFile(s"AMFCompiler#parseSyntax: parsing domain plugin ${domainPlugin.id}")
         parseReferences(document, domainPlugin) map { documentWithReferences =>
           val newCtx = compilerContext.parserContext.copyWithSonsReferences()
-          domainPlugin.parse(documentWithReferences, newCtx, compilerContext.platform, parsingOptions) match {
+          domainPlugin.parse(documentWithReferences, newCtx, parsingOptions) match {
             case Some(baseUnit) =>
               if (document.location == compilerContext.fileContext.root)
                 baseUnit.withRoot(true)
@@ -306,11 +305,7 @@ class AMFCompiler(compilerContext: CompilerContext,
   }
 
   private def getDomainPluginFor(document: Root): Option[AmfParsePlugin] = {
-    val plugins = vendor match {
-      case Some(definedVendor) => parsePlugins.filter(_.supportedVendors.contains(Vendor(definedVendor)))
-      case None => parsePlugins.filter(_.supportedMediatypes.contains(document.mediatype))
-    }
-    plugins.find(_.applies(document))
+    parsePlugins.find(_.applies(ParsingInfo(document, vendor)))
   }
 
   private def parseReferences(root: Root, domainPlugin: AmfParsePlugin)(
@@ -364,7 +359,7 @@ class AMFCompiler(compilerContext: CompilerContext,
 
   def root()(implicit executionContext: ExecutionContext): Future[Root] = fetchContent().map(parseSyntax).flatMap {
     case Right(document: Root) =>
-      val parsePlugin = parsePlugins.filter(_.supportedMediatypes.contains(document.mediatype)).find(_.applies(document))
+      val parsePlugin = parsePlugins.find(_.applies(ParsingInfo(document, None)))
       parsePlugin match {
         case Some(domainPlugin) =>
           parseReferences(document, domainPlugin)
@@ -392,7 +387,7 @@ class AMFCompilerAdapter(implicit executionContext: ExecutionContext) extends Ru
                      vendor: Option[String],
                      referenceKind: ReferenceKind,
                      parsingOptions: ParsingOptions): Future[BaseUnit] = {
-    val parsePlugins = AMFPluginsRegistry.obtainStaticEnv().registry.plugins.parsePlugins
+    val parsePlugins = AMFPluginsRegistry.obtainStaticEnv().registry.plugins.parsePlugins.sortBy(_.priority.priority)
     new AMFCompiler(compilerContext, parsePlugins, mediaType, vendor, referenceKind, parsingOptions).build()
   }
 }
