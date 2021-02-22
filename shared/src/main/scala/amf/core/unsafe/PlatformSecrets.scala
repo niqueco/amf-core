@@ -1,5 +1,6 @@
 package amf.core.unsafe
 
+import amf.client.`new`.BaseEnvironment
 import amf.client.execution.BaseExecutionEnvironment
 import amf.client.remote.Content
 import amf.core.execution.ExecutionEnvironment
@@ -78,7 +79,7 @@ case class TrunkPlatform(content: String,
 
   override def tmpdir(): String = throw new Exception("Unsupported tmpdir operation")
 
-  override def fetchContent(url: String, env: Environment = Environment())(
+  override def fetchContent(url: String, env: BaseEnvironment)(
       implicit executionContext: ExecutionContext): Future[Content] =
     Future.successful(new Content(content, url, forcedMediaType))
 

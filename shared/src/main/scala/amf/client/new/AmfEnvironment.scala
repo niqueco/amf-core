@@ -39,6 +39,8 @@ abstract private[amf] class BaseEnvironment(val resolvers: AmfResolvers,
 
   def overrideResourceLoaders(rl:Seq[ResourceLoader]): Self = doCopy(AmfResolvers(rl, resolvers.unitCache))
 
+  def withUnitCache(cache: UnitCache): Self = doCopy(AmfResolvers(resolvers.resourceLoaders, Some(cache)))
+
   def withPlugin(amfPlugin: AmfParsePlugin): Self = doCopy(registry.withPlugin(amfPlugin))
 
 //  private [amf] def beforeParse() = init()
@@ -48,6 +50,14 @@ abstract private[amf] class BaseEnvironment(val resolvers: AmfResolvers,
   protected def doCopy(resolvers: AmfResolvers): Self
 }
 
+object BaseEnvironment {
+  def fromLegacy(base: BaseEnvironment, legacy: Environment): BaseEnvironment = {
+    legacy.maxYamlReferences.foreach{ maxValue => base.options.parsingOptions.setMaxYamlReferences(maxValue) }
+    val withLoaders = base.overrideResourceLoaders(legacy.loaders)
+    legacy.resolver.map( unitCache => withLoaders.withUnitCache(unitCache)).getOrElse(withLoaders)
+  }
+}
+
 case class AmfEnvironment(override val resolvers: AmfResolvers,
                           override val errorHandlerProvider: ErrorHandlerProvider,
                           override val registry: AmfRegistry,
@@ -55,20 +65,23 @@ case class AmfEnvironment(override val resolvers: AmfResolvers,
                           override val options: AmfOptions) extends BaseEnvironment(resolvers, errorHandlerProvider, registry, amfConfig, options) { // break platform into more specific classes?
   type Self = AmfEnvironment
 
+  def withParsingOptions(parsingOptions: ParsingOptions): AmfEnvironment = this.copy(options = options.copy(parsingOptions = parsingOptions))
+
   override protected def doCopy(registry: AmfRegistry): Self = this.copy(registry = registry)
 
   override protected def doCopy(resolvers: AmfResolvers): Self = this.copy(resolvers = resolvers)
+
 }
 
-object AmfEnvironment{
+object AmfEnvironment {
 
   def default() = {
-    val default = AmfConfig.default
+    val config = AmfConfig.default
     new AmfEnvironment(
-      AmfResolvers(default.platform.loaders()(default.executionContext.context),None),
+      AmfResolvers(config.platform.loaders()(config.executionContext.context),None),
       DefaultErrorHandlerProvider,
       AmfRegistry.empty,
-      default,
+      config,
       AmfOptions.default
     )
   }

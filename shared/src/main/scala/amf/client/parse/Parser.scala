@@ -1,5 +1,6 @@
 package amf.client.parse
 
+import amf.client.`new`.PluginsRegistry
 import amf.client.convert.CoreClientConverters._
 import amf.client.environment.{DefaultEnvironment, Environment}
 import amf.client.execution.BaseExecutionEnvironment
@@ -8,6 +9,7 @@ import amf.client.validate.ValidationReport
 import amf.core.client.ParsingOptions
 import amf.core.errorhandling.UnhandledErrorHandler
 import amf.core.model.document.{BaseUnit => InternalBaseUnit}
+import amf.core.registries.AMFPluginsRegistry
 import amf.core.remote.{Cache, Context}
 import amf.core.services.{RuntimeCompiler, RuntimeValidator}
 import amf.internal.environment
@@ -107,14 +109,16 @@ class Parser(vendor: String, mediaType: String, private val env: Option[Environm
       loader.map(e.add).getOrElse(e)
     }
 
+    val newEnv = AMFPluginsRegistry.obtainStaticEnv().withParsingOptions(parsingOptions)
+
     RuntimeCompiler(
       url,
       Option(mediaType),
       Some(vendor),
       Context(platform),
-      env = environment,
       cache = Cache(),
-      parsingOptions = parsingOptions,
+      newEnv,
+      env = environment,
       errorHandler = DefaultParserErrorHandler.withRun()
     ) map { model =>
       parsedModel = Some(model)

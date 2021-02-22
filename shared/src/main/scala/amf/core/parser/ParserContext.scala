@@ -1,5 +1,6 @@
 package amf.core.parser
 
+import amf.core.errorhandling.ErrorHandler
 import amf.core.model.document.BaseUnit
 import amf.core.parser.errorhandler.ParserErrorHandler
 import amf.core.plugin.PluginContext
