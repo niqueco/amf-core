@@ -28,7 +28,7 @@ case class Reference(url: String, refs: Seq[RefContainer]) extends PlatformSecre
 
     // If there is any ReferenceResolver attached to the environment, then first try to get the cached reference if it exists. If not, load and parse as usual.
     try {
-      compilerContext.environment.resolver match {
+      compilerContext.environment.resolvers.unitCache match {
         case Some(resolver) =>
           resolver.fetch(compilerContext.resolvePath(url)) flatMap { cachedReference =>
             Future(ReferenceResolutionResult(None, Some(cachedReference.content)))

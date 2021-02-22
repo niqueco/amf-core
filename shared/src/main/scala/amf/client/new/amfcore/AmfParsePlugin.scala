@@ -43,8 +43,8 @@ trait AmfParsePlugin extends AmfPlugin[ParsingInfo] {
   def allowRecursiveReferences: Boolean
 
   // ideally can deleted, only used in AMFCompiler::verifyCrossReference for RAML validations
-  val supportedVendors: Seq[Vendor]
-  val validVendorsToReference:Seq[Vendor]
+  val supportedVendors: Seq[String]
+  val validVendorsToReference:Seq[String]
 
   // ideally can deleted, only used in Reference::resolveReference for RAML validations
   def verifyReferenceKind(unit: BaseUnit,

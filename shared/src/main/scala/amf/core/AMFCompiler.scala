@@ -1,5 +1,7 @@
 package amf.core
 
+import amf.client.`new`.BaseEnvironment
+
 import java.net.URISyntaxException
 import amf.client.`new`.amfcore.{AmfParsePlugin, ParsingInfo}
 import amf.client.parse.DefaultParserErrorHandler
@@ -8,6 +10,7 @@ import amf.client.remote.Content
 import amf.core.TaggedReferences._
 import amf.core.benchmark.ExecutionLog
 import amf.core.client.ParsingOptions
+import amf.core.errorhandling.ErrorHandler
 import amf.core.exception.{CyclicReferenceException, UnsupportedMediaTypeException, UnsupportedVendorException}
 import amf.core.model.document.{BaseUnit, ExternalFragment}
 import amf.core.model.domain.ExternalDomainElement
@@ -40,7 +43,7 @@ class CompilerContext(url: String,
                       val parserContext: ParserContext,
                       val fileContext: Context,
                       cache: Cache,
-                      val environment: Environment)(implicit executionContext: ExecutionContext) {
+                      val environment: BaseEnvironment)(implicit executionContext: ExecutionContext) {
 
   /**
     * The resolved path that result to be the normalized url
@@ -64,11 +67,10 @@ class CompilerContext(url: String,
       implicit executionContext: ExecutionContext): CompilerContext = {
     new CompilerContextBuilder(url, fileContext.platform, parserContext.eh)
       .withCache(cache)
-      .withEnvironment(environment)
       .withBaseParserContext(parserContext)
       .withFileContext(fileContext)
       .withNormalizedUri(withNormalizedUri)
-      .build()
+      .build(environment)
   }
 
   def violation(id: ValidationSpecification, node: String, message: String, ast: YPart): Unit =
@@ -87,7 +89,6 @@ class CompilerContextBuilder(url: String,
   private var fileContext: Context                = Context(platform)
   private var givenContent: Option[ParserContext] = None
   private var cache                               = Cache()
-  private var environment                         = Environment()
   private var normalizeUri: Boolean               = true
 
   def withBaseParserContext(parserContext: ParserContext): this.type = {
@@ -102,11 +103,6 @@ class CompilerContextBuilder(url: String,
 
   def withCache(cache: Cache): CompilerContextBuilder = {
     this.cache = cache
-    this
-  }
-
-  def withEnvironment(environment: Environment): CompilerContextBuilder = {
-    this.environment = environment
     this
   }
 
@@ -140,18 +136,18 @@ class CompilerContextBuilder(url: String,
     case None                                                        => ParserContext(fc.current, eh = eh)
   }
 
-  def build()(implicit executionContext: ExecutionContext): CompilerContext = {
+  def build(environment: BaseEnvironment)(implicit executionContext: ExecutionContext): CompilerContext = {
     val fc = buildFileContext()
     new CompilerContext(url, path, buildParserContext(fc), fc, cache, environment)
   }
 }
 
 class AMFCompiler(compilerContext: CompilerContext,
-                  val parsePlugins: Seq[AmfParsePlugin],
                   val mediaType: Option[String],
                   val vendor: Option[String],
-                  val referenceKind: ReferenceKind = UnspecifiedReference,
-                  val parsingOptions: ParsingOptions = ParsingOptions()) {
+                  val referenceKind: ReferenceKind = UnspecifiedReference) {
+
+  private val sortedParsePlugins = compilerContext.environment.registry.plugins.parsePlugins.sorted
 
   def build()(implicit executionContext: ExecutionContext): Future[BaseUnit] = {
     compilerContext.logForFile(s"AMFCompiler#build: Building")
@@ -224,7 +220,7 @@ class AMFCompiler(compilerContext: CompilerContext,
   private def parseSyntaxForMediaType(content: Content, mime: String) = {
     AMFPluginsRegistry
       .syntaxPluginForMediaType(mime)
-      .flatMap(_.parse(mime, content.stream, compilerContext.parserContext, parsingOptions))
+      .flatMap(_.parse(mime, content.stream, compilerContext.parserContext, compilerContext.environment.options.parsingOptions))
       .map((mime, _))
   }
 
@@ -263,7 +259,7 @@ class AMFCompiler(compilerContext: CompilerContext,
         compilerContext.logForFile(s"AMFCompiler#parseSyntax: parsing domain plugin ${domainPlugin.id}")
         parseReferences(document, domainPlugin) map { documentWithReferences =>
           val newCtx = compilerContext.parserContext.copyWithSonsReferences()
-          domainPlugin.parse(documentWithReferences, newCtx, parsingOptions) match {
+          domainPlugin.parse(documentWithReferences, newCtx, compilerContext.environment.options.parsingOptions) match {
             case Some(baseUnit) =>
               if (document.location == compilerContext.fileContext.root)
                 baseUnit.withRoot(true)
@@ -304,9 +300,8 @@ class AMFCompiler(compilerContext: CompilerContext,
           .withMediaType(document.mediatype))
   }
 
-  private def getDomainPluginFor(document: Root): Option[AmfParsePlugin] = {
-    parsePlugins.find(_.applies(ParsingInfo(document, vendor)))
-  }
+  private def getDomainPluginFor(document: Root): Option[AmfParsePlugin] =
+    sortedParsePlugins.find(_.applies(ParsingInfo(document, vendor)))
 
   private def parseReferences(root: Root, domainPlugin: AmfParsePlugin)(
       implicit executionContext: ExecutionContext): Future[Root] = {
@@ -347,7 +342,7 @@ class AMFCompiler(compilerContext: CompilerContext,
     val rootVendors = domainPlugin.supportedVendors
     val validVendors = rootVendors ++ domainPlugin.validVendorsToReference
     refVendor match {
-      case Some(v) if !validVendors.contains(v) && !isJsonRef(rootVendors) =>
+      case Some(v) if !validVendors.contains(v.name) && !isJsonRef(rootVendors) =>
         nodes.foreach(compilerContext.violation(InvalidCrossSpec, "Cannot reference fragments of another spec", _))
       case _ => // Nothing to do
     }
@@ -355,11 +350,11 @@ class AMFCompiler(compilerContext: CompilerContext,
 
   private val JSON_REFS = "JSON + Refs"
 
-  private def isJsonRef(vendors: Seq[Vendor]) = vendors.forall(_.name.equals(JSON_REFS))
+  private def isJsonRef(vendors: Seq[String]) = vendors.forall(_.equals(JSON_REFS))
 
   def root()(implicit executionContext: ExecutionContext): Future[Root] = fetchContent().map(parseSyntax).flatMap {
     case Right(document: Root) =>
-      val parsePlugin = parsePlugins.find(_.applies(ParsingInfo(document, None)))
+      val parsePlugin = sortedParsePlugins.find(_.applies(ParsingInfo(document, None)))
       parsePlugin match {
         case Some(domainPlugin) =>
           parseReferences(document, domainPlugin)
@@ -385,10 +380,8 @@ class AMFCompilerAdapter(implicit executionContext: ExecutionContext) extends Ru
   override def build(compilerContext: CompilerContext,
                      mediaType: Option[String],
                      vendor: Option[String],
-                     referenceKind: ReferenceKind,
-                     parsingOptions: ParsingOptions): Future[BaseUnit] = {
-    val parsePlugins = AMFPluginsRegistry.obtainStaticEnv().registry.plugins.parsePlugins.sortBy(_.priority.priority)
-    new AMFCompiler(compilerContext, parsePlugins, mediaType, vendor, referenceKind, parsingOptions).build()
+                     referenceKind: ReferenceKind): Future[BaseUnit] = {
+    new AMFCompiler(compilerContext, mediaType, vendor, referenceKind).build()
   }
 }
 
