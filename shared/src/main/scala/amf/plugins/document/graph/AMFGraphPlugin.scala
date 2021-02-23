@@ -1,6 +1,6 @@
 package amf.plugins.document.graph
 
-import amf.client.`new`.amfcore.plugins.AmfParsePluginAdapter
+import amf.client.`new`.amfcore.plugins.AMFParsePluginAdapter
 import amf.client.plugins.{AMFDocumentPlugin, AMFPlugin}
 import amf.core.Root
 import amf.core.client.ParsingOptions
@@ -22,7 +22,7 @@ import org.yaml.model.YDocument
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object AMFGraphParsePlugin extends AmfParsePluginAdapter(AMFGraphPlugin)
+object AMFGraphParsePlugin extends AMFParsePluginAdapter(AMFGraphPlugin)
 
 object AMFGraphPlugin extends AMFDocumentPlugin with PlatformSecrets {
 

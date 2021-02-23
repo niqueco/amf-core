@@ -1,6 +1,6 @@
 package amf.client.`new`.amfcore.plugins
 
-import amf.client.`new`.amfcore.{AmfParsePlugin, ParsingInfo, PluginPriority}
+import amf.client.`new`.amfcore.{AMFParsePlugin, ParsingInfo, PluginPriority}
 import amf.client.plugins.AMFDocumentPlugin
 import amf.core.{CompilerContext, Root}
 import amf.core.client.ParsingOptions
@@ -10,7 +10,7 @@ import amf.core.parser.{LibraryReference, ParsedDocument, ParserContext, RefCont
 import amf.core.remote.{Platform, Vendor}
 import org.yaml.model.YNode
 
-case class AmfParsePluginAdapter (plugin: AMFDocumentPlugin) extends AmfParsePlugin {
+case class AMFParsePluginAdapter(plugin: AMFDocumentPlugin) extends AMFParsePlugin {
   override def parse(document: Root, ctx: ParserContext, options: ParsingOptions): Option[BaseUnit] =
     plugin.parse(document, ctx, options)
 

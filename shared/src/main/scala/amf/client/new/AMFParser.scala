@@ -16,7 +16,7 @@ import amf.internal.resource.{ResourceLoader, StringResourceLoader}
 import scala.concurrent.Future
 import scala.scalajs.js.annotation.JSExport
 
-object AmfParser {
+object AMFParser {
 
 
   /**
@@ -42,7 +42,7 @@ object AmfParser {
     * @return A future that will have a BaseUnit or an error to handle the result of such invocation.
     */
   @JSExport
-  def parseStream(stream: String, env:AmfEnvironment): Future[AmfResult] = ???
+  def parseStream(stream: String, env:AMFEnvironment): Future[AmfResult] = ???
 //    parseAsync(DEFAULT_DOCUMENT_URL, Some(fromStream(stream)), env)
 
   /**
@@ -51,7 +51,7 @@ object AmfParser {
     * @return A future that will have a BaseUnit or an error to handle the result of such invocation.
     */
   @JSExport
-  def parseStream(stream: String,vendor:Vendor, env:AmfEnvironment): Future[AmfResult] = {
+  def parseStream(stream: String,vendor:Vendor, env:AMFEnvironment): Future[AmfResult] = {
     ???
 //    parseAsync(DEFAULT_DOCUMENT_URL, Some(fromStream(stream)))
   }

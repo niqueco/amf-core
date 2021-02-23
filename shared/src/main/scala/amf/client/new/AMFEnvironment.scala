@@ -3,7 +3,7 @@ package amf.client.`new`
 import java.util.EventListener
 
 import amf.ProfileName
-import amf.client.`new`.amfcore.{AmfLogger, AmfParsePlugin, AmfValidatePlugin, MutedLogger}
+import amf.client.`new`.amfcore.{AMFLogger, AMFParsePlugin, AMFValidatePlugin, MutedLogger}
 import amf.client.execution.BaseExecutionEnvironment
 import amf.client.remote.Content
 import amf.core.client.ParsingOptions
@@ -25,7 +25,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 abstract private[amf] class BaseEnvironment(val resolvers: AmfResolvers,
                                             val errorHandlerProvider: ErrorHandlerProvider,
-                                            val registry: AmfRegistry,
+                                            val registry: AMFRegistry,
                                             val amfConfig: AmfConfig,
                                             val options: AmfOptions){
   type Self <: BaseEnvironment
@@ -33,7 +33,7 @@ abstract private[amf] class BaseEnvironment(val resolvers: AmfResolvers,
 
 //  def init(): Future[Unit] = if(initialized) Future.unit else registry.init().map(_ => initialized = true)
 
-  def getInstance():AmfClient = new AmfClient(this)
+  def getInstance():AMFClient = new AMFClient(this)
 
   def withResourceLoader(rl:ResourceLoader): Self = doCopy(resolvers.withResourceLoader(rl))
 
@@ -41,11 +41,11 @@ abstract private[amf] class BaseEnvironment(val resolvers: AmfResolvers,
 
   def withUnitCache(cache: UnitCache): Self = doCopy(AmfResolvers(resolvers.resourceLoaders, Some(cache)))
 
-  def withPlugin(amfPlugin: AmfParsePlugin): Self = doCopy(registry.withPlugin(amfPlugin))
+  def withPlugin(amfPlugin: AMFParsePlugin): Self = doCopy(registry.withPlugin(amfPlugin))
 
 //  private [amf] def beforeParse() = init()
 
-  protected def doCopy(registry: AmfRegistry): Self
+  protected def doCopy(registry: AMFRegistry): Self
 
   protected def doCopy(resolvers: AmfResolvers): Self
 }
@@ -58,29 +58,29 @@ object BaseEnvironment {
   }
 }
 
-case class AmfEnvironment(override val resolvers: AmfResolvers,
+case class AMFEnvironment(override val resolvers: AmfResolvers,
                           override val errorHandlerProvider: ErrorHandlerProvider,
-                          override val registry: AmfRegistry,
+                          override val registry: AMFRegistry,
                           override val amfConfig: AmfConfig,
                           override val options: AmfOptions) extends BaseEnvironment(resolvers, errorHandlerProvider, registry, amfConfig, options) { // break platform into more specific classes?
-  type Self = AmfEnvironment
+  type Self = AMFEnvironment
 
-  def withParsingOptions(parsingOptions: ParsingOptions): AmfEnvironment = this.copy(options = options.copy(parsingOptions = parsingOptions))
+  def withParsingOptions(parsingOptions: ParsingOptions): AMFEnvironment = this.copy(options = options.copy(parsingOptions = parsingOptions))
 
-  override protected def doCopy(registry: AmfRegistry): Self = this.copy(registry = registry)
+  override protected def doCopy(registry: AMFRegistry): Self = this.copy(registry = registry)
 
   override protected def doCopy(resolvers: AmfResolvers): Self = this.copy(resolvers = resolvers)
 
 }
 
-object AmfEnvironment {
+object AMFEnvironment {
 
   def default() = {
     val config = AmfConfig.default
-    new AmfEnvironment(
+    new AMFEnvironment(
       AmfResolvers(config.platform.loaders()(config.executionContext.context),None),
       DefaultErrorHandlerProvider,
-      AmfRegistry.empty,
+      AMFRegistry.empty,
       config,
       AmfOptions.default
     )
@@ -103,14 +103,14 @@ case class AmfOptions(parsingOptions: ParsingOptions, renderingOptions:RenderOpt
 object AmfOptions{
   val default = new AmfOptions(ParsingOptions(), RenderOptions())
 }
-class AmfConfig(private val logger: AmfLogger,
+class AmfConfig(private val logger: AMFLogger,
                 private val listeners: List[EventListener],
                 val platform: Platform,
                 val executionContext: ExecutionEnvironment,
-                private val idGenerator: AmfIdGenerator)
+                private val idGenerator: AMFIdGenerator)
 
 object AmfConfig extends PlatformSecrets{
-  def default = new AmfConfig(MutedLogger, Nil,platform, ExecutionEnvironment(),PathAmfIdGenerator)
+  def default = new AmfConfig(MutedLogger, Nil,platform, ExecutionEnvironment(), PathAMFIdGenerator$)
 }
 // environment class
 case class AmfResolvers(val resourceLoaders: Seq[ResourceLoader], val unitCache: Option[UnitCache]) {

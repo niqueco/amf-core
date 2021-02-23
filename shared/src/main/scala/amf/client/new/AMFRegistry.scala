@@ -1,7 +1,7 @@
 package amf.client.`new`
 
 import amf.ProfileName
-import amf.client.`new`.amfcore.{AmfParsePlugin, AmfPlugin, AmfValidatePlugin}
+import amf.client.`new`.amfcore.{AMFParsePlugin, AMFPlugin, AMFValidatePlugin}
 import amf.core.model.document.BaseUnit
 import amf.core.model.domain.DomainElement
 import amf.core.parser.{ParsedDocument, SyamlParsedDocument}
@@ -12,36 +12,36 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 
-case class AmfRegistry(plugins: PluginsRegistry,
+case class AMFRegistry(plugins: PluginsRegistry,
                        entitiesRegistry: EntitiesRegistry,
-//                       resolutionPipelines: Map[Name, AmfResolutionPipeline],
-//                       contraintsRules: Map[ProfileName, Rules],
+                       //                       resolutionPipelines: Map[Name, AmfResolutionPipeline],
+                       //                       contraintsRules: Map[ProfileName, Rules],
                        /*private [amf] var env:AmfEnvironment*/) {
 
-  def withPlugin(amfPlugin: AmfPlugin[_]): AmfRegistry = copy(plugins = plugins + amfPlugin)
+  def withPlugin(amfPlugin: AMFPlugin[_]): AMFRegistry = copy(plugins = plugins + amfPlugin)
 }
 
-object AmfRegistry{
+object AMFRegistry{
 
 //  private val FullPluginRegistr = new PluginsRegistry(List(), List(), List(), GuessingParsePlugin)
   private val AllEntities = new EntitiesRegistry(Map.empty, Map.empty)
 //
 //  private val AmlEntities = new EntitiesRegistry()
 
-  val empty = new AmfRegistry(PluginsRegistry.empty,EntitiesRegistry.empty)
+  val empty = new AMFRegistry(PluginsRegistry.empty,EntitiesRegistry.empty)
 //  val aml = new AmfRegistry(PluginsRegistry(List(AmlParsePlugin), List(AmlResolvePlugin), List(AmlValidationPlugin),ExternalFragmentParsePlugin),AmlEntities, Map.empty) //aml resolution pipeline
 
 }
 // maps or just lists?
-case class PluginsRegistry private[amf] (parsePlugins: List[AmfParsePlugin],
-                                         validatePlugins: List[AmfValidatePlugin]/*,
+case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin],
+                                         validatePlugins: List[AMFValidatePlugin] /*,
                                          defaultPlugin: AmfParsePlugin*/) { // ?? default handling?){
 
-  def +(plugin: AmfPlugin[_]): PluginsRegistry = {
+  def +(plugin: AMFPlugin[_]): PluginsRegistry = {
     plugin match {
-      case p: AmfParsePlugin if !parsePlugins.exists(_.id == p.id) =>
+      case p: AMFParsePlugin if !parsePlugins.exists(_.id == p.id) =>
         copy(parsePlugins = parsePlugins :+ p)
-      case v: AmfValidatePlugin =>
+      case v: AMFValidatePlugin =>
         copy(validatePlugins = validatePlugins :+ v)
       case _ => this
     }
@@ -73,9 +73,9 @@ case class PluginsRegistry private[amf] (parsePlugins: List[AmfParsePlugin],
 
 //  def getResolvePluginFor(bu: BaseUnit, vendor: Vendor): Option[AmfResolvePlugin]
 
-  def getValidationsPlugin(bu: BaseUnit): Seq[AmfValidatePlugin] = ???
+  def getValidationsPlugin(bu: BaseUnit): Seq[AMFValidatePlugin] = ???
 
-  def getValidationPlugin(bu: BaseUnit, profile: ProfileName): Option[AmfValidatePlugin] = ???
+  def getValidationPlugin(bu: BaseUnit, profile: ProfileName): Option[AMFValidatePlugin] = ???
 }
 
 object PluginsRegistry{
