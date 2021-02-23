@@ -3,7 +3,7 @@ package amf.core
 import amf.client.`new`.BaseEnvironment
 
 import java.net.URISyntaxException
-import amf.client.`new`.amfcore.{AmfParsePlugin, ParsingInfo}
+import amf.client.`new`.amfcore.{AMFParsePlugin, ParsingInfo}
 import amf.client.parse.DefaultParserErrorHandler
 import amf.client.plugins.AMFDocumentPlugin
 import amf.client.remote.Content
@@ -300,10 +300,10 @@ class AMFCompiler(compilerContext: CompilerContext,
           .withMediaType(document.mediatype))
   }
 
-  private def getDomainPluginFor(document: Root): Option[AmfParsePlugin] =
+  private def getDomainPluginFor(document: Root): Option[AMFParsePlugin] =
     sortedParsePlugins.find(_.applies(ParsingInfo(document, vendor)))
 
-  private def parseReferences(root: Root, domainPlugin: AmfParsePlugin)(
+  private def parseReferences(root: Root, domainPlugin: AMFParsePlugin)(
       implicit executionContext: ExecutionContext): Future[Root] = {
     val handler = domainPlugin.referenceHandler(compilerContext.parserContext.eh)
     val refs    = handler.collect(root.parsed, compilerContext.parserContext)
@@ -338,7 +338,7 @@ class AMFCompiler(compilerContext: CompilerContext,
 
   private def fetchContent()(implicit executionContext: ExecutionContext): Future[Content] = compilerContext.fetchContent()
 
-  private def verifyCrossReference(refVendor: Option[Vendor], domainPlugin: AmfParsePlugin, nodes: Seq[YNode]): Unit = {
+  private def verifyCrossReference(refVendor: Option[Vendor], domainPlugin: AMFParsePlugin, nodes: Seq[YNode]): Unit = {
     val rootVendors = domainPlugin.supportedVendors
     val validVendors = rootVendors ++ domainPlugin.validVendorsToReference
     refVendor match {

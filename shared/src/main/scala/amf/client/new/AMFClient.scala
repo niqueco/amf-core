@@ -15,7 +15,7 @@ import scala.concurrent.Future
 
 
 // client
-class AmfClient(env: BaseEnvironment) {
+class AMFClient(env: BaseEnvironment) {
 
 
   def getEnvironment:BaseEnvironment = env
@@ -27,12 +27,12 @@ class AmfClient(env: BaseEnvironment) {
   // sync or async?
 
   // content type format, pendiente
-  def parse(url: String, vendor: Option[Vendor] = None): Future[AmfResult] = AmfParser.parse(url, env)
+  def parse(url: String, vendor: Option[Vendor] = None): Future[AmfResult] = AMFParser.parse(url, env)
     // build parsing context?
 
-  def resolve(bu: BaseUnit): AmfResult = AmfResolver.resolve(bu, env) // clone? BaseUnit.resolved
+  def resolve(bu: BaseUnit): AmfResult = AMFResolver.resolve(bu, env) // clone? BaseUnit.resolved
 
-  def render(bu:BaseUnit, target:Vendor):String = AmfRender.render(bu, env)
+  def render(bu:BaseUnit, target:Vendor):String = AMFRender.render(bu, env)
   // bu.clone?
   def validate(bu: BaseUnit, profileName: ProfileName): AMFValidationReport = ??? // how we can handle the parsing validations? error handler at base unit?
 

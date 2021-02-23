@@ -3,7 +3,7 @@ package amf.client.`new`
 import amf.core.model.document.BaseUnit
 import org.yaml.model.YDocument
 
-object AmfRender {
+object AMFRender {
 
   def render(bu:BaseUnit, env:BaseEnvironment): String = ???
 

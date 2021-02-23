@@ -3,7 +3,7 @@ package amf.client.`new`
 import amf.ProfileName
 import amf.core.model.document.BaseUnit
 
-object AmfResolver {
+object AMFResolver {
 
   def resolve(bu:BaseUnit, env: BaseEnvironment):AmfResult = ???
 

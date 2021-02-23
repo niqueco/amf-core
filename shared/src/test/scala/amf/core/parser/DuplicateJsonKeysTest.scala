@@ -3,6 +3,7 @@ package amf.core.parser
 import amf.Core
 import amf.client.convert.NativeOps
 import amf.client.parse.DefaultParserErrorHandler
+import amf.core.registries.AMFPluginsRegistry
 import amf.core.remote.{Cache, Context}
 import amf.core.services.RuntimeCompiler
 import amf.core.unsafe.PlatformSecrets
@@ -18,7 +19,8 @@ trait DuplicateJsonKeysTest extends AsyncFunSuite with PlatformSecrets with Nati
     Core.init().asFuture.flatMap { _ =>
       val errorHandler = DefaultParserErrorHandler.withRun()
       val url = "file://shared/src/test/resources/parser/duplicate-key.json"
-      RuntimeCompiler(url, None, None, base = Context(platform), cache = Cache(), errorHandler = errorHandler).map {
+      val env = AMFPluginsRegistry.obtainStaticEnv()
+      RuntimeCompiler(url, None, None, base = Context(platform), cache = Cache(), env, errorHandler = errorHandler).map {
         _ =>
           val errors = errorHandler.getErrors
           errors.size should be(4)

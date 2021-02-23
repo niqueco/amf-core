@@ -11,16 +11,16 @@ import org.yaml.model.{YDocument, YNode}
 
 import scala.concurrent.Future
 
-sealed trait AmfPlugin[T] {
+sealed trait AMFPlugin[T] {
   val id: String
   def applies(element: T): Boolean
   // test for collisions?
   def priority: PluginPriority //?
 }
 
-object AmfPlugin {
+object AMFPlugin {
 
-  implicit def ordering[A <: AmfPlugin[_]]: Ordering[A] = (x: A, y: A) => {
+  implicit def ordering[A <: AMFPlugin[_]]: Ordering[A] = (x: A, y: A) => {
     x.priority.priority compareTo (y.priority.priority)
   }
 
@@ -32,7 +32,7 @@ object AmfPlugin {
 // Root is has a lot of information that is not used, can be limited to YDocument and raw string
 case class ParsingInfo(parsed: Root, vendor: Option[String])
 
-trait AmfParsePlugin extends AmfPlugin[ParsingInfo] {
+trait AMFParsePlugin extends AMFPlugin[ParsingInfo] {
 
 //  def parse(document:Root, ctx:ParserContext): BaseUnit // change parser for AMF context
   def parse(document: Root, ctx: ParserContext, options: ParsingOptions): Option[BaseUnit]
@@ -57,7 +57,7 @@ trait AmfParsePlugin extends AmfPlugin[ParsingInfo] {
 
 }
 
-trait AmfValidatePlugin extends AmfPlugin[BaseUnit] {
+trait AMFValidatePlugin extends AMFPlugin[BaseUnit] {
   def validate: AMFValidationReport
 }
 
