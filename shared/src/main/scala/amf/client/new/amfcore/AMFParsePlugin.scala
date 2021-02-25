@@ -42,18 +42,9 @@ trait AMFParsePlugin extends AMFPlugin[ParsingInfo] {
   // move to some vendor/dialect configuration?
   def allowRecursiveReferences: Boolean
 
-  // ideally can deleted, only used in AMFCompiler::verifyCrossReference for RAML validations
+  // only used in AMFCompiler::verifyCrossReference for RAML validations
   val supportedVendors: Seq[String]
   val validVendorsToReference:Seq[String]
-
-  // ideally can deleted, only used in Reference::resolveReference for RAML validations
-  def verifyReferenceKind(unit: BaseUnit,
-                          definedKind: ReferenceKind,
-                          allKinds: Seq[ReferenceKind],
-                          nodes: Seq[YNode],
-                          ctx: ParserContext): Unit = Unit
-  // ideally can deleted, only used in Reference::parseReferences for RAML validations
-  def verifyValidFragment(refVendor: Option[Vendor], refs: Seq[RefContainer], ctx: CompilerContext): Unit = Unit
 
 }
 
