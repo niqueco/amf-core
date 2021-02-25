@@ -19,13 +19,6 @@ case class AMFParsePluginAdapter(plugin: AMFDocumentPlugin) extends AMFParsePlug
 
   override def referenceHandler(eh: ErrorHandler): ReferenceHandler = plugin.referenceHandler(eh)
 
-
-  override def verifyReferenceKind(unit: BaseUnit, definedKind: ReferenceKind, allKinds: Seq[ReferenceKind], nodes: Seq[YNode], ctx: ParserContext): Unit =
-    plugin.verifyReferenceKind(unit, definedKind, allKinds, nodes, ctx)
-
-  override def verifyValidFragment(refVendor: Option[Vendor], refs: Seq[RefContainer], ctx: CompilerContext): Unit =
-    plugin.verifyValidFragment(refVendor, refs, ctx)
-
   override def allowRecursiveReferences: Boolean = plugin.allowRecursiveReferences
 
   override val id: String = "Parse " + plugin.ID
