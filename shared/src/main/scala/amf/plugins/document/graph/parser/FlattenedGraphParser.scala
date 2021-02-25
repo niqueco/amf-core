@@ -345,10 +345,19 @@ class FlattenedGraphParser()(implicit val ctx: GraphParserContext) extends Graph
     }
 
     private def parseLinkableProperties(map: YMap, instance: DomainElement with Linkable): Unit = {
+      val targetIdFieldIri = LinkableElementModel.TargetId.value.iri()
       map
-        .key(compactUriFromContext(LinkableElementModel.TargetId.value.iri()))
+        .key(compactUriFromContext(targetIdFieldIri))
         .flatMap(entry => {
-          retrieveId(entry.value.as[Seq[YMap]].head, ctx)
+          entry.value.tagType match {
+            case YType.Map => retrieveId(entry.value.as[YMap], ctx)
+            case YType.Seq => retrieveId(entry.value.as[Seq[YMap]].head, ctx)
+            case _ =>
+              ctx.eh.violation(UnableToParseDocument,
+                               entry.value,
+                               s"$targetIdFieldIri field must have a map or array value")
+              None
+          }
         })
         .foreach { targetId =>
           val transformedId = transformIdFromContext(targetId)
