@@ -111,4 +111,5 @@ object AMFGraphPlugin extends AMFDocumentPlugin with PlatformSecrets {
     }
   }
 
+  override def vendorExtensionsValidations(): Seq[ValidationSpecification] = Nil
 }
