@@ -117,7 +117,9 @@ object RuntimeValidator {
 
   private def validator: RuntimeValidator = {
     validatorOption match {
-      case Some(runtimeValidator) => runtimeValidator
+      case Some(runtimeValidator) => {
+        runtimeValidator
+      }
       case None                   => throw new Exception("No registered runtime validator")
     }
   }
@@ -153,8 +155,9 @@ object RuntimeValidator {
       model: BaseUnit,
       validations: EffectiveValidations,
       customFunctions: CustomShaclFunctions = Map(), // used for customShaclValidator
-      options: ValidationOptions)(implicit executionContext: ExecutionContext): Future[ValidationReport] =
+      options: ValidationOptions)(implicit executionContext: ExecutionContext): Future[ValidationReport] = {
     validator.shaclValidation(model, validations, customFunctions, options)
+  }
 
   def emitShapesGraph(profileName: ProfileName): String =
     validator.emitShapesGraph(profileName)

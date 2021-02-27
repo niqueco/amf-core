@@ -118,5 +118,5 @@ abstract class AMFDocumentPlugin extends AMFPlugin {
   def vendorExtensionFieldsForClass(className: String): Seq[Field] = Nil
   def canEmitExtension(field: Field): Boolean = false
   def emitVendorExtensions(element: DomainElement, field: Field, keyDecorator: String => String): Seq[EntryEmitter] = Nil
-
+  def vendorExtensionsValidations(): Seq[ValidationSpecification] = Nil
 }
