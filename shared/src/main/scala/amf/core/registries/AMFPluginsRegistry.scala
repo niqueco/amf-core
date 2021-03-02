@@ -9,7 +9,7 @@ import scala.collection.mutable
 
 object AMFPluginsRegistry {
   // all static registries will end up here, and with a mayor version release the AmfEnvironment will not be static
-  private var staticEnvironment: AMFEnvironment                                             = AMFEnvironment.default()
+  private var staticEnvironment: AMFEnvironment                                             = AMFEnvironment.default
 
   private val syntaxPluginIDRegistry: mutable.HashMap[String, AMFSyntaxPlugin]               = mutable.HashMap()
   private val syntaxPluginRegistry: mutable.HashMap[String, AMFSyntaxPlugin]                 = mutable.HashMap()
