@@ -18,7 +18,8 @@ case class AMFRegistry(plugins: PluginsRegistry,
                        //                       contraintsRules: Map[ProfileName, Rules],
                        /*private [amf] var env:AmfEnvironment*/) {
 
-  def withPlugin(amfPlugin: AMFPlugin[_]): AMFRegistry = copy(plugins = plugins + amfPlugin)
+  def withPlugin(amfPlugin: AMFPlugin[_]): AMFRegistry = copy(plugins = plugins.withPlugin(amfPlugin))
+  def withPlugins(amfPlugins: List[AMFPlugin[_]]): AMFRegistry = copy(plugins = plugins.withPlugins(amfPlugins))
 }
 
 object AMFRegistry{
@@ -37,7 +38,9 @@ case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin],
                                          validatePlugins: List[AMFValidatePlugin] /*,
                                          defaultPlugin: AmfParsePlugin*/) { // ?? default handling?){
 
-  def +(plugin: AMFPlugin[_]): PluginsRegistry = {
+  lazy val allPlugins: List[AMFPlugin[_]] = parsePlugins ++ validatePlugins
+
+  def withPlugin(plugin: AMFPlugin[_]): PluginsRegistry = {
     plugin match {
       case p: AMFParsePlugin if !parsePlugins.exists(_.id == p.id) =>
         copy(parsePlugins = parsePlugins :+ p)
@@ -46,6 +49,11 @@ case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin],
       case _ => this
     }
   }
+
+  def withPlugins(plugins: List[AMFPlugin[_]]): PluginsRegistry = {
+    plugins.foldLeft(this) { case (registry, plugin) => registry.withPlugin(plugin) }
+  }
+
 //  def ydocument(document: ParsedDocument):Option[YDocument] = document match {
 //    case s:SyamlParsedDocument => Some(s.document)
 //    case _ => None

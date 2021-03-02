@@ -1,9 +1,8 @@
 package amf.client.`new`
 
 import java.util.EventListener
-
 import amf.ProfileName
-import amf.client.`new`.amfcore.{AMFLogger, AMFParsePlugin, AMFValidatePlugin, MutedLogger}
+import amf.client.`new`.amfcore.{AMFLogger, AMFParsePlugin, AMFPlugin, AMFValidatePlugin, MutedLogger}
 import amf.client.execution.BaseExecutionEnvironment
 import amf.client.remote.Content
 import amf.core.client.ParsingOptions
@@ -23,11 +22,11 @@ import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
 // all constructors only visible from amf. Users should always use builders or defaults
 
-abstract private[amf] class BaseEnvironment(val resolvers: AmfResolvers,
+abstract private[amf] class BaseEnvironment(val resolvers: AMFResolvers,
                                             val errorHandlerProvider: ErrorHandlerProvider,
                                             val registry: AMFRegistry,
-                                            val amfConfig: AmfConfig,
-                                            val options: AmfOptions){
+                                            val amfConfig: AMFConfig,
+                                            val options: AMFOptions){
   type Self <: BaseEnvironment
 //  private var initialized:Boolean = false
 
@@ -37,17 +36,19 @@ abstract private[amf] class BaseEnvironment(val resolvers: AmfResolvers,
 
   def withResourceLoader(rl:ResourceLoader): Self = doCopy(resolvers.withResourceLoader(rl))
 
-  def overrideResourceLoaders(rl:Seq[ResourceLoader]): Self = doCopy(AmfResolvers(rl, resolvers.unitCache))
+  def overrideResourceLoaders(rl:Seq[ResourceLoader]): Self = doCopy(AMFResolvers(rl, resolvers.unitCache))
 
-  def withUnitCache(cache: UnitCache): Self = doCopy(AmfResolvers(resolvers.resourceLoaders, Some(cache)))
+  def withUnitCache(cache: UnitCache): Self = doCopy(AMFResolvers(resolvers.resourceLoaders, Some(cache)))
 
   def withPlugin(amfPlugin: AMFParsePlugin): Self = doCopy(registry.withPlugin(amfPlugin))
+
+  def withPlugins(plugins: List[AMFPlugin[_]]): Self = doCopy(registry.withPlugins(plugins))
 
 //  private [amf] def beforeParse() = init()
 
   protected def doCopy(registry: AMFRegistry): Self
 
-  protected def doCopy(resolvers: AmfResolvers): Self
+  protected def doCopy(resolvers: AMFResolvers): Self
 }
 
 object BaseEnvironment {
@@ -58,40 +59,46 @@ object BaseEnvironment {
   }
 }
 
-case class AMFEnvironment(override val resolvers: AmfResolvers,
+case class AMFEnvironment(override val resolvers: AMFResolvers,
                           override val errorHandlerProvider: ErrorHandlerProvider,
                           override val registry: AMFRegistry,
-                          override val amfConfig: AmfConfig,
-                          override val options: AmfOptions) extends BaseEnvironment(resolvers, errorHandlerProvider, registry, amfConfig, options) { // break platform into more specific classes?
+                          override val amfConfig: AMFConfig,
+                          override val options: AMFOptions) extends BaseEnvironment(resolvers, errorHandlerProvider, registry, amfConfig, options) { // break platform into more specific classes?
   type Self = AMFEnvironment
 
   def withParsingOptions(parsingOptions: ParsingOptions): AMFEnvironment = this.copy(options = options.copy(parsingOptions = parsingOptions))
 
   override protected def doCopy(registry: AMFRegistry): Self = this.copy(registry = registry)
 
-  override protected def doCopy(resolvers: AmfResolvers): Self = this.copy(resolvers = resolvers)
+  override protected def doCopy(resolvers: AMFResolvers): Self = this.copy(resolvers = resolvers)
+
+  /**
+    * Merges two environments taking into account specific attributes that can be merged.
+    * This is currently limited to: registry plugins.
+    */
+  def merge(other: AMFEnvironment): AMFEnvironment = {
+    this.withPlugins(other.registry.plugins.allPlugins)
+  }
 
 }
 
 object AMFEnvironment {
 
-  def default() = {
-    val config = AmfConfig.default
+  def default(): AMFEnvironment = {
+    val config = AMFConfig.default()
     new AMFEnvironment(
-      AmfResolvers(config.platform.loaders()(config.executionContext.context),None),
+      AMFResolvers(config.platform.loaders()(config.executionContext.context),None),
       DefaultErrorHandlerProvider,
       AMFRegistry.empty,
       config,
-      AmfOptions.default
+      AMFOptions.default()
     )
   }
 
-  def fromFile(file:String) = {
-
-  }
 }
 
-case class AmfOptions(parsingOptions: ParsingOptions, renderingOptions:RenderOptions/*, private[amf] var env:AmfEnvironment*/){
+// TODO both options here are mutable and must be replaced
+case class AMFOptions(parsingOptions: ParsingOptions, renderingOptions:RenderOptions /*, private[amf] var env:AmfEnvironment*/){
 //  def withPrettyPrint(): AmfEnvironment = {
 //    val copied = copy(renderingOptions = renderingOptions.withPrettyPrint)
 //    val newEnv = env.copy(options = copied)
@@ -100,20 +107,21 @@ case class AmfOptions(parsingOptions: ParsingOptions, renderingOptions:RenderOpt
 //  }
 }
 
-object AmfOptions{
-  val default = new AmfOptions(ParsingOptions(), RenderOptions())
+object AMFOptions {
+  def default() = new AMFOptions(ParsingOptions(), RenderOptions())
 }
-class AmfConfig(private val logger: AMFLogger,
+
+class AMFConfig(private val logger: AMFLogger,
                 private val listeners: List[EventListener],
                 val platform: Platform,
                 val executionContext: ExecutionEnvironment,
                 private val idGenerator: AMFIdGenerator)
 
-object AmfConfig extends PlatformSecrets{
-  def default = new AmfConfig(MutedLogger, Nil,platform, ExecutionEnvironment(), PathAMFIdGenerator$)
+object AMFConfig extends PlatformSecrets{
+  def default() = new AMFConfig(MutedLogger, Nil,platform, ExecutionEnvironment(), PathAMFIdGenerator$)
 }
 // environment class
-case class AmfResolvers(val resourceLoaders: Seq[ResourceLoader], val unitCache: Option[UnitCache]) {
+case class AMFResolvers(val resourceLoaders: Seq[ResourceLoader], val unitCache: Option[UnitCache]) {
 
 
   def withResourceLoader(resourceLoader: ResourceLoader) = {
