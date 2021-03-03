@@ -33,7 +33,7 @@ trait Linkable extends AmfObject { this: DomainElement with Linkable =>
     set(LinkableElementModel.TargetId, AmfScalar(target.id), Annotations.synthesized())
   }
 
-  def withLinkLabel(label: String): this.type              = set(LinkableElementModel.Label, label)
+  def withLinkLabel(label: String, annotations: Annotations = Annotations()): this.type              = set(LinkableElementModel.Label, AmfScalar(label, annotations), Annotations.inferred())
   def withSupportsRecursion(recursive: Boolean): this.type = set(LinkableElementModel.SupportsRecursion, AmfScalar(recursive), Annotations.synthesized())
 
   def link[T](label: String, annotations: Annotations = Annotations()): T = {

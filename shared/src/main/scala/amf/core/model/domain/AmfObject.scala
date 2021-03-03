@@ -48,7 +48,7 @@ trait AmfObject extends AmfElement {
   }
 
   def set(field: Field, value: String, annotations: Annotations): this.type = {
-    set(field, AmfScalar(value), annotations)
+    set(field, AmfScalar(value, annotations), Annotations.inferred())
   }
 
   /** Set scalar value. */
