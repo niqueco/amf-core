@@ -1,10 +1,8 @@
 package amf.core.model.domain
 
-import amf.core.annotations.{Inferred, SynthesizedField}
 import amf.core.metamodel.Field
 import amf.core.model.StrField
-import amf.core.parser.{ScalarNode => ScalarNodeObj}
-import amf.core.parser.Annotations
+import amf.core.parser.{Annotations, ScalarNode => ScalarNodeObj}
 import org.yaml.model.YNode
 
 /**
