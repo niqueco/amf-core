@@ -16,8 +16,8 @@ trait AMFFeaturePlugin extends AMFPlugin {
 
   /**
     * Callback invoked for every linked document being parsed as result of the client invocation of the parser
-    * @param url URL of the documen being parsed
-    * @param content Raw content being parsed after fetching it fromt the remote location
+    * @param url URL of the document being parsed
+    * @param content Raw content being parsed after fetching it from the remote location
     * @param referenceKind Type of reference for the content
     */
   def onBeginDocumentParsing(url: String, content: Content, referenceKind: ReferenceKind): Content =
@@ -31,7 +31,7 @@ trait AMFFeaturePlugin extends AMFPlugin {
   def onSyntaxParsed(url: String, ast: ParsedDocument): ParsedDocument = ast
 
   /**
-    * Callabck being invoked for every successful domain model being parsed for any linked document
+    * Callback being invoked for every successful domain model being parsed for any linked document
     * @param url URL of the document being parsed
     * @param unit Parsed domain unit
     */

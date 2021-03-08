@@ -112,10 +112,10 @@ case class ValidationSpecification(name: String,
                                    targetObject: Seq[String] = Seq.empty,
                                    /**
                                      * Union of constraints passed as URIs
-                                     * to the contraints in the union
+                                     * to the constraints in the union
                                      */
                                    unionConstraints: Seq[String] = Seq.empty,
-                                   // Logical constraints here, or contraints are collected in the union above
+                                   // Logical constraints here, or constraints are collected in the union above
                                    andConstraints: Seq[String] = Seq.empty,
                                    xoneConstraints: Seq[String] = Seq.empty,
                                    notConstraint: Option[String] = None,

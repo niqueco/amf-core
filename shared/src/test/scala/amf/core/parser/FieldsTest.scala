@@ -138,7 +138,7 @@ class FieldsTest extends FunSuite with Matchers {
     strDefined.isNullOrEmpty should be(true)
     strDefined.is("") should be(false)
     strDefined.is(_ == "") should be(false)
-    strDefined.is(_ == null) should be(false) // option() its empty, so fold alwarys return false.
+    strDefined.is(_ == null) should be(false) // option() its empty, so fold always return false.
 
     fields.set("/", IntProperty, AmfScalar(null))
     val intDefined: IntField = fields.field(IntProperty)
