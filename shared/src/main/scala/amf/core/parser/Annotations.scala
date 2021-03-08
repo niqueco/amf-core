@@ -97,8 +97,8 @@ object Annotations {
 
   }
 
-  // todo: temp method to keep compatibility against previous range serializacion logic.
-  // We should discuss if always use the range of the YNode, or always use the range of the ynode member.
+  // todo: temp method to keep compatibility against previous range serialization logic.
+  // We should discuss if always use the range of the YNode, or always use the range of the Ynode member.
   def valueNode(node: YNode): Annotations = apply(node.value) += SourceNode(node)
 
   def apply(annotation: Annotation): Annotations = new Annotations() += annotation

@@ -286,7 +286,7 @@ class Value(var value: AmfElement, val annotations: Annotations) {
                       case _        => None
                     }
                     unresolved += (element
-                      .asInstanceOf[Linkable] -> syntax) // we need to collect the linkables unresolved instances,torun the after resolve trigger. This will end the father parser logic when its necessary
+                      .asInstanceOf[Linkable] -> syntax) // we need to collect the linkables unresolved instances, to run the after resolve trigger. This will end the father parser logic when its necessary
                     resolved.resolveUnreferencedLink(linkable.refName,
                                                      linkable.annotations,
                                                      element,

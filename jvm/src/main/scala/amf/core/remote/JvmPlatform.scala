@@ -51,16 +51,16 @@ class JvmPlatform extends Platform {
     }
   }
 
-  /** encodes a complete uri. Not encodes chars like / */
+  /** encodes a complete URI, does not encodes chars like '/' */
   override def encodeURI(url: String): String = EcmaEncoder.encode(url)
 
-  /** encodes a uri component, including chars like / and : */
+  /** encodes a URI component, including chars like '/' and ':' */
   override def encodeURIComponent(url: String): String = EcmaEncoder.encode(url, fullUri = false)
 
-  /** decode a complete uri. */
+  /** decode a complete URI. */
   override def decodeURI(url: String): String = EcmaEncoder.decode(url)
 
-  /** decodes a uri component */
+  /** decodes a URI component */
   override def decodeURIComponent(url: String): String = EcmaEncoder.decode(url, fullUri = false)
 
   override def normalizeURL(url: String): String = encodeURI(url)

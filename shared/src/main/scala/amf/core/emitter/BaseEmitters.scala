@@ -132,7 +132,7 @@ package object BaseEmitters {
         case _ : NumberFormatException => (text, YType.Str)
       }
 
-    // Hack to fix difference in float emittion between JS and Java (Java prints '.0')
+    // Hack to fix difference in float emission between JS and Java (Java prints '.0')
     private def floatValue(text: String) = {
       try formatFloatValue(text)
       catch {

@@ -150,7 +150,7 @@ object EcmaEncoder {
           var utf8Tail    = 0
           var ucs4Char    = 0
           var minUcs4Char = 0
-          if ((B & 0xC0) == 0x80) { // First  UTF-8 should be ouside 0x80..0xBF
+          if ((B & 0xC0) == 0x80) { // First  UTF-8 should be outside 0x80..0xBF
             throw uriError
           } else if ((B & 0x20) == 0) {
             utf8Tail = 1

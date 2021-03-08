@@ -89,7 +89,7 @@ class Parser(vendor: String, mediaType: String, private val env: Option[Environm
   def reportValidation(profile: ProfileName): ClientFuture[ValidationReport] = report(profile)
 
   /**
-    * Generates a custom validaton profile as specified in the input validation profile file
+    * Generates a custom validation profile as specified in the input validation profile file
     * @param profile the profile to be parsed
     * @param customProfilePath path to the custom profile file
     * @return the AMF validation report
