@@ -1,36 +1,31 @@
 package amf.core
 
 import amf.client.`new`.BaseEnvironment
-
-import java.net.URISyntaxException
 import amf.client.`new`.amfcore.{AMFParsePlugin, ParsingInfo}
 import amf.client.parse.DefaultParserErrorHandler
-import amf.client.plugins.AMFDocumentPlugin
 import amf.client.remote.Content
 import amf.core.TaggedReferences._
 import amf.core.benchmark.ExecutionLog
-import amf.core.client.ParsingOptions
-import amf.core.errorhandling.ErrorHandler
-import amf.core.exception.{CyclicReferenceException, UnsupportedMediaTypeException, UnsupportedVendorException}
+import amf.core.exception.{CyclicReferenceException, UnsupportedMediaTypeException}
 import amf.core.model.document.{BaseUnit, ExternalFragment}
 import amf.core.model.domain.ExternalDomainElement
 import amf.core.parser.errorhandler.ParserErrorHandler
-import amf.core.parser.{ParsedDocument, ParsedReference, ParserContext, RefContainer, ReferenceKind, ReferenceResolutionResult, UnspecifiedReference}
+import amf.core.parser.{ParsedDocument, ParsedReference, ParserContext, ReferenceKind, ReferenceResolutionResult, UnspecifiedReference}
 import amf.core.registries.AMFPluginsRegistry
 import amf.core.remote._
 import amf.core.services.RuntimeCompiler
 import amf.core.utils.AmfStrings
 import amf.core.validation.core.ValidationSpecification
-import amf.internal.environment.Environment
 import amf.plugins.features.validation.CoreValidations._
 import org.yaml.model.{YNode, YPart}
 
+import java.net.URISyntaxException
 import scala.concurrent.Future.failed
 import scala.concurrent.{ExecutionContext, Future}
 
 object AMFCompilerRunCount {
   val NONE: Int = -1
-  var count     = 0
+  var count = 0
 
   def nextRun(): Int = synchronized {
     count += 1
@@ -64,7 +59,7 @@ class CompilerContext(url: String,
     platform.fetchContent(location, environment)
 
   def forReference(url: String, withNormalizedUri: Boolean = true)(
-      implicit executionContext: ExecutionContext): CompilerContext = {
+    implicit executionContext: ExecutionContext): CompilerContext = {
     new CompilerContextBuilder(url, fileContext.platform, parserContext.eh)
       .withCache(cache)
       .withBaseParserContext(parserContext)
@@ -86,10 +81,10 @@ class CompilerContextBuilder(url: String,
                              platform: Platform,
                              eh: ParserErrorHandler = DefaultParserErrorHandler.withRun()) {
 
-  private var fileContext: Context                = Context(platform)
+  private var fileContext: Context = Context(platform)
   private var givenContent: Option[ParserContext] = None
-  private var cache                               = Cache()
-  private var normalizeUri: Boolean               = true
+  private var cache = Cache()
+  private var normalizeUri: Boolean = true
 
   def withBaseParserContext(parserContext: ParserContext): this.type = {
     givenContent = Some(parserContext)
@@ -132,8 +127,8 @@ class CompilerContextBuilder(url: String,
 
   private def buildParserContext(fc: Context) = givenContent match {
     case Some(given) if given.rootContextDocument.equals(fc.current) => given
-    case Some(given)                                                 => given.forLocation(fc.current)
-    case None                                                        => ParserContext(fc.current, eh = eh)
+    case Some(given) => given.forLocation(fc.current)
+    case None => ParserContext(fc.current, eh = eh)
   }
 
   def build(environment: BaseEnvironment)(implicit executionContext: ExecutionContext): CompilerContext = {
@@ -148,6 +143,7 @@ class AMFCompiler(compilerContext: CompilerContext,
                   val referenceKind: ReferenceKind = UnspecifiedReference) {
 
   private val sortedParsePlugins = compilerContext.environment.registry.plugins.parsePlugins.sorted
+  private val domainFallback = compilerContext.environment.registry.plugins.domainParsingFallback
 
   def build()(implicit executionContext: ExecutionContext): Future[BaseUnit] = {
     compilerContext.logForFile(s"AMFCompiler#build: Building")
@@ -180,23 +176,16 @@ class AMFCompiler(compilerContext: CompilerContext,
 
   private def parseSyntax(input: Content): Either[Content, Root] = {
     compilerContext.logForFile("AMFCompiler#parseSyntax: parsing syntax")
-    val content = AMFPluginsRegistry.featurePlugins().foldLeft(input) {
-      case (c, p) =>
-        p.onBeginDocumentParsing(compilerContext.path, c, referenceKind)
-    }
+    val content = runPreDocumentParseHooks(input)
 
     val parsed: Option[(String, ParsedDocument)] = mediaType
       .flatMap(mime => parseSyntaxForMediaType(content, mime))
       .orElse {
         mediaType match {
           case None =>
-            content.mime
-              .flatMap(mime => parseSyntaxForMediaType(content, mime))
+            content.mime.flatMap(mime => parseSyntaxForMediaType(content, mime))
               .orElse {
-                FileMediaType
-                  .extension(content.url)
-                  .flatMap(FileMediaType.mimeFromExtension)
-                  .flatMap(inferred => parseSyntaxForMediaType(content, inferred))
+                inferMediaTypeFromFileExtension(content).flatMap(inferred => parseSyntaxForMediaType(content, inferred))
               }
               .orElse {
                 autodetectSyntax(content.stream).flatMap(inferred => parseSyntaxForMediaType(content, inferred))
@@ -214,6 +203,19 @@ class AMFCompiler(compilerContext: CompilerContext,
         Right(Root(doc, content.url, effective, Seq(), referenceKind, content.stream.toString))
       case None =>
         Left(content)
+    }
+  }
+
+  private def inferMediaTypeFromFileExtension(content: Content) = {
+    FileMediaType
+      .extension(content.url)
+      .flatMap(FileMediaType.mimeFromExtension)
+  }
+
+  private def runPreDocumentParseHooks(input: Content) = {
+    AMFPluginsRegistry.featurePlugins().foldLeft(input) {
+      case (c, p) =>
+        p.onBeginDocumentParsing(compilerContext.path, c, referenceKind)
     }
   }
 
@@ -236,18 +238,19 @@ class AMFCompiler(compilerContext: CompilerContext,
   }
 
   private def parseDomain(parsed: Either[Content, Root])(
-      implicit executionContext: ExecutionContext): Future[BaseUnit] = {
+    implicit executionContext: ExecutionContext): Future[BaseUnit] = {
     parsed match {
       case Left(content) =>
         mediaType match {
           // if is Left (empty or other error) and is root (context.history.length == 1), then return an error
-          case Some(mime) if compilerContext.fileContext.history.length == 1 =>
-            throw new UnsupportedMediaTypeException(mime)
+          case Some(mime) if isRoot => throw new UnsupportedMediaTypeException(mime)
           case _ => parseExternalFragment(content)
         }
       case Right(document) => parseDomain(document)
     }
   }
+
+  private def isRoot = compilerContext.fileContext.history.length == 1
 
   private def parseDomain(document: Root)(implicit executionContext: ExecutionContext): Future[BaseUnit] = {
     compilerContext.logForFile("AMFCompiler#parseDomain: parsing domain")
@@ -261,52 +264,38 @@ class AMFCompiler(compilerContext: CompilerContext,
           val newCtx = compilerContext.parserContext.copyWithSonsReferences()
           domainPlugin.parse(documentWithReferences, newCtx, compilerContext.environment.options.parsingOptions) match {
             case Some(baseUnit) =>
-              if (document.location == compilerContext.fileContext.root)
-                baseUnit.withRoot(true)
+              if (document.location == compilerContext.fileContext.root) baseUnit.withRoot(true)
               baseUnit
                 .withRaw(document.raw)
                 .tagReferences(documentWithReferences)
 
-            case None => buildExternalFragment(document)
+            case None => domainFallback.chooseFallback(ParsingInfo(document, vendor), sortedParsePlugins)
           }
         }
-      case None if vendor.isDefined => throw new UnsupportedVendorException(vendor.get)
-      case None =>
-        Future {
-          compilerContext.logForFile("AMFCompiler#parseSyntax: parsing domain NO PLUGIN")
-          buildExternalFragment(document)
-        }
+      case None => Future.successful { domainFallback.chooseFallback(ParsingInfo(document, vendor), sortedParsePlugins) }
     }
-
-    futureDocument map { baseUnit: BaseUnit =>
-      // we setup the run for the parsed unit
-      baseUnit.withRunNumber(compilerContext.parserRun)
-      compilerContext.logForFile("AMFCompiler#parseDomain: model ready")
-      val bu = AMFPluginsRegistry.featurePlugins().foldLeft(baseUnit) {
-        case (unit, plugin) =>
-          plugin.onModelParsed(compilerContext.path, unit)
-      }
-      baseUnit
-    }
+    futureDocument map runHooksWithParsedUnit
   }
 
-  private def buildExternalFragment(document: Root) = {
-    ExternalFragment()
-      .withId(document.location)
-      .withLocation(document.location)
-      .withEncodes(
-        ExternalDomainElement()
-          .withRaw(document.raw)
-          .withMediaType(document.mediatype))
+  private def runHooksWithParsedUnit = { baseUnit: BaseUnit =>
+    // we setup the run for the parsed unit
+    baseUnit.withRunNumber(compilerContext.parserRun)
+    compilerContext.logForFile("AMFCompiler#parseDomain: model ready")
+    val bu = AMFPluginsRegistry.featurePlugins().foldLeft(baseUnit) {
+      case (unit, plugin) =>
+        plugin.onModelParsed(compilerContext.path, unit)
+    }
+    baseUnit
+
   }
 
   private def getDomainPluginFor(document: Root): Option[AMFParsePlugin] =
     sortedParsePlugins.find(_.applies(ParsingInfo(document, vendor)))
 
   private def parseReferences(root: Root, domainPlugin: AMFParsePlugin)(
-      implicit executionContext: ExecutionContext): Future[Root] = {
+    implicit executionContext: ExecutionContext): Future[Root] = {
     val handler = domainPlugin.referenceHandler(compilerContext.parserContext.eh)
-    val refs    = handler.collect(root.parsed, compilerContext.parserContext)
+    val refs = handler.collect(root.parsed, compilerContext.parserContext)
     compilerContext.logForFile(s"AMFCompiler#parseReferences: ${refs.toReferences.size} references found")
     val parsed: Seq[Future[Option[ParsedReference]]] = refs.toReferences
       .filter(_.isRemote)

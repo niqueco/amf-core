@@ -1,10 +1,13 @@
 package amf.client.`new`
 
 import amf.ProfileName
-import amf.client.`new`.amfcore.{AMFParsePlugin, AMFPlugin, AMFValidatePlugin}
-import amf.core.model.document.BaseUnit
-import amf.core.model.domain.DomainElement
-import amf.core.parser.{ParsedDocument, SyamlParsedDocument}
+import amf.client.`new`.amfcore.{AMFParsePlugin, AMFPlugin, AMFValidatePlugin, LowPriority, ParsingInfo, PluginPriority}
+import amf.core.Root
+import amf.core.client.ParsingOptions
+import amf.core.errorhandling.ErrorHandler
+import amf.core.model.document.{BaseUnit, ExternalFragment}
+import amf.core.model.domain.{DomainElement, ExternalDomainElement}
+import amf.core.parser.{ParsedDocument, ParserContext, ReferenceHandler, SimpleReferenceHandler, SyamlParsedDocument}
 import amf.core.remote.{Aml, Vendor}
 import org.yaml.model.YDocument
 
@@ -33,10 +36,27 @@ object AMFRegistry{
 //  val aml = new AmfRegistry(PluginsRegistry(List(AmlParsePlugin), List(AmlResolvePlugin), List(AmlValidationPlugin),ExternalFragmentParsePlugin),AmlEntities, Map.empty) //aml resolution pipeline
 
 }
+private[amf] trait DomainParsingFallback {
+
+  def chooseFallback(element: ParsingInfo, availablePlugins: Seq[AMFParsePlugin]): BaseUnit
+}
+
+object ExternalFragmentDomainFallback extends DomainParsingFallback {
+  override def chooseFallback(element: ParsingInfo, availablePlugins: Seq[AMFParsePlugin]): BaseUnit = {
+    val document = element.parsed
+    ExternalFragment()
+      .withId(document.location)
+      .withLocation(document.location)
+      .withEncodes(
+        ExternalDomainElement()
+          .withRaw(document.raw)
+          .withMediaType(document.mediatype))
+  }
+}
 // maps or just lists?
 case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin],
-                                         validatePlugins: List[AMFValidatePlugin] /*,
-                                         defaultPlugin: AmfParsePlugin*/) { // ?? default handling?){
+                                         validatePlugins: List[AMFValidatePlugin],
+                                         domainParsingFallback: DomainParsingFallback) {
 
   lazy val allPlugins: List[AMFPlugin[_]] = parsePlugins ++ validatePlugins
 
@@ -87,7 +107,7 @@ case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin],
 }
 
 object PluginsRegistry{
-  val empty = PluginsRegistry(Nil,Nil/*, ExternalFragmentParsePlugin*/)
+  val empty = PluginsRegistry(Nil,Nil, ExternalFragmentDomainFallback)
 }
 
 case class EntitiesRegistry(domainEntities: Map[String, DomainElement], wrappersRegistry: Map[String, DomainElement]) {}
