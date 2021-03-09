@@ -1,25 +1,13 @@
-package amf.client.`new`
+package amf.client.remod
 
-import java.util.EventListener
-import amf.ProfileName
-import amf.client.`new`.amfcore.{AMFLogger, AMFParsePlugin, AMFPlugin, AMFValidatePlugin, MutedLogger}
-import amf.client.execution.BaseExecutionEnvironment
-import amf.client.remote.Content
+import amf.client.remod.amfcore.config.{AMFConfig, AMFOptions, AMFResolvers}
+import amf.client.remod.amfcore.plugins.AMFPlugin
+import amf.client.remod.amfcore.plugins.parse.AMFParsePlugin
+import amf.client.remod.amfcore.registry.AMFRegistry
 import amf.core.client.ParsingOptions
-import amf.core.emitter.RenderOptions
-import amf.core.errorhandling.ErrorHandler
-import amf.core.execution.ExecutionEnvironment
-import amf.core.model.document.BaseUnit
-import amf.core.remote.{Aml, Platform, UnsupportedUrlScheme, Vendor}
-import amf.core.unsafe.PlatformSecrets
 import amf.internal.environment.Environment
 import amf.internal.reference.UnitCache
 import amf.internal.resource.ResourceLoader
-import org.mulesoft.common.io.FileSystem
-import org.yaml.model.YDocument
-
-import scala.collection.mutable
-import scala.concurrent.{ExecutionContext, Future}
 // all constructors only visible from amf. Users should always use builders or defaults
 
 abstract private[amf] class BaseEnvironment(val resolvers: AMFResolvers,
@@ -94,53 +82,5 @@ object AMFEnvironment {
       AMFOptions.default()
     )
   }
-
-}
-
-// TODO both options here are mutable and must be replaced
-case class AMFOptions(parsingOptions: ParsingOptions, renderingOptions:RenderOptions /*, private[amf] var env:AmfEnvironment*/){
-//  def withPrettyPrint(): AmfEnvironment = {
-//    val copied = copy(renderingOptions = renderingOptions.withPrettyPrint)
-//    val newEnv = env.copy(options = copied)
-//    copied.env = newEnv
-//    newEnv
-//  }
-}
-
-object AMFOptions {
-  def default() = new AMFOptions(ParsingOptions(), RenderOptions())
-}
-
-class AMFConfig(private val logger: AMFLogger,
-                private val listeners: List[EventListener],
-                val platform: Platform,
-                val executionContext: ExecutionEnvironment,
-                private val idGenerator: AMFIdGenerator)
-
-object AMFConfig extends PlatformSecrets{
-  def default() = new AMFConfig(MutedLogger, Nil,platform, ExecutionEnvironment(), PathAMFIdGenerator$)
-}
-// environment class
-case class AMFResolvers(val resourceLoaders: Seq[ResourceLoader], val unitCache: Option[UnitCache]) {
-
-
-  def withResourceLoader(resourceLoader: ResourceLoader) = {
-    copy(resourceLoaders = resourceLoader +: resourceLoaders)
-  }
-
-  def resolveContent(url: String)(implicit executionContext: ExecutionContext): Future[Content] = {
-    loaderConcat(url, resourceLoaders.filter(_.accepts(url)))
-  }
-
-  private def loaderConcat(url: String, loaders: Seq[ResourceLoader])(
-      implicit executionContext: ExecutionContext): Future[Content] = loaders.toList match {
-    case Nil         => throw new UnsupportedUrlScheme(url)
-    case head :: Nil => head.fetch(url)
-    case head :: tail =>
-      head.fetch(url).recoverWith {
-        case _ => loaderConcat(url, tail)
-      }
-  }
-
 }
 

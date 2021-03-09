@@ -1,6 +1,6 @@
 package amf.core.unsafe
 
-import amf.client.`new`.BaseEnvironment
+import amf.client.remod.BaseEnvironment
 import amf.client.execution.BaseExecutionEnvironment
 import amf.client.remote.Content
 import amf.core.execution.ExecutionEnvironment

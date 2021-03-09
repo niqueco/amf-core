@@ -1,10 +1,10 @@
 package amf.client.parse
 
-import amf.client.`new`.PluginsRegistry
 import amf.client.convert.CoreClientConverters._
 import amf.client.environment.{DefaultEnvironment, Environment}
 import amf.client.execution.BaseExecutionEnvironment
 import amf.client.model.document.BaseUnit
+import amf.client.remod.amfcore.registry.PluginsRegistry
 import amf.client.validate.ValidationReport
 import amf.core.client.ParsingOptions
 import amf.core.errorhandling.UnhandledErrorHandler

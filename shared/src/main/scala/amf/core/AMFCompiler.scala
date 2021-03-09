@@ -1,8 +1,8 @@
 package amf.core
 
-import amf.client.`new`.BaseEnvironment
-import amf.client.`new`.amfcore.{AMFParsePlugin, ParsingInfo}
 import amf.client.parse.DefaultParserErrorHandler
+import amf.client.remod.BaseEnvironment
+import amf.client.remod.amfcore.plugins.parse.{AMFParsePlugin, ParsingInfo}
 import amf.client.remote.Content
 import amf.core.TaggedReferences._
 import amf.core.benchmark.ExecutionLog

@@ -1,7 +1,7 @@
 package amf.core.remote
 
 import amf.ProfileName
-import amf.client.`new`.BaseEnvironment
+import amf.client.remod.BaseEnvironment
 import amf.client.execution.BaseExecutionEnvironment
 import amf.client.model.AmfObjectWrapper
 import amf.client.remote.Content

@@ -1,4 +1,4 @@
-package amf.client.`new`
+package amf.client.remod
 
 import amf.ProfileName
 import amf.client.convert.CoreClientConverters.platform

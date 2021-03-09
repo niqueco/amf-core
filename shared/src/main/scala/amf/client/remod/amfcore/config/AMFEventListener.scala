@@ -1,4 +1,4 @@
-package amf.client.`new`.amfcore
+package amf.client.remod.amfcore.config
 
 import amf.core.model.document.BaseUnit
 

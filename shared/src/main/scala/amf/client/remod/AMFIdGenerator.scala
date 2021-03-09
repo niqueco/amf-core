@@ -1,4 +1,4 @@
-package amf.client.`new`
+package amf.client.remod
 
 import amf.core.model.domain.DomainElement
 import amf.core.utils.IdCounter

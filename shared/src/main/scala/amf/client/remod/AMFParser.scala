@@ -1,4 +1,4 @@
-package amf.client.`new`
+package amf.client.remod
 
 import amf.{MessageStyle, ProfileName, RAMLStyle}
 import amf.client.convert.CoreClientConverters.{ClientFuture, platform}

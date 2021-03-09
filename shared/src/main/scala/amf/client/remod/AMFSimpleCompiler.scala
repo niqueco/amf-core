@@ -1,4 +1,4 @@
-package amf.client.`new`
+package amf.client.remod
 
 import amf.core.model.document.{BaseUnit, Document}
 import amf.core.validation.{AMFValidationReport, AMFValidationResult}
@@ -15,7 +15,6 @@ case class AmfResult(bu:BaseUnit, result: AMFValidationReport){
 
 
   def conforms = result.conforms
-//    ...
 
   def asDocument = bu match {
     case d:Document => d
