@@ -1,4 +1,4 @@
-package amf.client.`new`
+package amf.client.remod
 
 import amf.client.parse.DefaultParserErrorHandler
 import amf.core.errorhandling.ErrorHandler

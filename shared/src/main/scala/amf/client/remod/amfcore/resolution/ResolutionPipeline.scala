@@ -1,11 +1,11 @@
-package amf.client.`new`.amfcore
+package amf.client.remod.amfcore.resolution
 
 import amf.ProfileName
 import amf.core.model.document.BaseUnit
 import amf.core.model.domain.DomainElement
-import amf.core.resolution.stages.selectors.{NodeShapeSelector, Selector}
+import amf.core.resolution.stages.selectors.Selector
 
-class AMFResolutionPipeline(profile: ProfileName, steps: List[AMFResolutionStep]) {
+class AMFResolutionPipeline(name:PipelineName, steps: List[AMFResolutionStep]) {
   def resolve(bu: BaseUnit): BaseUnit = ???
 
 }
@@ -27,3 +27,8 @@ trait ElementResolutionStep[T <: DomainElement] extends AMFResolutionStep {
 
   def transform(element: T, isCycle: Boolean): T
 }
+
+
+case class PipelineName(name:String)
+
+object EditingResolutionPipeline extends AMFResolutionPipeline(PipelineName("EDITING"), Nil)

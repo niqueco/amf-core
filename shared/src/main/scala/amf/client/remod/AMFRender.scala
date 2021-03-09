@@ -1,4 +1,4 @@
-package amf.client.`new`
+package amf.client.remod
 
 import amf.core.model.document.BaseUnit
 import org.yaml.model.YDocument

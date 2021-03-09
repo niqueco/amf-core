@@ -1,6 +1,6 @@
 package amf.core.services
 
-import amf.client.`new`.BaseEnvironment
+import amf.client.remod.BaseEnvironment
 import amf.client.parse.DefaultParserErrorHandler
 import amf.core.client.ParsingOptions
 import amf.core.model.document.BaseUnit

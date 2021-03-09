@@ -1,7 +1,7 @@
 package amf.plugins.document.graph
 
-import amf.client.`new`.amfcore.plugins.AMFParsePluginAdapter
 import amf.client.plugins.{AMFDocumentPlugin, AMFPlugin}
+import amf.client.remod.amfcore.plugins.parse.AMFParsePluginAdapter
 import amf.core.Root
 import amf.core.client.ParsingOptions
 import amf.core.emitter.{RenderOptions, ShapeRenderOptions}
