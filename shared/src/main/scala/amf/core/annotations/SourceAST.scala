@@ -10,10 +10,11 @@ case class SourceNode(node: YNode) extends Annotation
 
 case class SourceLocation(location: String) extends PerpetualAnnotation
 
-object SourceLocation{
+object SourceLocation {
   def apply(ast: YPart): SourceLocation = {
     val location = ast match {
-      case m: MutRef => m.target.map(_.sourceName).getOrElse(m.sourceName)
+      case m: MutRef =>
+         m.target.map(_.sourceName).getOrElse(m.sourceName)
       case _ => ast.sourceName
     }
     new SourceLocation(location)

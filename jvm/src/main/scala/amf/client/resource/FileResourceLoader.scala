@@ -1,8 +1,7 @@
 package amf.client.resource
 
-import java.io.FileNotFoundException
+import java.io.{File, FileNotFoundException}
 import java.util.concurrent.CompletableFuture
-
 import amf.client.execution.BaseExecutionEnvironment
 import amf.client.remote.Content
 import amf.core.lexer.FileStream
@@ -11,7 +10,9 @@ import amf.core.remote.FutureConverter._
 import amf.core.remote.{FileNotFound, JvmPlatform}
 import amf.core.utils.AmfStrings
 
+import javax.sound.sampled.AudioFormat.Encoding
 import scala.concurrent.{ExecutionContext, Future}
+import scala.io.Codec.UTF8
 
 case class FileResourceLoader(executionContext: ExecutionContext) extends BaseFileResourceLoader {
 
