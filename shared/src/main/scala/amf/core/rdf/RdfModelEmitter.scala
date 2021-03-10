@@ -314,7 +314,8 @@ class RdfModelEmitter(rdfmodel: RdfModel) extends MetaModelTypeMapping with Comm
     }
 
     private def createAnnotationNodes(id: String, sources: SourceMap): Unit = {
-      sources.annotations.zipWithIndex.foreach({
+      val allAnnotations = sources.annotations ++ sources.eternals
+      allAnnotations.zipWithIndex.foreach({
         case ((a, values), i) =>
           values.zipWithIndex.foreach {
             case ((iri, v), j) =>
