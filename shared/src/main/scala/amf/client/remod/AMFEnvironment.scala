@@ -1,10 +1,9 @@
 package amf.client.remod
 
-import amf.client.remod.amfcore.config.{AMFConfig, AMFOptions, AMFResolvers}
+import amf.client.remod.amfcore.config.{AMFConfig, AMFOptions, AMFResolvers, ParsingOptions}
 import amf.client.remod.amfcore.plugins.AMFPlugin
 import amf.client.remod.amfcore.plugins.parse.AMFParsePlugin
 import amf.client.remod.amfcore.registry.AMFRegistry
-import amf.core.client.ParsingOptions
 import amf.internal.environment.Environment
 import amf.internal.reference.UnitCache
 import amf.internal.resource.ResourceLoader
@@ -28,7 +27,9 @@ abstract private[amf] class BaseEnvironment(val resolvers: AMFResolvers,
 
   def withUnitCache(cache: UnitCache): Self = doCopy(AMFResolvers(resolvers.resourceLoaders, Some(cache)))
 
-  def withPlugin(amfPlugin: AMFParsePlugin): Self = doCopy(registry.withPlugin(amfPlugin))
+  def withPlugin(amfPlugin: AMFPlugin[_]): Self = doCopy(registry.withPlugin(amfPlugin))
+
+  def removePlugin(amfPlugin: AMFPlugin[_]): Self = doCopy(registry.removePlugin(amfPlugin))
 
   def withPlugins(plugins: List[AMFPlugin[_]]): Self = doCopy(registry.withPlugins(plugins))
 
@@ -47,7 +48,7 @@ object BaseEnvironment {
   }
 }
 
-case class AMFEnvironment(override val resolvers: AMFResolvers,
+private[amf] case class AMFEnvironment(override val resolvers: AMFResolvers,
                           override val errorHandlerProvider: ErrorHandlerProvider,
                           override val registry: AMFRegistry,
                           override val amfConfig: AMFConfig,

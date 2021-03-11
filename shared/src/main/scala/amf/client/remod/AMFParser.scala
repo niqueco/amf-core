@@ -16,7 +16,7 @@ import amf.internal.resource.{ResourceLoader, StringResourceLoader}
 import scala.concurrent.Future
 import scala.scalajs.js.annotation.JSExport
 
-object AMFParser {
+private[remod] object AMFParser {
 
 
   /**

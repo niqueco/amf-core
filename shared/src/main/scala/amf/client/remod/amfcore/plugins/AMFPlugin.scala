@@ -1,6 +1,6 @@
 package amf.client.remod.amfcore.plugins
 
-private [amf] trait AMFPlugin[T] {
+private[remod] trait AMFPlugin[T] {
   val id: String
   def applies(element: T): Boolean
   // test for collisions?

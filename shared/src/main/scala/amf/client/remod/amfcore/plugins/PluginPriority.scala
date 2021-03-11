@@ -1,6 +1,6 @@
 package amf.client.remod.amfcore.plugins
 
-sealed case class PluginPriority(priority: Int) {}
+private[remod] sealed case class PluginPriority(priority: Int) {}
 
 object HighPriority extends PluginPriority(1)
 

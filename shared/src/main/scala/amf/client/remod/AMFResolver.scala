@@ -3,7 +3,7 @@ package amf.client.remod
 import amf.client.remod.amfcore.resolution.AMFResolutionPipeline
 import amf.core.model.document.BaseUnit
 
-object AMFResolver {
+private[remod] object AMFResolver {
 
   def resolve(bu:BaseUnit, env: BaseEnvironment):AmfResult = ???
 

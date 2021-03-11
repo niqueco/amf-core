@@ -2,6 +2,7 @@ package amf.core
 
 import amf.client.parse.DefaultParserErrorHandler
 import amf.client.remod.BaseEnvironment
+import amf.client.remod.amfcore.config.ParsingOptionsConverter
 import amf.client.remod.amfcore.plugins.parse.{AMFParsePlugin, ParsingInfo}
 import amf.client.remote.Content
 import amf.core.TaggedReferences._
@@ -16,6 +17,7 @@ import amf.core.remote._
 import amf.core.services.RuntimeCompiler
 import amf.core.utils.AmfStrings
 import amf.core.validation.core.ValidationSpecification
+import amf.internal.environment.Environment
 import amf.plugins.features.validation.CoreValidations._
 import org.yaml.model.{YNode, YPart}
 
@@ -56,7 +58,7 @@ class CompilerContext(url: String,
   def resolvePath(url: String): String = fileContext.resolve(fileContext.platform.normalizePath(url))
 
   def fetchContent()(implicit executionContext: ExecutionContext): Future[Content] =
-    platform.fetchContent(location, environment)
+    platform.fetchContent(location, environment.resolvers.resourceLoaders)
 
   def forReference(url: String, withNormalizedUri: Boolean = true)(
     implicit executionContext: ExecutionContext): CompilerContext = {
@@ -65,7 +67,8 @@ class CompilerContext(url: String,
       .withBaseParserContext(parserContext)
       .withFileContext(fileContext)
       .withNormalizedUri(withNormalizedUri)
-      .build(environment)
+      .withBaseEnvironment(environment)
+      .build()
   }
 
   def violation(id: ValidationSpecification, node: String, message: String, ast: YPart): Unit =
@@ -85,6 +88,7 @@ class CompilerContextBuilder(url: String,
   private var givenContent: Option[ParserContext] = None
   private var cache = Cache()
   private var normalizeUri: Boolean = true
+  private var env: BaseEnvironment = AMFPluginsRegistry.obtainStaticEnv()
 
   def withBaseParserContext(parserContext: ParserContext): this.type = {
     givenContent = Some(parserContext)
@@ -98,6 +102,17 @@ class CompilerContextBuilder(url: String,
 
   def withCache(cache: Cache): CompilerContextBuilder = {
     this.cache = cache
+    this
+  }
+
+  def withEnvironment(environment: Environment): CompilerContextBuilder = {
+    val newEnv = BaseEnvironment.fromLegacy(this.env, environment)
+    this.env = newEnv
+    this
+  }
+
+  def withBaseEnvironment(environment: BaseEnvironment): CompilerContextBuilder = {
+    this.env = environment
     this
   }
 
@@ -131,9 +146,9 @@ class CompilerContextBuilder(url: String,
     case None => ParserContext(fc.current, eh = eh)
   }
 
-  def build(environment: BaseEnvironment)(implicit executionContext: ExecutionContext): CompilerContext = {
+  def build()(implicit executionContext: ExecutionContext): CompilerContext = {
     val fc = buildFileContext()
-    new CompilerContext(url, path, buildParserContext(fc), fc, cache, environment)
+    new CompilerContext(url, path, buildParserContext(fc), fc, cache, this.env)
   }
 }
 
@@ -144,6 +159,7 @@ class AMFCompiler(compilerContext: CompilerContext,
 
   private val sortedParsePlugins = compilerContext.environment.registry.plugins.parsePlugins.sorted
   private val domainFallback = compilerContext.environment.registry.plugins.domainParsingFallback
+  private val parsingOptions = ParsingOptionsConverter.toLegacy(compilerContext.environment.options.parsingOptions)
 
   def build()(implicit executionContext: ExecutionContext): Future[BaseUnit] = {
     compilerContext.logForFile(s"AMFCompiler#build: Building")
@@ -222,7 +238,7 @@ class AMFCompiler(compilerContext: CompilerContext,
   private def parseSyntaxForMediaType(content: Content, mime: String) = {
     AMFPluginsRegistry
       .syntaxPluginForMediaType(mime)
-      .flatMap(_.parse(mime, content.stream, compilerContext.parserContext, compilerContext.environment.options.parsingOptions))
+      .flatMap(_.parse(mime, content.stream, compilerContext.parserContext, parsingOptions))
       .map((mime, _))
   }
 
@@ -262,7 +278,7 @@ class AMFCompiler(compilerContext: CompilerContext,
         compilerContext.logForFile(s"AMFCompiler#parseSyntax: parsing domain plugin ${domainPlugin.id}")
         parseReferences(document, domainPlugin) map { documentWithReferences =>
           val newCtx = compilerContext.parserContext.copyWithSonsReferences()
-          domainPlugin.parse(documentWithReferences, newCtx, compilerContext.environment.options.parsingOptions) match {
+          domainPlugin.parse(documentWithReferences, newCtx, parsingOptions) match {
             case Some(baseUnit) =>
               if (document.location == compilerContext.fileContext.root) baseUnit.withRoot(true)
               baseUnit

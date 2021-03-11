@@ -25,6 +25,15 @@ case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin],
   def withPlugins(plugins: List[AMFPlugin[_]]): PluginsRegistry = {
     plugins.foldLeft(this) { case (registry, plugin) => registry.withPlugin(plugin) }
   }
+
+  def removePlugin(plugin: AMFPlugin[_]): PluginsRegistry =
+    plugin match {
+      case _: AMFParsePlugin =>
+        copy(parsePlugins = parsePlugins.filterNot(_.id == plugin.id))
+      case _: AMFValidatePlugin =>
+        copy(validatePlugins = validatePlugins.filterNot(_.id == plugin.id))
+      case _ => this
+    }
   //
   //  def getParsePluginFor(document:ParsedDocument, vendor: Vendor): AmfParsePlugin = pickPlugin(document, (p:AmfParsePlugin, d:YDocument) => p.apply(d, vendor))
   //
@@ -48,9 +57,9 @@ case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin],
 
   //  def getResolvePluginFor(bu: BaseUnit, vendor: Vendor): Option[AmfResolvePlugin]
 
-  def getValidationsPlugin(bu: BaseUnit): Seq[AMFValidatePlugin] = ???
+//  def getValidationsPlugin(bu: BaseUnit): Seq[AMFValidatePlugin] = ???
 
-  def getValidationPlugin(bu: BaseUnit, profile: ProfileName): Option[AMFValidatePlugin] = ???
+//  def getValidationPlugin(bu: BaseUnit, profile: ProfileName): Option[AMFValidatePlugin] = ???
 }
 
 object PluginsRegistry{

@@ -7,7 +7,7 @@ import amf.core.unsafe.PlatformSecrets
 
 import java.util.EventListener
 
-class AMFConfig(private val logger: AMFLogger,
+private[remod] class AMFConfig(private val logger: AMFLogger,
                 private val listeners: List[EventListener],
                 val platform: Platform,
                 val executionContext: ExecutionEnvironment,

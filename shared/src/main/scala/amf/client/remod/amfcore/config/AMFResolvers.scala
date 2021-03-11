@@ -7,10 +7,10 @@ import amf.internal.resource.ResourceLoader
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case class AMFResolvers(val resourceLoaders: Seq[ResourceLoader], val unitCache: Option[UnitCache]) {
+private[remod] case class AMFResolvers(resourceLoaders: Seq[ResourceLoader], val unitCache: Option[UnitCache]) {
 
 
-  def withResourceLoader(resourceLoader: ResourceLoader) = {
+  def withResourceLoader(resourceLoader: ResourceLoader): AMFResolvers = {
     copy(resourceLoaders = resourceLoader +: resourceLoaders)
   }
 

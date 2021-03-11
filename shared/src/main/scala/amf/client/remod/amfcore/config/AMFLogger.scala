@@ -1,6 +1,6 @@
 package amf.client.remod.amfcore.config
 
-class AMFLogger {
+private[remod] class AMFLogger {
 
   private def log(message: String, severity: LogSeverity, source: String) = {}
 
@@ -9,10 +9,10 @@ class AMFLogger {
   //....
 }
 
-object MutedLogger extends AMFLogger{
+private[remod] object MutedLogger extends AMFLogger{
 
 }
-sealed case class LogSeverity(severity: String)
+private[remod] sealed case class LogSeverity(severity: String)
 
 object ViolationSeverity extends LogSeverity("VIOLATION")
 object WarningSeverity   extends LogSeverity("WARNING")

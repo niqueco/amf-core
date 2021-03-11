@@ -8,7 +8,7 @@ import amf.core.errorhandling.ErrorHandler
 import amf.core.model.document.BaseUnit
 import amf.core.parser.{ParserContext, ReferenceHandler}
 
-case class AMFParsePluginAdapter(plugin: AMFDocumentPlugin) extends AMFParsePlugin {
+private[amf] case class AMFParsePluginAdapter(plugin: AMFDocumentPlugin) extends AMFParsePlugin {
   override def parse(document: Root, ctx: ParserContext, options: ParsingOptions): Option[BaseUnit] =
     plugin.parse(document, ctx, options)
 
@@ -19,7 +19,7 @@ case class AMFParsePluginAdapter(plugin: AMFDocumentPlugin) extends AMFParsePlug
 
   override def allowRecursiveReferences: Boolean = plugin.allowRecursiveReferences
 
-  override val id: String = "Parse " + plugin.ID
+  override val id: String = plugin.ID
 
   override def applies(element: ParsingInfo): Boolean = {
     val syntaxCondition = element.vendor match {

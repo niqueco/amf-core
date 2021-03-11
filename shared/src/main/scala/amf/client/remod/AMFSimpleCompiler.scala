@@ -5,7 +5,7 @@ import amf.core.validation.{AMFValidationReport, AMFValidationResult}
 
 import scala.concurrent.Future
 
-abstract class AMFSimpleCompiler {
+private[remod] abstract class AMFSimpleCompiler {
 
   // parse and validate the resource. Returns the model not resolved (clone for validate).
   def compile: Future[AmfResult]

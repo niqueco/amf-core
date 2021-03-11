@@ -15,15 +15,14 @@ import scala.concurrent.Future
 
 
 // client
-class AMFClient(env: BaseEnvironment) {
+private[remod] class AMFClient(env: BaseEnvironment) {
 
 
   def getEnvironment:BaseEnvironment = env
-  // como hacemos para devolver el ErrorHandler que nos genero si lo pide para un BU dado?
-  // relacion EH vs BU? el BU DEBE tener el error handler adentro? (si no fue de parseo?)
-  // el parse siempre devuelve error handler + base unit? (Amf result)
+  // how do we return the ErrorHandler that is created by the provider?
+  // relation between EH vs BU? should the BU have an EH inside?
+  // should parse always return error handler + base unit? (Amf result)
 
-  // y el vendor? sobrecargamos el metodo de parse? un objeto aparte?
   // sync or async?
 
   // content type format, pendiente

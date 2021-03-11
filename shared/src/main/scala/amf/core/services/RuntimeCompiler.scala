@@ -2,6 +2,7 @@ package amf.core.services
 
 import amf.client.remod.BaseEnvironment
 import amf.client.parse.DefaultParserErrorHandler
+import amf.client.remod.amfcore.config.ParsingOptionsConverter
 import amf.core.client.ParsingOptions
 import amf.core.model.document.BaseUnit
 import amf.core.parser.errorhandler.AmfParserErrorHandler
@@ -26,19 +27,20 @@ object RuntimeCompiler {
     compiler = Some(runtimeCompiler)
   }
 
+  // interface used by amf-service
   def apply(url: String,
             mediaType: Option[String],
             vendor: Option[String],
             base: Context,
             cache: Cache,
-            newEnv: BaseEnvironment,
             referenceKind: ReferenceKind = UnspecifiedReference,
             ctx: Option[ParserContext] = None,
             env: Environment = Environment(),
+            parsingOptions: ParsingOptions = ParsingOptions(),
             errorHandler: AmfParserErrorHandler = DefaultParserErrorHandler.withRun())(implicit executionContext: ExecutionContext): Future[BaseUnit] = {
-
-    val withValueOfLegacyEnv = BaseEnvironment.fromLegacy(newEnv, env)
-    val context = new CompilerContextBuilder(url, base.platform,errorHandler).withCache(cache).withFileContext(base).build(withValueOfLegacyEnv)
+    val baseEnv = AMFPluginsRegistry.obtainStaticEnv().withParsingOptions(ParsingOptionsConverter.fromLegacy(parsingOptions))
+    val withValueOfLegacyEnv = BaseEnvironment.fromLegacy(baseEnv, env)
+    val context = new CompilerContextBuilder(url, base.platform,errorHandler).withCache(cache).withFileContext(base).withBaseEnvironment(withValueOfLegacyEnv).build()
     compiler match {
       case Some(runtimeCompiler) =>
         AMFPluginsRegistry.featurePlugins().foreach(_.onBeginParsingInvocation(url, mediaType))

@@ -109,16 +109,14 @@ class Parser(vendor: String, mediaType: String, private val env: Option[Environm
       loader.map(e.add).getOrElse(e)
     }
 
-    val newEnv = AMFPluginsRegistry.obtainStaticEnv().withParsingOptions(parsingOptions)
-
     RuntimeCompiler(
       url,
       Option(mediaType),
       Some(vendor),
       Context(platform),
-      cache = Cache(),
-      newEnv,
       env = environment,
+      cache = Cache(),
+      parsingOptions = parsingOptions,
       errorHandler = DefaultParserErrorHandler.withRun()
     ) map { model =>
       parsedModel = Some(model)

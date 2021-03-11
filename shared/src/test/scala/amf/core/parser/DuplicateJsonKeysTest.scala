@@ -20,8 +20,7 @@ trait DuplicateJsonKeysTest extends AsyncFunSuite with PlatformSecrets with Nati
     Core.init().asFuture.flatMap { _ =>
       val errorHandler = DefaultParserErrorHandler.withRun()
       val url = "file://shared/src/test/resources/parser/duplicate-key.json"
-      val env = AMFEnvironment.default()
-      RuntimeCompiler(url, None, None, base = Context(platform), cache = Cache(), env, errorHandler = errorHandler).map {
+      RuntimeCompiler(url, None, None, base = Context(platform), cache = Cache(), errorHandler = errorHandler).map {
         _ =>
           val errors = errorHandler.getErrors
           errors.size should be(4)

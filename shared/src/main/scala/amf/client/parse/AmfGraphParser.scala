@@ -18,6 +18,5 @@ class AmfGraphParser private (private val env: Option[Environment] = None)
   def this(environment: Environment) = this(Some(environment))
 
   AMFPluginsRegistry.registerDocumentPlugin(AMFGraphPlugin)
-  AMFPluginsRegistry.registerNewInterfacePlugin(AMFGraphParsePlugin)
 
 }

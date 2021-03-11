@@ -3,7 +3,7 @@ package amf.client.remod
 import amf.core.model.domain.DomainElement
 import amf.core.utils.IdCounter
 
-trait AMFIdGenerator {
+private[remod] trait AMFIdGenerator {
 
   // get id or set id?
   def id(d: DomainElement, baseUri: String): String
@@ -11,13 +11,13 @@ trait AMFIdGenerator {
 }
 
 // how get parent?
-object PathAMFIdGenerator$ extends AMFIdGenerator {
+private[remod] object PathAMFIdGenerator$ extends AMFIdGenerator {
   override def id(d: DomainElement, baseUri: String): String = {
     baseUri + "/" + d.componentId
   }
 }
 
-class AutoIncrementAMFIdGenerator() extends AMFIdGenerator {
+private[remod] class AutoIncrementAMFIdGenerator() extends AMFIdGenerator {
 
   // check order for test?
 

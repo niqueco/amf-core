@@ -29,7 +29,6 @@ object AMF {
       } map { _ =>
       AMFPluginsRegistry.registerSyntaxPlugin(SYamlSyntaxPlugin)
       AMFPluginsRegistry.registerDocumentPlugin(AMFGraphPlugin)
-      AMFPluginsRegistry.registerNewInterfacePlugin(AMFGraphParsePlugin)
     }
   }
 

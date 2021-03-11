@@ -5,12 +5,12 @@ import amf.core.model.document.BaseUnit
 import amf.core.model.domain.DomainElement
 import amf.core.resolution.stages.selectors.Selector
 
-class AMFResolutionPipeline(name:PipelineName, steps: List[AMFResolutionStep]) {
+private[remod] class AMFResolutionPipeline(name:PipelineName, steps: List[AMFResolutionStep]) {
   def resolve(bu: BaseUnit): BaseUnit = ???
 
 }
 
-trait AMFResolutionStep {
+private[remod] trait AMFResolutionStep {
   def apply(bu: BaseUnit): Boolean
 
   protected var m: Option[BaseUnit] = None
@@ -19,7 +19,7 @@ trait AMFResolutionStep {
 
 // field resolution step could have sense?
 
-trait ElementResolutionStep[T <: DomainElement] extends AMFResolutionStep {
+private[remod] trait ElementResolutionStep[T <: DomainElement] extends AMFResolutionStep {
 
   protected val selector: Selector
 
@@ -29,6 +29,6 @@ trait ElementResolutionStep[T <: DomainElement] extends AMFResolutionStep {
 }
 
 
-case class PipelineName(name:String)
+private[remod] case class PipelineName(name:String)
 
-object EditingResolutionPipeline extends AMFResolutionPipeline(PipelineName("EDITING"), Nil)
+private[remod] object EditingResolutionPipeline extends AMFResolutionPipeline(PipelineName("EDITING"), Nil)

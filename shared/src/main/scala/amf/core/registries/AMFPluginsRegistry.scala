@@ -2,14 +2,14 @@ package amf.core.registries
 
 import amf.client.remod.{AMFEnvironment, BaseEnvironment}
 import amf.client.plugins._
-import amf.client.remod.amfcore.plugins.parse.AMFParsePlugin
+import amf.client.remod.amfcore.plugins.parse.{AMFParsePlugin, AMFParsePluginAdapter}
 import amf.core.validation.AMFPayloadValidationPlugin
 
 import scala.collection.mutable
 
 object AMFPluginsRegistry {
   // all static registries will end up here, and with a mayor version release the AmfEnvironment will not be static
-  private var staticEnvironment: AMFEnvironment                                             = AMFEnvironment.default
+  private var staticEnvironment: AMFEnvironment                                             = AMFEnvironment.default()
 
   private val syntaxPluginIDRegistry: mutable.HashMap[String, AMFSyntaxPlugin]               = mutable.HashMap()
   private val syntaxPluginRegistry: mutable.HashMap[String, AMFSyntaxPlugin]                 = mutable.HashMap()
@@ -31,10 +31,11 @@ object AMFPluginsRegistry {
 
   def obtainStaticEnv(): AMFEnvironment = staticEnvironment
 
-  def registerNewInterfacePlugin(amfPlugin: AMFParsePlugin): Unit = {
-    val newEnv = staticEnvironment.withPlugin(amfPlugin)
-    staticEnvironment = newEnv
-  }
+  private def registerPluginInEnv(plugin: AMFDocumentPlugin): Unit =
+    staticEnvironment = staticEnvironment.withPlugin(AMFParsePluginAdapter(plugin))
+
+  private def unregisterPluginFromEnv(plugin: AMFDocumentPlugin): Unit =
+    staticEnvironment = staticEnvironment.removePlugin(AMFParsePluginAdapter(plugin))
 
   def registerSyntaxPlugin(syntaxPlugin: AMFSyntaxPlugin): Unit = {
     syntaxPluginIDRegistry.get(syntaxPlugin.ID) match {
@@ -85,6 +86,7 @@ object AMFPluginsRegistry {
       case Some(_) => // ignore
       case None =>
         documentPluginIDRegistry.put(documentPlugin.ID, documentPlugin)
+        registerPluginInEnv(documentPlugin)
 
         documentPlugin.serializableAnnotations().foreach {
           case (name, unloader) =>
@@ -167,6 +169,7 @@ object AMFPluginsRegistry {
 
   def unregisterDocumentPlugin(documentPlugin: AMFDocumentPlugin):Unit = {
     documentPluginIDRegistry.remove(documentPlugin.ID)
+    unregisterPluginFromEnv(documentPlugin)
 
     documentPlugin.serializableAnnotations().foreach {
       case (name, _) =>

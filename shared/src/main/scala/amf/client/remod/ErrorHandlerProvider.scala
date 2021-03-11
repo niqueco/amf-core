@@ -4,7 +4,7 @@ import amf.client.parse.DefaultParserErrorHandler
 import amf.core.errorhandling.ErrorHandler
 
 // what is the benefit of defining a provider for the error handler? it could be received directly
-trait ErrorHandlerProvider {
+private[remod] trait ErrorHandlerProvider {
 
   // Returns a new instance of error handler to collect results
   def errorHandler(): ErrorHandler
