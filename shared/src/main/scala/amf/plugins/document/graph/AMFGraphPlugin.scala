@@ -2,6 +2,7 @@ package amf.plugins.document.graph
 
 import amf.client.plugins.{AMFDocumentPlugin, AMFPlugin}
 import amf.client.remod.amfcore.plugins.parse.AMFParsePluginAdapter
+import amf.client.remod.amfcore.plugins.render.AMFRenderPluginAdapter
 import amf.core.Root
 import amf.core.client.ParsingOptions
 import amf.core.emitter.{RenderOptions, ShapeRenderOptions}
@@ -23,6 +24,7 @@ import org.yaml.model.YDocument
 import scala.concurrent.{ExecutionContext, Future}
 
 object AMFGraphParsePlugin extends AMFParsePluginAdapter(AMFGraphPlugin)
+object AMFGraphRenderPlugin extends AMFRenderPluginAdapter(AMFGraphPlugin)
 
 object AMFGraphPlugin extends AMFDocumentPlugin with PlatformSecrets {
 

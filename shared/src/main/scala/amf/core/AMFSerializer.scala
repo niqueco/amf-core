@@ -2,6 +2,8 @@ package amf.core
 
 import java.io.StringWriter
 import amf.client.plugins.AMFDocumentPlugin
+import amf.client.remod.BaseEnvironment
+import amf.client.remod.amfcore.plugins.render.{AMFRenderPlugin, RenderInfo}
 import amf.core.benchmark.ExecutionLog
 import amf.core.emitter.{RenderOptions, ShapeRenderOptions}
 import amf.core.model.document.{BaseUnit, ExternalFragment}
@@ -12,13 +14,7 @@ import amf.core.remote.{Platform, Vendor}
 import amf.core.services.RuntimeSerializer
 import amf.core.vocabulary.Namespace
 import amf.plugins.document.graph.AMFGraphPlugin.platform
-import amf.plugins.document.graph.{
-  EmbeddedForm,
-  FlattenedForm,
-  JsonLdDocumentForm,
-  JsonLdSerialization,
-  RdfSerialization
-}
+import amf.plugins.document.graph.{EmbeddedForm, FlattenedForm, JsonLdDocumentForm, JsonLdSerialization, RdfSerialization}
 import amf.plugins.document.graph.emitter.{EmbeddedJsonLdEmitter, FlattenedJsonLdEmitter}
 import amf.plugins.syntax.RdfSyntaxPlugin
 import org.mulesoft.common.io.Output
@@ -31,15 +27,17 @@ import scala.concurrent.{ExecutionContext, Future}
 class AMFSerializer(unit: BaseUnit,
                     mediaType: String,
                     vendor: String,
-                    options: RenderOptions,
-                    shapeOptions: ShapeRenderOptions = ShapeRenderOptions()) {
+                    shapeOptions: ShapeRenderOptions = ShapeRenderOptions(),
+                    env: BaseEnvironment) {
+
+  private val options = RenderOptions.fromImmutable(env.options.renderingOptions)
 
   def renderAsYDocument(): SyamlParsedDocument = {
-    val domainPlugin = getDomainPlugin
+    val renderPlugin = getRenderPlugin
     val builder      = new YDocumentBuilder
-    if (domainPlugin.emit(unit, builder, options, shapeOptions))
+    if (renderPlugin.emit(unit, builder, options, shapeOptions))
       SyamlParsedDocument(builder.result.asInstanceOf[YDocument])
-    else throw new Exception(s"Error unparsing syntax $mediaType with domain plugin ${domainPlugin.ID}")
+    else throw new Exception(s"Error unparsing syntax $mediaType with domain plugin ${renderPlugin.id}")
   }
 
   /** Render to doc builder. */
@@ -114,23 +112,28 @@ class AMFSerializer(unit: BaseUnit,
     w.toString
   }
 
-  protected def findDomainPlugin(): Option[AMFDocumentPlugin] =
-    AMFPluginsRegistry.documentPluginForVendor(vendor).find { plugin =>
-      plugin.documentSyntaxes.contains(mediaType) && plugin.canUnparse(unit)
-    } match {
-      case Some(domainPlugin) =>
-        Some(domainPlugin)
-      case None => AMFPluginsRegistry.documentPluginForMediaType(mediaType).find(_.canUnparse(unit))
-    }
 
-  private def getDomainPlugin: AMFDocumentPlugin =
-    findDomainPlugin().getOrElse {
+  private def getRenderPlugin: AMFRenderPlugin = {
+    val renderPlugin = env.registry.plugins.renderPlugins.sorted.find(_.applies(RenderInfo(unit, vendor, mediaType)))
+    renderPlugin.getOrElse {
       throw new Exception(
         s"Cannot serialize domain model '${unit.location()}' for detected media type $mediaType and vendor $vendor")
     }
+  }
 }
 
 object AMFSerializer {
+  // this constructor will be removed as the env will be received from the client interfaces and not statically
+  def apply(unit: BaseUnit,
+            mediaType: String,
+            vendor: String,
+            options: RenderOptions,
+            shapeOptions: ShapeRenderOptions = ShapeRenderOptions()): AMFSerializer = {
+    val immutableOptions = RenderOptions.toImmutable(options)
+    val env = AMFPluginsRegistry.obtainStaticEnv().withRenderingOptions(immutableOptions)
+    new AMFSerializer(unit, mediaType, vendor, shapeOptions, env)
+  }
+
   def init()(implicit executionContext: ExecutionContext): Unit = {
     RuntimeSerializer.register(new RuntimeSerializer {
       override def dump(unit: BaseUnit,
@@ -138,7 +141,7 @@ object AMFSerializer {
                         vendor: String,
                         options: RenderOptions,
                         shapeOptions: ShapeRenderOptions): String =
-        new AMFSerializer(unit, mediaType, vendor, options, shapeOptions).render()
+        AMFSerializer(unit, mediaType, vendor, options, shapeOptions).render()
 
       override def dumpToFile(platform: Platform,
                               file: String,
@@ -147,7 +150,7 @@ object AMFSerializer {
                               vendor: String,
                               options: RenderOptions,
                               shapeOptions: ShapeRenderOptions): Future[Unit] = {
-        new AMFSerializer(unit, mediaType, vendor, options, shapeOptions).renderToFile(platform, file)
+        AMFSerializer(unit, mediaType, vendor, options, shapeOptions).renderToFile(platform, file)
       }
     })
   }

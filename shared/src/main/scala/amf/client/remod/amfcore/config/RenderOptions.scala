@@ -2,11 +2,11 @@ package amf.client.remod.amfcore.config
 
 import amf.core.errorhandling.{ErrorHandler, UnhandledErrorHandler}
 import amf.core.metamodel.Field
-
+import amf.core.emitter.{RenderOptions => LegacyRenderOptions}
 /**
   * Immutable implementation of render options
   */
-private[remod] case class RenderOptions(
+private[amf] case class RenderOptions(
     compactedEmission: Boolean = true,
     sources: Boolean = false,
     compactUris: Boolean = false,

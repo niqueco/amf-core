@@ -105,20 +105,20 @@ class Renderer(val vendor: String, val mediaType: String, private val env: Optio
     * (like the browser) or if a remote URL is provided.
     */
   private def generate(unit: InternalBaseUnit, url: String, options: InternalRenderOptions): Future[Unit] = {
-    new AMFSerializer(unit, mediaType, vendor, options).renderToFile(platform, url)
+    AMFSerializer(unit, mediaType, vendor, options).renderToFile(platform, url)
   }
 
   private def generate(unit: InternalBaseUnit, options: InternalRenderOptions): Future[String] = {
-    new AMFSerializer(unit, mediaType, vendor, options).renderToString
+    AMFSerializer(unit, mediaType, vendor, options).renderToString
   }
 
   private def generate[W: Output](unit: InternalBaseUnit, options: InternalRenderOptions, writer: W): Future[Unit] = {
-    new AMFSerializer(unit, mediaType, vendor, options).renderToWriter(writer)
+    AMFSerializer(unit, mediaType, vendor, options).renderToWriter(writer)
   }
 
   private def generate[T](unit: InternalBaseUnit,
                           options: InternalRenderOptions,
                           builder: DocBuilder[T]): Future[Unit] = {
-    new AMFSerializer(unit, mediaType, vendor, options).renderToBuilder(builder)
+    AMFSerializer(unit, mediaType, vendor, options).renderToBuilder(builder)
   }
 }

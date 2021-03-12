@@ -1,5 +1,6 @@
 package amf.core.emitter
 
+import amf.client.remod.amfcore.config.{RenderOptions => ImmutableRenderOptions}
 import amf.client.render.{RenderOptions => ClientRenderOptions}
 import amf.client.resolve.ClientErrorHandlerConverter._
 import amf.core.errorhandling.{ErrorHandler, UnhandledErrorHandler}
@@ -170,5 +171,39 @@ object RenderOptions {
     opts.prettyPrint = client.isPrettyPrint
     opts.flattenedJsonLd = client.isFlattenedJsonLd
     opts
+  }
+
+  def fromImmutable(client: ImmutableRenderOptions): RenderOptions = {
+    val opts = new RenderOptions()
+    opts.compactedEmission = client.compactedEmission
+    opts.sources = client.sources
+    opts.compactUris = client.compactUris
+    opts.rawSourceMaps = client.rawSourceMaps
+    opts.validating = client.validating
+    opts.filterFields = client.filterFields
+    opts.amfJsonLdSerialization = client.amfJsonLdSerialization
+    opts.useJsonLdEmitter = client.useJsonLdEmitter
+    opts.flattenedJsonLd = client.flattenedJsonLd
+    opts.eh = client.eh
+    opts.prettyPrint = client.prettyPrint
+    opts.emitNodeIds = client.emitNodeIds
+    opts
+  }
+
+  def toImmutable(options: RenderOptions): ImmutableRenderOptions = {
+    ImmutableRenderOptions(
+      options.compactedEmission,
+      options.sources,
+      options.compactUris,
+      options.rawSourceMaps,
+      options.validating,
+      options.filterFields,
+      options.amfJsonLdSerialization,
+      options.useJsonLdEmitter,
+      options.flattenedJsonLd,
+      options.eh,
+      options.prettyPrint,
+      options.emitNodeIds,
+    )
   }
 }

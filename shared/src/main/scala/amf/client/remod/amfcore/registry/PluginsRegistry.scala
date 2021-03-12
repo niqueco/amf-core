@@ -3,11 +3,13 @@ package amf.client.remod.amfcore.registry
 import amf.ProfileName
 import amf.client.remod.amfcore.plugins.AMFPlugin
 import amf.client.remod.amfcore.plugins.parse.{AMFParsePlugin, DomainParsingFallback, ExternalFragmentDomainFallback}
+import amf.client.remod.amfcore.plugins.render.AMFRenderPlugin
 import amf.client.remod.amfcore.plugins.validate.AMFValidatePlugin
 import amf.core.model.document.BaseUnit
 
 case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin],
                                          validatePlugins: List[AMFValidatePlugin],
+                                         renderPlugins: List[AMFRenderPlugin],
                                          domainParsingFallback: DomainParsingFallback) {
 
   lazy val allPlugins: List[AMFPlugin[_]] = parsePlugins ++ validatePlugins
@@ -16,8 +18,10 @@ case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin],
     plugin match {
       case p: AMFParsePlugin if !parsePlugins.exists(_.id == p.id) =>
         copy(parsePlugins = parsePlugins :+ p)
-      case v: AMFValidatePlugin =>
+      case v: AMFValidatePlugin if !validatePlugins.exists(_.id == v.id) =>
         copy(validatePlugins = validatePlugins :+ v)
+      case r: AMFRenderPlugin if !renderPlugins.exists(_.id == r.id)=>
+        copy(renderPlugins = renderPlugins :+ r)
       case _ => this
     }
   }
@@ -26,42 +30,13 @@ case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin],
     plugins.foldLeft(this) { case (registry, plugin) => registry.withPlugin(plugin) }
   }
 
-  def removePlugin(plugin: AMFPlugin[_]): PluginsRegistry =
-    plugin match {
-      case _: AMFParsePlugin =>
-        copy(parsePlugins = parsePlugins.filterNot(_.id == plugin.id))
-      case _: AMFValidatePlugin =>
-        copy(validatePlugins = validatePlugins.filterNot(_.id == plugin.id))
-      case _ => this
-    }
-  //
-  //  def getParsePluginFor(document:ParsedDocument, vendor: Vendor): AmfParsePlugin = pickPlugin(document, (p:AmfParsePlugin, d:YDocument) => p.apply(d, vendor))
-  //
-  //
-  //  private def pickPlugin(document:ParsedDocument,selectorFn: (AmfParsePlugin,YDocument) => Boolean) = {
-  //    ydocument(document).flatMap { ast =>
-  //      reduceList(parsePlugins.filter(p => selectorFn(p, ast)))
-  //    } getOrElse(defaultPlugin)
-  //  }
-  //
-  //  private def reduceList(list:List[AmfParsePlugin]): Option[AmfParsePlugin] = {
-  //    list match {
-  //      case Nil         => None
-  //      case head :: Nil => Some(head)
-  //      case multiple    => Some(multiple.min)
-  //    }
-  //  }
-  //
-  //  def getParsePluginFor(document:ParsedDocument): AmfParsePlugin = pickPlugin(document, (p:AmfParsePlugin, d:YDocument) => p.applies(d))
-
-
-  //  def getResolvePluginFor(bu: BaseUnit, vendor: Vendor): Option[AmfResolvePlugin]
-
-//  def getValidationsPlugin(bu: BaseUnit): Seq[AMFValidatePlugin] = ???
-
-//  def getValidationPlugin(bu: BaseUnit, profile: ProfileName): Option[AMFValidatePlugin] = ???
+  def removePlugin(id: String): PluginsRegistry =
+        copy(parsePlugins = parsePlugins.filterNot(_.id == id),
+          validatePlugins = validatePlugins.filterNot(_.id == id),
+          renderPlugins = renderPlugins.filterNot(_.id == id))
+          
 }
 
 object PluginsRegistry{
-  val empty: PluginsRegistry = PluginsRegistry(Nil,Nil, ExternalFragmentDomainFallback)
+  val empty: PluginsRegistry = PluginsRegistry(Nil, Nil, Nil, ExternalFragmentDomainFallback)
 }
