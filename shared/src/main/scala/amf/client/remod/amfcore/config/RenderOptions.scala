@@ -2,7 +2,6 @@ package amf.client.remod.amfcore.config
 
 import amf.core.errorhandling.{ErrorHandler, UnhandledErrorHandler}
 import amf.core.metamodel.Field
-import amf.core.emitter.{RenderOptions => LegacyRenderOptions}
 /**
   * Immutable implementation of render options
   */
@@ -19,6 +18,7 @@ private[amf] case class RenderOptions(
     eh: ErrorHandler = UnhandledErrorHandler,
     prettyPrint: Boolean = false,
     emitNodeIds: Boolean = false,
+    shapeRenderOptions: ShapeRenderOptions = ShapeRenderOptions()
 ) {
 
   def withCompactedEmission: RenderOptions = copy(compactedEmission = true)

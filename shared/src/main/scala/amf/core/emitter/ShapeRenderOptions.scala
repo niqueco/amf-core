@@ -3,6 +3,7 @@ package amf.core.emitter
 import amf.client.render.{JSONSchemaVersion, JSONSchemaVersions, ShapeRenderOptions => ClientShapeRenderOptions}
 import amf.client.resolve.ClientErrorHandlerConverter._
 import amf.core.errorhandling.{ErrorHandler, UnhandledErrorHandler}
+import amf.client.remod.amfcore.config.{ShapeRenderOptions => ImmutableShapeRenderOptions}
 
 /**
   * JSON Schema options
@@ -61,4 +62,23 @@ object ShapeRenderOptions {
     opts.withSchemaVersion(client.schemaVersion)
     opts
   }
+
+  def fromImmutable(opts: ImmutableShapeRenderOptions): ShapeRenderOptions = {
+    val newOptions = new ShapeRenderOptions()
+    newOptions.documentation = opts.documentation
+    newOptions.compactedEmission = opts.compactedEmission
+    newOptions.emitWarningForUnsupportedValidationFacets = opts.emitWarningForUnsupportedValidationFacets
+    newOptions.schema = opts.schema
+    newOptions.eh = opts.eh
+    newOptions
+  }
+
+  def toImmutable(options: ShapeRenderOptions): ImmutableShapeRenderOptions =
+    ImmutableShapeRenderOptions(
+      options.documentation,
+      options.compactedEmission,
+      options.emitWarningForUnsupportedValidationFacets,
+      options.schema,
+      options.eh
+    )
 }
