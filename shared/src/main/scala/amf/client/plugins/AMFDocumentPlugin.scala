@@ -36,8 +36,6 @@ abstract class AMFDocumentPlugin extends AMFPlugin {
 
   val vendors: Seq[String]
 
-  val validVendorsToReference: Seq[Vendor] = Nil
-
   def modelEntities: Seq[Obj]
 
   def modelEntitiesResolver: Option[AMFDomainEntityResolver] = None

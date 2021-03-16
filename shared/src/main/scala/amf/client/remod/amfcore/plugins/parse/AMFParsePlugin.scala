@@ -16,11 +16,6 @@ private[amf] trait AMFParsePlugin extends AMFPlugin[ParsingInfo] {
 
   // move to some vendor/dialect configuration?
   def allowRecursiveReferences: Boolean
-
-  // only used in AMFCompiler::verifyCrossReference for RAML validations
-  val supportedVendors: Seq[String]
-  val validVendorsToReference:Seq[String]
-
 }
 
 
