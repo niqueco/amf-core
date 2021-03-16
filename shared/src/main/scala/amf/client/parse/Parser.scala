@@ -4,10 +4,12 @@ import amf.client.convert.CoreClientConverters._
 import amf.client.environment.{DefaultEnvironment, Environment}
 import amf.client.execution.BaseExecutionEnvironment
 import amf.client.model.document.BaseUnit
+import amf.client.remod.amfcore.registry.PluginsRegistry
 import amf.client.validate.ValidationReport
 import amf.core.client.ParsingOptions
 import amf.core.errorhandling.UnhandledErrorHandler
 import amf.core.model.document.{BaseUnit => InternalBaseUnit}
+import amf.core.registries.AMFPluginsRegistry
 import amf.core.remote.{Cache, Context}
 import amf.core.services.{RuntimeCompiler, RuntimeValidator}
 import amf.internal.environment

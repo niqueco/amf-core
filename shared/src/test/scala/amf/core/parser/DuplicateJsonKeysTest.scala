@@ -1,8 +1,10 @@
 package amf.core.parser
 
 import amf.Core
+import amf.client.remod.AMFEnvironment
 import amf.client.convert.NativeOps
 import amf.client.parse.DefaultParserErrorHandler
+import amf.core.registries.AMFPluginsRegistry
 import amf.core.remote.{Cache, Context}
 import amf.core.services.RuntimeCompiler
 import amf.core.unsafe.PlatformSecrets

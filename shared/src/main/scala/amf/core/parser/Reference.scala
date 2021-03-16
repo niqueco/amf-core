@@ -22,26 +22,26 @@ case class Reference(url: String, refs: Seq[RefContainer]) extends PlatformSecre
     copy(refs = refs :+ RefContainer(kind, ast, fragment))
   }
 
-  def resolve(compilerContext: CompilerContext, nodes: Seq[YNode], allowRecursiveRefs: Boolean, domainPlugin: AMFDocumentPlugin)(
+  def resolve(compilerContext: CompilerContext, allowRecursiveRefs: Boolean)(
       implicit executionContext: ExecutionContext): Future[ReferenceResolutionResult] = {
 
     // If there is any ReferenceResolver attached to the environment, then first try to get the cached reference if it exists. If not, load and parse as usual.
     try {
-      compilerContext.environment.resolver match {
+      compilerContext.environment.resolvers.unitCache match {
         case Some(resolver) =>
           resolver.fetch(compilerContext.resolvePath(url)) flatMap { cachedReference =>
             Future(ReferenceResolutionResult(None, Some(cachedReference.content)))
           } recoverWith {
-            case _ => resolveReference(compilerContext, nodes, allowRecursiveRefs, domainPlugin)
+            case _ => resolveReference(compilerContext, allowRecursiveRefs)
           }
-        case None => resolveReference(compilerContext, nodes, allowRecursiveRefs, domainPlugin)
+        case None => resolveReference(compilerContext, allowRecursiveRefs)
       }
     } catch {
-      case _: Throwable => resolveReference(compilerContext, nodes, allowRecursiveRefs, domainPlugin)
+      case _: Throwable => resolveReference(compilerContext, allowRecursiveRefs)
     }
   }
 
-  private def resolveReference(compilerContext: CompilerContext, nodes: Seq[YNode], allowRecursiveRefs: Boolean, domainPlugin: AMFDocumentPlugin)(
+  private def resolveReference(compilerContext: CompilerContext, allowRecursiveRefs: Boolean)(
       implicit executionContext: ExecutionContext): Future[ReferenceResolutionResult] = {
     val kinds = refs.map(_.linkType).distinct
     val kind  = if (kinds.size > 1) UnspecifiedReference else kinds.head
@@ -49,7 +49,6 @@ case class Reference(url: String, refs: Seq[RefContainer]) extends PlatformSecre
       val context = compilerContext.forReference(url)
       val res: Future[Future[ReferenceResolutionResult]] = RuntimeCompiler.forContext(context, None, None, kind) map {
         eventualUnit =>
-          domainPlugin.verifyReferenceKind(eventualUnit, kind, kinds, nodes, context.parserContext)
           Future(parser.ReferenceResolutionResult(None, Some(eventualUnit)))
       } recover {
         case e: CyclicReferenceException if allowRecursiveRefs =>
@@ -67,7 +66,7 @@ case class Reference(url: String, refs: Seq[RefContainer]) extends PlatformSecre
   protected def resolveRecursiveUnit(fulllUrl: String, compilerContext: CompilerContext)(
       implicit executionContext: ExecutionContext): Future[RecursiveUnit] = {
     ExecutionLog.log(s"AMFCompiler#parserReferences: Recursive reference $fulllUrl")
-    platform.fetchContent(fulllUrl, compilerContext.environment) map { content =>
+    platform.fetchContent(fulllUrl, compilerContext.environment.resolvers.resourceLoaders) map { content =>
       val recUnit = RecursiveUnit().adopted(fulllUrl).withLocation(fulllUrl)
       recUnit.withRaw(content.stream.toString)
       recUnit

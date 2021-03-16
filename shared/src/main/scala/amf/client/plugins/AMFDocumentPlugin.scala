@@ -44,14 +44,6 @@ abstract class AMFDocumentPlugin extends AMFPlugin {
 
   def serializableAnnotations(): Map[String, AnnotationGraphLoader]
 
-  def verifyValidFragment(refVendor: Option[Vendor], refs: Seq[RefContainer], ctx: CompilerContext): Unit = Unit
-
-  def verifyReferenceKind(unit: BaseUnit,
-                          definedKind: ReferenceKind,
-                          allKinds: Seq[ReferenceKind],
-                          nodes: Seq[YNode],
-                          ctx: ParserContext): Unit = Unit
-
   /**
     * Resolves the provided base unit model, according to the semantics of the domain of the document
     */
@@ -74,7 +66,7 @@ abstract class AMFDocumentPlugin extends AMFPlugin {
   /**
     * Parses an accepted document returning an optional BaseUnit
     */
-  def parse(document: Root, ctx: ParserContext, platform: Platform, options: ParsingOptions): Option[BaseUnit]
+  def parse(document: Root, ctx: ParserContext, options: ParsingOptions): Option[BaseUnit]
 
   /**
     * Emit an Output for a given base unit

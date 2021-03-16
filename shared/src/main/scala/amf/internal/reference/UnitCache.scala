@@ -4,7 +4,7 @@ import amf.core.model.document.BaseUnit
 
 import scala.concurrent.Future
 
-trait ReferenceResolver {
+trait UnitCache {
   /** Fetch specified reference and return associated cached reference if exists. */
   def fetch(url: String): Future[CachedReference]
 }

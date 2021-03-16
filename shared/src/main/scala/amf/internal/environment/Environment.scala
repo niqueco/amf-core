@@ -2,15 +2,15 @@ package amf.internal.environment
 
 import amf.client.execution.BaseExecutionEnvironment
 import amf.core.unsafe.PlatformSecrets
-import amf.internal.reference.ReferenceResolver
+import amf.internal.reference.UnitCache
 import amf.internal.resource.ResourceLoader
 
 import scala.concurrent.ExecutionContext
 
-case class Environment(loaders: Seq[ResourceLoader], resolver: Option[ReferenceResolver], maxYamlReferences: Option[Long]) {
+case class Environment(loaders: Seq[ResourceLoader], resolver: Option[UnitCache], maxYamlReferences: Option[Long]) {
   def add(loader: ResourceLoader): Environment  = Environment(loader +: loaders, resolver, maxYamlReferences)
   def withLoaders(loaders: Seq[ResourceLoader]): Environment = Environment(loaders, resolver, maxYamlReferences)
-  def withResolver(resolver: ReferenceResolver): Environment = Environment(loaders, Some(resolver), maxYamlReferences)
+  def withResolver(resolver: UnitCache): Environment = Environment(loaders, Some(resolver), maxYamlReferences)
   def setMaxYamlReferences(value: Long): Environment = Environment(loaders, resolver, Some(value))
 }
 
@@ -30,7 +30,7 @@ object Environment extends PlatformSecrets {
     new Environment(platform.loaders(exec), None, None)
   }
 
-  def apply(resolver: ReferenceResolver): Environment = new Environment(Nil, Some(resolver), None)
+  def apply(resolver: UnitCache): Environment = new Environment(Nil, Some(resolver), None)
 
   def apply(loaders: Seq[ResourceLoader]): Environment = new Environment(loaders, None, None)
 

@@ -1,6 +1,7 @@
 package amf.plugins.document.graph
 
 import amf.client.plugins.{AMFDocumentPlugin, AMFPlugin}
+import amf.client.remod.amfcore.plugins.parse.AMFParsePluginAdapter
 import amf.core.Root
 import amf.core.client.ParsingOptions
 import amf.core.emitter.{RenderOptions, ShapeRenderOptions}
@@ -20,6 +21,8 @@ import org.yaml.builder.DocBuilder
 import org.yaml.model.YDocument
 
 import scala.concurrent.{ExecutionContext, Future}
+
+object AMFGraphParsePlugin extends AMFParsePluginAdapter(AMFGraphPlugin)
 
 object AMFGraphPlugin extends AMFDocumentPlugin with PlatformSecrets {
 
@@ -56,7 +59,7 @@ object AMFGraphPlugin extends AMFDocumentPlugin with PlatformSecrets {
     }
   }
 
-  override def parse(root: Root, ctx: ParserContext, platform: Platform, options: ParsingOptions): Option[BaseUnit] =
+  override def parse(root: Root, ctx: ParserContext, options: ParsingOptions): Option[BaseUnit] =
     root.parsed match {
       case parsed: SyamlParsedDocument if FlattenedGraphParser.canParse(parsed) =>
         Some(FlattenedGraphParser(ctx.eh).parse(parsed.document, effectiveUnitUrl(root.location, options)))

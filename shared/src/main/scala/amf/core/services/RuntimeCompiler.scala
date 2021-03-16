@@ -1,6 +1,8 @@
 package amf.core.services
 
+import amf.client.remod.BaseEnvironment
 import amf.client.parse.DefaultParserErrorHandler
+import amf.client.remod.amfcore.config.ParsingOptionsConverter
 import amf.core.client.ParsingOptions
 import amf.core.model.document.BaseUnit
 import amf.core.parser.errorhandler.AmfParserErrorHandler
@@ -16,8 +18,7 @@ trait RuntimeCompiler {
   def build(compilerContext: CompilerContext,
            mediaType: Option[String],
             vendor: Option[String],
-            referenceKind: ReferenceKind,
-            parsingOptions: ParsingOptions = ParsingOptions()): Future[BaseUnit]
+            referenceKind: ReferenceKind): Future[BaseUnit]
 }
 
 object RuntimeCompiler {
@@ -26,6 +27,7 @@ object RuntimeCompiler {
     compiler = Some(runtimeCompiler)
   }
 
+  // interface used by amf-service
   def apply(url: String,
             mediaType: Option[String],
             vendor: Option[String],
@@ -36,12 +38,13 @@ object RuntimeCompiler {
             env: Environment = Environment(),
             parsingOptions: ParsingOptions = ParsingOptions(),
             errorHandler: AmfParserErrorHandler = DefaultParserErrorHandler.withRun())(implicit executionContext: ExecutionContext): Future[BaseUnit] = {
-
-    val context = new CompilerContextBuilder(url, base.platform,errorHandler).withCache(cache).withEnvironment(env).withFileContext(base).build()
+    val baseEnv = AMFPluginsRegistry.obtainStaticEnv().withParsingOptions(ParsingOptionsConverter.fromLegacy(parsingOptions))
+    val withValueOfLegacyEnv = BaseEnvironment.fromLegacy(baseEnv, env)
+    val context = new CompilerContextBuilder(url, base.platform,errorHandler).withCache(cache).withFileContext(base).withBaseEnvironment(withValueOfLegacyEnv).build()
     compiler match {
       case Some(runtimeCompiler) =>
         AMFPluginsRegistry.featurePlugins().foreach(_.onBeginParsingInvocation(url, mediaType))
-        runtimeCompiler.build(context, mediaType, vendor,referenceKind, parsingOptions) map {
+        runtimeCompiler.build(context, mediaType, vendor,referenceKind) map {
           parsedUnit =>
             AMFPluginsRegistry.featurePlugins().foldLeft(parsedUnit) {
               case (parsed, plugin) =>
@@ -52,15 +55,15 @@ object RuntimeCompiler {
     }
   }
 
+  // could not add new environment in this method as it forces breaking changes in ReferenceHandler
   def forContext(compilerContext: CompilerContext,
             mediaType: Option[String],
             vendor: Option[String],
-            referenceKind: ReferenceKind = UnspecifiedReference,
-            parsingOptions: ParsingOptions = ParsingOptions())(implicit executionContext: ExecutionContext): Future[BaseUnit] = {
+            referenceKind: ReferenceKind = UnspecifiedReference)(implicit executionContext: ExecutionContext): Future[BaseUnit] = {
     compiler match {
       case Some(runtimeCompiler) =>
         AMFPluginsRegistry.featurePlugins().foreach(_.onBeginParsingInvocation(compilerContext.path, mediaType))
-        runtimeCompiler.build(compilerContext,mediaType, vendor, referenceKind,parsingOptions) map {
+        runtimeCompiler.build(compilerContext,mediaType, vendor, referenceKind) map {
           parsedUnit =>
             AMFPluginsRegistry.featurePlugins().foldLeft(parsedUnit) {
               case (parsed, plugin) =>

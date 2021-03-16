@@ -1,6 +1,7 @@
 package amf.core.remote
 
 import amf.ProfileName
+import amf.client.remod.BaseEnvironment
 import amf.client.execution.BaseExecutionEnvironment
 import amf.client.model.AmfObjectWrapper
 import amf.client.remote.Content
@@ -125,8 +126,8 @@ trait Platform extends FileMediaType {
   }
 
   /** Resolve remote url. */
-  def fetchContent(url: String, env: Environment)(implicit executionContext: ExecutionContext): Future[Content] =
-    loaderConcat(url, env.loaders.filter(_.accepts(url)))
+  def fetchContent(url: String, loaders: Seq[ResourceLoader])(implicit executionContext: ExecutionContext): Future[Content] =
+    loaderConcat(url, loaders.filter(_.accepts(url)))
 
   /** Platform out of the box [ResourceLoader]s */
   def loaders(exec: BaseExecutionEnvironment = defaultExecutionEnvironment): Seq[ResourceLoader] = {
