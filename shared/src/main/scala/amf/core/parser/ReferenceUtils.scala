@@ -11,12 +11,12 @@ import scala.collection.mutable
 
 case class ReferenceResolutionResult(exception: Option[Throwable], unit: Option[BaseUnit])
 
-case class RefContainer(linkType: ReferenceKind, node: YNode, fragment: Option[String]){
+case class RefContainer(linkType: ReferenceKind, node: YNode, uriFragment: Option[String]){
 
   def reduceToLocation(): Range = {
     node.asOption[YScalar] match {
       case Some(s)  =>
-        reduceStringLength(s, fragment.map(l => l.length + 1).getOrElse(0), if(s.mark.plain) 0  else 1)
+        reduceStringLength(s, uriFragment.map(l => l.length + 1).getOrElse(0), if(s.mark.plain) 0  else 1)
       case _ if node.isInstanceOf[MutRef] =>
         val mutRef = node.asInstanceOf[MutRef]
         Range(mutRef.origValue.range)
