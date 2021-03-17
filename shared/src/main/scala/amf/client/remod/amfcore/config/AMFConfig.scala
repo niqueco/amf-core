@@ -9,10 +9,9 @@ import java.util.EventListener
 
 class AMFConfig(private val logger: AMFLogger,
                 private val listeners: List[EventListener],
-                val platform: Platform,
                 val executionContext: ExecutionEnvironment,
                 private val idGenerator: AMFIdGenerator)
 
 object AMFConfig extends PlatformSecrets{
-  def default() = new AMFConfig(MutedLogger, Nil,platform, ExecutionEnvironment(), PathAMFIdGenerator$)
+  def predefined() = new AMFConfig(MutedLogger, Nil, ExecutionEnvironment(), PathAMFIdGenerator$)
 }

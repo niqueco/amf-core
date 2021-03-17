@@ -5,6 +5,7 @@ import amf.client.remod.amfcore.plugins.AMFPlugin
 import amf.client.remod.amfcore.plugins.parse.AMFParsePlugin
 import amf.client.remod.amfcore.registry.AMFRegistry
 import amf.core.client.ParsingOptions
+import amf.core.validation.core.ValidationProfile
 import amf.internal.environment.Environment
 import amf.internal.reference.UnitCache
 import amf.internal.resource.ResourceLoader
@@ -31,6 +32,8 @@ abstract private[amf] class BaseEnvironment(val resolvers: AMFResolvers,
   def withPlugin(amfPlugin: AMFParsePlugin): Self = doCopy(registry.withPlugin(amfPlugin))
 
   def withPlugins(plugins: List[AMFPlugin[_]]): Self = doCopy(registry.withPlugins(plugins))
+
+  def withConstraints(profile:ValidationProfile) : Self = doCopy(registry.withConstraints(profile))
 
 //  private [amf] def beforeParse() = init()
 
@@ -72,8 +75,8 @@ case class AMFEnvironment(override val resolvers: AMFResolvers,
 
 object AMFEnvironment {
 
-  def default(): AMFEnvironment = {
-    val config = AMFConfig.default()
+  def predefined(): AMFEnvironment = {
+    val config = AMFConfig.predefined()
     new AMFEnvironment(
       AMFResolvers(config.platform.loaders()(config.executionContext.context),None),
       DefaultErrorHandlerProvider,

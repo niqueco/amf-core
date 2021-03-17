@@ -10,7 +10,7 @@ import amf.core.parser.{ParserContext, ReferenceHandler}
 trait AMFParsePlugin extends AMFPlugin[ParsingInfo] {
 
 //  def parse(document:Root, ctx:ParserContext): BaseUnit // change parser for AMF context
-  def parse(document: Root, ctx: ParserContext, options: ParsingOptions): Option[BaseUnit]
+  def parse(document: Root, ctx: ParserContext, options: ParsingOptions): BaseUnit
 
   def referenceHandler(eh:ErrorHandler): ReferenceHandler
 
