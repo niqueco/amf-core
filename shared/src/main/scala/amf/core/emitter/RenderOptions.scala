@@ -174,7 +174,7 @@ object RenderOptions {
     opts
   }
 
-  def fromImmutable(opts: ImmutableRenderOptions): RenderOptions = {
+  def fromImmutable(opts: ImmutableRenderOptions, eh: ErrorHandler): RenderOptions = {
     val newOptions = new RenderOptions()
     newOptions.compactedEmission = opts.compactedEmission
     newOptions.sources = opts.sources
@@ -185,7 +185,7 @@ object RenderOptions {
     newOptions.amfJsonLdSerialization = opts.amfJsonLdSerialization
     newOptions.useJsonLdEmitter = opts.useJsonLdEmitter
     newOptions.flattenedJsonLd = opts.flattenedJsonLd
-    newOptions.eh = opts.eh
+    newOptions.eh = eh
     newOptions.prettyPrint = opts.prettyPrint
     newOptions.emitNodeIds = opts.emitNodeIds
     newOptions
@@ -202,7 +202,6 @@ object RenderOptions {
       options.amfJsonLdSerialization,
       options.useJsonLdEmitter,
       options.flattenedJsonLd,
-      options.eh,
       options.prettyPrint,
       options.emitNodeIds,
       shapeRenderOptions

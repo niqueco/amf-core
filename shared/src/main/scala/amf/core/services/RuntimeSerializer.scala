@@ -12,6 +12,12 @@ trait RuntimeSerializer {
            vendor: String,
            options: RenderOptions,
            shapeOptions: ShapeRenderOptions): String
+
+  def dump(unit: BaseUnit,
+           mediaType: String,
+           vendor: String,
+           shapeOptions: ShapeRenderOptions): String = dump(unit, mediaType, vendor, RenderOptions(), shapeOptions)
+
   def dumpToFile(platform: Platform,
                  file: String,
                  unit: BaseUnit,
@@ -48,6 +54,17 @@ object RuntimeSerializer {
             shapeOptions: ShapeRenderOptions = ShapeRenderOptions()): String = {
     serializer match {
       case Some(runtimeSerializer) => runtimeSerializer.dump(unit, mediaType, vendor, options, shapeOptions)
+      case None                    => throw new Exception("No registered runtime serializer")
+    }
+  }
+
+  // only used from JsonSchemaSerializer
+  def apply(unit: BaseUnit,
+            mediaType: String,
+            vendor: String,
+            shapeOptions: ShapeRenderOptions): String = {
+    serializer match {
+      case Some(runtimeSerializer) => runtimeSerializer.dump(unit, mediaType, vendor, shapeOptions)
       case None                    => throw new Exception("No registered runtime serializer")
     }
   }

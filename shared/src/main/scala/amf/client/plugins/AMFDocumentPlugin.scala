@@ -1,9 +1,9 @@
 package amf.client.plugins
 
+import amf.client.remod.amfcore.config.RenderOptions
 import amf.core.{CompilerContext, Root}
 import amf.core.client.ParsingOptions
-import amf.core.emitter.{RenderOptions, ShapeRenderOptions}
-import amf.core.errorhandling.ErrorHandler
+import amf.core.errorhandling.{ErrorHandler, UnhandledErrorHandler}
 import amf.core.metamodel.Obj
 import amf.core.model.document.BaseUnit
 import amf.core.model.domain.AnnotationGraphLoader
@@ -12,7 +12,6 @@ import amf.core.registries.AMFDomainEntityResolver
 import amf.core.remote.{Platform, Vendor}
 import amf.core.resolution.pipelines.ResolutionPipeline
 import amf.core.vocabulary.{Namespace, NamespaceAliases}
-import amf.plugins.document.graph.context.GraphContext
 import org.yaml.builder.{DocBuilder, YDocumentBuilder}
 import org.yaml.model.{YDocument, YNode}
 
@@ -74,10 +73,10 @@ abstract class AMFDocumentPlugin extends AMFPlugin {
   def emit[T](unit: BaseUnit,
               builder: DocBuilder[T],
               renderOptions: RenderOptions = RenderOptions(),
-              shapeRenderOptions: ShapeRenderOptions = ShapeRenderOptions()): Boolean =
+              errorHandler: ErrorHandler = UnhandledErrorHandler): Boolean =
     builder match {
       case sb: YDocumentBuilder =>
-        unparseAsYDocument(unit, renderOptions, shapeRenderOptions) exists { doc =>
+        unparseAsYDocument(unit, renderOptions, errorHandler) exists { doc =>
           sb.document = doc
           true
         }
@@ -86,7 +85,7 @@ abstract class AMFDocumentPlugin extends AMFPlugin {
 
   protected def unparseAsYDocument(unit: BaseUnit,
                                    renderOptions: RenderOptions,
-                                   shapeRenderOptions: ShapeRenderOptions): Option[YDocument]
+                                   errorHandler: ErrorHandler): Option[YDocument]
 
   /**
     * Decides if this plugin can parse the provided document instance.

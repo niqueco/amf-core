@@ -11,7 +11,6 @@ private[amf] case class ShapeRenderOptions(
     compactedEmission: Boolean = false,
     emitWarningForUnsupportedValidationFacets: Boolean = false,
     schema: JSONSchemaVersion = JSONSchemaVersions.UNSPECIFIED,
-    eh: ErrorHandler = UnhandledErrorHandler
 ) {
 
   /** Remove documentation info as examples, descriptions, display names, etc. */
@@ -22,13 +21,10 @@ private[amf] case class ShapeRenderOptions(
 
   def withEmitWarningForUnsupportedValidationFacets(value: Boolean): ShapeRenderOptions = copy(emitWarningForUnsupportedValidationFacets = value)
 
-  def withErrorHandler(errorHandler: ErrorHandler): ShapeRenderOptions = copy(eh = errorHandler)
-
   def withSchemaVersion(version: JSONSchemaVersion): ShapeRenderOptions = copy(schema = version)
 
   def isWithDocumentation: Boolean = documentation
   def isWithCompactedEmission: Boolean = compactedEmission
   def shouldEmitWarningForUnsupportedValidationFacets: Boolean = emitWarningForUnsupportedValidationFacets
-  def errorHandler: ErrorHandler   = eh
   def schemaVersion: JSONSchemaVersion = schema
 }

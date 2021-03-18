@@ -33,6 +33,8 @@ abstract private[amf] class BaseEnvironment(val resolvers: AMFResolvers,
 
   def withPlugins(plugins: List[AMFPlugin[_]]): Self = doCopy(registry.withPlugins(plugins))
 
+  def withErrorHandlerProvider(provider: ErrorHandlerProvider): Self
+
 //  private [amf] def beforeParse() = init()
 
   protected def doCopy(registry: AMFRegistry): Self
@@ -61,6 +63,8 @@ private[amf] case class AMFEnvironment(override val resolvers: AMFResolvers,
   override protected def doCopy(registry: AMFRegistry): Self = this.copy(registry = registry)
 
   override protected def doCopy(resolvers: AMFResolvers): Self = this.copy(resolvers = resolvers)
+
+  override def withErrorHandlerProvider(provider: ErrorHandlerProvider): AMFEnvironment = copy(errorHandlerProvider = provider)
 
   /**
     * Merges two environments taking into account specific attributes that can be merged.

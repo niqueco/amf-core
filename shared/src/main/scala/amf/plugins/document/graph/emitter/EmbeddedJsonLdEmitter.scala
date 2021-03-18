@@ -1,7 +1,7 @@
 package amf.plugins.document.graph.emitter
 
 import amf.core.annotations._
-import amf.core.emitter.RenderOptions
+import amf.client.remod.amfcore.config.RenderOptions
 import amf.core.metamodel.Type.{Any, Array, Bool, EncodedIri, Iri, LiteralUri, SortedArray, Str}
 import amf.core.metamodel._
 import amf.core.metamodel.document.{ModuleModel, SourceMapModel}

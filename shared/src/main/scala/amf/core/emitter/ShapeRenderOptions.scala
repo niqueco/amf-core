@@ -63,13 +63,13 @@ object ShapeRenderOptions {
     opts
   }
 
-  def fromImmutable(opts: ImmutableShapeRenderOptions): ShapeRenderOptions = {
+  def fromImmutable(opts: ImmutableShapeRenderOptions, eh: ErrorHandler): ShapeRenderOptions = {
     val newOptions = new ShapeRenderOptions()
     newOptions.documentation = opts.documentation
     newOptions.compactedEmission = opts.compactedEmission
     newOptions.emitWarningForUnsupportedValidationFacets = opts.emitWarningForUnsupportedValidationFacets
     newOptions.schema = opts.schema
-    newOptions.eh = opts.eh
+    newOptions.eh = eh
     newOptions
   }
 
@@ -78,7 +78,6 @@ object ShapeRenderOptions {
       options.documentation,
       options.compactedEmission,
       options.emitWarningForUnsupportedValidationFacets,
-      options.schema,
-      options.eh
+      options.schema
     )
 }

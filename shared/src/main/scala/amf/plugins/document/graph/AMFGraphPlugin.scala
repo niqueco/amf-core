@@ -5,7 +5,7 @@ import amf.client.remod.amfcore.plugins.parse.AMFParsePluginAdapter
 import amf.client.remod.amfcore.plugins.render.AMFRenderPluginAdapter
 import amf.core.Root
 import amf.core.client.ParsingOptions
-import amf.core.emitter.{RenderOptions, ShapeRenderOptions}
+import amf.client.remod.amfcore.config.RenderOptions
 import amf.core.errorhandling.ErrorHandler
 import amf.core.metamodel.Obj
 import amf.core.metamodel.domain._
@@ -78,13 +78,13 @@ object AMFGraphPlugin extends AMFDocumentPlugin with PlatformSecrets {
   override def emit[T](unit: BaseUnit,
                        builder: DocBuilder[T],
                        renderOptions: RenderOptions,
-                       shapeRenderOptions: ShapeRenderOptions = ShapeRenderOptions()): Boolean =
+                       errorHandler: ErrorHandler): Boolean =
     EmbeddedJsonLdEmitter.emit(unit, builder, renderOptions)
 
   override protected def unparseAsYDocument(
       unit: BaseUnit,
       renderOptions: RenderOptions,
-      shapeRenderOptions: ShapeRenderOptions = ShapeRenderOptions()): Option[YDocument] =
+      errorHandler: ErrorHandler): Option[YDocument] =
     throw new IllegalStateException("Unreachable")
 
   override def referenceHandler(eh: ErrorHandler): ReferenceHandler = GraphDependenciesReferenceHandler
