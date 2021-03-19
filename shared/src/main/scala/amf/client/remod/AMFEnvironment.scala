@@ -58,7 +58,7 @@ private[amf] case class AMFEnvironment(override val resolvers: AMFResolvers,
   type Self = AMFEnvironment
 
   def withParsingOptions(parsingOptions: ParsingOptions): AMFEnvironment = this.copy(options = options.copy(parsingOptions = parsingOptions))
-  def withRenderingOptions(renderingOptions: RenderOptions): AMFEnvironment = this.copy(options = options.copy(renderingOptions = renderingOptions))
+  def withRenderOptions(renderOptions: RenderOptions): AMFEnvironment = this.copy(options = options.copy(renderOptions = renderOptions))
 
   override protected def doCopy(registry: AMFRegistry): Self = this.copy(registry = registry)
 

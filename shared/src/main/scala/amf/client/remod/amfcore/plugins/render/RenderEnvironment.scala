@@ -18,7 +18,7 @@ case class DefaultRenderEnvironment(renderPlugins: List[AMFRenderPlugin],
 object DefaultRenderEnvironment {
   def apply(env: BaseEnvironment): RenderEnvironment = {
     DefaultRenderEnvironment(env.registry.plugins.renderPlugins,
-                             env.options.renderingOptions,
+                             env.options.renderOptions,
                              env.errorHandlerProvider.errorHandler())
   }
 }

@@ -1,7 +1,12 @@
 package amf.core
 
 import java.io.StringWriter
-import amf.client.remod.amfcore.plugins.render.{AMFRenderPlugin, DefaultRenderEnvironment, RenderEnvironment, RenderInfo}
+import amf.client.remod.amfcore.plugins.render.{
+  AMFRenderPlugin,
+  DefaultRenderEnvironment,
+  RenderEnvironment,
+  RenderInfo
+}
 import amf.core.benchmark.ExecutionLog
 import amf.core.emitter.{RenderOptions, ShapeRenderOptions}
 import amf.core.errorhandling.UnhandledErrorHandler
@@ -13,7 +18,13 @@ import amf.core.remote.{Platform, Vendor}
 import amf.core.services.RuntimeSerializer
 import amf.core.vocabulary.Namespace
 import amf.plugins.document.graph.AMFGraphPlugin.platform
-import amf.plugins.document.graph.{EmbeddedForm, FlattenedForm, JsonLdDocumentForm, JsonLdSerialization, RdfSerialization}
+import amf.plugins.document.graph.{
+  EmbeddedForm,
+  FlattenedForm,
+  JsonLdDocumentForm,
+  JsonLdSerialization,
+  RdfSerialization
+}
 import amf.plugins.document.graph.emitter.{EmbeddedJsonLdEmitter, FlattenedJsonLdEmitter}
 import amf.plugins.syntax.RdfSyntaxPlugin
 import org.mulesoft.common.io.Output
@@ -23,12 +34,27 @@ import org.yaml.model.YDocument
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AMFSerializer(unit: BaseUnit,
-                    mediaType: String,
-                    vendor: String,
-                    env: RenderEnvironment) {
+class AMFSerializer(unit: BaseUnit, mediaType: String, vendor: String, env: RenderEnvironment) {
 
-  private val options = env.renderOptions
+  private def this(unit: BaseUnit,
+                   mediaType: String,
+                   vendor: String,
+                   options: Option[RenderOptions],
+                   shapeOptions: ShapeRenderOptions) =
+    this(unit, mediaType, vendor, AMFSerializer.generateRenderEnv(options, shapeOptions))
+
+  private def this(unit: BaseUnit, mediaType: String, vendor: String, shapeOptions: ShapeRenderOptions) =
+    this(unit, mediaType, vendor, None, shapeOptions)
+
+  // maintained for compatibility reasons
+  def this(unit: BaseUnit,
+           mediaType: String,
+           vendor: String,
+           options: RenderOptions,
+           shapeOptions: ShapeRenderOptions = ShapeRenderOptions()) =
+    this(unit, mediaType, vendor, Some(options), shapeOptions)
+
+  private val options       = env.renderOptions
   private val legacyOptions = RenderOptions.fromImmutable(options, env.errorHandler)
 
   def renderAsYDocument(): SyamlParsedDocument = {
@@ -111,7 +137,6 @@ class AMFSerializer(unit: BaseUnit,
     w.toString
   }
 
-
   private def getRenderPlugin: AMFRenderPlugin = {
     val renderPlugin = env.renderPlugins.sorted.find(_.applies(RenderInfo(unit, vendor, mediaType)))
     renderPlugin.getOrElse {
@@ -122,31 +147,16 @@ class AMFSerializer(unit: BaseUnit,
 }
 
 object AMFSerializer {
-  // this constructor will be removed as the env will be received from the client interfaces and not statically
-  def apply(unit: BaseUnit,
-            mediaType: String,
-            vendor: String,
-            options: RenderOptions,
-            shapeOptions: ShapeRenderOptions = ShapeRenderOptions()): AMFSerializer =
-    apply(unit, mediaType, vendor, Some(options), shapeOptions)
 
-  def apply(unit: BaseUnit,
-            mediaType: String,
-            vendor: String,
-            shapeOptions: ShapeRenderOptions): AMFSerializer = apply(unit, mediaType, vendor, None, shapeOptions)
-
-  def apply(unit: BaseUnit,
-            mediaType: String,
-            vendor: String,
-            options: Option[RenderOptions],
-            shapeOptions: ShapeRenderOptions): AMFSerializer = {
-    val renderOptions = options.getOrElse(RenderOptions())
+  private def generateRenderEnv(options: Option[RenderOptions], shapeOptions: ShapeRenderOptions): RenderEnvironment = {
+    val renderOptions    = options.getOrElse(RenderOptions())
     val immutableOptions = RenderOptions.toImmutable(renderOptions, ShapeRenderOptions.toImmutable(shapeOptions))
-    val errorHandler = options.map(_.errorHandler).getOrElse(shapeOptions.errorHandler)
-    val env = AMFPluginsRegistry.obtainStaticEnv()
-      .withRenderingOptions(immutableOptions)
+    val errorHandler     = options.map(_.errorHandler).getOrElse(shapeOptions.errorHandler)
+    val env = AMFPluginsRegistry
+      .obtainStaticEnv()
+      .withRenderOptions(immutableOptions)
       .withErrorHandlerProvider(() => errorHandler)
-    new AMFSerializer(unit, mediaType, vendor, DefaultRenderEnvironment(env))
+    DefaultRenderEnvironment(env)
   }
 
   def init()(implicit executionContext: ExecutionContext): Unit = {
@@ -156,11 +166,10 @@ object AMFSerializer {
                         vendor: String,
                         options: RenderOptions,
                         shapeOptions: ShapeRenderOptions): String =
-        AMFSerializer(unit, mediaType, vendor, options, shapeOptions).render()
-
+        new AMFSerializer(unit, mediaType, vendor, options, shapeOptions).render()
 
       override def dump(unit: BaseUnit, mediaType: String, vendor: String, shapeOptions: ShapeRenderOptions): String = {
-        AMFSerializer(unit, mediaType, vendor, shapeOptions).render()
+        new AMFSerializer(unit, mediaType, vendor, shapeOptions).render()
       }
 
       override def dumpToFile(platform: Platform,
@@ -170,7 +179,7 @@ object AMFSerializer {
                               vendor: String,
                               options: RenderOptions,
                               shapeOptions: ShapeRenderOptions): Future[Unit] = {
-        AMFSerializer(unit, mediaType, vendor, options, shapeOptions).renderToFile(platform, file)
+        new AMFSerializer(unit, mediaType, vendor, options, shapeOptions).renderToFile(platform, file)
       }
     })
   }
