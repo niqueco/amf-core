@@ -3,6 +3,7 @@ package amf.core.registries
 import amf.client.remod.{AMFEnvironment, BaseEnvironment}
 import amf.client.plugins._
 import amf.client.remod.amfcore.plugins.parse.{AMFParsePlugin, AMFParsePluginAdapter}
+import amf.client.remod.amfcore.plugins.render.AMFRenderPluginAdapter
 import amf.core.validation.AMFPayloadValidationPlugin
 
 import scala.collection.mutable
@@ -32,10 +33,10 @@ object AMFPluginsRegistry {
   def obtainStaticEnv(): AMFEnvironment = staticEnvironment
 
   private def registerPluginInEnv(plugin: AMFDocumentPlugin): Unit =
-    staticEnvironment = staticEnvironment.withPlugin(AMFParsePluginAdapter(plugin))
+    staticEnvironment = staticEnvironment.withPlugins(List(AMFParsePluginAdapter(plugin), AMFRenderPluginAdapter(plugin)))
 
   private def unregisterPluginFromEnv(plugin: AMFDocumentPlugin): Unit =
-    staticEnvironment = staticEnvironment.removePlugin(AMFParsePluginAdapter(plugin))
+    staticEnvironment = staticEnvironment.removePlugin(plugin.ID)
 
   def registerSyntaxPlugin(syntaxPlugin: AMFSyntaxPlugin): Unit = {
     syntaxPluginIDRegistry.get(syntaxPlugin.ID) match {

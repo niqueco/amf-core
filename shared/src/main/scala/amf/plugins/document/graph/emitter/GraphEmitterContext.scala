@@ -1,6 +1,6 @@
 package amf.plugins.document.graph.emitter
 
-import amf.core.emitter.RenderOptions
+import amf.client.remod.amfcore.config.RenderOptions
 import amf.core.model.document.{BaseUnit, Fragment, Module}
 import amf.core.model.domain.{AmfElement, DomainElement}
 import amf.core.utils.IdCounter

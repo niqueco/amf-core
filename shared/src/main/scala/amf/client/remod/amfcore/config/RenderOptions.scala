@@ -2,11 +2,10 @@ package amf.client.remod.amfcore.config
 
 import amf.core.errorhandling.{ErrorHandler, UnhandledErrorHandler}
 import amf.core.metamodel.Field
-
 /**
   * Immutable implementation of render options
   */
-private[remod] case class RenderOptions(
+private[amf] case class RenderOptions(
     compactedEmission: Boolean = true,
     sources: Boolean = false,
     compactUris: Boolean = false,
@@ -16,9 +15,9 @@ private[remod] case class RenderOptions(
     amfJsonLdSerialization: Boolean = true,
     useJsonLdEmitter: Boolean = false,
     flattenedJsonLd: Boolean = false,
-    eh: ErrorHandler = UnhandledErrorHandler,
     prettyPrint: Boolean = false,
     emitNodeIds: Boolean = false,
+    shapeRenderOptions: ShapeRenderOptions = ShapeRenderOptions()
 ) {
 
   def withCompactedEmission: RenderOptions = copy(compactedEmission = true)
@@ -57,8 +56,6 @@ private[remod] case class RenderOptions(
 
   def withAmfJsonLdSerialization: RenderOptions = copy(amfJsonLdSerialization = true)
 
-  def withErrorHandler(errorHandler: ErrorHandler): RenderOptions = copy(eh = errorHandler)
-
   def withFlattenedJsonLd: RenderOptions = copy(flattenedJsonLd = true)
 
   def withoutFlattenedJsonLd: RenderOptions = copy(flattenedJsonLd = false)
@@ -72,7 +69,6 @@ private[remod] case class RenderOptions(
   def isAmfJsonLdSerilization: Boolean   = amfJsonLdSerialization
   def isValidation: Boolean              = validating
   def renderField(field: Field): Boolean = !filterFields(field)
-  def errorHandler: ErrorHandler         = eh
   def isPrettyPrint: Boolean             = prettyPrint
   def isEmitNodeIds: Boolean             = emitNodeIds
 }

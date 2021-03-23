@@ -1,6 +1,6 @@
 package amf.client.remod.amfcore.config
 
-private[remod] case class AMFOptions(parsingOptions: ParsingOptions, renderingOptions:RenderOptions /*, private[amf] var env:AmfEnvironment*/){
+private[remod] case class AMFOptions(parsingOptions: ParsingOptions, renderOptions: RenderOptions /*, private[amf] var env:AmfEnvironment*/){
   //  def withPrettyPrint(): AmfEnvironment = {
   //    val copied = copy(renderingOptions = renderingOptions.withPrettyPrint)
   //    val newEnv = env.copy(options = copied)

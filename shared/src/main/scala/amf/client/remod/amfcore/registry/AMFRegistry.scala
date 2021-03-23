@@ -11,7 +11,7 @@ private[remod] case class AMFRegistry(plugins: PluginsRegistry,
                                       constraintsRules: Map[ProfileName, ValidationProfile]) {
 
   def withPlugin(amfPlugin: AMFPlugin[_]): AMFRegistry         = copy(plugins = plugins.withPlugin(amfPlugin))
-  def removePlugin(amfPlugin: AMFPlugin[_]): AMFRegistry       = copy(plugins = plugins.removePlugin(amfPlugin))
+  def removePlugin(id: String): AMFRegistry                    = copy(plugins = plugins.removePlugin(id))
   def withPlugins(amfPlugins: List[AMFPlugin[_]]): AMFRegistry = copy(plugins = plugins.withPlugins(amfPlugins))
 }
 

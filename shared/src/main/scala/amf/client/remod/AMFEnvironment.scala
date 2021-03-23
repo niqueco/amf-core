@@ -1,6 +1,6 @@
 package amf.client.remod
 
-import amf.client.remod.amfcore.config.{AMFConfig, AMFOptions, AMFResolvers, ParsingOptions}
+import amf.client.remod.amfcore.config.{AMFConfig, AMFOptions, AMFResolvers, ParsingOptions, RenderOptions}
 import amf.client.remod.amfcore.plugins.AMFPlugin
 import amf.client.remod.amfcore.plugins.parse.AMFParsePlugin
 import amf.client.remod.amfcore.registry.AMFRegistry
@@ -29,9 +29,11 @@ abstract private[amf] class BaseEnvironment(val resolvers: AMFResolvers,
 
   def withPlugin(amfPlugin: AMFPlugin[_]): Self = doCopy(registry.withPlugin(amfPlugin))
 
-  def removePlugin(amfPlugin: AMFPlugin[_]): Self = doCopy(registry.removePlugin(amfPlugin))
+  def removePlugin(id: String): Self = doCopy(registry.removePlugin(id))
 
   def withPlugins(plugins: List[AMFPlugin[_]]): Self = doCopy(registry.withPlugins(plugins))
+
+  def withErrorHandlerProvider(provider: ErrorHandlerProvider): Self
 
 //  private [amf] def beforeParse() = init()
 
@@ -56,10 +58,13 @@ private[amf] case class AMFEnvironment(override val resolvers: AMFResolvers,
   type Self = AMFEnvironment
 
   def withParsingOptions(parsingOptions: ParsingOptions): AMFEnvironment = this.copy(options = options.copy(parsingOptions = parsingOptions))
+  def withRenderOptions(renderOptions: RenderOptions): AMFEnvironment = this.copy(options = options.copy(renderOptions = renderOptions))
 
   override protected def doCopy(registry: AMFRegistry): Self = this.copy(registry = registry)
 
   override protected def doCopy(resolvers: AMFResolvers): Self = this.copy(resolvers = resolvers)
+
+  override def withErrorHandlerProvider(provider: ErrorHandlerProvider): AMFEnvironment = copy(errorHandlerProvider = provider)
 
   /**
     * Merges two environments taking into account specific attributes that can be merged.
