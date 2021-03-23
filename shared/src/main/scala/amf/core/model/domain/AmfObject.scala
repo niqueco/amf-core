@@ -10,7 +10,8 @@ import scala.collection.mutable
   */
 trait AmfObject extends AmfElement {
 
-  def meta:Obj
+  def meta: Obj
+
   /** Set of fields composing object. */
   val fields: Fields
 
@@ -115,11 +116,12 @@ trait AmfObject extends AmfElement {
         val obj = newInstance()
         obj.id = id
         obj.annotations ++= annotations
-        branch.put(this ,obj)
+        branch.put(this, obj)
         fields.cloneFields(branch).into(obj.fields)
         obj
     }
   }
 
-  private def newInstance(): AmfObject = meta.asInstanceOf[ModelDefaultBuilder].modelInstance // make meta be model default builder also
+  private[amf] def newInstance(): AmfObject =
+    meta.asInstanceOf[ModelDefaultBuilder].modelInstance // make meta be model default builder also
 }

@@ -10,7 +10,10 @@ import amf.core.parser.{Annotations, Fields}
 import org.yaml.model.YDocument
 
 /** Units containing abstract fragments that can be referenced from other fragments */
-case class Module(fields: Fields, annotations: Annotations) extends BaseUnit with DeclaresModel with CustomizableElement {
+case class Module(fields: Fields, annotations: Annotations)
+    extends BaseUnit
+    with DeclaresModel
+    with CustomizableElement {
 
   /** Returns the list document URIs referenced from the document that has been parsed to generate this model */
   override def references: Seq[BaseUnit] = fields(References)
@@ -19,14 +22,15 @@ case class Module(fields: Fields, annotations: Annotations) extends BaseUnit wit
   override def declares: Seq[DomainElement] = fields(Declares)
 
   /** Meta data for the document */
-  override def meta = ModuleModel
+  override def meta: ModuleModel = ModuleModel
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
   override def componentId: String = ""
 
   def customDomainProperties: Seq[DomainExtension] = fields.field(CustomDomainProperties)
 
-  def withCustomDomainProperties(extensions: Seq[DomainExtension]): this.type = setArray(CustomDomainProperties, extensions)
+  def withCustomDomainProperties(extensions: Seq[DomainExtension]): this.type =
+    setArray(CustomDomainProperties, extensions)
 
   def withCustomDomainProperty(extensions: DomainExtension): this.type = add(CustomDomainProperties, extensions)
 }
@@ -36,7 +40,8 @@ trait DeclaresModel extends AmfObject {
   /** Declared DomainElements that can be re-used from other documents. */
   def declares: Seq[DomainElement]
 
-  def withDeclares(declarations: Seq[DomainElement], annotations: Annotations = Annotations()): this.type = setArrayWithoutId(Declares, declarations, annotations)
+  def withDeclares(declarations: Seq[DomainElement], annotations: Annotations = Annotations()): this.type =
+    setArrayWithoutId(Declares, declarations, annotations)
 
   def withDeclaredElement(element: DomainElement): this.type = add(Declares, element)
 }

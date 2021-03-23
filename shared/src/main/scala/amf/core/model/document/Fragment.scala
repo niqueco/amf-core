@@ -14,11 +14,10 @@ trait Fragment extends BaseUnit with EncodesModel {
 
   override def encodes: DomainElement = fields(FragmentModel.Encodes)
 
-  override def meta: Obj = FragmentModel
+  override def meta: FragmentModel = FragmentModel
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
   override def componentId: String = ""
-
 
 }
 

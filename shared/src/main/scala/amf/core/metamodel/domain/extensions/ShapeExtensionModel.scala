@@ -21,8 +21,8 @@ object ShapeExtensionModel extends DomainElementModel {
   override def modelInstance = ShapeExtension()
 
   override val doc: ModelDoc = ModelDoc(
-    ModelVocabularies.ApiContract,
-    "ShapeExtension",
-    "Custom extensions for a data shape definition inside an API definition"
+      ModelVocabularies.ApiContract,
+      "ShapeExtension",
+      "Custom extensions for a data shape definition inside an API definition"
   )
 }

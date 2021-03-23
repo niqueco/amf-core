@@ -9,10 +9,9 @@ import amf.core.vocabulary.Namespace.Core
   * DisplayName field.
   */
 trait DisplayNameField {
-  val DisplayName = Field(
-    Str,
-    Core + "displayName",
-    ModelDoc(ModelVocabularies.Core, "displayName", "Human readable name for the term"))
+  val DisplayName = Field(Str,
+                          Core + "displayName",
+                          ModelDoc(ModelVocabularies.Core, "displayName", "Human readable name for the term"))
 }
 
 object DisplayNameField extends DisplayNameField

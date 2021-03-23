@@ -12,9 +12,12 @@ object FieldsFilter {
   /** Scope does not include external references. */
   object Local extends FieldsFilter {
     override def filter(fields: Fields): List[AmfElement] =
-      fields.fields().collect {
-        case e if e.field != References => e.element
-      }.toList
+      fields
+        .fields()
+        .collect {
+          case e if e.field != References => e.element
+        }
+        .toList
   }
 
   /** Scope includes external references. */

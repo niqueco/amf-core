@@ -18,13 +18,13 @@ trait FragmentModel extends BaseUnitModel {
   /**
     * The encodes relationship links a parsing Unit with the DomainElement from a particular domain the unit contains.
     */
-  val Encodes = Field(
-    DomainElementModel,
-    Document + "encodes",
-    ModelDoc(
-      ModelVocabularies.AmlDoc,
-      "encodes",
-      "The encodes relationship links a parsing Unit with the DomainElement from a particular domain the unit contains.")
+  val Encodes: Field = Field(
+      DomainElementModel,
+      Document + "encodes",
+      ModelDoc(
+          ModelVocabularies.AmlDoc,
+          "encodes",
+          "The encodes relationship links a parsing Unit with the DomainElement from a particular domain the unit contains.")
   )
 
   override def modelInstance: AmfObject =
@@ -39,26 +39,26 @@ object FragmentModel extends FragmentModel {
   override val fields: List[Field] = Encodes :: BaseUnitModel.fields
 
   override val doc: ModelDoc = ModelDoc(
-    ModelVocabularies.AmlDoc,
-    "Fragment",
-    "A Fragment is a parsing Unit that encodes a DomainElement"
+      ModelVocabularies.AmlDoc,
+      "Fragment",
+      "A Fragment is a parsing Unit that encodes a DomainElement"
   )
 }
 
 object PayloadFragmentModel extends FragmentModel {
 
-  val MediaType = Field(
-    Str,
-    Core + "mediaType",
-    ModelDoc(ModelVocabularies.Core, "mediaType", "HTTP Media type associated to the encoded fragment information"))
+  val MediaType: Field = Field(
+      Str,
+      Core + "mediaType",
+      ModelDoc(ModelVocabularies.Core, "mediaType", "HTTP Media type associated to the encoded fragment information"))
 
   override val fields: List[Field] = Encodes :: MediaType :: BaseUnitModel.fields
 
   override val `type`: List[ValueType] = List(ApiContract + "PayloadFragment") ++ FragmentModel.`type`
 
   override val doc: ModelDoc = ModelDoc(
-    ModelVocabularies.ApiContract,
-    "PayloadFragment",
-    "Fragment encoding HTTP payload information"
+      ModelVocabularies.ApiContract,
+      "PayloadFragment",
+      "Fragment encoding HTTP payload information"
   )
 }

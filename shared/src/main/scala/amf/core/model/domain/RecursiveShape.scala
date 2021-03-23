@@ -2,8 +2,6 @@ package amf.core.model.domain
 
 import amf.client.execution.BaseExecutionEnvironment
 import amf.core.errorhandling.ErrorHandler
-import amf.core.execution.ExecutionEnvironment
-import amf.core.metamodel.Obj
 import amf.core.metamodel.domain.RecursiveShapeModel
 import amf.core.metamodel.domain.RecursiveShapeModel._
 import amf.core.model.StrField
@@ -29,10 +27,12 @@ class RecursiveShape(override val fields: Fields, override val annotations: Anno
 
   def withFixPoint(shapeId: String): this.type = set(FixPoint, shapeId)
 
-  override def cloneShape(recursionErrorHandler: Option[ErrorHandler],
-                          recursionBase: Option[String],
-                          traversal: ModelTraversalRegistry = ModelTraversalRegistry(),
-                          cloneExamples: Boolean = false): Shape = {
+  override def cloneShape(
+      recursionErrorHandler: Option[ErrorHandler],
+      recursionBase: Option[String],
+      traversal: ModelTraversalRegistry = ModelTraversalRegistry(),
+      cloneExamples: Boolean = false
+  ): Shape = {
     val cloned = RecursiveShape()
     cloned.id = this.id
     copyFields(recursionErrorHandler, cloned, None, traversal)
@@ -42,7 +42,7 @@ class RecursiveShape(override val fields: Fields, override val annotations: Anno
 
   override def linkCopy(): Linkable = throw new Exception("Recursive shape cannot be linked")
 
-  override def meta: Obj = RecursiveShapeModel
+  override def meta: RecursiveShapeModel.type = RecursiveShapeModel
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
   override def componentId: String =

@@ -25,9 +25,9 @@ object DataNodeModel extends DomainElementModel with NameFieldSchema {
     throw new Exception("DataNode is an abstract class and it cannot be instantiated directly")
 
   override val doc: ModelDoc = ModelDoc(
-    ModelVocabularies.Data,
-    "DataNode",
-    "Base class for all data nodes parsed from the data structure"
+      ModelVocabularies.Data,
+      "DataNode",
+      "Base class for all data nodes parsed from the data structure"
   )
 }
 
@@ -38,9 +38,9 @@ trait ObjectNodeModel extends DomainElementModel {
   override def modelInstance: AmfObject = ObjectNode()
 
   override val doc: ModelDoc = ModelDoc(
-    ModelVocabularies.Data,
-    "ObjectNode",
-    "Node that represents a dynamic object with records data structure"
+      ModelVocabularies.Data,
+      "ObjectNode",
+      "Node that represents a dynamic object with records data structure"
   )
 }
 
@@ -52,16 +52,18 @@ object ScalarNodeModel extends DomainElementModel {
     Field(Str, Namespace.Data + "value", ModelDoc(ModelVocabularies.Data, "value", "value for an scalar dynamic node"))
 
   val DataType =
-    Field(Iri, Namespace.Shacl + "datatype", ModelDoc(ModelVocabularies.Data, "dataType", "Data type of value for an scalar dynamic node"))
+    Field(Iri,
+          Namespace.Shacl + "datatype",
+          ModelDoc(ModelVocabularies.Data, "dataType", "Data type of value for an scalar dynamic node"))
 
   override def fields: List[Field]      = Value :: DataType :: DataNodeModel.fields
   override val `type`: List[ValueType]  = Data + "Scalar" :: DataNodeModel.`type`
   override def modelInstance: AmfObject = ScalarNode()
 
   override val doc: ModelDoc = ModelDoc(
-    ModelVocabularies.Data,
-    "ScalarNode",
-    "Node that represents a dynamic scalar value data structure"
+      ModelVocabularies.Data,
+      "ScalarNode",
+      "Node that represents a dynamic scalar value data structure"
   )
 }
 
@@ -75,9 +77,9 @@ object ArrayNodeModel extends DomainElementModel {
   override def modelInstance: AmfObject = ArrayNode()
 
   override val doc: ModelDoc = ModelDoc(
-    ModelVocabularies.Data,
-    "ArrayNode",
-    "Node that represents a dynamic array data structure"
+      ModelVocabularies.Data,
+      "ArrayNode",
+      "Node that represents a dynamic array data structure"
   )
 }
 
@@ -91,8 +93,8 @@ object LinkNodeModel extends DomainElementModel {
   override def modelInstance: AmfObject = LinkNode()
 
   override val doc: ModelDoc = ModelDoc(
-    ModelVocabularies.Data,
-    "LinkNode",
-    "Node that represents a dynamic link in a data structure"
+      ModelVocabularies.Data,
+      "LinkNode",
+      "Node that represents a dynamic link in a data structure"
   )
 }

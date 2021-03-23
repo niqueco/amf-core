@@ -19,9 +19,9 @@ trait LinkableElementModel extends Obj {
 
   // Never serialise this
   val Target = Field(
-    DomainElementModel,
-    Namespace.Document + "effective-target",
-    ModelDoc(ModelVocabularies.AmlDoc, "effectiveTarget", "URI of the final element in a chain of linked elements")
+      DomainElementModel,
+      Namespace.Document + "effective-target",
+      ModelDoc(ModelVocabularies.AmlDoc, "effectiveTarget", "URI of the final element in a chain of linked elements")
   )
 
   /**
@@ -32,11 +32,11 @@ trait LinkableElementModel extends Obj {
                     ModelDoc(ModelVocabularies.AmlDoc, "linkLabel", "Label for the type of link"))
 
   val SupportsRecursion = Field(
-    Bool,
-    Namespace.Document + "recursive",
-    ModelDoc(ModelVocabularies.AmlDoc,
-             "supportsRecursion",
-             "Indication taht this kind of linkable element can support recursive links")
+      Bool,
+      Namespace.Document + "recursive",
+      ModelDoc(ModelVocabularies.AmlDoc,
+               "supportsRecursion",
+               "Indication taht this kind of linkable element can support recursive links")
   )
 
 }
@@ -52,9 +52,9 @@ object LinkableElementModel extends LinkableElementModel {
   override val fields: List[Field] = List(TargetId, Label, SupportsRecursion)
 
   override val doc: ModelDoc = ModelDoc(
-    ModelVocabularies.AmlDoc,
-    "LinkableElement",
-    "Reification of a link between elements in the model. Used when we want to capture the structure of the source document\nin the graph itself. Linkable elements are just replaced by regular links after resolution."
+      ModelVocabularies.AmlDoc,
+      "LinkableElement",
+      "Reification of a link between elements in the model. Used when we want to capture the structure of the source document\nin the graph itself. Linkable elements are just replaced by regular links after resolution."
   )
 
 }

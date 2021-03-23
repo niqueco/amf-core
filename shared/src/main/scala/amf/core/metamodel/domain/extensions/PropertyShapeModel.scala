@@ -40,8 +40,8 @@ object PropertyShapeModel extends ShapeModel {
   override def modelInstance = PropertyShape()
 
   override val doc: ModelDoc = ModelDoc(
-    ModelVocabularies.Shapes,
-    "PropertyShape",
-    "Constraint over a property in a data shape."
+      ModelVocabularies.Shapes,
+      "PropertyShape",
+      "Constraint over a property in a data shape."
   )
 }

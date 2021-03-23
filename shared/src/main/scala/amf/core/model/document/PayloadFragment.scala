@@ -10,7 +10,7 @@ case class PayloadFragment(fields: Fields = Fields(), annotations: Annotations =
   override def encodes: DataNode = fields(PayloadFragmentModel.Encodes)
 
   /** Meta data for the document */
-  override def meta = PayloadFragmentModel
+  override def meta: PayloadFragmentModel.type = PayloadFragmentModel
 
   def withMediaType(mediaType: String): this.type = {
     set(PayloadFragmentModel.MediaType, mediaType)
