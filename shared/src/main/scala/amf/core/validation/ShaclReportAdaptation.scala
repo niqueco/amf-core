@@ -1,45 +1,28 @@
 package amf.core.validation
 
-import amf.{MessageStyle, OASStyle, RAMLStyle}
+import amf.{MessageStyle, OASStyle, ProfileName, RAMLStyle}
 import amf.core.model.document.BaseUnit
 import amf.core.validation.core.ValidationProfile.SeverityLevel
-import amf.core.validation.core.{ValidationResult, ValidationSpecification}
+import amf.core.validation.core.{ValidationReport, ValidationResult, ValidationSpecification}
 import amf.core.vocabulary.Namespace
 
 import scala.collection.mutable
 
-trait ValidationResultProcessor {
+trait ShaclReportAdaptation {
 
-  protected def processAggregatedResult(result: AMFValidationResult,
-                                        messageStyle: MessageStyle,
-                                        validations: EffectiveValidations): AMFValidationResult = {
-
-    /*val spec = validations.all.get(result.validationId) match {
-      case Some(s) => s
-      case None    => throw new Exception(s"Cannot find spec for aggregated validation result ${result.validationId}")
-    }*/
-
-    val message: String = result.message match {
-      case ""   => "Constraint violation"
-      case some => some
-    }
-
-    val severity = findLevel(result.validationId, validations, result.level)
-
-    new AMFValidationResult(message,
-                            severity,
-                            result.targetNode,
-                            result.targetProperty,
-                            result.validationId,
-                            result.position,
-                            result.location,
-                            result.source)
+  protected def adaptToAmfReport(model: BaseUnit,
+                                 profile: ProfileName,
+                                 report: ValidationReport,
+                                 messageStyle: MessageStyle,
+                                 validations: EffectiveValidations): AMFValidationReport = {
+    val amfResults = report.results.flatMap { r => adaptToAmfResult(model, r, messageStyle, validations) }
+    AMFValidationReport(model.id, profile, amfResults)
   }
 
-  protected def buildValidationResult(model: BaseUnit,
-                                      result: ValidationResult,
-                                      messageStyle: MessageStyle,
-                                      validations: EffectiveValidations): Option[AMFValidationResult] = {
+  protected def adaptToAmfResult(model: BaseUnit,
+                                 result: ValidationResult,
+                                 messageStyle: MessageStyle,
+                                 validations: EffectiveValidations): Option[AMFValidationResult] = {
     val validationSpecToLook = if (result.sourceShape.startsWith(Namespace.Data.base)) {
       result.sourceShape
         .replace(Namespace.Data.base, "") // this is for custom validations they are all prefixed with the data namespace

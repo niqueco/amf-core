@@ -40,6 +40,8 @@ abstract class ResolutionPipeline(val eh: ErrorHandler) {
     steps.foreach { s =>
       m = step(m, s)
     }
+    // TODO: should be unit metadata
+    m.resolved = true
     ExecutionLog.log(s"${this.getClass.getName}#resolve: resolved model ${m.location().getOrElse("")}")
     m
   }

@@ -14,8 +14,19 @@ import amf.core.model.{BoolField, StrField}
 import amf.core.parser.{FieldEntry, ParserContext, ReferenceCollector, Value}
 import amf.core.rdf.{RdfModel, RdfModelParser}
 import amf.core.remote.Vendor
-import amf.core.traversal.{DomainElementSelectorAdapter, DomainElementTransformationAdapter, TransformationData, TransformationTraversal}
-import amf.core.traversal.iterator.{AmfIterator, DomainElementStrategy, IdCollector, IteratorStrategy, VisitedCollector}
+import amf.core.traversal.{
+  DomainElementSelectorAdapter,
+  DomainElementTransformationAdapter,
+  TransformationData,
+  TransformationTraversal
+}
+import amf.core.traversal.iterator.{
+  AmfIterator,
+  DomainElementStrategy,
+  IdCollector,
+  IteratorStrategy,
+  VisitedCollector
+}
 import amf.core.unsafe.PlatformSecrets
 import amf.plugins.features.validation.CoreValidations.RecursiveShapeSpecification
 
@@ -31,7 +42,8 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
   withRoot(false)
 
   // We store the parser run here to be able to find runtime validations for this model
-  private var run: Option[Int] = None
+  private var run: Option[Int]         = None
+  protected[amf] var resolved: Boolean = false
 
   private[amf] def withRunNumber(parserRun: Int): BaseUnit = {
     if (this.run.nonEmpty) // todo: exception or what?
@@ -87,7 +99,9 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
   def addReference(newRef: BaseUnit): Unit = synchronized(withReferences(references :+ newRef))
 
   /** Returns Unit iterator for specified strategy and scope. */
-  def iterator(strategy: IteratorStrategy = DomainElementStrategy, fieldsFilter: FieldsFilter = Local, visited: VisitedCollector = IdCollector()): AmfIterator =
+  def iterator(strategy: IteratorStrategy = DomainElementStrategy,
+               fieldsFilter: FieldsFilter = Local,
+               visited: VisitedCollector = IdCollector()): AmfIterator =
     strategy.iterator(fieldsFilter.filter(fields), visited)
 
   /**
@@ -108,14 +122,13 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
 
   def transform(selector: DomainElement => Boolean, transformation: (DomainElement, Boolean) => Option[DomainElement])(
       implicit errorHandler: ErrorHandler): BaseUnit = {
-    val domainElementAdapter = new DomainElementSelectorAdapter(selector)
+    val domainElementAdapter  = new DomainElementSelectorAdapter(selector)
     val transformationAdapter = new DomainElementTransformationAdapter(transformation)
     new TransformationTraversal(TransformationData(domainElementAdapter, transformationAdapter)).traverse(this)
     this
   }
 
   def findInReferences(id: String): Option[BaseUnit] = references.find(_.id == id)
-
 
   def toNativeRdfModel(renderOptions: RenderOptions = new RenderOptions()): RdfModel = {
     platform.rdfFramework match {

@@ -20,23 +20,23 @@ case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin],
         copy(parsePlugins = parsePlugins :+ p)
       case v: AMFValidatePlugin if !validatePlugins.exists(_.id == v.id) =>
         copy(validatePlugins = validatePlugins :+ v)
-      case r: AMFRenderPlugin if !renderPlugins.exists(_.id == r.id)=>
+      case r: AMFRenderPlugin if !renderPlugins.exists(_.id == r.id) =>
         copy(renderPlugins = renderPlugins :+ r)
       case _ => this
     }
   }
 
-  def withPlugins(plugins: List[AMFPlugin[_]]): PluginsRegistry = {
+  def withPlugins(plugins: Seq[AMFPlugin[_]]): PluginsRegistry = {
     plugins.foldLeft(this) { case (registry, plugin) => registry.withPlugin(plugin) }
   }
 
   def removePlugin(id: String): PluginsRegistry =
-        copy(parsePlugins = parsePlugins.filterNot(_.id == id),
-          validatePlugins = validatePlugins.filterNot(_.id == id),
-          renderPlugins = renderPlugins.filterNot(_.id == id))
-          
+    copy(parsePlugins = parsePlugins.filterNot(_.id == id),
+         validatePlugins = validatePlugins.filterNot(_.id == id),
+         renderPlugins = renderPlugins.filterNot(_.id == id))
+
 }
 
-object PluginsRegistry{
+object PluginsRegistry {
   val empty: PluginsRegistry = PluginsRegistry(Nil, Nil, Nil, ExternalFragmentDomainFallback)
 }
