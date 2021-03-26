@@ -9,7 +9,7 @@ import amf.core.model.document.BaseUnit
 import amf.core.parser.{ParserContext, ReferenceHandler}
 
 private[amf] case class AMFParsePluginAdapter(plugin: AMFDocumentPlugin) extends AMFParsePlugin {
-  override def parse(document: Root, ctx: ParserContext, options: ParsingOptions): Option[BaseUnit] =
+  override def parse(document: Root, ctx: ParserContext, options: ParsingOptions): BaseUnit =
     plugin.parse(document, ctx, options)
 
   override def referenceHandler(eh: ErrorHandler): ReferenceHandler = plugin.referenceHandler(eh)
