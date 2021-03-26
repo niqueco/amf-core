@@ -63,7 +63,7 @@ abstract class AMFDocumentPlugin extends AMFPlugin {
   /**
     * Parses an accepted document returning an optional BaseUnit
     */
-  def parse(document: Root, ctx: ParserContext, options: ParsingOptions): Option[BaseUnit]
+  def parse(document: Root, ctx: ParserContext, options: ParsingOptions): BaseUnit
 
   /**
     * Emit an Output for a given base unit
