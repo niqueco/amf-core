@@ -21,8 +21,8 @@ object VariableValueModel extends DomainElementModel {
   override def modelInstance = VariableValue()
 
   override val doc: ModelDoc = ModelDoc(
-    ModelVocabularies.AmlDoc,
-    "VariableValue",
-    "Value for a variable in a graph template"
+      ModelVocabularies.AmlDoc,
+      "VariableValue",
+      "Value for a variable in a graph template"
   )
 }

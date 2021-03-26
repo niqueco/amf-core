@@ -1,10 +1,10 @@
 package amf.core.model.domain
 
 import amf.core.annotations.ScalarType
+import amf.core.metamodel.Field
 import amf.core.metamodel.Type.EncodedIri
 import amf.core.metamodel.domain.DataNodeModel._
 import amf.core.metamodel.domain.{ScalarNodeModel, _}
-import amf.core.metamodel.{Field, Obj}
 import amf.core.model.domain.ScalarNode.forDataType
 import amf.core.model.domain.templates.Variable
 import amf.core.model.{DataType, StrField}
@@ -17,8 +17,7 @@ import org.yaml.model.{YPart, YSequence}
 
 import scala.collection.mutable
 
-/**
-  * Base class for all dynamic DataNodes
+/** Base class for all dynamic DataNodes
   */
 abstract class DataNode(annotations: Annotations) extends DomainElement {
 
@@ -79,8 +78,7 @@ object DataNodeOps {
   }
 }
 
-/**
-  * Data records, with a list of properties
+/** Data records, with a list of properties
   */
 class ObjectNode(override val fields: Fields, val annotations: Annotations) extends DataNode(annotations) {
 
@@ -127,10 +125,11 @@ class ObjectNode(override val fields: Fields, val annotations: Annotations) exte
       propertyOrUri
     }
 
-  override val meta: Obj = new ObjectNodeDynamicModel()
+  override val meta: ObjectNodeDynamicModel = new ObjectNodeDynamicModel()
 
   override def replaceVariables(values: Set[Variable], keys: Seq[ElementTree])(
-      reportError: String => Unit): DataNode = {
+      reportError: String => Unit
+  ): DataNode = {
 
     propertyFields().foreach { field =>
       val decodedKey = field.value.name.urlComponentDecoded
@@ -145,10 +144,11 @@ class ObjectNode(override val fields: Fields, val annotations: Annotations) exte
           val value = v.value
             .asInstanceOf[DataNode]
             .replaceVariables(values, maybeTree.map(_.subtrees).getOrElse(Nil))(
-              if (decodedKey
-                    .endsWith("?") && maybeTree.isEmpty) // TODO review this logic
-                (_: String) => Unit
-              else reportError) // if its an optional node, ignore the violation of the var not implement
+                if (decodedKey
+                      .endsWith("?") && maybeTree.isEmpty) // TODO review this logic
+                  (_: String) => Unit
+                else reportError
+            ) // if its an optional node, ignore the violation of the var not implement
           fields.removeField(field)
           addProperty(VariableReplacer.replaceVariablesInKey(decodedKey, values, reportError), value, v.annotations)
         case _ =>
@@ -167,9 +167,9 @@ class ObjectNode(override val fields: Fields, val annotations: Annotations) exte
     override def modelInstance: AmfObject = ObjectNode()
 
     override val doc: ModelDoc = ModelDoc(
-      ModelVocabularies.Data,
-      "ObjectNode",
-      "Node that represents a dynamic object with records data structure"
+        ModelVocabularies.Data,
+        "ObjectNode",
+        "Node that represents a dynamic object with records data structure"
     )
   }
 
@@ -201,8 +201,7 @@ object ObjectNode {
 
 }
 
-/**
-  * Scalar values with associated data type
+/** Scalar values with associated data type
   */
 class ScalarNode(override val fields: Fields, val annotations: Annotations) extends DataNode(annotations) {
 
@@ -222,10 +221,11 @@ class ScalarNode(override val fields: Fields, val annotations: Annotations) exte
 
   def dataType: StrField = fields.field(ScalarNodeModel.DataType)
 
-  override def meta: Obj = ScalarNodeModel
+  override def meta: ScalarNodeModel.type = ScalarNodeModel
 
   override def replaceVariables(values: Set[Variable], keys: Seq[ElementTree])(
-      reportError: String => Unit): DataNode = {
+      reportError: String => Unit
+  ): DataNode = {
     VariableReplacer.replaceNodeVariables(this, values, reportError)
   }
   override def copyNode(): DataNode =
@@ -254,51 +254,50 @@ object ScalarNode {
   }
 
   def forDataType(dataTypeUri: String): AmfScalar = dataTypeUri match {
-    case DataType.String => string
-    case DataType.Integer => integer
-    case DataType.Number => number
-    case DataType.Long => long
-    case DataType.Double => double
-    case DataType.Float => float
-    case DataType.Decimal => decimal
-    case DataType.Boolean => boolean
-    case DataType.Date => date
-    case DataType.Time => time
-    case DataType.DateTime => dateTime
+    case DataType.String       => string
+    case DataType.Integer      => integer
+    case DataType.Number       => number
+    case DataType.Long         => long
+    case DataType.Double       => double
+    case DataType.Float        => float
+    case DataType.Decimal      => decimal
+    case DataType.Boolean      => boolean
+    case DataType.Date         => date
+    case DataType.Time         => time
+    case DataType.DateTime     => dateTime
     case DataType.DateTimeOnly => dateTimeOnly
-    case DataType.File => file
-    case DataType.Byte => byte
-    case DataType.Binary => base64Binary
-    case DataType.Password => password
-    case DataType.Any => anyType
-    case DataType.AnyUri => anyURI
-    case DataType.Nil => nil
-    case _                    => AmfScalar(dataTypeUri, Annotations())
+    case DataType.File         => file
+    case DataType.Byte         => byte
+    case DataType.Binary       => base64Binary
+    case DataType.Password     => password
+    case DataType.Any          => anyType
+    case DataType.AnyUri       => anyURI
+    case DataType.Nil          => nil
+    case _                     => AmfScalar(dataTypeUri, Annotations())
   }
 
-  private val string = AmfScalar(DataType.String, Annotations.empty)
-  private val integer = AmfScalar(DataType.Integer, Annotations.empty)
-  private val number = AmfScalar(DataType.Number, Annotations.empty)
-  private val long = AmfScalar(DataType.Long, Annotations.empty)
-  private val double = AmfScalar(DataType.Double, Annotations.empty)
-  private val float = AmfScalar(DataType.Float, Annotations.empty)
-  private val decimal = AmfScalar(DataType.Decimal, Annotations.empty)
-  private val boolean = AmfScalar(DataType.Boolean, Annotations.empty)
-  private val date = AmfScalar(DataType.Date, Annotations.empty)
-  private val time = AmfScalar(DataType.Time, Annotations.empty)
-  private val dateTime = AmfScalar(DataType.DateTime, Annotations.empty)
+  private val string       = AmfScalar(DataType.String, Annotations.empty)
+  private val integer      = AmfScalar(DataType.Integer, Annotations.empty)
+  private val number       = AmfScalar(DataType.Number, Annotations.empty)
+  private val long         = AmfScalar(DataType.Long, Annotations.empty)
+  private val double       = AmfScalar(DataType.Double, Annotations.empty)
+  private val float        = AmfScalar(DataType.Float, Annotations.empty)
+  private val decimal      = AmfScalar(DataType.Decimal, Annotations.empty)
+  private val boolean      = AmfScalar(DataType.Boolean, Annotations.empty)
+  private val date         = AmfScalar(DataType.Date, Annotations.empty)
+  private val time         = AmfScalar(DataType.Time, Annotations.empty)
+  private val dateTime     = AmfScalar(DataType.DateTime, Annotations.empty)
   private val dateTimeOnly = AmfScalar(DataType.DateTimeOnly, Annotations.empty)
-  private val file = AmfScalar(DataType.File, Annotations.empty)
-  private val byte = AmfScalar(DataType.Byte, Annotations.empty)
+  private val file         = AmfScalar(DataType.File, Annotations.empty)
+  private val byte         = AmfScalar(DataType.Byte, Annotations.empty)
   private val base64Binary = AmfScalar(DataType.Binary, Annotations.empty)
-  private val password = AmfScalar(DataType.Password, Annotations.empty)
-  private val anyType = AmfScalar(DataType.Any, Annotations.empty)
-  private val anyURI = AmfScalar(DataType.AnyUri, Annotations.empty)
-  private val nil = AmfScalar(DataType.Nil, Annotations.empty)
+  private val password     = AmfScalar(DataType.Password, Annotations.empty)
+  private val anyType      = AmfScalar(DataType.Any, Annotations.empty)
+  private val anyURI       = AmfScalar(DataType.AnyUri, Annotations.empty)
+  private val nil          = AmfScalar(DataType.Nil, Annotations.empty)
 }
 
-/**
-  * Arrays of values
+/** Arrays of values
   */
 class ArrayNode(override val fields: Fields, val annotations: Annotations) extends DataNode(annotations) {
 
@@ -316,7 +315,8 @@ class ArrayNode(override val fields: Fields, val annotations: Annotations) exten
   }
 
   override def replaceVariables(values: Set[Variable], keys: Seq[ElementTree])(
-      reportError: String => Unit): DataNode = {
+      reportError: String => Unit
+  ): DataNode = {
     val newMembers = members.map(_.replaceVariables(values, keys)(reportError))
     withMembers(newMembers)
   }
@@ -326,7 +326,7 @@ class ArrayNode(override val fields: Fields, val annotations: Annotations) exten
       Field(EncodedIri, Namespace.Data + s"pos$i", ModelDoc(ModelVocabularies.Data, s"pos$i"))
   }
 
-  override def meta: Obj = ArrayNodeModel
+  override def meta: ArrayNodeModel.type = ArrayNodeModel
 
   override def copyNode(): this.type = {
     val cloned =
@@ -352,8 +352,7 @@ object ArrayNode {
     new ArrayNode(Fields(), annotations)
 }
 
-/**
-  * Dynamic node representing a link to another dynamic node
+/** Dynamic node representing a link to another dynamic node
   * @param fields default fields for the dynamic node
   * @param annotations default annotations for the dynamic node
   */
@@ -365,7 +364,7 @@ class LinkNode(override val fields: Fields, val annotations: Annotations) extend
   def withLink(link: String): this.type   = set(LinkNodeModel.Value, link)
   def withAlias(alias: String): this.type = set(LinkNodeModel.Alias, alias)
 
-  override def cloneElement(branch: mutable.Map[AmfObject, AmfObject]) = {
+  override def cloneElement(branch: mutable.Map[AmfObject, AmfObject]): LinkNode = {
     val node = super.cloneElement(branch).asInstanceOf[LinkNode]
     linkedDomainElement.foreach(node.withLinkedDomainElement)
     node
@@ -381,7 +380,7 @@ class LinkNode(override val fields: Fields, val annotations: Annotations) extend
     this
   }
 
-  override def meta: Obj = LinkNodeModel
+  override def meta: LinkNodeModel.type = LinkNodeModel
 
   override def copyNode(): LinkNode = {
     val cloned = new LinkNode(fields.copy(), annotations.copy()).withId(id)

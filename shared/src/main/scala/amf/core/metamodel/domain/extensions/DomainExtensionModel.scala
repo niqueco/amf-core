@@ -20,7 +20,9 @@ import amf.core.vocabulary.{Namespace, ValueType}
   */
 trait DomainExtensionModel extends DomainElementModel with KeyField {
 
-  val Name = Field(Str, Namespace.Core + "extensionName", ModelDoc(ModelVocabularies.Core, "name", "Name of an extension entity"))
+  val Name = Field(Str,
+                   Namespace.Core + "extensionName",
+                   ModelDoc(ModelVocabularies.Core, "name", "Name of an extension entity"))
   val DefinedBy = Field(CustomDomainPropertyModel,
                         Document + "definedBy",
                         ModelDoc(ModelVocabularies.AmlDoc, "definedBy", "Definition for the extended entity"))
@@ -41,8 +43,8 @@ object DomainExtensionModel extends DomainExtensionModel {
   override def modelInstance = DomainExtension()
 
   override val doc: ModelDoc = ModelDoc(
-    ModelVocabularies.ApiContract,
-    "DomainExtension",
-    "Extension to the model being parsed from RAML annotation or OpenAPI extensions\nThey must be a DomainPropertySchema (only in RAML) defining them.\nThe DomainPropertySchema might have an associated Data Shape that must validate the extension nested graph.\nThey are parsed as RDF graphs using a default transformation from a set of nested records into RDF."
+      ModelVocabularies.ApiContract,
+      "DomainExtension",
+      "Extension to the model being parsed from RAML annotation or OpenAPI extensions\nThey must be a DomainPropertySchema (only in RAML) defining them.\nThe DomainPropertySchema might have an associated Data Shape that must validate the extension nested graph.\nThey are parsed as RDF graphs using a default transformation from a set of nested records into RDF."
   )
 }

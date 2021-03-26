@@ -1,6 +1,5 @@
 package amf.core.model.document
 
-import amf.core.metamodel.Obj
 import amf.core.metamodel.document.DocumentModel._
 import amf.core.metamodel.document.{DocumentModel, ExtensionLikeModel}
 import amf.core.model.domain.DomainElement
@@ -19,7 +18,7 @@ case class Document(fields: Fields, annotations: Annotations) extends BaseUnit w
   override def declares: Seq[DomainElement] = fields(Declares)
 
   /** Meta data for the document */
-  override def meta: Obj = DocumentModel
+  override def meta: DocumentModel = DocumentModel
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
   override def componentId: String = ""

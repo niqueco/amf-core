@@ -1,17 +1,17 @@
 package amf.core.model.document
 
 import amf.client.parse.DefaultParserErrorHandler
-import amf.core.annotations.{LexicalInformation, SourceAST, SourceNode, SourceVendor}
+import amf.core.annotations.SourceVendor
 import amf.core.emitter.RenderOptions
 import amf.core.errorhandling.ErrorHandler
+import amf.core.metamodel.MetaModelTypeMapping
+import amf.core.metamodel.document.BaseUnitModel
 import amf.core.metamodel.document.BaseUnitModel.{Location, ModelVersion, Root, Usage}
-import amf.core.metamodel.document.DocumentModel
 import amf.core.metamodel.document.DocumentModel.References
-import amf.core.metamodel.{Field, MetaModelTypeMapping, Obj}
 import amf.core.model.document.FieldsFilter.Local
 import amf.core.model.domain._
 import amf.core.model.{BoolField, StrField}
-import amf.core.parser.{FieldEntry, ParserContext, ReferenceCollector, Value}
+import amf.core.parser.ParserContext
 import amf.core.rdf.{RdfModel, RdfModelParser}
 import amf.core.remote.Vendor
 import amf.core.traversal.{
@@ -20,15 +20,8 @@ import amf.core.traversal.{
   TransformationData,
   TransformationTraversal
 }
-import amf.core.traversal.iterator.{
-  AmfIterator,
-  DomainElementStrategy,
-  IdCollector,
-  IteratorStrategy,
-  VisitedCollector
-}
+import amf.core.traversal.iterator.{AmfIterator, DomainElementStrategy, IdCollector, IteratorStrategy, VisitedCollector}
 import amf.core.unsafe.PlatformSecrets
-import amf.plugins.features.validation.CoreValidations.RecursiveShapeSpecification
 
 import scala.collection.mutable
 
@@ -60,7 +53,7 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
   var raw: Option[String] = None
 
   /** Meta data for the document */
-  def meta: Obj
+  def meta: BaseUnitModel
 
   /** Returns the list document URIs referenced from the document that has been parsed to generate this model */
   def references: Seq[BaseUnit]
