@@ -6,7 +6,8 @@ import amf.core.model.domain.AmfObject
 import amf.core.parser.Annotations
 import amf.core.registries.AMFDomainRegistry.defaultIri
 import amf.core.registries.{AMFDomainEntityResolver, AMFDomainRegistry}
-
+import org.mulesoft.common.core.CachedFunction
+import org.mulesoft.common.functional.MonadInstances._
 import scala.collection.immutable.TreeSet
 
 /** Context for handling plugins registration. */
@@ -27,7 +28,7 @@ case class PluginContext(blacklist: Seq[AMFPlugin]) {
     .flatten
 
   /** Find matching type given type IRI. */
-  def findType(`type`: String): Option[Obj] = {
+  private val findType = CachedFunction.fromMonadic { `type`: String =>
     types
       .get(`type`)
       .orElse(resolvers.iterator.map(_.findType(`type`)).collectFirst {
@@ -35,8 +36,9 @@ case class PluginContext(blacklist: Seq[AMFPlugin]) {
       })
   }
 
-  /** Return instance builder given type. */
-  def buildType(`type`: Obj): Annotations => AmfObject = {
+  def findType(`type`: String): Option[Obj] = findType.runCached(`type`)
+
+  private val buildType = CachedFunction.from { `type`: Obj =>
     types.get(defaultIri(`type`)) match {
       case Some(builder: ModelDefaultBuilder) =>
         (annotations: Annotations) =>
@@ -52,6 +54,9 @@ case class PluginContext(blacklist: Seq[AMFPlugin]) {
           .getOrElse(throw new Exception(s"Cannot find builder for type ${`type`}"))
     }
   }
+
+  /** Return instance builder given type. */
+  def buildType(`type`: Obj): Annotations => AmfObject = buildType.runCached(`type`)
 
   private val types: Map[String, Obj] = {
     val ignored = TreeSet(blacklistedTypes.map(defaultIri): _*)
