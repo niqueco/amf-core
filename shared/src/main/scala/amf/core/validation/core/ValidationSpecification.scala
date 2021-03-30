@@ -1,6 +1,7 @@
 package amf.core.validation.core
 
 import amf.core.rdf.RdfModel
+import amf.core.validation.SeverityLevels
 import amf.core.validation.core.ValidationSpecification.PARSER_SIDE_VALIDATION
 import amf.core.validation.model.PropertyPath
 import amf.core.vocabulary.Namespace
@@ -175,4 +176,13 @@ object ValidationSpecification {
   val PAYLOAD_VALIDATION: String         = (Namespace.Shapes + "PayloadShape").iri()
   val RENDER_SIDE_VALIDATION: String     = (Namespace.Shapes + "RenderShape").iri()
   val RESOLUTION_SIDE_VALIDATION: String = (Namespace.Shapes + "ResolutionShape").iri()
+}
+
+object ShaclSeverityUris {
+
+  private lazy val shaclSeverities = Map(
+    SeverityLevels.VIOLATION -> Namespace.staticAliases.expand("sh:Violation"),
+    SeverityLevels.WARNING -> Namespace.staticAliases.expand("sh:Warning"),
+    SeverityLevels.INFO -> Namespace.staticAliases.expand("sh:Info")
+  )
 }
