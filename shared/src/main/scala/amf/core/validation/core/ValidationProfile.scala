@@ -14,12 +14,6 @@ case class ValidationProfile(name: ProfileName,
 
   def index: ProfileIndex = ProfileIndex(this)
 
-  // TODO: Should we do this?
-  def validate(): Unit = {
-    // 1. Cannot define severity for unmatched specification
-    // 2. Cannot define multiple severities for same validation
-  }
-
   def validationsWith(severity: SeverityLevel): Seq[ValidationName] = {
     severity match {
       case SeverityLevels.INFO      => severities.info
