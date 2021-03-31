@@ -40,6 +40,13 @@ case class SeverityMapping() {
     this
   }
 
+  def getSeverityOf(name: ValidationName): Option[String] = {
+    if (violation.contains(name)) Some(SeverityLevels.VIOLATION)
+    else if (warning.contains(name)) Some(SeverityLevels.WARNING)
+    else if (info.contains(name)) Some(SeverityLevels.INFO)
+    else None
+  }
+
   def disable(validations: Seq[ValidationName]): this.type = {
     disabled = validations
     this

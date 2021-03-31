@@ -31,11 +31,11 @@ trait Validations {
                            ramlMessage: Option[String] = None,
                            oasMessage: Option[String] = None): ValidationSpecification =
     ValidationSpecification(
-      (namespace + id).iri(),
-      message,
-      ramlMessage,
-      oasMessage,
-      Seq(specification)
+        name = (namespace + id).iri(),
+        message = message,
+        ramlMessage = ramlMessage,
+        oasMessage = oasMessage,
+        targetInstance = Seq(specification)
     )
 
   def level(id: String, profile: ProfileName): String =

@@ -15,7 +15,9 @@ trait ShaclReportAdaptation {
                                  report: ValidationReport,
                                  messageStyle: MessageStyle,
                                  validations: EffectiveValidations): AMFValidationReport = {
-    val amfResults = report.results.flatMap { r => adaptToAmfResult(model, r, messageStyle, validations) }
+    val amfResults = report.results.flatMap { r =>
+      adaptToAmfResult(model, r, messageStyle, validations)
+    }
     AMFValidationReport(model.id, profile, amfResults)
   }
 
@@ -75,10 +77,9 @@ trait ShaclReportAdaptation {
         } else {
           Namespace.Data.base + idMapping(result.sourceShape)
         }
-        val severity = findLevel(idMapping(result.sourceShape), validations)
         Some(
-          AMFValidationResult.withShapeId(finalId,
-                                          AMFValidationResult.fromSHACLValidation(model, message, severity, result)))
+            AMFValidationResult
+              .withShapeId(finalId, AMFValidationResult.fromSHACLValidation(model, message, result.severity, result)))
       case _ => None
     }
   }

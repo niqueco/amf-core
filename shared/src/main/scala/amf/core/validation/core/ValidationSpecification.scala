@@ -2,6 +2,7 @@ package amf.core.validation.core
 
 import amf.core.rdf.RdfModel
 import amf.core.validation.SeverityLevels
+import amf.core.validation.SeverityLevels.VIOLATION
 import amf.core.validation.core.ValidationSpecification.PARSER_SIDE_VALIDATION
 import amf.core.validation.model.PropertyPath
 import amf.core.vocabulary.Namespace
@@ -38,6 +39,7 @@ case class NodeConstraint(constraint: String, value: String)
 
 case class PropertyConstraint(ramlPropertyId: String,
                               name: String,
+                              severity: String = ShaclSeverityUris.shaclSeverity(SeverityLevels.VIOLATION),
                               // storing the constraint over a property path
                               path: Option[PropertyPath] = None,
                               // shacl:message
@@ -90,6 +92,7 @@ case class QueryConstraint(
 case class ValidationSpecification(name: String,
                                    // shacl:message
                                    message: String,
+                                   severity: String = ShaclSeverityUris.shaclSeverity(VIOLATION),
                                    ramlMessage: Option[String] = None,
                                    oasMessage: Option[String] = None,
                                    /**
@@ -180,9 +183,22 @@ object ValidationSpecification {
 
 object ShaclSeverityUris {
 
+  private val SHACL_VIOLATION: String = Namespace.staticAliases.expand("sh:Violation").iri()
+  private val SHACL_WARNING: String = Namespace.staticAliases.expand("sh:Warning").iri()
+  private val SHACL_INFO: String = Namespace.staticAliases.expand("sh:Info").iri()
+
   private lazy val shaclSeverities = Map(
-    SeverityLevels.VIOLATION -> Namespace.staticAliases.expand("sh:Violation"),
-    SeverityLevels.WARNING -> Namespace.staticAliases.expand("sh:Warning"),
-    SeverityLevels.INFO -> Namespace.staticAliases.expand("sh:Info")
+    VIOLATION -> SHACL_VIOLATION,
+    SeverityLevels.WARNING -> SHACL_WARNING,
+    SeverityLevels.INFO -> SHACL_INFO
   )
+
+  private lazy val shaclToAmf = Map(
+    SHACL_VIOLATION -> VIOLATION,
+    SHACL_WARNING -> SeverityLevels.WARNING,
+    SHACL_INFO -> SeverityLevels.INFO
+  )
+
+  def shaclSeverity(severity: String): String = shaclSeverities.getOrElse(severity, SHACL_VIOLATION)
+  def amfSeverity(shaclSeverity: String): String = shaclToAmf.getOrElse(shaclSeverity, VIOLATION)
 }
