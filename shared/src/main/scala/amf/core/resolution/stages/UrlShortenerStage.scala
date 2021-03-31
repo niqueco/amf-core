@@ -12,9 +12,14 @@ import scala.collection.mutable
 class UrlShortenerStage()(override implicit val errorHandler: ErrorHandler) extends ResolutionStage {
 
   override def resolve[T <: BaseUnit](model: T): T = {
-    val ids: Set[String] = Set(model.id) ++ model.references.map(_.id)
+    val ids: Set[String] = Set(model.id) ++ obtainNestedReferenceIds(model)
     shorten(model, ids)
     model.withId(base)
+  }
+
+  private def obtainNestedReferenceIds[T <: BaseUnit](model: T): Seq[String] = {
+    val ids = model.references.map(_.id)
+    ids ++ model.references.flatMap(obtainNestedReferenceIds)
   }
 
   def shorten(element: AmfElement, ids: Set[String]): Unit = {
