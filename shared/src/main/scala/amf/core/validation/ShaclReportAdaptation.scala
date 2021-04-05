@@ -32,7 +32,7 @@ trait ShaclReportAdaptation {
       result.sourceShape // by default we expect to find a URI here
     }
     val idMapping: mutable.HashMap[String, String] = mutable.HashMap()
-    val maybeTargetSpec: Option[ValidationSpecification] = validations.all.get(validationSpecToLook) match {
+    val maybeTargetSpecification: Option[ValidationSpecification] = validations.all.get(validationSpecToLook) match {
       case Some(validationSpec) =>
         idMapping.put(result.sourceShape, validationSpecToLook)
         Some(validationSpec)
@@ -56,7 +56,7 @@ trait ShaclReportAdaptation {
         }
     }
 
-    maybeTargetSpec match {
+    maybeTargetSpecification match {
       case Some(targetSpec) =>
         var message = messageStyle match {
           case RAMLStyle => targetSpec.ramlMessage.getOrElse(targetSpec.message)
@@ -87,6 +87,6 @@ trait ShaclReportAdaptation {
   protected def findLevel(id: String,
                           validations: EffectiveValidations,
                           default: String = SeverityLevels.VIOLATION): SeverityLevel =
-    validations.findLevel(id).getOrElse(SeverityLevels.unapply(default))
+    validations.findSecurityLevelFor(id).getOrElse(SeverityLevels.unapply(default))
 
 }

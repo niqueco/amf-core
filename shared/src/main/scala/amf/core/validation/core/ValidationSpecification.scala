@@ -39,7 +39,7 @@ case class NodeConstraint(constraint: String, value: String)
 
 case class PropertyConstraint(ramlPropertyId: String,
                               name: String,
-                              severity: String = ShaclSeverityUris.shaclSeverity(SeverityLevels.VIOLATION),
+                              severity: String = ShaclSeverityUris.amfToShaclSeverity(SeverityLevels.VIOLATION),
                               // storing the constraint over a property path
                               path: Option[PropertyPath] = None,
                               // shacl:message
@@ -92,7 +92,7 @@ case class QueryConstraint(
 case class ValidationSpecification(name: String,
                                    // shacl:message
                                    message: String,
-                                   severity: String = ShaclSeverityUris.shaclSeverity(VIOLATION),
+                                   severity: String = ShaclSeverityUris.amfToShaclSeverity(VIOLATION),
                                    ramlMessage: Option[String] = None,
                                    oasMessage: Option[String] = None,
                                    /**
@@ -132,17 +132,17 @@ case class ValidationSpecification(name: String,
                                    closed: Option[Boolean] = None,
                                    functionConstraint: Option[FunctionConstraint] = None,
                                    custom: Option[(EntryBuilder, String) => Unit] = None,
-                                  /*
-                                   * Nested validations
-                                   */
+                                   /*
+                                    * Nested validations
+                                    */
                                    nested: Option[String] = None,
-                                  /*
-                                   * transition from JS functions to complex ones
-                                   */
+                                   /*
+                                    * transition from JS functions to complex ones
+                                    */
                                    replacesFunctionConstraint: Option[String] = None,
-                                  /*
-                                   * Query validation
-                                   */
+                                   /*
+                                    * Query validation
+                                    */
                                    query: Option[QueryConstraint] = None
                                   ) {
 
@@ -199,6 +199,6 @@ object ShaclSeverityUris {
     SHACL_INFO -> SeverityLevels.INFO
   )
 
-  def shaclSeverity(severity: String): String = shaclSeverities.getOrElse(severity, SHACL_VIOLATION)
+  def amfToShaclSeverity(severity: String): String = shaclSeverities.getOrElse(severity, SHACL_VIOLATION)
   def amfSeverity(shaclSeverity: String): String = shaclToAmf.getOrElse(shaclSeverity, VIOLATION)
 }
