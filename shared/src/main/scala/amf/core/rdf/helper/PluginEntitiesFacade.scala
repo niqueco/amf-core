@@ -7,18 +7,22 @@ import amf.core.model.domain.AmfObject
 import amf.core.parser.{Annotations, ParserContext}
 import amf.core.rdf.Node
 import amf.plugins.features.validation.CoreValidations.UnableToParseNode
+import org.mulesoft.common.core.CachedFunction
+import org.mulesoft.common.functional.MonadInstances._
 
 import scala.collection.mutable
 
 class PluginEntitiesFacade(ctx: ParserContext) {
-  private val cache  = mutable.Map[String, Obj]()
   private val sorter = new DefaultNodeClassSorter()
 
   private def isUnitModel(typeModel: Obj): Boolean =
     typeModel.isInstanceOf[DocumentModel] || typeModel.isInstanceOf[EncodesModel] || typeModel
       .isInstanceOf[DeclaresModel] || typeModel.isInstanceOf[BaseUnitModel]
 
-  def retrieveType(id: String, node: Node, findBaseUnit: Boolean = false, visitedSelfEncoded: Boolean = false): Option[Obj] = {
+  def retrieveType(id: String,
+                   node: Node,
+                   findBaseUnit: Boolean = false,
+                   visitedSelfEncoded: Boolean = false): Option[Obj] = {
     val types = sorter.sortedClassesOf(node)
 
     val foundType = types.find { t =>
@@ -46,17 +50,11 @@ class PluginEntitiesFacade(ctx: ParserContext) {
     }
   }
 
-  private def findType(`type`: String): Option[Obj] = {
-    cache.get(`type`).orElse {
-      ctx.plugins.findType(`type`) match {
-        case Some(obj) =>
-          cache(`type`) = obj
-          Some(obj)
-        case None => None
-      }
-    }
+  private val findType = CachedFunction.fromMonadic(ctx.plugins.findType)
 
-  }
+  private val buildType = CachedFunction.from(ctx.plugins.buildType)
 
-  def buildType(`type`: Obj): Annotations => AmfObject = ctx.plugins.buildType(`type`)
+  private def findType(`type`: String): Option[Obj] = findType.runCached(`type`)
+
+  def buildType(`type`: Obj): Annotations => AmfObject = buildType.runCached(`type`)
 }

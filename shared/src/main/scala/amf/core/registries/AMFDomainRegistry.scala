@@ -4,24 +4,28 @@ import amf.core.metamodel.Obj
 import amf.core.model.domain.{AmfObject, AnnotationGraphLoader}
 import amf.core.parser.Annotations
 import amf.core.plugin.CorePlugin
+import org.mulesoft.common.core.CachedFunction
+import org.mulesoft.common.functional.MonadInstances._
 
 import scala.collection.mutable
 
 object AMFDomainRegistry {
 
-  def findType(typeString: String): Option[Obj] =
-    metadataResolverRegistry.toStream
-      .map(_.findType(typeString))
-      .filter(_.isDefined)
-      .map(_.get)
-      .headOption
+  private val findType = CachedFunction.fromMonadic { typeString: String =>
+    metadataResolverRegistry.collectFirst {
+      case r => r.findType(typeString)
+    }.flatten
+  }
 
-  def buildType(modelType: Obj): Option[Annotations => AmfObject] =
-    metadataResolverRegistry.toStream
-      .map(_.buildType(modelType))
-      .filter(_.isDefined)
-      .map(_.get)
-      .headOption
+  def findType(typeString: String): Option[Obj] = findType.runCached(typeString)
+
+  private val buildType = CachedFunction.fromMonadic { modelType: Obj =>
+    metadataResolverRegistry.collectFirst {
+      case r => r.buildType(modelType)
+    }.flatten
+  }
+
+  def buildType(modelType: Obj): Option[Annotations => AmfObject] = buildType.runCached(modelType)
 
   val annotationsRegistry: mutable.HashMap[String, AnnotationGraphLoader] =
     map(size = 1024, CorePlugin.serializableAnnotations())
