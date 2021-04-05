@@ -1,7 +1,7 @@
 package amf.plugins.document.graph.parser
 import amf.client.parse.IgnoringErrorHandler
 import amf.core.annotations.DomainExtensionAnnotation
-import amf.core.metamodel.Type.{Array, Bool, Iri, LiteralUri, RegExp, SortedArray, Str}
+import amf.core.metamodel.Type.{Array, Bool, Iri, LiteralUri, RegExp, Scalar, SortedArray, Str}
 import amf.core.metamodel.document.BaseUnitModel
 import amf.core.metamodel.domain.extensions.DomainExtensionModel
 import amf.core.metamodel.domain.{DomainElementModel, ExternalSourceElementModel, LinkableElementModel}
@@ -77,7 +77,8 @@ class FlattenedGraphParser()(implicit val ctx: GraphParserContext) extends Graph
       }
     }
 
-    private def isSelfEncoded(node: YNode) = nodeIsOfType(node, BaseUnitModel) && nodeIsOfType(node, DomainElementModel)
+    private def isSelfEncoded(node: YNode) =
+      nodeIsOfType(node, BaseUnitModel) && nodeIsOfType(node, DomainElementModel)
 
     private def parseGraph(graph: YNode): Option[BaseUnit] = {
       populateGraphMap(graph.as[YSequence])
@@ -493,12 +494,24 @@ class FlattenedGraphParser()(implicit val ctx: GraphParserContext) extends Graph
           val parsed = parseSortedArray(l.element, node.as[YMap])
           instance.setArrayWithoutId(f, parsed, annotations(nodes, sources, key))
         case a: Array =>
-          val items = node.as[Seq[YNode]]
-          val values: Seq[AmfElement] = a.element match {
-            case _: Obj    => items.flatMap(n => parse(n.as[YMap]))
-            case Str | Iri => items.map(n => str(value(a.element, n)))
+          (node.tagType, a.element) match {
+            case (YType.Seq, _) =>
+              val rawItems = node.as[Seq[YNode]]
+              val values: Seq[AmfElement] = a.element match {
+                case _: Obj    => rawItems.flatMap(n => parse(n.as[YMap]))
+                case Str | Iri => rawItems.map(n => str(value(a.element, n)))
+              }
+              instance.setArrayWithoutId(f, values, annotations(nodes, sources, key))
+            case (YType.Map, _: Obj) =>
+              val rawHead = node.as[YMap]
+              parse(rawHead) match {
+                case Some(head) => instance.setArrayWithoutId(f, Seq(head), annotations(nodes, sources, key))
+                case None       => instance // Ignore
+              }
+            case (YType.Str, Str | Iri) =>
+              instance.setArrayWithoutId(f, Seq(str(node)), annotations(nodes, sources, key))
+            case _ => instance
           }
-          instance.setArrayWithoutId(f, values, annotations(nodes, sources, key))
       }
     }
 
@@ -562,7 +575,7 @@ object FlattenedGraphParser extends GraphContextHelper with GraphParserHelpers {
     document.document.node.value match {
       case m: YMap =>
         implicit val ctx: GraphParserContext = new GraphParserContext(
-          eh = IgnoringErrorHandler()
+            eh = IgnoringErrorHandler()
         )
         m.key(JsonLdKeywords.Context).foreach(entry => JsonLdGraphContextParser(entry.value, ctx.graphContext).parse())
         m.key(JsonLdKeywords.Graph) match {
