@@ -6,7 +6,6 @@ import amf.core.model.domain.extensions.{ShapeExtension => InternalShapeExtensio
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 @JSExportAll
-@JSExportTopLevel("model.domain.ShapeExtension")
 case class ShapeExtension(override private[amf] val _internal: InternalShapeExtension) extends DomainElement {
 
   @JSExportTopLevel("model.domain.ShapeExtension")

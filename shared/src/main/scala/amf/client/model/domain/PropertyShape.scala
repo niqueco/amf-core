@@ -7,7 +7,6 @@ import amf.core.model.domain.extensions.{PropertyShape => InternalPropertyShape}
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 @JSExportAll
-@JSExportTopLevel("model.domain.PropertyShape")
 case class PropertyShape(override private[amf] val _internal: InternalPropertyShape) extends Shape {
 
   @JSExportTopLevel("model.domain.PropertyShape")

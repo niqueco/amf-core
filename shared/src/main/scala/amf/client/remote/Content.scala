@@ -4,7 +4,6 @@ import amf.core.lexer.{CharSequenceStream, CharStream}
 
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
-@JSExportAll
 case class Content(stream: CharStream, url: String, mime: Option[String] = None) {
 
   @JSExportTopLevel("client.remote.Content")

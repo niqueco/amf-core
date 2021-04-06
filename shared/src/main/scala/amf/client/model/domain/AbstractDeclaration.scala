@@ -7,13 +7,12 @@ import amf.core.model.domain.templates.{AbstractDeclaration => InternalAbstractD
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 @JSExportAll
-@JSExportTopLevel("model.domain.AbstractDeclaration")
 class AbstractDeclaration(private[amf] val _internal: InternalAbstractDeclaration)
     extends DomainElement
     with Linkable
     with NamedDomainElement {
 
-  override def name: StrField                  = _internal.name
+  override def name: StrField         = _internal.name
   def description: StrField           = _internal.description
   def dataNode: DataNode              = _internal.dataNode
   def variables: ClientList[StrField] = _internal.variables.asClient

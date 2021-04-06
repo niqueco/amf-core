@@ -47,8 +47,8 @@ trait Shape extends DomainElement with Linkable with NamedDomainElement {
     this
   }
 
-  def withDefaultValue(default: DataNode): this.type = {
-    _internal.withDefault(default)
+  def withDefaultValue(defaultVal: DataNode): this.type = {
+    _internal.withDefault(defaultVal)
     this
   }
 

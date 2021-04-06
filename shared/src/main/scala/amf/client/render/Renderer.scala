@@ -72,12 +72,10 @@ class Renderer(val vendor: String, val mediaType: String, private val env: Optio
     generate(unit._internal, InternalRenderOptions(options)).asClient
 
   /** Asynchronously renders the syntax to a provided writer and returns it. */
-  @JSExport
   def generateToWriter(unit: BaseUnit, options: RenderOptions, writer: Writer): ClientFuture[Unit] =
     generate(unit._internal, InternalRenderOptions(options), writer).asClient
 
   /** Asynchronously renders the syntax to a provided writer and returns it. */
-  @JSExport
   def generateToWriter(unit: BaseUnit, writer: Writer): ClientFuture[Unit] =
     generateToWriter(unit, defaultRenderOptions, writer)
 

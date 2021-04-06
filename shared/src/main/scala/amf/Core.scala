@@ -16,7 +16,6 @@ import amf.core.unsafe.PlatformSecrets
 import scala.concurrent.ExecutionContext
 import scala.scalajs.js.annotation.JSExportAll
 
-@JSExportAll
 object Core extends PlatformSecrets {
 
   def init(): ClientFuture[Unit] = init(platform.defaultExecutionEnvironment)
@@ -71,5 +70,4 @@ object Core extends PlatformSecrets {
   def registerNamespace(alias: String, prefix: String): Boolean = platform.registerNamespace(alias, prefix).isDefined
 
   def registerPlugin(plugin: AMFPlugin): Unit = AMF.registerPlugin(plugin)
-
 }
