@@ -46,9 +46,9 @@ trait Linkable extends AmfObject { this: DomainElement with Linkable =>
     link(label.text(), annotations, Annotations.inferred())
   }
 
-  private def link[T](label: AmfScalar, annotations: Annotations, fieldAnn: Annotations): T = {
+  private[amf] def link[T](label: AmfScalar, annotations: Annotations, fieldAnn: Annotations): T = {
     val copied = linkCopy()
-    val hash   = buildLinkHash(label.value.toString, annotations)
+    val hash   = buildLinkHash(Option(label.value).map(_.toString).getOrElse(""), annotations) // todo: label.value is sometimes null!
     copied
       .withId(s"${copied.id}/link-$hash")
       .withLinkTarget(this)
@@ -79,7 +79,7 @@ trait Linkable extends AmfObject { this: DomainElement with Linkable =>
                                  supportsRecursion: Boolean): T = {
     if (unresolved.asInstanceOf[Linkable].shouldLink) {
 
-      val linked: T = link(label, annotations)
+      val linked: T = link(AmfScalar(label), annotations, Annotations.synthesized())
       if (supportsRecursion && linked.isInstanceOf[Linkable])
         linked.asInstanceOf[Linkable].withSupportsRecursion(supportsRecursion)
       linked
