@@ -20,6 +20,8 @@ private[amf] case class AMFRegistry(plugins: PluginsRegistry,
   def withConstraints(profile: ValidationProfile): AMFRegistry =
     copy(constraintsRules = constraintsRules + (profile.name -> profile))
 
+  def removeConstriantsOf(name: ProfileName): AMFRegistry = copy(constraintsRules = constraintsRules - name)
+
   def withTransformationPipeline(pipeline: ResolutionPipeline): AMFRegistry =
     copy(transformationPipelines = transformationPipelines + (pipeline.name -> pipeline))
 
