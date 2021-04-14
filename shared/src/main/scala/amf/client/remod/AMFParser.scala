@@ -1,23 +1,12 @@
 package amf.client.remod
 
-import amf.{MessageStyle, ProfileName, RAMLStyle}
-import amf.client.convert.CoreClientConverters.{ClientFuture, platform}
-import amf.client.environment.DefaultEnvironment
-import amf.client.model.document.BaseUnit
-import amf.client.parse.DefaultParserErrorHandler
-import amf.client.validate.ValidationReport
-import amf.core.client.ParsingOptions
-import amf.core.errorhandling.UnhandledErrorHandler
-import amf.core.remote.{Aml, Cache, Context, Vendor}
-import amf.core.services.{RuntimeCompiler, RuntimeValidator}
-import amf.internal.environment
+import amf.client.convert.CoreClientConverters.platform
 import amf.internal.resource.{ResourceLoader, StringResourceLoader}
 
 import scala.concurrent.Future
 import scala.scalajs.js.annotation.JSExport
 
-private[remod] object AMFParser {
-
+private[amf] object AMFParser {
 
   /**
     * Asynchronously generate a BaseUnit from the unit located in the given url.
@@ -25,24 +14,24 @@ private[remod] object AMFParser {
     * @param env: AnfEnvironment
     * @return A future that will have a BaseUnit or an error to handle the result of such invocation.
     */
-  def parse(url: String, env:BaseEnvironment): Future[AmfResult] = parseAsync(url, None, env)
+  def parse(url: String, env: AMFConfiguration): Future[AMFResult] = parseAsync(url, None, env)
 
   /**
     * Asynchronously generate a BaseUnit from the unit located in the given url.
     * @param url : Location of the api.
     * @return A future that will have a BaseUnit or an error to handle the result of such invocation.
     */
-
   // check Vendor , only param? ParseParams?
-  def parse(url: String, vendor:Vendor, env:BaseEnvironment): Future[AmfResult] = parseAsync(url, Some(vendor), env)
+  def parse(url: String, mediaType: String, env: AMFConfiguration): Future[AMFResult] =
+    parseAsync(url, Some(mediaType), env)
 
   /**
     * Asynchronously generate a BaseUnit from a given string.
-    * @param stream: The unit as a string
+    * @param content: The unit as a string
     * @return A future that will have a BaseUnit or an error to handle the result of such invocation.
     */
   @JSExport
-  def parseStream(stream: String, env:AMFEnvironment): Future[AmfResult] = ???
+  def parseContent(content: String, env: AMFConfiguration): Future[AMFResult] = ???
 //    parseAsync(DEFAULT_DOCUMENT_URL, Some(fromStream(stream)), env)
 
   /**
@@ -51,7 +40,7 @@ private[remod] object AMFParser {
     * @return A future that will have a BaseUnit or an error to handle the result of such invocation.
     */
   @JSExport
-  def parseStream(stream: String,vendor:Vendor, env:AMFEnvironment): Future[AmfResult] = {
+  def parseContent(content: String, mediaType: String, env: AMFConfiguration): Future[AMFResult] = {
     ???
 //    parseAsync(DEFAULT_DOCUMENT_URL, Some(fromStream(stream)))
   }
@@ -72,8 +61,8 @@ private[remod] object AMFParser {
 //  }
 
   private[amf] def parseAsync(url: String,
-                              vendor:Option[Vendor],
-                              amfEnvironment: BaseEnvironment): Future[AmfResult] = {
+                              mediaType: Option[String],
+                              amfEnvironment: AMFConfiguration): Future[AMFResult] = {
 //    amfEnvironment.beforeParse().flatMap { _ =>
 //      val environment = {
 //        val e = internalEnv()
