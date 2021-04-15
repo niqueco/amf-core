@@ -2,7 +2,13 @@ package amf.core
 
 import amf.client.parse.DefaultParserErrorHandler
 import amf.client.remod.AMFGraphConfiguration
-import amf.client.remod.amfcore.config.ParsingOptionsConverter
+import amf.client.remod.amfcore.config.{
+  AMFEvent,
+  ParsedModelEvent,
+  ParsedSyntaxEvent,
+  ParsingOptionsConverter,
+  StartingContentParsingEvent
+}
 import amf.client.remod.amfcore.plugins.parse.{AMFParsePlugin, ParsingInfo}
 import amf.client.remote.Content
 import amf.core.TaggedReferences._
@@ -175,6 +181,8 @@ class AMFCompiler(compilerContext: CompilerContext,
   private val domainFallback     = compilerContext.configuration.registry.plugins.domainParsingFallback
   private val parsingOptions     = ParsingOptionsConverter.toLegacy(compilerContext.configuration.options.parsingOptions)
 
+  private def notifyEvent(e: AMFEvent): Unit = compilerContext.configuration.listeners.foreach(_.notifyEvent(e))
+
   def build()(implicit executionContext: ExecutionContext): Future[BaseUnit] = {
     compilerContext.logForFile(s"AMFCompiler#build: Building")
     if (compilerContext.hasCycles) failed(new CyclicReferenceException(compilerContext.fileContext.history))
@@ -213,21 +221,20 @@ class AMFCompiler(compilerContext: CompilerContext,
 
   private[amf] def parseSyntax(input: Content): Either[Content, Root] = {
     compilerContext.logForFile("AMFCompiler#parseSyntax: parsing syntax")
-    val content = runPreDocumentParseHooks(input)
+    notifyEvent(StartingContentParsingEvent(compilerContext.path, input))
 
     val parsed: Option[(String, ParsedDocument)] = mediaType
-      .flatMap(mime => parseSyntaxForMediaType(content, mime))
+      .flatMap(mime => parseSyntaxForMediaType(input, mime))
       .orElse {
         mediaType match {
           case None =>
-            content.mime
-              .flatMap(mime => parseSyntaxForMediaType(content, mime))
+            input.mime
+              .flatMap(mime => parseSyntaxForMediaType(input, mime))
               .orElse {
-                inferMediaTypeFromFileExtension(content).flatMap(inferred =>
-                  parseSyntaxForMediaType(content, inferred))
+                inferMediaTypeFromFileExtension(input).flatMap(inferred => parseSyntaxForMediaType(input, inferred))
               }
               .orElse {
-                autodetectSyntax(content.stream).flatMap(inferred => parseSyntaxForMediaType(content, inferred))
+                autodetectSyntax(input.stream).flatMap(inferred => parseSyntaxForMediaType(input, inferred))
               }
           case _ => None
         }
@@ -235,13 +242,10 @@ class AMFCompiler(compilerContext: CompilerContext,
 
     parsed match {
       case Some((effective, document)) =>
-        val doc = AMFPluginsRegistry.featurePlugins().foldLeft(document) {
-          case (d, p) =>
-            p.onSyntaxParsed(compilerContext.path, d)
-        }
-        Right(Root(doc, content.url, effective, Seq(), referenceKind, content.stream.toString))
+        notifyEvent(ParsedSyntaxEvent(compilerContext.path, input, document))
+        Right(Root(document, input.url, effective, Seq(), referenceKind, input.stream.toString))
       case None =>
-        Left(content)
+        Left(input)
     }
   }
 
@@ -249,13 +253,6 @@ class AMFCompiler(compilerContext: CompilerContext,
     FileMediaType
       .extension(content.url)
       .flatMap(FileMediaType.mimeFromExtension)
-  }
-
-  private def runPreDocumentParseHooks(input: Content) = {
-    AMFPluginsRegistry.featurePlugins().foldLeft(input) {
-      case (c, p) =>
-        p.onBeginDocumentParsing(compilerContext.path, c, referenceKind)
-    }
   }
 
   private def parseSyntaxForMediaType(content: Content, mime: String) = {
@@ -308,19 +305,17 @@ class AMFCompiler(compilerContext: CompilerContext,
       case None =>
         Future.successful { domainFallback.chooseFallback(ParsingInfo(document, vendor), sortedParsePlugins) }
     }
-    futureDocument map runHooksWithParsedUnit
+    futureDocument foreach { unit =>
+      // we setup the run for the parsed unit
+      unit.withRunNumber(compilerContext.parserRun)
+      parsedModelEvent(unit)
+    }
+    futureDocument
   }
 
-  private def runHooksWithParsedUnit = { baseUnit: BaseUnit =>
-    // we setup the run for the parsed unit
-    baseUnit.withRunNumber(compilerContext.parserRun)
+  private def parsedModelEvent(baseUnit: BaseUnit): Unit = {
     compilerContext.logForFile("AMFCompiler#parseDomain: model ready")
-    val bu = AMFPluginsRegistry.featurePlugins().foldLeft(baseUnit) {
-      case (unit, plugin) =>
-        plugin.onModelParsed(compilerContext.path, unit)
-    }
-    baseUnit
-
+    notifyEvent(ParsedModelEvent(compilerContext.path, baseUnit))
   }
 
   private[amf] def getDomainPluginFor(document: Root): Option[AMFParsePlugin] = {

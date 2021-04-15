@@ -1,5 +1,12 @@
 package amf.core
 
+import amf.client.remod.amfcore.config.{
+  AMFEvent,
+  FinishedRenderingASTEvent,
+  FinishedRenderingSyntaxEvent,
+  StartingRenderingEvent
+}
+
 import java.io.StringWriter
 import amf.client.remod.amfcore.plugins.render.{
   AMFRenderPlugin,
@@ -9,7 +16,6 @@ import amf.client.remod.amfcore.plugins.render.{
 }
 import amf.core.benchmark.ExecutionLog
 import amf.core.emitter.{RenderOptions, ShapeRenderOptions}
-import amf.core.errorhandling.UnhandledErrorHandler
 import amf.core.model.document.{BaseUnit, ExternalFragment}
 import amf.core.parser.SyamlParsedDocument
 import amf.core.rdf.RdfModelDocument
@@ -34,7 +40,7 @@ import org.yaml.model.YDocument
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AMFSerializer(unit: BaseUnit, mediaType: String, vendor: String, env: RenderConfiguration) {
+class AMFSerializer(unit: BaseUnit, mediaType: String, vendor: String, config: RenderConfiguration) {
 
   private def this(unit: BaseUnit,
                    mediaType: String,
@@ -54,16 +60,21 @@ class AMFSerializer(unit: BaseUnit, mediaType: String, vendor: String, env: Rend
            shapeOptions: ShapeRenderOptions = ShapeRenderOptions()) =
     this(unit, mediaType, vendor, Some(options), shapeOptions)
 
-  private val options       = env.renderOptions
-  private val legacyOptions = RenderOptions.fromImmutable(options, env.errorHandler)
+  private val options       = config.renderOptions
+  private val legacyOptions = RenderOptions.fromImmutable(options, config.errorHandler)
 
   def renderAsYDocument(): SyamlParsedDocument = {
     val renderPlugin = getRenderPlugin
     val builder      = new YDocumentBuilder
-    if (renderPlugin.emit(unit, builder, options, env.errorHandler))
-      SyamlParsedDocument(builder.result.asInstanceOf[YDocument])
-    else throw new Exception(s"Error unparsing syntax $mediaType with domain plugin ${renderPlugin.id}")
+    notifyEvent(StartingRenderingEvent(unit, renderPlugin, mediaType))
+    if (renderPlugin.emit(unit, builder, options, config.errorHandler)) {
+      val result = SyamlParsedDocument(builder.result.asInstanceOf[YDocument])
+      notifyEvent(FinishedRenderingASTEvent(unit, result))
+      result
+    } else throw new Exception(s"Error unparsing syntax $mediaType with domain plugin ${renderPlugin.id}")
   }
+
+  private def notifyEvent(e: AMFEvent): Unit = config.listeners.foreach(_.notifyEvent(e))
 
   /** Render to doc builder. */
   def renderToBuilder[T](builder: DocBuilder[T])(implicit executor: ExecutionContext): Future[Unit] = Future {
@@ -107,7 +118,9 @@ class AMFSerializer(unit: BaseUnit, mediaType: String, vendor: String, env: Rend
       case _ =>
         val ast = renderAsYDocument()
         AMFPluginsRegistry.syntaxPluginForMediaType(mediaType) match {
-          case Some(syntaxPlugin) => syntaxPlugin.unparse(mediaType, ast, writer)
+          case Some(syntaxPlugin) =>
+            syntaxPlugin.unparse(mediaType, ast, writer)
+            notifyEvent(FinishedRenderingSyntaxEvent(unit))
           case None if unit.isInstanceOf[ExternalFragment] =>
             writer.append(unit.asInstanceOf[ExternalFragment].encodes.raw.value())
           case _ => throw new Exception(s"Unsupported media type $mediaType and vendor $vendor")
@@ -140,7 +153,7 @@ class AMFSerializer(unit: BaseUnit, mediaType: String, vendor: String, env: Rend
   }
 
   private def getRenderPlugin: AMFRenderPlugin = {
-    val renderPlugin = env.renderPlugins.sorted.find(_.applies(RenderInfo(unit, vendor, mediaType)))
+    val renderPlugin = config.renderPlugins.sorted.find(_.applies(RenderInfo(unit, vendor, mediaType)))
     renderPlugin.getOrElse {
       throw new Exception(
           s"Cannot serialize domain model '${unit.location()}' for detected media type $mediaType and vendor $vendor")
