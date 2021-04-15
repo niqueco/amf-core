@@ -7,9 +7,15 @@ import amf.core.model.domain._
 import amf.core.parser.{FieldEntry, Value}
 
 class TransformationTraversal(val transformation: TransformationData) {
+  var selfEncoded = false
 
   def traverse(element: AmfObject, traversalPath: TraversalPath = ObjectIdTraversalPath()): AmfObject = {
-    if (!traversalPath.hasVisited(element)) traverseElement(element, traversalPath)
+    if (!traversalPath.hasVisited(element)) {
+      traverseElement(element, traversalPath)
+    } else if (traversalPath.hasVisited(element) && transformation.selfEncoded.isDefined && transformation.selfEncoded.get == element.id && !selfEncoded) {
+      selfEncoded = true
+      traverseElement(element, traversalPath)
+    }
     else element
   }
 
@@ -81,7 +87,8 @@ class TransformationTraversal(val transformation: TransformationData) {
   * @param transformation transformation function
   */
 sealed case class TransformationData(predicate: AmfObject => Boolean,
-                                     transformation: (AmfObject, Boolean) => Option[AmfObject])
+                                     transformation: (AmfObject, Boolean) => Option[AmfObject],
+                                     selfEncoded: Option[String] = None)
 
 
 class DeclaresModelFieldOrdering extends Ordering[FieldEntry] {
@@ -103,9 +110,11 @@ class BaseUnitFieldOrdering extends Ordering[FieldEntry] {
 }
 
 class DomainElementSelectorAdapter(selector: DomainElement => Boolean) extends (AmfObject => Boolean) {
-  override def apply(obj: AmfObject): Boolean = obj match {
-    case e: DomainElement => selector(e)
-    case _                => false
+  override def apply(obj: AmfObject): Boolean = {
+    obj match {
+      case e: DomainElement => selector(e)
+      case _                => false
+    }
   }
 }
 

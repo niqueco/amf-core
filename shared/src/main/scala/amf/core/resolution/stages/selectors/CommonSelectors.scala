@@ -9,11 +9,12 @@ import amf.core.vocabulary.{ValueType, Namespace}
 import scala.collection.mutable
 
 object LinkSelector extends Selector {
-  override def apply(element: DomainElement): Boolean =
+  override def apply(element: DomainElement): Boolean = {
     element match {
       case l: Linkable => l.isLink
       case _           => false
     }
+  }
 }
 
 object LinkNodeSelector extends Selector {

@@ -2,6 +2,7 @@ package amf.core.remote
 
 import amf.core.utils.{Absolute, RelativeToIncludedFile, RelativeToRoot, UriUtils}
 
+
 /**
   * Context class for URL resolution.
   */

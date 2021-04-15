@@ -12,6 +12,7 @@ object RuntimeResolver {
     resolve(vendor, unit, pipelineId, unit.errorHandler())
 
   def resolve(vendor: String, unit: BaseUnit, pipelineId: String, errorHandler: ErrorHandler): BaseUnit = {
+    System.err.println("RESOLVING!!!")
     val plugin = AMFPluginsRegistry.documentPluginForID(vendor) match {
       case Some(documentPlugin) => Some(documentPlugin)
       case None                 => AMFPluginsRegistry.documentPluginForVendor(vendor).headOption
