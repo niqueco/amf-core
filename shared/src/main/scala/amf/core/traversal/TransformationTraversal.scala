@@ -6,10 +6,15 @@ import amf.core.model.document.{BaseUnit, DeclaresModel}
 import amf.core.model.domain._
 import amf.core.parser.{FieldEntry, Value}
 
-class TransformationTraversal(val transformation: TransformationData) {
+class TransformationTraversal private[amf] (val transformation: TransformationData, multiVisitAllowed: Set[String]) {
+
+  def this(transformation: TransformationData) = {
+    this(transformation, Set.empty[String])
+  }
 
   def traverse(element: AmfObject, traversalPath: TraversalPath = ObjectIdTraversalPath()): AmfObject = {
-    if (!traversalPath.hasVisited(element)) traverseElement(element, traversalPath)
+    if (!traversalPath.hasVisited(element) || multiVisitAllowed.contains(element.id))
+      traverseElement(element, traversalPath)
     else element
   }
 
@@ -82,7 +87,6 @@ class TransformationTraversal(val transformation: TransformationData) {
   */
 sealed case class TransformationData(predicate: AmfObject => Boolean,
                                      transformation: (AmfObject, Boolean) => Option[AmfObject])
-
 
 class DeclaresModelFieldOrdering extends Ordering[FieldEntry] {
   override def compare(x: FieldEntry, y: FieldEntry): Int = (x.field, y.field) match {
