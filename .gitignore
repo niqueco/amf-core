@@ -13,3 +13,5 @@ classes
 .gradle
 build/
 buildbrowser.sh
+.metals/
+.vscode/
