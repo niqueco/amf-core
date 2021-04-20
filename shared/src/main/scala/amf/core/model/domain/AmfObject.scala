@@ -98,7 +98,7 @@ trait AmfObject extends AmfElement {
 
   /** Set field value. */
   def setArrayWithoutId(field: Field, values: Seq[AmfElement], annotations: Annotations): this.type = {
-    fields.setWithoutId(field, AmfArray(values, annotations))
+    fields.setWithoutId(field, AmfArray(values), annotations)
     this
   }
 
