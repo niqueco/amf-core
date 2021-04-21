@@ -16,7 +16,7 @@ import scala.scalajs.js.annotation.JSExportAll
 
 /** Any parsable unit, backed by a source URI. */
 @JSExportAll
-trait BaseUnit extends AmfObjectWrapper with PlatformSecrets {
+trait BaseUnit extends AmfObjectWrapper with PlatformSecrets with RdfExportable {
 
   override private[amf] val _internal: InternalBaseUnit
 
@@ -62,22 +62,26 @@ trait BaseUnit extends AmfObjectWrapper with PlatformSecrets {
     this
   }
 
-  def toNativeRdfModel(renderOptions: RenderOptions = new RenderOptions()): RdfModel = {
-    val coreOptions = amf.core.emitter.RenderOptions(renderOptions)
-    _internal.toNativeRdfModel(coreOptions)
-  }
-
-  def findById(id: String): ClientOption[DomainElement] = _internal.findById(Namespace.staticAliases.uri(id).iri()).asClient
+  def findById(id: String): ClientOption[DomainElement] =
+    _internal.findById(Namespace.staticAliases.uri(id).iri()).asClient
 
   def findByType(typeId: String): ClientList[DomainElement] =
     _internal.findByType(Namespace.staticAliases.expand(typeId).iri()).asClient
 
   def sourceVendor: ClientOption[Vendor] = _internal.sourceVendor.asClient
 
-  def cloneUnit():BaseUnit = _internal.cloneUnit()
+  def cloneUnit(): BaseUnit = _internal.cloneUnit()
 
   def withReferenceAlias(alias: String, fullUrl: String, relativeUrl: String): BaseUnit = {
     AliasDeclaration(_internal, alias, fullUrl, relativeUrl)
     this
+  }
+}
+
+// Trait to avoid having to export one by one each element of the BaseUnit except for this method. @author: Tom
+protected[document] trait RdfExportable { unit: BaseUnit =>
+  def toNativeRdfModel(renderOptions: RenderOptions = new RenderOptions()): RdfModel = {
+    val coreOptions = amf.core.emitter.RenderOptions(renderOptions)
+    _internal.toNativeRdfModel(coreOptions)
   }
 }

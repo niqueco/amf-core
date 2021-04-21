@@ -23,11 +23,11 @@ object ExecutionLog {
 
   implicit val executionContext: ExecutionContext = ExecutionContextBuilder.getGlobalExecutionContext
 
-  var executions: Seq[Execution]         = Nil
-  var current: Option[Execution]         = None
-  var stagesSeq: Seq[String]             = Seq()
-  var stagesStartTime: Map[String, Long] = Map()
-  var stagesEndTime: Map[String, Long]   = Map()
+  private var executions: Seq[Execution]         = Nil
+  private var current: Option[Execution]         = None
+  private var stagesSeq: Seq[String]             = Seq()
+  private var stagesStartTime: Map[String, Long] = Map()
+  private var stagesEndTime: Map[String, Long]   = Map()
 
   def startStage(name: String): Unit = {
     current.foreach { _ =>
@@ -77,8 +77,7 @@ object ExecutionLog {
             // nested
             val newLevel = if (isOpen) {
               level + 2
-            }
-            else {
+            } else {
               level
             }
             val nested         = remaining.tail.takeWhile(!_.startsWith(s"$stage::SEP::end"))

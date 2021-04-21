@@ -8,7 +8,7 @@ import amf.core.parser.{Range, Annotations => InternalAnnotations}
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 @JSExportAll
-case class Annotations(_internal: InternalAnnotations) {
+case class Annotations(protected[amf] val _internal: InternalAnnotations) {
 
   @JSExportTopLevel("model.Annotations")
   def this() = this(InternalAnnotations())

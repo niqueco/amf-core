@@ -6,7 +6,6 @@ import amf.core.model.domain.{ArrayNode => InternalArrayNode}
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 @JSExportAll
-@JSExportTopLevel("model.domain.ArrayNode")
 case class ArrayNode(override private[amf] val _internal: InternalArrayNode) extends DataNode {
 
   @JSExportTopLevel("model.domain.ArrayNode")

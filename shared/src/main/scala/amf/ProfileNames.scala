@@ -31,6 +31,7 @@ object ProfileNames {
         Async20Profile)
 }
 
+@JSExportAll
 case class ProfileName(private[amf] val p: String, private val m: MessageStyle = AMFStyle) {
   @JSExportTopLevel("ProfileName")
   def this(profile: String) = this(profile, AMFStyle)
@@ -87,6 +88,7 @@ object MessageStyle {
   }
 }
 
+@JSExportAll
 trait MessageStyle {
   def profileName: ProfileName
 }

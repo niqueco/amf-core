@@ -18,9 +18,10 @@ case class Environment private (private[amf] val _internal: InternalEnvironment,
 
   private implicit val executionContext: ExecutionContext = executionEnvironment.executionContext
 
-  def loaders: ClientList[ResourceLoader]            = _internal.loaders.asClient
-  def reference: ClientOption[ReferenceResolver]     = _internal.resolver.asClient
-  def executionEnvironment: BaseExecutionEnvironment = exec.getOrElse(platform.defaultExecutionEnvironment)
+  def loaders: ClientList[ResourceLoader]        = _internal.loaders.asClient
+  def reference: ClientOption[ReferenceResolver] = _internal.resolver.asClient
+  protected[amf] def executionEnvironment: BaseExecutionEnvironment =
+    exec.getOrElse(platform.defaultExecutionEnvironment)
 
   @JSExportTopLevel("client.environment.Environment")
   def this() = this(InternalEnvironment.empty(), None)
@@ -58,6 +59,7 @@ case class Environment private (private[amf] val _internal: InternalEnvironment,
   def withResolver(resolver: ClientReference): Environment = {
     Environment(_internal.withResolver(ReferenceResolverMatcher.asInternal(resolver)), exec)
   }
+
   /**
     * Defines an upper bound of yaml alias that will be resolved when parsing a DataNode
     */
@@ -67,13 +69,14 @@ case class Environment private (private[amf] val _internal: InternalEnvironment,
 }
 
 object Environment {
-  def empty(): Environment                                                          = new Environment()
-  def empty(exec: BaseExecutionEnvironment): Environment                            = new Environment(exec)
-  def apply(loader: ClientLoader): Environment                                      = empty().add(loader)
-  def apply(loader: ClientLoader, exec: BaseExecutionEnvironment): Environment      = empty(exec).add(loader)
-  def apply(resolver: ClientReference): Environment                                 = empty().withResolver(resolver)
-  def apply(resolver: ClientReference, exec: BaseExecutionEnvironment): Environment = empty(exec).withResolver(resolver)
-  def apply(loaders: ClientList[ClientLoader]): Environment                         = empty().withLoaders(loaders)
+  def empty(): Environment                                                     = new Environment()
+  def empty(exec: BaseExecutionEnvironment): Environment                       = new Environment(exec)
+  def apply(loader: ClientLoader): Environment                                 = empty().add(loader)
+  def apply(loader: ClientLoader, exec: BaseExecutionEnvironment): Environment = empty(exec).add(loader)
+  def apply(resolver: ClientReference): Environment                            = empty().withResolver(resolver)
+  def apply(resolver: ClientReference, exec: BaseExecutionEnvironment): Environment =
+    empty(exec).withResolver(resolver)
+  def apply(loaders: ClientList[ClientLoader]): Environment = empty().withLoaders(loaders)
   def apply(loaders: ClientList[ClientLoader], exec: BaseExecutionEnvironment): Environment =
     empty(exec).withLoaders(loaders)
   def apply(int: InternalEnvironment): Environment                                 = new Environment(int)

@@ -7,7 +7,6 @@ import amf.core.model.domain.{ExternalDomainElement => InternalExternalDomainEle
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 @JSExportAll
-@JSExportTopLevel("model.domain.ExternalDomainElement")
 case class ExternalDomainElement(private[amf] val _internal: InternalExternalDomainElement) extends DomainElement {
 
   @JSExportTopLevel("model.domain.ExternalDomainElement")

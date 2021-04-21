@@ -7,7 +7,6 @@ import amf.client.convert.CoreClientConverters._
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 @JSExportAll
-@JSExportTopLevel("model.domain.ScalarNode")
 case class ScalarNode(override private[amf] val _internal: InternalScalarNode) extends DataNode {
 
   @JSExportTopLevel("model.domain.ScalarNode")
@@ -34,7 +33,6 @@ case class ScalarNode(override private[amf] val _internal: InternalScalarNode) e
   }
 }
 
-@JSExportAll
 object ScalarNode {
   def build(value: String, dataType: String) = new ScalarNode(value, dataType)
 }

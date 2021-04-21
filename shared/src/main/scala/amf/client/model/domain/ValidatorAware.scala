@@ -5,7 +5,7 @@ import amf.client.environment.Environment
 import amf.client.execution.BaseExecutionEnvironment
 import amf.client.validate.PayloadValidator
 
-trait ValidatorAware {
+trait ValidatorAware { internal: Shape =>
 
   def payloadValidator(mediaType: String): ClientOption[PayloadValidator]
 

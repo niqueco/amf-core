@@ -22,6 +22,7 @@ class Resolver(vendor: String) {
     RuntimeResolver.resolve(vendor, unit, pipeline, errorHandler)
 }
 
+@JSExportAll
 trait ClientErrorHandler {
 
   def reportConstraint(id: String,
