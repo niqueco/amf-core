@@ -12,6 +12,16 @@ private[amf] trait AMFParsePlugin extends AMFPlugin[ParsingInfo] {
 //  def parse(document:Root, ctx:ParserContext): BaseUnit // change parser for AMF context
   def parse(document: Root, ctx: ParserContext, options: ParsingOptions): BaseUnit
 
+  /**
+    * media types which specifies vendors that are parsed by this plugin.
+    */
+  def mediaTypes: Seq[String]
+
+  /**
+    * media types which specifies vendors that may be referenced.
+    */
+  def validMediaTypesToReference: Seq[String]
+
   def referenceHandler(eh: ErrorHandler): ReferenceHandler
 
   // move to some vendor/dialect configuration?
