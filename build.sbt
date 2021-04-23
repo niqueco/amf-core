@@ -10,7 +10,7 @@ name := "amf-core"
 
 version in ThisBuild := {
   val major = 4
-  val minor = 1
+  val minor = 2
 
   lazy val build  = sys.env.getOrElse("BUILD_NUMBER", "0")
   lazy val branch = sys.env.get("BRANCH_NAME")
