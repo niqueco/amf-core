@@ -48,6 +48,10 @@ trait AmfObject extends AmfElement {
     set(field, AmfScalar(value))
   }
 
+  def set(field: Field, value: String, annotations: Annotations): this.type = {
+    set(field, AmfScalar(value), annotations)
+  }
+
   /** Set scalar value. */
   def set(field: Field, value: Boolean): this.type = set(field, AmfScalar(value))
 

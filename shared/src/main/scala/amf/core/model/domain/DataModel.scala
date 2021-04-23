@@ -1,5 +1,6 @@
 package amf.core.model.domain
 
+import amf.core.annotations.{ScalarType, SynthesizedField}
 import amf.core.annotations.ScalarType
 import amf.core.metamodel.Field
 import amf.core.metamodel.Type.EncodedIri
@@ -13,17 +14,15 @@ import amf.core.resolution.VariableReplacer
 import amf.core.utils._
 import amf.core.vocabulary.Namespace.Data
 import amf.core.vocabulary.{Namespace, ValueType}
-import org.yaml.model.{YPart, YSequence}
+import org.yaml.model.{YPart, YScalar, YSequence}
 
 import scala.collection.mutable
 
 /** Base class for all dynamic DataNodes
   */
-abstract class DataNode(annotations: Annotations) extends DomainElement {
+abstract class DataNode(annotations: Annotations) extends DomainElement with NamedDomainElement {
 
-  def name: StrField = fields.field(Name)
-
-  def withName(name: String): this.type = set(Name, name)
+  override protected def nameField: Field = DataNodeModel.Name // ??
 
   override def adopted(parent: String, cycle: Seq[String] = Seq()): this.type = {
     if (Option(id).isEmpty) simpleAdoption(parent) else this
@@ -89,9 +88,19 @@ class ObjectNode(override val fields: Fields, val annotations: Annotations) exte
 
   def addProperty(propertyOrUri: String, objectValue: DataNode, annotations: Annotations = Annotations()): this.type = {
     val property = ensurePlainProperty(propertyOrUri)
-    objectValue.set(DataNodeModel.Name, property)
+    overrideName(objectValue, property)
     addPropertyByField(createField(property), objectValue, annotations)
     this
+  }
+
+  private def overrideName(objectValue: DataNode, newName: String) = {
+    objectValue.fields
+      .getValueAsOption(DataNodeModel.Name)
+      .fold({
+        objectValue.withSynthesizeName(newName)
+      })(value => {
+        objectValue.set(DataNodeModel.Name, AmfScalar(newName, value.value.annotations), value.annotations)
+      })
   }
 
   private def createField(property: String) = {
@@ -210,9 +219,8 @@ class ScalarNode(override val fields: Fields, val annotations: Annotations) exte
   def withValue(v: String, ann: Annotations): this.type =
     set(ScalarNodeModel.Value, AmfScalar(v, ann))
 
-  def withDataType(dataType: String): this.type = {
+  def withDataType(dataType: String): this.type =
     set(ScalarNodeModel.DataType, forDataType(dataType))
-  }
 
   def withDataType(dataType: String, ann: Annotations): this.type =
     set(ScalarNodeModel.DataType, AmfScalar(dataType, ann))
@@ -250,7 +258,7 @@ object ScalarNode {
       annotations += ScalarType(d)
       scalar.withDataType(d)
     })
-    scalar.set(ScalarNodeModel.Value, AmfScalar(value, annotations))
+    scalar.set(ScalarNodeModel.Value, AmfScalar(value, annotations), Annotations.inferred())
   }
 
   def forDataType(dataTypeUri: String): AmfScalar = dataTypeUri match {
