@@ -32,6 +32,7 @@ pipeline {
     stage('Publish') {
       when {
         branch 'master'
+        branch 'release/4.1.210'
       }
       steps {
         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
