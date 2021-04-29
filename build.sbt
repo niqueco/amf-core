@@ -8,7 +8,7 @@ val ivyLocal = Resolver.file("ivy", file(Path.userHome.absolutePath + "/.ivy2/lo
 
 name := "amf-core"
 
-version in ThisBuild := "4.1.211"
+version in ThisBuild := "4.1.212"
 
 publish := {}
 
