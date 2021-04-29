@@ -95,7 +95,6 @@ class CompilerContextBuilder(url: String,
   private var fileContext: Context                   = Context(platform)
   private var givenContent: Option[ParserContext]    = None
   private var cache                                  = Cache()
-  private var normalizeUri: Boolean                  = true
   private var env: AMFGraphConfiguration             = AMFPluginsRegistry.obtainStaticConfig()
   private var allowedMediaTypes: Option[Seq[String]] = None
 
@@ -125,11 +124,6 @@ class CompilerContextBuilder(url: String,
     this
   }
 
-  def withNormalizedUri(normalizeUri: Boolean): CompilerContextBuilder = {
-    this.normalizeUri = normalizeUri
-    this
-  }
-
   def withAllowedMediaTypes(allowed: Seq[String]): CompilerContextBuilder = {
     this.allowedMediaTypes = Some(allowed)
     this
@@ -150,8 +144,7 @@ class CompilerContextBuilder(url: String,
   }
 
   private def buildFileContext() = {
-    val uriToUpdate = if (normalizeUri) path else url
-    fileContext.update(uriToUpdate)
+    fileContext.update(path)
   }
 
   private def buildParserContext(fc: Context) = givenContent match {
