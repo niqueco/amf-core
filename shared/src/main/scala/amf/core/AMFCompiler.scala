@@ -68,13 +68,12 @@ class CompilerContext(url: String,
   def fetchContent()(implicit executionContext: ExecutionContext): Future[Content] =
     platform.fetchContent(location, configuration)
 
-  def forReference(url: String, withNormalizedUri: Boolean = true, allowedMediaTypes: Option[Seq[String]] = None)(
+  def forReference(url: String, allowedMediaTypes: Option[Seq[String]] = None)(
       implicit executionContext: ExecutionContext): CompilerContext = {
     val builder = new CompilerContextBuilder(url, fileContext.platform, parserContext.eh)
       .withCache(cache)
       .withBaseParserContext(parserContext)
       .withFileContext(fileContext)
-      .withNormalizedUri(withNormalizedUri)
       .withBaseEnvironment(configuration)
     allowedMediaTypes.foreach(builder.withAllowedMediaTypes)
     builder.build()
@@ -93,11 +92,10 @@ class CompilerContextBuilder(url: String,
                              platform: Platform,
                              eh: ParserErrorHandler = DefaultParserErrorHandler.withRun()) {
 
-  private var fileContext: Context                = Context(platform)
-  private var givenContent: Option[ParserContext] = None
-  private var cache                               = Cache()
-  private var normalizeUri: Boolean               = true
-  private var env: AMFGraphConfiguration          = AMFPluginsRegistry.obtainStaticConfig()
+  private var fileContext: Context                   = Context(platform)
+  private var givenContent: Option[ParserContext]    = None
+  private var cache                                  = Cache()
+  private var env: AMFGraphConfiguration             = AMFPluginsRegistry.obtainStaticConfig()
   private var allowedMediaTypes: Option[Seq[String]] = None
 
   def withBaseParserContext(parserContext: ParserContext): this.type = {
@@ -126,11 +124,6 @@ class CompilerContextBuilder(url: String,
     this
   }
 
-  def withNormalizedUri(normalizeUri: Boolean): CompilerContextBuilder = {
-    this.normalizeUri = normalizeUri
-    this
-  }
-
   def withAllowedMediaTypes(allowed: Seq[String]): CompilerContextBuilder = {
     this.allowedMediaTypes = Some(allowed)
     this
@@ -151,8 +144,7 @@ class CompilerContextBuilder(url: String,
   }
 
   private def buildFileContext() = {
-    val uriToUpdate = if (normalizeUri) path else url
-    fileContext.update(uriToUpdate)
+    fileContext.update(path)
   }
 
   private def buildParserContext(fc: Context) = givenContent match {
