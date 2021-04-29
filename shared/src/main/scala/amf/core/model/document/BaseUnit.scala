@@ -20,7 +20,13 @@ import amf.core.traversal.{
   TransformationData,
   TransformationTraversal
 }
-import amf.core.traversal.iterator.{AmfIterator, DomainElementStrategy, IdCollector, IteratorStrategy, VisitedCollector}
+import amf.core.traversal.iterator.{
+  AmfIterator,
+  DomainElementStrategy,
+  IdCollector,
+  IteratorStrategy,
+  VisitedCollector
+}
 import amf.core.unsafe.PlatformSecrets
 
 import scala.collection.mutable
@@ -29,7 +35,7 @@ import scala.collection.mutable
 trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets {
 
   // Set the current model version
-  withModelVersion("3.0.0")
+  withModelVersion("3.1.0")
 
   // Set the default parsingRoot
   withRoot(false)
