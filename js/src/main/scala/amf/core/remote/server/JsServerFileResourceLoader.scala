@@ -19,25 +19,32 @@ import amf.core.utils.AmfStrings
 @JSExportAll
 case class JsServerFileResourceLoader() extends BaseFileResourceLoader {
   override def fetchFile(resource: String): js.Promise[Content] = {
-    println(s"JsServerFileResourceLoader.fetchFile: $resource")
+    println(s"JsServerFileResourceLoader.fetchFile $resource started")
     Fs.asyncFile(resource)
       .read()
-      .map(
-          content =>
-            Content(new CharSequenceStream(resource, content),
-                    ensureFileAuthority(resource),
-                    extension(resource).flatMap(mimeFromExtension)))
+      .map(content => {
+        println(s"JsServerFileResourceLoader.fetchFile $resource succeeded")
+        Content(new CharSequenceStream(resource, content),
+                ensureFileAuthority(resource),
+                extension(resource).flatMap(mimeFromExtension))
+      })
       .recoverWith {
         case _: IOException => // exception for local file system where we accept resources including spaces
+          println(s"JsServerFileResourceLoader.fetchFile $resource failed")
+          println(s"JsServerFileResourceLoader.fetchFile ${resource.urlDecoded} started")
           Fs.asyncFile(resource.urlDecoded)
             .read()
-            .map(
-                content =>
-                  Content(new CharSequenceStream(resource, content),
-                          ensureFileAuthority(resource),
-                          extension(resource).flatMap(mimeFromExtension)))
+            .map(content => {
+              println(s"JsServerFileResourceLoader.fetchFile ${resource.urlDecoded} succeeded")
+              Content(new CharSequenceStream(resource, content),
+                      ensureFileAuthority(resource),
+                      extension(resource).flatMap(mimeFromExtension))
+            })
             .recover {
-              case io: IOException => throw FileNotFound(io)
+              case io: IOException => {
+                println(s"JsServerFileResourceLoader.fetchFile ${resource.urlDecoded} failed")
+                throw FileNotFound(io)
+              }
             }
       }
       .toJSPromise
