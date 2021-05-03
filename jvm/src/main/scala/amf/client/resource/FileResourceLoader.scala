@@ -38,10 +38,10 @@ case class FileResourceLoader(executionContext: ExecutionContext) extends BaseFi
             Content(new FileStream(decoded),
                     ensureFileAuthority(resource),
                     extension(resource).flatMap(mimeFromExtension))
-            println(s"FileResourceLoader.fetchFile ${resource.decoded} succeeded")
+            println(s"FileResourceLoader.fetchFile ${resource.urlDecoded} succeeded")
           } catch {
             case e: FileNotFoundException => {
-              println(s"FileResourceLoader.fetchFile ${resource.decoded} failed")
+              println(s"FileResourceLoader.fetchFile ${resource.urlDecoded} failed")
               throw FileNotFound(e)
             }
           }
