@@ -40,9 +40,24 @@ case class JsServerFileResourceLoader() extends BaseFileResourceLoader {
                       ensureFileAuthority(resource),
                       extension(resource).flatMap(mimeFromExtension))
             })
+      }
+      .recoverWith {
+        case _: IOException => // exception for local file system where we accept resources including spaces
+          println(s"JsServerFileResourceLoader.fetchFile $resource failed")
+          println(s"JsServerFileResourceLoader.fetchFile covid19-data-tracking-api/${resource.urlDecoded} started")
+          Fs.asyncFile(s"covid19-data-tracking-api/${resource.urlDecoded}")
+            .read()
+            .map(content => {
+              println(
+                  s"JsServerFileResourceLoader.fetchFile covid19-data-tracking-api/${resource.urlDecoded} succeeded")
+              Content(new CharSequenceStream(resource, content),
+                      ensureFileAuthority(resource),
+                      extension(resource).flatMap(mimeFromExtension))
+            })
             .recover {
               case io: IOException => {
-                println(s"JsServerFileResourceLoader.fetchFile ${resource.urlDecoded} failed")
+                println(
+                    s"JsServerFileResourceLoader.fetchFile covid19-data-tracking-api/${resource.urlDecoded} failed")
                 throw FileNotFound(io)
               }
             }
