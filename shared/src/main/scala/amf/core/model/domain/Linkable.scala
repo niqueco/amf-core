@@ -12,7 +12,7 @@ import amf.core.parser.{
   UnresolvedComponents
 }
 import amf.core.utils._
-import amf.plugins.features.validation.CoreValidations.UnresolvedReference
+import amf.plugins.features.validation.CoreValidations.{UnresolvedReference, UnresolvedReferenceWarning}
 import org.yaml.model.YPart
 
 trait Linkable extends AmfObject { this: DomainElement with Linkable =>
@@ -109,6 +109,7 @@ trait Linkable extends AmfObject { this: DomainElement with Linkable =>
   def unresolved(refName: String, refAst: YPart, unresolvedSeverity: String = "error")(
       implicit ctx: UnresolvedComponents) = {
     isUnresolved = true
+    this.unresolvedSeverity = unresolvedSeverity
     this.refName = refName
     this.refAst = Some(refAst)
     refCtx = Some(ctx)
@@ -124,11 +125,10 @@ trait Linkable extends AmfObject { this: DomainElement with Linkable =>
             DeclarationPromise(
                 resolve,
                 () =>
-                  if (unresolvedSeverity == "warning") {
-                    ctx.eh.warning(UnresolvedReference, id, s"Unresolved reference '$refName'", refAst.get)
-                  } else {
+                  if (unresolvedSeverity == "warning")
+                    ctx.eh.warning(UnresolvedReferenceWarning, id, s"Unresolved reference '$refName'", refAst.get)
+                  else
                     ctx.eh.violation(UnresolvedReference, id, s"Unresolved reference '$refName'", refAst.get)
-                }
             )
         )
       case _ => throw new Exception("Cannot create unresolved reference with missing parsing context")

@@ -27,6 +27,11 @@ object CoreValidations extends Validations {
       "Unresolved reference"
   )
 
+  val UnresolvedReferenceWarning = validation(
+      "unresolved-reference-warning",
+      "Unresolved reference"
+  )
+
   val UriSyntaxError = validation(
       "uri-syntax-error",
       "invalid uri syntax"
@@ -122,7 +127,8 @@ object CoreValidations extends Validations {
   )
 
   override val levels: Map[String, Map[ProfileName, String]] = Map(
-      SyamlWarning.id -> all(WARNING),
+      SyamlWarning.id               -> all(WARNING),
+      UnresolvedReferenceWarning.id -> all(WARNING),
       RecursiveShapeSpecification.id -> Map(
           Raml10Profile -> VIOLATION,
           Raml08Profile -> VIOLATION,
@@ -136,6 +142,7 @@ object CoreValidations extends Validations {
       CycleReferenceError,
       NotLinkable,
       UnresolvedReference,
+      UnresolvedReferenceWarning,
       SyamlError,
       SyamlWarning,
       NodeNotFound,
