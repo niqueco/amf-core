@@ -21,9 +21,12 @@ case class FileResourceLoader(executionContext: ExecutionContext) extends BaseFi
   def this(executionEnvironment: BaseExecutionEnvironment) = this(executionEnvironment.executionContext)
 
   def fetchFile(resource: String): CompletableFuture[Content] = {
+    println(s"FileResourceLoader.fetchFile: $resource")
     Future {
       try {
-        Content(new FileStream(resource), ensureFileAuthority(resource), extension(resource).flatMap(mimeFromExtension))
+        Content(new FileStream(resource),
+                ensureFileAuthority(resource),
+                extension(resource).flatMap(mimeFromExtension))
       } catch {
         case e: FileNotFoundException =>
           // exception for local file system where we accept spaces [] and other chars in files names

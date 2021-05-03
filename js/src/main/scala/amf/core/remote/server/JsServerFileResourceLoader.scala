@@ -18,28 +18,30 @@ import amf.core.utils.AmfStrings
 @JSExportTopLevel("JsServerFileResourceLoader")
 @JSExportAll
 case class JsServerFileResourceLoader() extends BaseFileResourceLoader {
-  override def fetchFile(resource: String): js.Promise[Content] =
+  override def fetchFile(resource: String): js.Promise[Content] = {
+    println(s"JsServerFileResourceLoader.fetchFile: $resource")
     Fs.asyncFile(resource)
       .read()
       .map(
-        content =>
-          Content(new CharSequenceStream(resource, content),
-                  ensureFileAuthority(resource),
-                  extension(resource).flatMap(mimeFromExtension)))
+          content =>
+            Content(new CharSequenceStream(resource, content),
+                    ensureFileAuthority(resource),
+                    extension(resource).flatMap(mimeFromExtension)))
       .recoverWith {
         case _: IOException => // exception for local file system where we accept resources including spaces
           Fs.asyncFile(resource.urlDecoded)
             .read()
             .map(
-              content =>
-                Content(new CharSequenceStream(resource, content),
-                        ensureFileAuthority(resource),
-                        extension(resource).flatMap(mimeFromExtension)))
+                content =>
+                  Content(new CharSequenceStream(resource, content),
+                          ensureFileAuthority(resource),
+                          extension(resource).flatMap(mimeFromExtension)))
             .recover {
               case io: IOException => throw FileNotFound(io)
             }
       }
       .toJSPromise
+  }
 
   def ensureFileAuthority(str: String): String = if (str.startsWith("file:")) str else s"file://$str"
 }

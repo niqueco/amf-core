@@ -16,13 +16,14 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 case class JsServerHttpResourceLoader() extends BaseHttpResourceLoader {
 
   override def fetch(resource: String): js.Promise[Content] = {
+    println(s"JsServerHttpResourceLoader.fetch: $resource")
     val promise: Promise[Content] = Promise()
 
     if (resource.startsWith("https:")) {
       try {
         val req = Https.get(
-          resource,
-          handleResponse(resource, promise)
+            resource,
+            handleResponse(resource, promise)
         )
         req.on("error", handleError(promise))
       } catch {
@@ -33,8 +34,8 @@ case class JsServerHttpResourceLoader() extends BaseHttpResourceLoader {
     } else {
       try {
         val req = Http.get(
-          resource,
-          handleResponse(resource, promise)
+            resource,
+            handleResponse(resource, promise)
         )
         req.on("error", handleError(promise))
       } catch {
