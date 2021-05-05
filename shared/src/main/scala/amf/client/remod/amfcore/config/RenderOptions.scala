@@ -1,11 +1,11 @@
 package amf.client.remod.amfcore.config
 
-import amf.core.errorhandling.{ErrorHandler, UnhandledErrorHandler}
 import amf.core.metamodel.Field
+
 /**
   * Immutable implementation of render options
   */
-private[amf] case class RenderOptions(
+case class RenderOptions private[amf] (
     compactedEmission: Boolean = true,
     sources: Boolean = false,
     compactUris: Boolean = false,
@@ -20,44 +20,61 @@ private[amf] case class RenderOptions(
     shapeRenderOptions: ShapeRenderOptions = ShapeRenderOptions()
 ) {
 
+  /** Include CompactedEmission when rendering to graph. */
   def withCompactedEmission: RenderOptions = copy(compactedEmission = true)
 
+  /** Exclude CompactedEmission when rendering to graph. */
   def withoutCompactedEmission: RenderOptions = copy(compactedEmission = false)
 
+  /** Include PrettyPrint when rendering to graph. */
   def withPrettyPrint: RenderOptions = copy(prettyPrint = true)
 
+  /** Exclude PrettyPrint when rendering to graph. */
   def withoutPrettyPrint: RenderOptions = copy(prettyPrint = true)
 
   /** Include source maps when rendering to graph. */
   def withSourceMaps: RenderOptions = copy(sources = true)
 
-  /** Include source maps when rendering to graph. */
+  /** Exclude source maps when rendering to graph. */
   def withoutSourceMaps: RenderOptions = copy(sources = false)
 
+  /** Include CompactUris when rendering to graph. */
   def withCompactUris: RenderOptions = copy(compactUris = true)
 
+  /** Exclude CompactUris when rendering to graph. */
   def withoutCompactUris: RenderOptions = copy(compactUris = false)
 
+  /** Include RawSourceMaps when rendering to graph. */
   def withRawSourceMaps: RenderOptions = copy(rawSourceMaps = true)
 
+  /** Exclude RawSourceMaps when rendering to graph. */
   def withoutRawSourceMaps: RenderOptions = copy(rawSourceMaps = false)
 
+  /** Include Validation when rendering to graph. */
   def withValidation: RenderOptions = copy(validating = true)
 
-  def withNodeIds: RenderOptions = copy(emitNodeIds = true)
-
-  def withoutNodeIds: RenderOptions = copy(emitNodeIds = false)
-
+  /** Exclude Validation when rendering to graph. */
   def withoutValidation: RenderOptions = copy(validating = false)
 
+  /** Include Node IDs when rendering to graph. */
+  def withNodeIds: RenderOptions = copy(emitNodeIds = true)
+
+  /** Exclude Node IDs when rendering to graph. */
+  def withoutNodeIds: RenderOptions = copy(emitNodeIds = false)
+
+  /** Apply function to filter fields when rendering to graph. */
   def withFilterFieldsFunc(f: Field => Boolean): RenderOptions = copy(filterFields = f)
 
-  def withoutAmfJsonLdSerialization: RenderOptions = copy(amfJsonLdSerialization = false)
-
+  /** Include AmfJsonLdSerialization when rendering to graph. */
   def withAmfJsonLdSerialization: RenderOptions = copy(amfJsonLdSerialization = true)
 
+  /** Exclude AmfJsonLdSerialization when rendering to graph. */
+  def withoutAmfJsonLdSerialization: RenderOptions = copy(amfJsonLdSerialization = false)
+
+  /** Include FlattenedJsonLd when rendering to graph. */
   def withFlattenedJsonLd: RenderOptions = copy(flattenedJsonLd = true)
 
+  /** Exclude FlattenedJsonLd when rendering to graph. */
   def withoutFlattenedJsonLd: RenderOptions = copy(flattenedJsonLd = false)
 
   def isFlattenedJsonLd: Boolean = flattenedJsonLd
@@ -66,7 +83,7 @@ private[amf] case class RenderOptions(
   def isCompactUris: Boolean             = compactUris
   def isWithSourceMaps: Boolean          = sources
   def isWithRawSourceMaps: Boolean       = rawSourceMaps
-  def isAmfJsonLdSerilization: Boolean   = amfJsonLdSerialization
+  def isAmfJsonLdSerialization: Boolean  = amfJsonLdSerialization
   def isValidation: Boolean              = validating
   def renderField(field: Field): Boolean = !filterFields(field)
   def isPrettyPrint: Boolean             = prettyPrint

@@ -4,7 +4,7 @@ import amf.core.exception.UnsupportedVendorException
 import amf.core.model.document.{BaseUnit, ExternalFragment}
 import amf.core.model.domain.ExternalDomainElement
 
-private[amf] trait DomainParsingFallback {
+trait DomainParsingFallback {
 
   def chooseFallback(element: ParsingInfo, availablePlugins: Seq[AMFParsePlugin]): BaseUnit
 }
@@ -20,9 +20,9 @@ object ExternalFragmentDomainFallback extends DomainParsingFallback {
           .withId(document.location)
           .withLocation(document.location)
           .withEncodes(
-            ExternalDomainElement()
-              .withRaw(document.raw)
-              .withMediaType(document.mediatype))
+              ExternalDomainElement()
+                .withRaw(document.raw)
+                .withMediaType(document.mediatype))
     }
 
   }

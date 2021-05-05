@@ -3,7 +3,7 @@ package amf.client.remod
 import amf.client.parse.DefaultParserErrorHandler
 import amf.core.errorhandling.ErrorHandler
 
-private[amf] trait ErrorHandlerProvider {
+trait ErrorHandlerProvider {
 
   // Returns a new instance of error handler to collect results
   def errorHandler(): ErrorHandler

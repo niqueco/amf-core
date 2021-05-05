@@ -1,7 +1,9 @@
 package amf.client.remod.amfcore.config
 
-//TODO: ARM remove private[amf]
-private[amf] class AMFLogger {
+/**
+  * AMF Logger object
+  */
+class AMFLogger {
 
   private def log(message: String, severity: LogSeverity, source: String) = {}
 
