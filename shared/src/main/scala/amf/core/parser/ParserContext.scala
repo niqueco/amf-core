@@ -2,6 +2,7 @@ package amf.core.parser
 
 import amf.core.errorhandling.ErrorHandler
 import amf.core.model.document.BaseUnit
+import amf.core.model.domain.extensions.CustomDomainProperty
 import amf.core.parser.errorhandler.ParserErrorHandler
 import amf.core.plugin.PluginContext
 import amf.core.validation.core.ValidationSpecification
@@ -10,6 +11,29 @@ import org.yaml.model.{IllegalTypeHandler, ParseErrorHandler, SyamlException, YE
 
 import scala.collection.mutable
 
+//abstract class DataNodeParserContext(eh: ParserErrorHandler) extends ErrorHandlingContext()(eh) {
+//
+//  def rootContextDocument: String
+//  def violation(violationId: ValidationSpecification, node: String, message: String): Unit =
+//    eh.violation(violationId, node, message, rootContextDocument)
+//
+//}
+
+abstract class ErrorHandlingContext(implicit val eh: ParserErrorHandler)
+    extends ParseErrorHandler
+    with IllegalTypeHandler {
+  override def handle(location: SourceLocation, e: SyamlException): Unit = eh.handle(location, e)
+
+  override def handle[T](error: YError, defaultValue: T): T = eh.handle(error, defaultValue)
+
+  def violation(violationId: ValidationSpecification, node: String, message: String)
+}
+
+trait UnresolvedComponents {
+  def futureDeclarations: FutureDeclarations
+  def eh: ParserErrorHandler
+}
+
 object EmptyFutureDeclarations {
   def apply(): FutureDeclarations = new FutureDeclarations {}
 }
@@ -17,9 +41,10 @@ object EmptyFutureDeclarations {
 case class ParserContext(rootContextDocument: String = "",
                          refs: Seq[ParsedReference] = Seq.empty,
                          futureDeclarations: FutureDeclarations = EmptyFutureDeclarations(),
-                         eh: ParserErrorHandler,
+                         override val eh: ParserErrorHandler,
                          plugins: PluginContext = PluginContext())
-    extends ParseErrorHandler
+    extends ErrorHandlingContext()(eh)
+    with UnresolvedComponents
     with IllegalTypeHandler {
 
   var globalSpace: mutable.Map[String, Any] = mutable.Map()
@@ -44,7 +69,7 @@ case class ParserContext(rootContextDocument: String = "",
   private def getSonsParsedReferences: Seq[ParsedReference] =
     sonsReferences.values.map(u => ParsedReference(u, new Reference(u.location().getOrElse(u.id), Nil))).toSeq
 
-  def  copyWithSonsReferences(): ParserContext = {
+  def copyWithSonsReferences(): ParserContext = {
     val context = this.copy(refs = this.refs ++ getSonsParsedReferences)
     context.globalSpace = this.globalSpace
     context
