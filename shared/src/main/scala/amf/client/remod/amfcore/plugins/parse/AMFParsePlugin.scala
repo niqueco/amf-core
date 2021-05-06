@@ -7,7 +7,7 @@ import amf.core.errorhandling.ErrorHandler
 import amf.core.model.document.BaseUnit
 import amf.core.parser.{ParserContext, ReferenceHandler}
 
-private[amf] trait AMFParsePlugin extends AMFPlugin[ParsingInfo] {
+trait AMFParsePlugin extends AMFPlugin[ParsingInfo] {
 
 //  def parse(document:Root, ctx:ParserContext): BaseUnit // change parser for AMF context
   def parse(document: Root, ctx: ParserContext, options: ParsingOptions): BaseUnit

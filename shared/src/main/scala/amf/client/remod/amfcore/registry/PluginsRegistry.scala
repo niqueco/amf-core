@@ -7,6 +7,13 @@ import amf.client.remod.amfcore.plugins.render.AMFRenderPlugin
 import amf.client.remod.amfcore.plugins.validate.AMFValidatePlugin
 import amf.core.model.document.BaseUnit
 
+/**
+  * A registry of plugins
+  * @param parsePlugins a list of {@link amf.client.remod.amfcore.plugins.parse.AMFParsePlugin}
+  * @param validatePlugins a list of {@link amf.client.remod.amfcore.plugins.validate.AMFValidatePlugin}
+  * @param renderPlugins a list of {@link amf.client.remod.amfcore.plugins.render.AMFRenderPlugin}
+  * @param domainParsingFallback {@link amf.client.remod.amfcore.plugins.parse.DomainParsingFallback}
+  */
 case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin],
                                          validatePlugins: List[AMFValidatePlugin],
                                          renderPlugins: List[AMFRenderPlugin],
@@ -38,5 +45,7 @@ case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin],
 }
 
 object PluginsRegistry {
+
+  /** Creates an empty PluginsRegistry */
   val empty: PluginsRegistry = PluginsRegistry(Nil, Nil, Nil, ExternalFragmentDomainFallback)
 }

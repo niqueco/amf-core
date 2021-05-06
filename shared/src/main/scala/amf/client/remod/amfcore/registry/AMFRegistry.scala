@@ -6,6 +6,13 @@ import amf.client.remod.amfcore.plugins.parse.{AMFParsePlugin, DomainParsingFall
 import amf.core.resolution.pipelines.TransformationPipeline
 import amf.core.validation.core.ValidationProfile
 
+/**
+  * Registry to store plugins, entities, transformation pipelines and constraint rules
+  * @param plugins {@link amf.client.remod.amfcore.registry.PluginsRegistry}
+  * @param entitiesRegistry {@link amf.client.remod.amfcore.registry.EntitiesRegistry}
+  * @param transformationPipelines a map of {@link amf.core.resolution.pipelines.ResolutionPipeline}s
+  * @param constraintsRules a map of {@link amf.ProfileName} -> {@link amf.core.validation.core.ValidationProfile}
+  */
 private[amf] case class AMFRegistry(plugins: PluginsRegistry,
                                     entitiesRegistry: EntitiesRegistry,
                                     transformationPipelines: Map[String, TransformationPipeline],
@@ -37,5 +44,7 @@ private[amf] case class AMFRegistry(plugins: PluginsRegistry,
 }
 
 object AMFRegistry {
+
+  /** Creates an empty AMF Registry */
   val empty = new AMFRegistry(PluginsRegistry.empty, EntitiesRegistry.empty, Map.empty, Map.empty)
 }

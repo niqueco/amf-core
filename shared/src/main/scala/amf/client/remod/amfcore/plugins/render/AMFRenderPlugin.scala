@@ -7,17 +7,20 @@ import amf.core.errorhandling.ErrorHandler
 import amf.core.model.document.BaseUnit
 import org.yaml.builder.DocBuilder
 
-private[amf] trait AMFRenderPlugin extends AMFPlugin[RenderInfo] {
-  def emit[T](unit: BaseUnit, builder: DocBuilder[T], renderOptions: RenderOptions, errorHandler: ErrorHandler): Boolean
+trait AMFRenderPlugin extends AMFPlugin[RenderInfo] {
+  def emit[T](unit: BaseUnit,
+              builder: DocBuilder[T],
+              renderOptions: RenderOptions,
+              errorHandler: ErrorHandler): Boolean
 }
 
 private[amf] case class AMFRenderPluginAdapter(plugin: AMFDocumentPlugin) extends AMFRenderPlugin {
 
-  override def emit[T](unit: BaseUnit, builder: DocBuilder[T], renderOptions: RenderOptions, errorHandler: ErrorHandler): Boolean =
-    plugin.emit(unit,
-                builder,
-                renderOptions,
-                errorHandler)
+  override def emit[T](unit: BaseUnit,
+                       builder: DocBuilder[T],
+                       renderOptions: RenderOptions,
+                       errorHandler: ErrorHandler): Boolean =
+    plugin.emit(unit, builder, renderOptions, errorHandler)
 
   override val id: String = plugin.ID
 

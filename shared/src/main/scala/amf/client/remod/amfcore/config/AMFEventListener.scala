@@ -12,6 +12,9 @@ import amf.core.validation.AMFValidationReport
 
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
+/**
+  * Defines an event listener linked to a specific {@link amf.client.remod.amfcore.config.EventKind}
+  */
 private[amf] trait AMFEventListener {
   def notifyEvent(event: AMFEvent)
 }
