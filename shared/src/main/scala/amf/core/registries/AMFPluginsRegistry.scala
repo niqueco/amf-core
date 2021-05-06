@@ -5,12 +5,13 @@ import amf.client.remod.AMFGraphConfiguration
 import amf.client.remod.amfcore.plugins.parse.AMFParsePluginAdapter
 import amf.client.remod.amfcore.plugins.render.AMFRenderPluginAdapter
 import amf.core.validation.AMFPayloadValidationPlugin
+import amf.core.validation.core.ValidationProfile
 
 import scala.collection.mutable
 
 object AMFPluginsRegistry {
   // all static registries will end up here, and with a mayor version release the AmfEnvironment will not be static
-  private[amf] var staticCofiguration: AMFGraphConfiguration = AMFGraphConfiguration.predefined()
+  private[amf] var staticConfiguration: AMFGraphConfiguration = AMFGraphConfiguration.predefined()
 
   private val syntaxPluginIDRegistry: mutable.HashMap[String, AMFSyntaxPlugin]     = mutable.HashMap()
   private val syntaxPluginRegistry: mutable.HashMap[String, AMFSyntaxPlugin]       = mutable.HashMap()
@@ -27,16 +28,28 @@ object AMFPluginsRegistry {
 
   def documentPlugins: Iterable[AMFDocumentPlugin] = documentPluginIDRegistry.values
 
-  def obtainStaticConfig(): AMFGraphConfiguration = staticCofiguration
+  def obtainStaticConfig(): AMFGraphConfiguration = staticConfiguration
 
   private def registerPluginInEnv(plugin: AMFDocumentPlugin): Unit = {
-    staticCofiguration =
-      staticCofiguration.withPlugins(List(AMFParsePluginAdapter(plugin), AMFRenderPluginAdapter(plugin)))
-    staticCofiguration = staticCofiguration.withTransformationPipelines(plugin.pipelines.values.toList)
+    staticConfiguration =
+      staticConfiguration.withPlugins(List(AMFParsePluginAdapter(plugin), AMFRenderPluginAdapter(plugin)))
+    staticConfiguration = staticConfiguration.withTransformationPipelines(plugin.pipelines.values.toList)
+    plugin match {
+      case validationPlugin: AMFValidationPlugin =>
+        staticConfiguration = validationPlugin.domainValidationProfiles
+          .foldLeft(staticConfiguration) { (config, profile) =>
+            config.withValidationProfile(profile)
+          }
+      case _ => // ignore
+    }
+  }
+
+  protected[amf] def registerValidationProfile(profile: ValidationProfile): Unit = {
+    staticConfiguration = staticConfiguration.withValidationProfile(profile)
   }
 
   private def unregisterPluginFromEnv(plugin: AMFDocumentPlugin): Unit =
-    staticCofiguration = staticCofiguration.removePlugin(plugin.ID)
+    staticConfiguration = staticConfiguration.removePlugin(plugin.ID)
 
   def registerSyntaxPlugin(syntaxPlugin: AMFSyntaxPlugin): Unit = {
     syntaxPluginIDRegistry.get(syntaxPlugin.ID) match {
@@ -57,11 +70,8 @@ object AMFPluginsRegistry {
   }
 
   def cleanMediaType(mediaType: String): String =
-    if (mediaType.contains(";")) {
-      mediaType.split(";").head
-    } else {
-      mediaType
-    }
+    if (mediaType.contains(";")) mediaType.split(";").head
+    else mediaType
 
   def syntaxPluginForMediaType(mediaType: String): Option[AMFSyntaxPlugin] = {
     val normalizedMediaType = cleanMediaType(mediaType)
