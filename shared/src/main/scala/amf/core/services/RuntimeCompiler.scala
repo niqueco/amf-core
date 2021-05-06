@@ -2,7 +2,7 @@ package amf.core.services
 
 import amf.client.parse.DefaultParserErrorHandler
 import amf.client.remod.AMFGraphConfiguration
-import amf.client.remod.amfcore.config.ParsingOptionsConverter
+import amf.client.remod.amfcore.config.{FinishedParsingEvent, ParsingOptionsConverter, StartingParsingEvent}
 import amf.core.client.ParsingOptions
 import amf.core.model.document.BaseUnit
 import amf.core.parser.errorhandler.AmfParserErrorHandler
@@ -49,12 +49,12 @@ object RuntimeCompiler {
       .build()
     compiler match {
       case Some(runtimeCompiler) =>
-        AMFPluginsRegistry.featurePlugins().foreach(_.onBeginParsingInvocation(url, mediaType))
+        val startingParsingEvent = StartingParsingEvent(url, mediaType)
+        baseEnv.listeners.foreach(_.notifyEvent(startingParsingEvent))
         runtimeCompiler.build(context, mediaType, vendor, referenceKind) map { parsedUnit =>
-          AMFPluginsRegistry.featurePlugins().foldLeft(parsedUnit) {
-            case (parsed, plugin) =>
-              plugin.onFinishedParsingInvocation(url, parsed)
-          }
+          val finishedParsingEvent = FinishedParsingEvent(url, parsedUnit)
+          baseEnv.listeners.foreach(_.notifyEvent(finishedParsingEvent))
+          parsedUnit
         }
       case _ => throw new Exception("No registered runtime compiler")
     }
@@ -67,15 +67,8 @@ object RuntimeCompiler {
                  referenceKind: ReferenceKind = UnspecifiedReference)(
       implicit executionContext: ExecutionContext): Future[BaseUnit] = {
     compiler match {
-      case Some(runtimeCompiler) =>
-        AMFPluginsRegistry.featurePlugins().foreach(_.onBeginParsingInvocation(compilerContext.path, mediaType))
-        runtimeCompiler.build(compilerContext, mediaType, vendor, referenceKind) map { parsedUnit =>
-          AMFPluginsRegistry.featurePlugins().foldLeft(parsedUnit) {
-            case (parsed, plugin) =>
-              plugin.onFinishedParsingInvocation(compilerContext.path, parsed)
-          }
-        }
-      case _ => throw new Exception("No registered runtime compiler")
+      case Some(runtimeCompiler) => runtimeCompiler.build(compilerContext, mediaType, vendor, referenceKind)
+      case _                     => throw new Exception("No registered runtime compiler")
     }
   }
 }
