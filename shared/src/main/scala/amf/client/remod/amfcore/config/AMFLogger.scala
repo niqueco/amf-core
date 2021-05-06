@@ -3,7 +3,7 @@ package amf.client.remod.amfcore.config
 /**
   * AMF Logger object
   */
-class AMFLogger {
+private[amf] class AMFLogger {
 
   private def log(message: String, severity: LogSeverity, source: String) = {}
 

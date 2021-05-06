@@ -14,7 +14,7 @@ trait AMFRenderPlugin extends AMFPlugin[RenderInfo] {
               errorHandler: ErrorHandler): Boolean
 }
 
-case class AMFRenderPluginAdapter(plugin: AMFDocumentPlugin) extends AMFRenderPlugin {
+private[amf] case class AMFRenderPluginAdapter(plugin: AMFDocumentPlugin) extends AMFRenderPlugin {
 
   override def emit[T](unit: BaseUnit,
                        builder: DocBuilder[T],

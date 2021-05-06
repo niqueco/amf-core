@@ -11,6 +11,7 @@ import amf.internal.reference.UnitCache
 import amf.internal.resource.ResourceLoader
 import amf.plugins.document.graph.{AMFGraphParsePlugin, AMFGraphRenderPlugin}
 
+import java.rmi.registry.LocateRegistry.getRegistry
 import scala.concurrent.ExecutionContext
 // all constructors only visible from amf. Users should always use builders or defaults
 
@@ -28,16 +29,14 @@ object AMFGraphConfiguration {
   }
 
   /**
-    * Predefined AMF core environment with
-    * AMF Resolvers predefined {@link amf.client.remod.amfcore.config.AMFResolvers.predefined predefined}
-    *
-    * Default error handler provider that will create a {@link amf.client.parse.DefaultParserErrorHandler}
-    *
-    * Empty AMF Registry: {@link amf.client.remod.amfcore.registry.AMFRegistry.empty}
-    *
-    * MutedLogger: {@link amf.client.remod.amfcore.config.MutedLogger}
-    *
-    * Without Any listener
+    * Predefined AMF core environment with:
+    * <ul>
+    *   <li>AMF Resolvers predefined {@link amf.client.remod.amfcore.config.AMFResolvers.predefined predefined}</li>
+    *   <li>Default error handler provider that will create a {@link amf.client.parse.DefaultParserErrorHandler}</li>
+    *   <li>Empty AMF Registry: {@link amf.client.remod.amfcore.registry.AMFRegistry.empty}</li>
+    *   <li>MutedLogger: {@link amf.client.remod.amfcore.config.MutedLogger}</li>
+    *   <li>Without Any listener</li>
+    * </ul>
     */
   def predefined(): AMFGraphConfiguration = {
     new AMFGraphConfiguration(

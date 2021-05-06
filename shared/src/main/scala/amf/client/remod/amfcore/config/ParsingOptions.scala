@@ -29,7 +29,7 @@ case class ParsingOptions private[amf] (amfJsonLdSerialization: Boolean = true,
 
 }
 
-object ParsingOptionsConverter {
+private[amf] object ParsingOptionsConverter {
   def toLegacy(options: ParsingOptions): LegacyParsingOptions = {
     val mutableOptions = new LegacyParsingOptions()
     if (!options.amfJsonLdSerialization) mutableOptions.withoutAmfJsonLdSerialization
