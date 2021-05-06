@@ -1,6 +1,5 @@
 package amf.client.remod
 
-import amf.ProfileName
 import amf.client.remod.amfcore.config._
 import amf.client.remod.amfcore.plugins.AMFPlugin
 import amf.client.remod.amfcore.registry.AMFRegistry
@@ -95,9 +94,6 @@ private[amf] class AMFGraphConfiguration(override private[amf] val resolvers: AM
   def withValidationProfile(profile: ValidationProfile): AMFGraphConfiguration =
     super._withValidationProfile(profile)
 
-  // TODO - ARM: Should be erased as configuration should be incremental, not decremental
-  def removeValidationProfile(name: ProfileName): AMFGraphConfiguration = super._removeValidationProfile(name)
-
   def withTransformationPipeline(pipeline: ResolutionPipeline): AMFGraphConfiguration =
     super._withTransformationPipeline(pipeline)
 
@@ -166,10 +162,6 @@ sealed abstract class BaseAMFConfigurationSetter(private[amf] val resolvers: AMF
 
   protected def _withValidationProfile[T](profile: ValidationProfile): T =
     copy(registry = registry.withConstraints(profile)).asInstanceOf[T]
-
-  // TODO - ARM: Should be erased as configuration should be incremental, not decremental
-  protected def _removeValidationProfile[T](name: ProfileName): T =
-    copy(registry = registry.removeConstriantsOf(name)).asInstanceOf[T]
 
   protected def _withTransformationPipeline[T](pipeline: ResolutionPipeline): T =
     copy(registry = registry.withTransformationPipeline(pipeline)).asInstanceOf[T]
