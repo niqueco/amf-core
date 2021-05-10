@@ -31,10 +31,10 @@ object AMFGraphConfiguration {
   /**
     * Predefined AMF core environment with:
     * <ul>
-    *   <li>AMF Resolvers predefined {@link amf.client.remod.amfcore.config.AMFResolvers.predefined predefined}</li>
+    *   <li>AMF Resolvers predefined `amf.client.remod.amfcore.config.AMFResolvers.predefined`</li>
     *   <li>Default error handler provider that will create a {@link amf.client.parse.DefaultParserErrorHandler}</li>
-    *   <li>Empty AMF Registry: {@link amf.client.remod.amfcore.registry.AMFRegistry.empty}</li>
-    *   <li>MutedLogger: {@link amf.client.remod.amfcore.config.MutedLogger}</li>
+    *   <li>Empty `amf.client.remod.amfcore.registry.AMFRegistry`</li>
+    *   <li>MutedLogger: `amf.client.remod.amfcore.config.MutedLogger`</li>
     *   <li>Without Any listener</li>
     * </ul>
     */
