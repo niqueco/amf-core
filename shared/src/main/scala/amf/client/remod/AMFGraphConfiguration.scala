@@ -114,10 +114,10 @@ class AMFGraphConfiguration private[amf] (override private[amf] val resolvers: A
 
   /**
     * AMF internal method just to facilitate the construction
-    * @param pipelines a list of {@link amf.core.resolution.pipelines.ResolutionPipeline}s
+    * @param pipelines a list of {@link amf.core.resolution.pipelines.TransformationPipeline}
     * @return
     */
-  def withTransformationPipelines(pipelines: List[TransformationPipeline]): AMFGraphConfiguration =
+  private[amf] def withTransformationPipelines(pipelines: List[TransformationPipeline]): AMFGraphConfiguration =
     super._withTransformationPipelines(pipelines)
 
   /**
