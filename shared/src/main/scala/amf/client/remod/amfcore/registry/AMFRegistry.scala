@@ -9,7 +9,7 @@ import amf.core.validation.core.ValidationProfile
 /**
   * Registry to store plugins, entities, transformation pipelines and constraint rules
   * @param plugins                 {@link amf.client.remod.amfcore.registry.PluginsRegistry}
-  * @param entitiesRegistry        `amf.client.remod.amfcore.registry.EntitiesRegistry`
+  * @param entitiesRegistry        {@link amf.client.remod.amfcore.registry.EntitiesRegistry}
   * @param transformationPipelines a map of {@link amf.core.resolution.pipelines.TransformationPipeline}s
   * @param constraintsRules        a map of {@link amf.ProfileName} -> {@link amf.core.validation.core.ValidationProfile}
   */
