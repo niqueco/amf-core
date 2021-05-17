@@ -1,6 +1,6 @@
 package amf.client.remod.amfcore.config
 
-import amf.client.remod.amfcore.config.AMFEventNames._
+import amf.client.exported.config.AMFEventNames._
 import amf.client.remod.amfcore.plugins.render.AMFRenderPlugin
 import amf.client.remod.amfcore.plugins.validate.{AMFValidatePlugin, ValidationResult}
 import amf.client.remote.Content
@@ -10,35 +10,14 @@ import amf.core.resolution.pipelines.TransformationPipeline
 import amf.core.resolution.stages.TransformationStep
 import amf.core.validation.AMFValidationReport
 
-import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
+// interface is duplicated in exported package to maintain separate hierarchy of AMFEvents
 
-/**
-  * Defines an event listener linked to a specific {@link amf.client.remod.amfcore.config.EventKind}
-  */
-private[amf] trait AMFEventListener {
+trait AMFEventListener {
   def notifyEvent(event: AMFEvent)
 }
+
 sealed trait AMFEvent {
   val name: String
-}
-
-@JSExportTopLevel("EventNames")
-@JSExportAll
-object AMFEventNames {
-  val StartingParsing            = "StartingParsing"
-  val StartingContentParsing     = "StartingContentParsing"
-  val ParsedSyntax               = "ParsedSyntax"
-  val ParsedModel                = "ParsedModel"
-  val FinishedParsing            = "FinishedParsing"
-  val StartingTransformation     = "StartingTransformation"
-  val FinishedTransformationStep = "FinishedTransformationStep"
-  val FinishedTransformation     = "FinishedTransformation"
-  val StartingValidation         = "StartingValidation"
-  val FinishedValidationPlugin   = "FinishedValidationPlugin"
-  val FinishedValidation         = "FinishedValidation"
-  val StartingRendering          = "StartingRendering"
-  val FinishedRenderingAST       = "FinishedRenderingAST"
-  val FinishedRenderingSyntax    = "FinishedRenderingSyntax"
 }
 
 // Parsing Events
@@ -95,7 +74,7 @@ case class StartingTransformationEvent(pipeline: TransformationPipeline) extends
   override val name: String = StartingTransformation
 }
 
-case class FinishedTransformationStepEvent(stage: TransformationStep, index: Int) extends AMFEvent {
+case class FinishedTransformationStepEvent(step: TransformationStep, index: Int) extends AMFEvent {
   override val name: String = FinishedTransformationStep
 }
 
@@ -110,11 +89,11 @@ case class StartingValidationEvent(totalPlugins: Int) extends AMFEvent {
   override val name: String = StartingValidation
 }
 
-case class FinishedValidationPluginEvent(plugin: AMFValidatePlugin, result: ValidationResult) extends AMFEvent {
+case class FinishedValidationPluginEvent(plugin: AMFValidatePlugin, result: AMFValidationReport) extends AMFEvent {
   override val name: String = FinishedValidationPlugin
 }
 
-case class FinishedValidationEvent(report: AMFValidationReport) extends AMFEvent {
+case class FinishedValidationEvent(result: AMFValidationReport) extends AMFEvent {
   override val name: String = FinishedValidation
 }
 
