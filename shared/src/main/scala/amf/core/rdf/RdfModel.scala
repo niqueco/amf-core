@@ -57,4 +57,7 @@ abstract class RdfModel {
 
   // returns the native representation of the model
   def native(): Any
+
+  // wraps native() method because 'native' is a reserved keyword in Java
+  def toNative(): Any = native()
 }
