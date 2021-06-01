@@ -6,7 +6,8 @@ import amf.core.client.scala.transform.AMFTransformer
 import amf.core.client.scala.validation.{AMFValidationReport, AMFValidator}
 import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.common.validation.ProfileName
-import org.yaml.model.YDocument
+import amf.core.client.scala.parse.document.ParsedDocument
+import org.yaml.builder.DocBuilder
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -79,9 +80,9 @@ class AMFGraphClient(protected val configuration: AMFGraphConfiguration) {
   /**
     * Render a [[BaseUnit]] and return the AST
     * @param bu [[BaseUnit]] to be rendered
-    * @return the AST as a [[YDocument]]
+    * @return the AST as a [[ParsedDocument]]
     */
-  def renderAST(bu: BaseUnit): YDocument = AMFRenderer.renderAST(bu, configuration)
+  def renderAST(bu: BaseUnit): ParsedDocument = AMFRenderer.renderAST(bu, configuration)
 
   /**
     * Render a [[BaseUnit]] to a certain mediaType
@@ -97,9 +98,18 @@ class AMFGraphClient(protected val configuration: AMFGraphConfiguration) {
     * @param bu [[BaseUnit]] to be rendered
     * @param mediaType The nature and format of the given content. Must be <code>"application/spec"</code> or <code>"application/spec+syntax"</code>.
     *                  Examples: <code>"application/raml10"</code> or <code>"application/raml10+yaml"</code>
-    * @return the AST as a [[YDocument]]
+    * @return the AST as a [[ParsedDocument]]
     */
-  def renderAST(bu: BaseUnit, mediaType: String): YDocument = AMFRenderer.renderAST(bu, mediaType, configuration)
+  def renderAST(bu: BaseUnit, mediaType: String): ParsedDocument = AMFRenderer.renderAST(bu, mediaType, configuration)
+
+  /**
+    * Render a [[BaseUnit]] to a [[DocBuilder]] in the form of a graph (jsonld)
+    * @param bu [[BaseUnit]] to be rendered
+    * @param builder [[DocBuilder]] which is used for rendering
+    * @return The result produced by the DocBuilder after rendering
+    */
+  def renderGraphToBuilder[T](bu: BaseUnit, builder: DocBuilder[T]): T =
+    AMFRenderer.renderGraphToBuilder(bu, builder, configuration)
 
   /**
     * Validate a [[BaseUnit]] with its default validation profile name

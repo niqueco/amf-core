@@ -1,27 +1,20 @@
 package amf.core.internal.render
 
-import amf.core.client.scala.config.{
-  AMFEvent,
-  FinishedRenderingASTEvent,
-  FinishedRenderingSyntaxEvent,
-  StartingRenderingEvent
-}
+import amf.core.client.scala.config.{AMFEvent, FinishedRenderingASTEvent, FinishedRenderingSyntaxEvent, StartingRenderingEvent}
 import amf.core.client.scala.model.document.{BaseUnit, ExternalFragment}
-import amf.core.client.scala.parse.document.SyamlParsedDocument
+import amf.core.client.scala.parse.document.{ParsedDocument, SyamlParsedDocument}
 import amf.core.internal.rdf.RdfModelDocument
-import amf.core.client.scala.vocabulary.{Namespace, NamespaceAliases}
 import amf.core.internal.benchmark.ExecutionLog
 import amf.core.internal.plugins.document.graph._
-import amf.core.internal.plugins.document.graph.emitter.{EmbeddedJsonLdEmitter, FlattenedJsonLdEmitter}
-import amf.core.internal.plugins.render.{AMFRenderPlugin, DefaultRenderConfiguration, RenderConfiguration, RenderInfo}
+import amf.core.internal.plugins.render.{AMFGraphRenderPlugin, AMFRenderPlugin, RenderConfiguration, RenderInfo}
 import amf.core.internal.plugins.syntax.RdfSyntaxPlugin
-import amf.core.internal.registries.domain.AMFPluginsRegistry
 import amf.core.internal.remote.{MediaTypeParser, Platform, Vendor}
 import amf.core.internal.unsafe.PlatformSecrets
+import amf.core.internal.validation.CoreValidations
 import org.mulesoft.common.io.Output
 import org.mulesoft.common.io.Output._
-import org.yaml.builder.{DocBuilder, JsonOutputBuilder, YDocumentBuilder}
-import org.yaml.model.YDocument
+import org.yaml.builder.{JsonOutputBuilder, YDocumentBuilder}
+import org.yaml.model.{YDocument, YNode}
 
 import java.io.StringWriter
 import scala.concurrent.{ExecutionContext, Future}
@@ -45,25 +38,6 @@ class AMFSerializer(unit: BaseUnit, mediaType: String, config: RenderConfigurati
 
   private def notifyEvent(e: AMFEvent): Unit = config.listeners.foreach(_.notifyEvent(e))
 
-  /** Render to doc builder. */
-  def renderToBuilder[T](builder: DocBuilder[T])(implicit executor: ExecutionContext): Unit =
-    mediaTypeExp.getPureVendorExp match {
-      case Vendor.AMF.mediaType =>
-        val namespaceAliases = generateNamespaceAliasesFromPlugins
-        config.renderOptions.toGraphSerialization match {
-          case JsonLdSerialization(FlattenedForm) =>
-            FlattenedJsonLdEmitter.emit(unit, builder, options, namespaceAliases)
-          case JsonLdSerialization(EmbeddedForm) =>
-            EmbeddedJsonLdEmitter.emit(unit, builder, options, namespaceAliases)
-        }
-    }
-
-  private def generateNamespaceAliasesFromPlugins: NamespaceAliases =
-    config.namespacePlugins.sorted
-      .find(_.applies(unit))
-      .map(_.aliases(unit))
-      .getOrElse(Namespace.defaultAliases)
-
   /** Print ast to writer. */
   def renderToWriter[W: Output](writer: W)(implicit executor: ExecutionContext): Unit = render(writer)
 
@@ -79,8 +53,8 @@ class AMFSerializer(unit: BaseUnit, mediaType: String, config: RenderConfigurati
     mediaTypeExp.getPureVendorExp match {
       case Vendor.AMF.mediaType =>
         config.renderOptions.toGraphSerialization match {
-          case RdfSerialization()                => emitRdf(writer)
-          case JsonLdSerialization(documentForm) => emitJsonLd(writer, documentForm)
+          case RdfSerialization()     => emitRdf(writer)
+          case JsonLdSerialization(_) => emitJsonldToWriter(writer)
         }
       case _ =>
         val renderPlugin = getRenderPlugin
@@ -97,28 +71,41 @@ class AMFSerializer(unit: BaseUnit, mediaType: String, config: RenderConfigurati
     }
   }
 
+  def renderAST: ParsedDocument = {
+    mediaTypeExp.getPureVendorExp match {
+      case Vendor.AMF.mediaType if config.renderOptions.toGraphSerialization.isInstanceOf[RdfSerialization] =>
+        toRdfModelDoc.getOrElse(SyamlParsedDocument(YDocument(YNode.Empty)))
+      case _ => renderYDocumentWithPlugins
+    }
+  }
+
+  private[amf] def renderYDocumentWithPlugins: SyamlParsedDocument = {
+    val renderPlugin = getRenderPlugin
+    renderAsYDocument(renderPlugin)
+  }
+
   private def getSyntaxPlugin(ast: SyamlParsedDocument, mediaType: String) = {
     val candidates = config.syntaxPlugin.filter(_.mediaTypes.contains(mediaType))
     candidates.find(_.applies(ast))
   }
 
-  private def emitJsonLd[W: Output](writer: W, form: JsonLdDocumentForm): Unit = {
-    val b                = JsonOutputBuilder[W](writer, options.isPrettyPrint)
-    val namespaceAliases = generateNamespaceAliasesFromPlugins
-    form match {
-      case FlattenedForm => FlattenedJsonLdEmitter.emit(unit, b, options, namespaceAliases)
-      case EmbeddedForm  => EmbeddedJsonLdEmitter.emit(unit, b, options, namespaceAliases)
-      case _             => // Ignore
-    }
+  private def emitJsonldToWriter[W: Output](writer: W): Unit = {
+    val b = JsonOutputBuilder[W](writer, options.isPrettyPrint)
+    AMFGraphRenderPlugin.emit(unit, b, config)
   }
 
   private def emitRdf[W: Output](writer: W): Unit =
+    toRdfModelDoc.foreach(RdfSyntaxPlugin.unparse(mediaType, _, writer))
+
+  private def toRdfModelDoc: Option[RdfModelDocument] = {
     platform.rdfFramework match {
-      case Some(r) =>
-        val d = RdfModelDocument(r.unitToRdfModel(unit, config.renderOptions))
-        RdfSyntaxPlugin.unparse(mediaType, d, writer)
-      case _ => None
+      case Some(r) => Some(RdfModelDocument(r.unitToRdfModel(unit, config.renderOptions)))
+      case _ =>
+        config.errorHandler
+          .violation(CoreValidations.UnableToParseRdfDocument, unit.id, "Unable to generate RDF Model")
+        None
     }
+  }
 
   private[amf] def render(): String = {
     val w = new StringWriter

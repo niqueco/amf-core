@@ -5,7 +5,7 @@ import amf.core.client.platform.model.document.BaseUnit
 import amf.core.client.scala.{AMFGraphClient => InternalAMFGraphClient}
 import amf.core.client.platform.validation.AMFValidationReport
 import amf.core.client.common.validation.ProfileName
-
+import org.yaml.builder.DocBuilder
 import scala.concurrent.ExecutionContext
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
@@ -88,6 +88,14 @@ class AMFGraphClient private[amf] (private val _internal: InternalAMFGraphClient
     * @return The content rendered
     */
   def render(bu: BaseUnit, mediaType: String): String = _internal.render(bu, mediaType)
+
+  /**
+    * Render a [[BaseUnit]] to a [[DocBuilder]] in the form of a graph (jsonld)
+    * @param bu [[BaseUnit]] to be rendered
+    * @param builder [[DocBuilder]] which is used for rendering
+    * @return The result produced by the DocBuilder after rendering
+    */
+  def renderGraphToBuilder[T](bu: BaseUnit, builder: DocBuilder[T]): T = _internal.renderGraphToBuilder(bu, builder)
 
   /**
     * Validate a [[BaseUnit]] with its default validation profile name
