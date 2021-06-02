@@ -1,12 +1,11 @@
 package amf.core.validation
 
+import amf.client.remod.AMFResult
 import amf.{AmfProfile, ProfileName, UnknownProfile}
 import amf.core.model.document.BaseUnit
 
-case class AMFValidationReport(conforms: Boolean,
-                               model: String,
-                               profile: ProfileName,
-                               results: Seq[AMFValidationResult]) {
+case class AMFValidationReport(model: String, profile: ProfileName, results: Seq[AMFValidationResult])
+    extends ReportConformance(results) {
 
   private val DefaultMax = 30
 
@@ -46,17 +45,22 @@ case class AMFValidationReport(conforms: Boolean,
 
 object AMFValidationReport {
   def apply(model: String, profile: ProfileName, results: Seq[AMFValidationResult]) =
-    new AMFValidationReport(!results.exists(_.severityLevel == SeverityLevels.VIOLATION), model, profile, results)
+    new AMFValidationReport(model, profile, results)
 
   def empty(model: String, profileName: ProfileName): AMFValidationReport = apply(model, profileName, Seq())
 
-  def forModel(model: BaseUnit, results: List[AMFValidationResult]): AMFValidationReport = {
-    val profileName = model.profileName.getOrElse(UnknownProfile)
+  /** used for storing results of parsing and transformation into report for tests */
+  private[amf] def unknownProfile(result: AMFResult): AMFValidationReport = {
+    val profileName = UnknownProfile
+    val model       = result.bu
     new AMFValidationReport(
-        !results.exists(r => r.severityLevel == SeverityLevels.VIOLATION),
         model.location().getOrElse(model.id),
         profileName,
-        results
+        result.results
     )
   }
+}
+
+abstract class ReportConformance(results: Seq[AMFValidationResult]) {
+  lazy val conforms: Boolean = !results.exists(r => r.severityLevel == SeverityLevels.VIOLATION)
 }
