@@ -2,7 +2,7 @@ package amf.core.validation.core
 
 import amf.core.model.document.BaseUnit
 import amf.core.rdf.{RdfFramework, RdfModel}
-import amf.core.services.ValidationOptions
+import amf.core.services.ShaclValidationOptions
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -27,7 +27,7 @@ trait SHACLValidator extends RdfFramework {
   def validate(data: String, dataMediaType: String, shapes: String, shapesMediaType: String)(
       implicit executionContext: ExecutionContext): Future[String]
 
-  def validate(data: BaseUnit, shapes: Seq[ValidationSpecification], options: ValidationOptions)(
+  def validate(data: BaseUnit, shapes: Seq[ValidationSpecification], options: ShaclValidationOptions)(
       implicit executionContext: ExecutionContext): Future[String]
 
   /**
@@ -42,7 +42,7 @@ trait SHACLValidator extends RdfFramework {
   def report(data: String, dataMediaType: String, shapes: String, shapesMediaType: String)(
       implicit executionContext: ExecutionContext): Future[ValidationReport]
 
-  def report(data: BaseUnit, shapes: Seq[ValidationSpecification], options: ValidationOptions)(
+  def report(data: BaseUnit, shapes: Seq[ValidationSpecification], options: ShaclValidationOptions)(
       implicit executionContext: ExecutionContext): Future[ValidationReport]
 
   /**

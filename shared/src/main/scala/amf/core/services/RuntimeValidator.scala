@@ -54,15 +54,6 @@ trait RuntimeValidator extends PlatformSecrets {
     loadValidationProfile(validationProfilePath, Environment(exec), errorHandler, exec)
 
   /**
-    * Low level validation returning a SHACL validation report
-    */
-  def shaclValidation(
-      model: BaseUnit,
-      validations: EffectiveValidations,
-      customFunctions: CustomShaclFunctions, // used in customShaclValidator
-      options: ValidationOptions)(implicit executionContext: ExecutionContext): Future[ValidationReport]
-
-  /**
     * Generates a JSON-LD graph with the SHACL shapes for the requested profile name
     *
     * @return JSON-LD graph
@@ -117,13 +108,6 @@ object RuntimeValidator {
   type CustomShaclFunction  = (AmfObject, Option[PropertyInfo] => Unit) => Unit
   type CustomShaclFunctions = Map[String, CustomShaclFunction]
 
-  def shaclValidation(
-      model: BaseUnit,
-      validations: EffectiveValidations,
-      customFunctions: CustomShaclFunctions = Map(), // used for customShaclValidator
-      options: ValidationOptions)(implicit executionContext: ExecutionContext): Future[ValidationReport] =
-    validator.shaclValidation(model, validations, customFunctions, options)
-
   def emitShapesGraph(profileName: ProfileName): String =
     validator.emitShapesGraph(profileName)
 
@@ -140,24 +124,24 @@ object RuntimeValidator {
 
 }
 
-class ValidationOptions() {
+class ShaclValidationOptions() {
   val filterFields: Field => Boolean = (_: Field) => false
   var messageStyle: MessageStyle     = AMFStyle
   var level: String                  = "partial" // partial | full
 
   def toRenderOptions: RenderOptions = RenderOptions().withValidation.withFilterFieldsFunc(filterFields)
 
-  def withMessageStyle(style: MessageStyle): ValidationOptions = {
+  def withMessageStyle(style: MessageStyle): ShaclValidationOptions = {
     messageStyle = style
     this
   }
 
-  def withFullValidation(): ValidationOptions = {
+  def withFullValidation(): ShaclValidationOptions = {
     level = "full"
     this
   }
 
-  def withPartialValidation(): ValidationOptions = {
+  def withPartialValidation(): ShaclValidationOptions = {
     level = "partial"
     this
   }
@@ -165,4 +149,4 @@ class ValidationOptions() {
   def isPartialValidation: Boolean = level == "partial"
 }
 
-object DefaultValidationOptions extends ValidationOptions {}
+object DefaultShaclValidationOptions extends ShaclValidationOptions {}
