@@ -1,7 +1,7 @@
 package amf.client.remod
 
 import amf.{AmfProfile, AmlProfile, Async20Profile, AsyncProfile, Oas20Profile, Oas30Profile, ProfileName, Raml08Profile, Raml10Profile}
-import amf.client.remod.amfcore.plugins.validate.{ValidationConfiguration, ValidationOptions}
+import amf.client.remod.amfcore.plugins.validate.{ValidationConfiguration, ValidationInfo, ValidationOptions}
 import amf.core.model.document.BaseUnit
 import amf.core.remote.Vendor
 import amf.core.validation.core.ValidationProfile
@@ -29,7 +29,7 @@ object AMFValidator {
     validate(bu, guessedVendor, conf)
   }
   def validate(bu: BaseUnit, profileName: ProfileName, conf: AMFGraphConfiguration): Future[AMFValidationReport] = {
-    val plugins = conf.registry.plugins.validatePlugins
+    val plugins = conf.registry.plugins.validatePlugins.filter(_.applies(ValidationInfo(bu, profileName)))
     val constraints = computeApplicableConstraints(profileName, conf.registry.constraintsRules)
     val options = ValidationOptions(profileName, constraints, ValidationConfiguration(conf))
     val runner = FailFastValidationRunner(plugins, options)
