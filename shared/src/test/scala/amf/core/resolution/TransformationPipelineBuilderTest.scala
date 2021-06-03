@@ -55,8 +55,8 @@ class TransformationPipelineBuilderTest extends FunSuite with Matchers {
   test("Create builder from pipeline name and config") {
     val config = AMFGraphConfiguration.predefined()
     val builder =
-      TransformationPipelineBuilder.fromPipeline(PipelineName.from(Amf.name, TransformationPipeline.DEFAULT_PIPELINE),
-                                                 config)
+      TransformationPipelineBuilder
+        .fromPipeline(PipelineName.from(Amf.mediaType, TransformationPipeline.DEFAULT_PIPELINE), config)
     val pipeline = builder.get.build()
     pipeline.steps should not be empty
   }

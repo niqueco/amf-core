@@ -8,5 +8,4 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 @JSExportAll
 object PipelineName {
   def from(targetMediaType: String, pipelineId: String): String = s"$targetMediaType+$pipelineId"
-  def from(targetMediaType: String): String                     = s"$targetMediaType+${TransformationPipeline.DEFAULT_PIPELINE}"
 }
