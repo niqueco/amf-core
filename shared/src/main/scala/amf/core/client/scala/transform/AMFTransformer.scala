@@ -1,5 +1,6 @@
 package amf.core.client.scala.transform
 
+import amf.core.client.common.transform.{PipelineId, PipelineName}
 import amf.core.client.scala.{AMFGraphConfiguration, AMFResult}
 import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.scala.transform.pipelines.{TransformationPipeline, TransformationPipelineRunner}
@@ -10,7 +11,7 @@ object AMFTransformer {
 
   def transform(unit: BaseUnit, conf: AMFGraphConfiguration): AMFResult = {
     val guessedMediaType = unit.sourceVendor.getOrElse(Amf).mediaType
-    transform(unit, PipelineName.from(guessedMediaType, TransformationPipeline.DEFAULT_PIPELINE), conf)
+    transform(unit, PipelineName.from(guessedMediaType, PipelineId.Default), conf)
   }
 
   def transform(unit: BaseUnit, pipelineName: String, conf: AMFGraphConfiguration): AMFResult = {
