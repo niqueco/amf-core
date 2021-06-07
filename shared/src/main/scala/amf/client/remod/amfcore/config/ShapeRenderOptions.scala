@@ -5,9 +5,9 @@ import amf.client.exported.config.{JSONSchemaVersion, JSONSchemaVersions}
 /**
   * Immutable implementation of shape render options
   */
-private[amf] case class ShapeRenderOptions(
+case class ShapeRenderOptions(
     documentation: Boolean = true,
-    compactedEmission: Boolean = false,
+    compactedEmission: Boolean = true,
     emitWarningForUnsupportedValidationFacets: Boolean = false,
     schema: JSONSchemaVersion = JSONSchemaVersions.UNSPECIFIED,
 ) {
@@ -15,8 +15,8 @@ private[amf] case class ShapeRenderOptions(
   /** Remove documentation info as examples, descriptions, display names, etc. */
   def withoutDocumentation: ShapeRenderOptions = copy(documentation = false)
 
-  /** Render shape extracting common types to definitions */
-  def withCompactedEmission: ShapeRenderOptions = copy(compactedEmission = true)
+  /** Render shape without extracting common types to definitions */
+  def withoutCompactedEmission: ShapeRenderOptions = copy(compactedEmission = false)
 
   def withEmitWarningForUnsupportedValidationFacets(value: Boolean): ShapeRenderOptions = copy(emitWarningForUnsupportedValidationFacets = value)
 

@@ -3,9 +3,9 @@ package amf.client.remod.amfcore.config
 /**
   * Immutable implementation of parsing options
   */
-case class ParsingOptions private[amf] (amfJsonLdSerialization: Boolean = true,
-                                        baseUnitUrl: Option[String] = None,
-                                        maxYamlReferences: Option[Long] = None) {
+case class ParsingOptions(amfJsonLdSerialization: Boolean = true,
+                          baseUnitUrl: Option[String] = None,
+                          maxYamlReferences: Option[Long] = None) {
 
   /** Parse specific AMF JSON-LD serialization */
   def withoutAmfJsonLdSerialization: ParsingOptions = copy(amfJsonLdSerialization = false)

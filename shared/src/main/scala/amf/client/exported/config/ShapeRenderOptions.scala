@@ -17,8 +17,8 @@ case class ShapeRenderOptions(private[amf] val _internal: InternalShapeRenderOpt
   /** Remove documentation info as examples, descriptions, display names, etc. */
   def withoutDocumentation: ShapeRenderOptions = _internal.withoutDocumentation
 
-  /** Render shape extracting common types to definitions. */
-  def withCompactedEmission: ShapeRenderOptions = _internal.withCompactedEmission
+  /** Render shape without extracting common types to definitions. */
+  def withoutCompactedEmission: ShapeRenderOptions = _internal.withoutCompactedEmission
 
   def withSchemaVersion(version: JSONSchemaVersion): ShapeRenderOptions = _internal.withSchemaVersion(version)
 }
