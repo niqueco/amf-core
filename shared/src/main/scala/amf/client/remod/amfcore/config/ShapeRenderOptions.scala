@@ -1,7 +1,6 @@
 package amf.client.remod.amfcore.config
 
-import amf.client.render.{JSONSchemaVersion, JSONSchemaVersions}
-import amf.core.errorhandling.{AMFErrorHandler, UnhandledErrorHandler}
+import amf.client.exported.config.{JSONSchemaVersion, JSONSchemaVersions}
 
 /**
   * Immutable implementation of shape render options

@@ -13,7 +13,6 @@ import amf.client.remod.amfcore.plugins.render.{
   RenderInfo
 }
 import amf.core.benchmark.ExecutionLog
-import amf.core.emitter.{RenderOptions, ShapeRenderOptions}
 import amf.core.model.document.{BaseUnit, ExternalFragment}
 import amf.core.parser.SyamlParsedDocument
 import amf.core.rdf.RdfModelDocument
@@ -138,19 +137,5 @@ class AMFSerializer(unit: BaseUnit, mediaType: String, config: RenderConfigurati
     renderPlugin.getOrElse {
       throw new Exception(s"Cannot serialize domain model '${unit.location()}' for media type $mediaType")
     }
-  }
-}
-
-object AMFSerializer {
-
-  private def generateRenderEnv(options: Option[RenderOptions],
-                                shapeOptions: ShapeRenderOptions): RenderConfiguration = {
-    val renderOptions    = options.getOrElse(RenderOptions())
-    val immutableOptions = RenderOptions.toImmutable(renderOptions, ShapeRenderOptions.toImmutable(shapeOptions))
-
-    val env = AMFPluginsRegistry
-      .obtainStaticConfig()
-      .withRenderOptions(immutableOptions)
-    DefaultRenderConfiguration(env)
   }
 }
