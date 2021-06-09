@@ -1,7 +1,7 @@
 package amf.plugins.syntax
 
 import amf.client.plugins.{AMFPlugin, AMFSyntaxPlugin}
-import amf.core.client.ParsingOptions
+import amf.client.remod.amfcore.config.ParsingOptions
 import amf.core.parser.{JsonParserFactory, ParsedDocument, ParserContext, SyamlParsedDocument}
 import amf.core.rdf.RdfModelDocument
 import amf.core.unsafe.PlatformSecrets
@@ -36,7 +36,7 @@ object SYamlSyntaxPlugin extends AMFSyntaxPlugin with PlatformSecrets {
                      ctx: ParserContext,
                      options: ParsingOptions): Option[ParsedDocument] = {
     if (text.length() == 0) None
-    else if ((mediaType == "application/ld+json" || mediaType == "application/json") && !options.isAmfJsonLdSerilization && platform.rdfFramework.isDefined) {
+    else if ((mediaType == "application/ld+json" || mediaType == "application/json") && !options.isAmfJsonLdSerialization && platform.rdfFramework.isDefined) {
       Some(platform.rdfFramework.get.syntaxToRdfModel(mediaType, text))
     } else {
       val parser = getFormat(mediaType) match {

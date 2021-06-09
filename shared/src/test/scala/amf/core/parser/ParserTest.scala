@@ -1,7 +1,7 @@
 package amf.core.parser
 
 import amf.client.remod.ParseConfiguration
-import amf.core.client.ParsingOptions
+import amf.client.remod.amfcore.config.ParsingOptions
 import amf.core.errorhandling.UnhandledErrorHandler
 import amf.core.model.document.BaseUnit
 import amf.core.rdf.RdfModel

@@ -1,7 +1,7 @@
 package amf.plugins.syntax
 
 import amf.client.plugins.{AMFPlugin, AMFSyntaxPlugin}
-import amf.core.client.ParsingOptions
+import amf.client.remod.amfcore.config.ParsingOptions
 import amf.core.parser.{ParsedDocument, ParserContext}
 import amf.core.rdf.RdfModelDocument
 import amf.core.unsafe.PlatformSecrets
@@ -24,8 +24,8 @@ object RdfSyntaxPlugin extends AMFSyntaxPlugin with PlatformSecrets {
                      ctx: ParserContext,
                      options: ParsingOptions): Option[ParsedDocument] = {
     platform.rdfFramework match {
-      case Some(r) if !options.isAmfJsonLdSerilization => Option(r.syntaxToRdfModel(mediaType, text))
-      case _                                           => None
+      case Some(r) if !options.isAmfJsonLdSerialization => Option(r.syntaxToRdfModel(mediaType, text))
+      case _                                            => None
     }
   }
 

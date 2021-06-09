@@ -10,11 +10,6 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
 
   def this() = this(InternalRenderOptions())
 
-  def withCompactedEmission: RenderOptions = _internal.withCompactedEmission
-
-  /** Emit not compacted graph. */
-  def withoutCompactedEmission: RenderOptions = _internal.withoutCompactedEmission
-
   /** Pretty print the graph. */
   def withPrettyPrint: RenderOptions = _internal.withPrettyPrint
 
@@ -53,7 +48,6 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
 
   def withShapeRenderOptions(s: ShapeRenderOptions): RenderOptions = _internal.withShapeRenderOptions(s)
 
-  def isWithCompactedEmission: Boolean       = _internal.compactedEmission
   def isWithCompactUris: Boolean             = _internal.compactUris
   def isWithSourceMaps: Boolean              = _internal.sources
   def isAmfJsonLdSerilization: Boolean       = _internal.amfJsonLdSerialization

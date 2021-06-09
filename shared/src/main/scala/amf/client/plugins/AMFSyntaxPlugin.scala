@@ -1,8 +1,8 @@
 package amf.client.plugins
 
-import java.io.StringWriter
+import amf.client.remod.amfcore.config.ParsingOptions
 
-import amf.core.client.ParsingOptions
+import java.io.StringWriter
 import amf.core.parser.{ParsedDocument, ParserContext}
 import org.mulesoft.common.io.Output
 

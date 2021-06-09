@@ -12,8 +12,7 @@ import amf.plugins.document.graph.{
 /**
   * Immutable implementation of render options
   */
-case class RenderOptions private[amf] (
-    compactedEmission: Boolean = true,
+case class RenderOptions(
     sources: Boolean = false,
     compactUris: Boolean = false,
     rawSourceMaps: Boolean = false,
@@ -26,12 +25,6 @@ case class RenderOptions private[amf] (
     emitNodeIds: Boolean = false,
     shapeRenderOptions: ShapeRenderOptions = ShapeRenderOptions()
 ) {
-
-  /** Include CompactedEmission when rendering to graph. */
-  def withCompactedEmission: RenderOptions = copy(compactedEmission = true)
-
-  /** Exclude CompactedEmission when rendering to graph. */
-  def withoutCompactedEmission: RenderOptions = copy(compactedEmission = false)
 
   /** Include PrettyPrint when rendering to graph. */
   def withPrettyPrint: RenderOptions = copy(prettyPrint = true)
@@ -88,7 +81,6 @@ case class RenderOptions private[amf] (
 
   def isFlattenedJsonLd: Boolean = flattenedJsonLd
 
-  def isWithCompactedEmission: Boolean   = compactedEmission
   def isCompactUris: Boolean             = compactUris
   def isWithSourceMaps: Boolean          = sources
   def isWithRawSourceMaps: Boolean       = rawSourceMaps
