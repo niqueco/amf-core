@@ -1,7 +1,0 @@
-package amf.core.parser
-
-import amf.client.convert.NativeOpsFromJs
-
-class JsAmfEmbeddedGraphParserTest extends EmbeddedGraphParserTest with NativeOpsFromJs
-
-class JsAmfFlattenedGraphParserTest extends FlattenedGraphParserTest with NativeOpsFromJs

@@ -1,5 +1,5 @@
 package amf.core.resolution
 
-import amf.client.convert.NativeOpsFromJs
+import amf.core.internal.convert.NativeOpsFromJs
 
 class JsBasicResolutionTest extends BasicResolutionTest with NativeOpsFromJs

@@ -1,10 +1,11 @@
 package amf.core.core.utils
 
-import amf.core.utils._
+import amf.core.internal.utils._
 import org.scalatest.FunSuite
 import org.scalatest.Matchers._
+
 /**
-  * [[amf.core.utils]] test
+  * [[amf.core.internal.utils]] test
   */
 class CoreTest extends FunSuite {
 

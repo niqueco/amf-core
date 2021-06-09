@@ -1,14 +1,14 @@
 package amf.core.render
 
-import amf.client.convert.{BaseUnitConverter, NativeOps}
-import amf.client.exported.AMFGraphConfiguration
-import amf.client.exported.config.RenderOptions
+import amf.core.internal.convert.{BaseUnitConverter, NativeOps}
+import amf.core.client.platform.AMFGraphConfiguration
+import amf.core.client.platform.config.RenderOptions
 import amf.core.io.FileAssertionTest
-import amf.core.metamodel.domain.ArrayNodeModel
-import amf.core.model.document.{Document, Module}
-import amf.core.model.domain.{ArrayNode, ObjectNode, ScalarNode}
-import amf.core.remote.Vendor.AMF
-import amf.core.vocabulary.Namespace
+import amf.core.internal.metamodel.domain.ArrayNodeModel
+import amf.core.client.scala.model.document.{Document, Module}
+import amf.core.client.scala.model.domain.{ArrayNode, ObjectNode, ScalarNode}
+import amf.core.internal.remote.Vendor.AMF
+import amf.core.client.scala.vocabulary.Namespace
 import org.scalatest.AsyncFunSuite
 
 import scala.concurrent.{ExecutionContext, Future}
