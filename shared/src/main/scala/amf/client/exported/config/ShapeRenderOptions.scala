@@ -5,9 +5,9 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 import amf.client.remod.amfcore.config.{ShapeRenderOptions => InternalShapeRenderOptions}
 
 @JSExportAll
-@JSExportTopLevel("ShapeRenderOptions")
 case class ShapeRenderOptions(private[amf] val _internal: InternalShapeRenderOptions) {
 
+  @JSExportTopLevel("ShapeRenderOptions")
   def this() = this(InternalShapeRenderOptions())
 
   def isWithDocumentation: Boolean     = _internal.isWithDocumentation

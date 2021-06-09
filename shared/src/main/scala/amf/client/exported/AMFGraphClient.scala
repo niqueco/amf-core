@@ -22,7 +22,7 @@ class AMFGraphClient private[amf] (private val _internal: InternalAMFGraphClient
     this(new InternalAMFGraphClient(configuration))
   }
 
-  def getConfiguration: AMFGraphConfiguration = _internal.getConfiguration
+  def getConfiguration(): AMFGraphConfiguration = _internal.getConfiguration
 
   /**
     * Asynchronously generate a BaseUnit from the content located in the given url.

@@ -1,6 +1,6 @@
 package amf.core.remote
 
-import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
+import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel}
 
 @JSExportTopLevel("core.Vendor")
 object Vendor {
@@ -38,6 +38,7 @@ object Vendor {
   @JSExport val JSONSCHEMA: Vendor = JsonSchema
 }
 
+@JSExportAll
 trait Vendor {
   val name: String
 
@@ -76,7 +77,7 @@ trait Async extends Vendor {
   override def toString: String = name.trim
 }
 
-object Aml extends Vendor {
+case object Aml extends Vendor {
 
   override val name: String = "AML 1.0"
 
@@ -85,56 +86,56 @@ object Aml extends Vendor {
   override val mediaType: String = "application/aml"
 }
 
-object Oas20 extends Oas {
+case object Oas20 extends Oas {
   override def version: String = "2.0"
 
   override val mediaType: String = "application/oas20"
 }
 
-object Oas30 extends Oas {
+case object Oas30 extends Oas {
   override def version: String = "3.0"
 
   override val mediaType: String = "application/openapi30"
 }
 
-object Raml08 extends Raml {
+case object Raml08 extends Raml {
   override def version: String   = "0.8"
   override val mediaType: String = "application/raml08"
 }
 
-object Raml10 extends Raml {
+case object Raml10 extends Raml {
   override def version: String = "1.0"
 
   override val mediaType: String = "application/raml10"
 }
 
-object AsyncApi extends Async {
+case object AsyncApi extends Async {
   override def version: String = ""
 
   override val mediaType: String = "application/asyncapi"
 }
 
-object AsyncApi20 extends Async {
+case object AsyncApi20 extends Async {
   override def version: String = "2.0"
 
   override val mediaType: String = "application/asyncapi20"
 
 }
 
-object Amf extends Vendor {
+case object Amf extends Vendor {
   override val name: String = "AMF Graph"
 
   override val mediaType: String = "application/graph"
 
 }
 
-object Payload extends Vendor {
+case object Payload extends Vendor {
   override val name: String = "AMF Payload"
 
   override val mediaType: String = "application/amf-payload"
 }
 
-object JsonSchema extends Vendor {
+case object JsonSchema extends Vendor {
   override val name: String = "JSON Schema"
 
   override val mediaType: String = "application/schema+json"

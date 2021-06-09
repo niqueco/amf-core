@@ -50,6 +50,7 @@ import amf.client.remote.Content
 import amf.client.resolve.{ClientErrorHandler, ClientErrorHandlerConverter}
 import amf.client.resource.{ResourceLoader => ClientResourceLoader}
 import amf.client.validate.{
+  ValidationProfile,
   AMFValidationReport => ClientValidationReport,
   PayloadValidator => ClientInternalPayloadValidator,
   ValidationCandidate => ClientValidationCandidate,
@@ -107,7 +108,8 @@ trait CoreBaseConverter
     with TransformationStepConverter
     with TransformationPipelineBuilderConverter
     with AMFResultConverter
-    with AMFEventListenerConverter {
+    with AMFEventListenerConverter
+    with ValidationProfileConverter {
 
   implicit def asClient[Internal, Client](from: Internal)(
       implicit m: InternalClientMatcher[Internal, Client]): Client =
@@ -672,5 +674,15 @@ trait AMFEventListenerConverter {
         from.notifyEvent(clientEvent)
       }
     }
+  }
+}
+
+trait ValidationProfileConverter {
+  implicit object ValidationProfileMatcher
+      extends BidirectionalMatcher[amf.core.validation.core.ValidationProfile, ValidationProfile] {
+    override def asClient(from: core.ValidationProfile): ValidationProfile =
+      new amf.client.validate.ValidationProfile(from)
+
+    override def asInternal(from: ValidationProfile): core.ValidationProfile = from.internal
   }
 }

@@ -5,9 +5,9 @@ import amf.client.convert.CoreClientConverters._
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 @JSExportAll
-@JSExportTopLevel("RenderOptions")
 case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
 
+  @JSExportTopLevel("RenderOptions")
   def this() = this(InternalRenderOptions())
 
   /** Pretty print the graph. */

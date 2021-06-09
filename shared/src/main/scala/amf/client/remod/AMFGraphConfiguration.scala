@@ -66,7 +66,7 @@ object AMFGraphConfiguration {
 
   def fromLegacy(base: AMFGraphConfiguration, legacy: Environment): AMFGraphConfiguration = {
     legacy.maxYamlReferences.foreach { maxValue =>
-      base.getParsingOptions.setMaxYamlReferences(maxValue)
+      base.getParsingOptions.setMaxYamlReferences(maxValue.toInt)
     }
     val withLoaders: AMFGraphConfiguration = base.withResourceLoaders(legacy.loaders.toList)
     legacy.resolver.map(unitCache => withLoaders.withUnitCache(unitCache)).getOrElse(withLoaders)

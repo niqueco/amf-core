@@ -20,5 +20,6 @@ class AMFValidationReport(private[amf] val _internal: InternalValidationReport) 
 
   override def toString: String = _internal.toString
 
-  def toString(max: Int): String = _internal.toString(max)
+  // Name is not 'toString' as it clashes in Typescript definition
+  def toStringMaxed(max: Int): String = _internal.toString(max)
 }
