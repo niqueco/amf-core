@@ -177,7 +177,7 @@ package object utils {
     }
   }
 
-  case class AliasCounter(var count: Int = 0, maxThreshold: Long = AliasCounter.defaultThreshold) {
+  case class AliasCounter(var count: Int = 0, maxThreshold: Int = AliasCounter.defaultThreshold) {
     def exceedsThreshold(node: YNode): Boolean = {
       register(node)
       count > maxThreshold
@@ -188,7 +188,7 @@ package object utils {
 
   object AliasCounter {
     val defaultThreshold = 10000
-    def apply(maxThreshold: Option[Long]): AliasCounter = maxThreshold match {
+    def apply(maxThreshold: Option[Int]): AliasCounter = maxThreshold match {
       case Some(value) => apply(maxThreshold = value)
       case None        => apply()
     }
