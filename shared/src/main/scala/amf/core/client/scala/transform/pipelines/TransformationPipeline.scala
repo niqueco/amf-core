@@ -47,11 +47,3 @@ private[amf] case class TransformationPipelineRunner(errorHandler: AMFErrorHandl
     resolved
   }
 }
-
-//TODO: this should be modified to include full pipeline names
-object TransformationPipeline {
-  val DEFAULT_PIPELINE       = "default"
-  val EDITING_PIPELINE       = "editing"
-  val COMPATIBILITY_PIPELINE = "compatibility"
-  val CACHE_PIPELINE         = "cache"
-}

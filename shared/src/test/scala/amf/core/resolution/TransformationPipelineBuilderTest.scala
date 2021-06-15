@@ -1,9 +1,10 @@
 package amf.core.resolution
 
+import amf.core.client.common.transform.{PipelineId, PipelineName}
 import amf.core.client.scala.errorhandling.{AMFErrorHandler, DefaultErrorHandler, UnhandledErrorHandler}
 import amf.core.client.scala.AMFGraphConfiguration
 import amf.core.client.scala.model.document.{BaseUnit, Document}
-import amf.core.client.scala.transform.{PipelineName, TransformationPipelineBuilder}
+import amf.core.client.scala.transform.TransformationPipelineBuilder
 import amf.core.internal.remote.Amf
 import amf.core.client.scala.transform.pipelines.{TransformationPipeline, TransformationPipelineRunner}
 import amf.core.client.scala.transform.stages.TransformationStep
@@ -55,8 +56,8 @@ class TransformationPipelineBuilderTest extends FunSuite with Matchers {
   test("Create builder from pipeline name and config") {
     val config = AMFGraphConfiguration.predefined()
     val builder =
-      TransformationPipelineBuilder.fromPipeline(PipelineName.from(Amf.name, TransformationPipeline.DEFAULT_PIPELINE),
-                                                 config)
+      TransformationPipelineBuilder
+        .fromPipeline(PipelineName.from(Amf.mediaType, PipelineId.Default), config)
     val pipeline = builder.get.build()
     pipeline.steps should not be empty
   }
