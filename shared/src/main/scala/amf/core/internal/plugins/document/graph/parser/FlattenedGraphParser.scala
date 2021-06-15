@@ -389,7 +389,7 @@ class FlattenedGraphParser(config: ParseConfiguration, startingPoint: String)(im
       val extensions = properties
         .flatMap { uri =>
           map
-            .key(compactUriFromContext(uri))
+            .key(transformIdFromContext(uri)) // See ADR adrs/0006-custom-domain-properties-json-ld-rendering.md last consequence item
             .map(entry => {
               val extension  = DomainExtension()
               val entryValue = entry.value
@@ -401,7 +401,7 @@ class FlattenedGraphParser(config: ParseConfiguration, startingPoint: String)(im
                 .map(extension.withElement)
 
               val definition = CustomDomainProperty()
-              definition.id = uri
+              definition.id = transformIdFromContext(uri)
               extension.withDefinedBy(definition)
 
               parse(obj).collect({ case d: DataNode => d }).foreach { pn =>
