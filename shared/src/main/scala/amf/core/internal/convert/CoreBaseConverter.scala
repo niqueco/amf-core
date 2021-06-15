@@ -1,6 +1,7 @@
 package amf.core.internal.convert
 
-import amf.core.client.scala.errorhandling.AMFErrorHandler
+import amf.core.client.common.remote.Content
+import amf.core.client.common.validation.{ProfileName, ValidationProfile}
 import amf.core.client.platform
 import amf.core.client.platform.config.{
   AMFEventConverter,
@@ -10,8 +11,6 @@ import amf.core.client.platform.config.{
   ShapeRenderOptions => ClientShapeRenderOptions
 }
 import amf.core.client.platform.errorhandling.ClientErrorHandler
-import amf.core.client.platform.transform.{TransformationPipelineBuilder => ClientTransformationPipelineBuilder}
-import amf.core.client.platform.{config, transform, AMFResult => ClientAMFResult}
 import amf.core.client.platform.model.document.{
   BaseUnit => ClientBaseUnit,
   Document => ClientDocument,
@@ -44,25 +43,17 @@ import amf.core.client.platform.model.{
   StrField => ClientStrField
 }
 import amf.core.client.platform.reference.{CachedReference => ClientCachedReference, UnitCache => ClientUnitCache}
-import amf.core.client.common.remote.Content
 import amf.core.client.platform.resource.{ResourceLoader => ClientResourceLoader}
-import amf.core.client.scala.config.{
-  AMFEvent,
-  AMFEventListener,
-  CachedReference,
-  ParsingOptions,
-  RenderOptions,
-  ShapeRenderOptions,
-  UnitCache
-}
-import amf.core.client.scala.{AMFGraphConfiguration, AMFResult}
+import amf.core.client.platform.transform.{TransformationPipelineBuilder => ClientTransformationPipelineBuilder}
 import amf.core.client.platform.validation.{
   AMFValidationReport => ClientValidationReport,
-  PayloadValidator => ClientInternalPayloadValidator,
   ValidationCandidate => ClientValidationCandidate,
   ValidationResult => ClientValidationResult,
   ValidationShapeSet => ClientValidationShapeSet
 }
+import amf.core.client.platform.{config, transform, AMFResult => ClientAMFResult}
+import amf.core.client.scala.config._
+import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model._
 import amf.core.client.scala.model.document.{BaseUnit, Document, Module, PayloadFragment}
 import amf.core.client.scala.model.domain._
@@ -74,16 +65,16 @@ import amf.core.client.scala.model.domain.extensions.{
 }
 import amf.core.client.scala.model.domain.templates.{AbstractDeclaration, ParametrizedDeclaration, VariableValue}
 import amf.core.client.scala.transform.TransformationPipelineBuilder
-import amf.core.client.scala.validation.{AMFValidationReport, AMFValidationResult}
-import amf.core.client.common.validation.{ProfileName, ValidationProfile}
-import amf.core.internal.remote.Vendor
 import amf.core.client.scala.transform.stages.TransformationStep
-import amf.core.client.scala.validation.payload.PayloadValidator
-import amf.core.internal.unsafe.PlatformSecrets
-import amf.core.client.scala.validation._
+import amf.core.client.scala.validation.payload.AMFShapePayloadValidator
+import amf.core.client.platform.validation.{AMFShapePayloadValidator => ClientAMFShapePayloadValidator}
+import amf.core.client.scala.validation.{AMFValidationReport, AMFValidationResult}
+import amf.core.client.scala.{AMFGraphConfiguration, AMFResult}
 import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.reference.UnitCacheAdapter
+import amf.core.internal.remote.Vendor
 import amf.core.internal.resource.{ClientResourceLoaderAdapter, InternalResourceLoaderAdapter, ResourceLoader}
+import amf.core.internal.unsafe.PlatformSecrets
 import amf.core.internal.validation.{ValidationCandidate, ValidationShapeSet}
 
 import scala.collection.mutable
@@ -602,11 +593,11 @@ trait ValidationShapeSetConverter {
 trait PayloadValidatorConverter {
 
   implicit object PayloadValidatorMatcher
-      extends BidirectionalMatcher[PayloadValidator, ClientInternalPayloadValidator] {
-    override def asClient(from: PayloadValidator): ClientInternalPayloadValidator =
-      new ClientInternalPayloadValidator(from)
+      extends BidirectionalMatcher[AMFShapePayloadValidator, ClientAMFShapePayloadValidator] {
+    override def asClient(from: AMFShapePayloadValidator): ClientAMFShapePayloadValidator =
+      new ClientAMFShapePayloadValidator(from)
 
-    override def asInternal(from: ClientInternalPayloadValidator): PayloadValidator = from._internal
+    override def asInternal(from: ClientAMFShapePayloadValidator): AMFShapePayloadValidator = from._internal
   }
 }
 

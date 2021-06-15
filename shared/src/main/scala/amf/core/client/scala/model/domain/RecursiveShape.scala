@@ -1,15 +1,12 @@
 package amf.core.client.scala.model.domain
 
 import amf.core.client.scala.errorhandling.AMFErrorHandler
-import amf.core.client.platform.execution.BaseExecutionEnvironment
+import amf.core.client.scala.model.StrField
+import amf.core.client.scala.traversal.ModelTraversalRegistry
 import amf.core.internal.metamodel.domain.RecursiveShapeModel
 import amf.core.internal.metamodel.domain.RecursiveShapeModel._
-import amf.core.client.scala.model.StrField
-import amf.core.internal.parser.domain.Fields
-import amf.core.client.scala.validation.payload.PayloadValidator
-import amf.core.client.scala.traversal.ModelTraversalRegistry
-import amf.core.internal.utils.AmfStrings
 import amf.core.internal.parser.domain.{Annotations, Fields}
+import amf.core.internal.utils.AmfStrings
 
 class RecursiveShape(override val fields: Fields, override val annotations: Annotations) extends Shape {
 
