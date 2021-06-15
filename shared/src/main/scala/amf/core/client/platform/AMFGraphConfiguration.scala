@@ -1,20 +1,21 @@
 package amf.core.client.platform
 
-import amf.core.internal.convert.CoreClientConverters._
-import amf.core.internal.convert.TransformationPipelineConverter._
 import amf.core.client.platform.config.{AMFEventListener, AMFLogger, ParsingOptions, RenderOptions}
 import amf.core.client.platform.errorhandling.ErrorHandlerProvider
-import amf.core.client.platform.transform.TransformationPipeline
 import amf.core.client.platform.reference.UnitCache
-import amf.core.internal.convert.ClientErrorHandlerConverter._
 import amf.core.client.platform.resource.ResourceLoader
+import amf.core.client.platform.transform.TransformationPipeline
+import amf.core.internal.convert.ClientErrorHandlerConverter._
+import amf.core.internal.convert.CoreClientConverters._
+import amf.core.internal.convert.TransformationPipelineConverter._
 
 import scala.concurrent.ExecutionContext
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 import amf.core.client.scala
+import amf.core.client.scala.validation.payload.ShapePayloadValidatorFactory
+import amf.core.client.scala.{AMFGraphConfiguration => InternalGraphConfiguration}
 import amf.core.internal.registries.AMFRegistry
 import amf.core.internal.resource.AMFResolvers
-import amf.core.client.scala.{AMFGraphConfiguration => InternalGraphConfiguration}
 
 /** Base AMF configuration object */
 @JSExportAll
@@ -22,6 +23,8 @@ class AMFGraphConfiguration private[amf] (private[amf] val _internal: scala.AMFG
   private implicit val ec: ExecutionContext = _internal.getExecutionContext
 
   def createClient(): AMFGraphClient = new AMFGraphClient(this)
+
+  def payloadValidatorFactory(): ShapePayloadValidatorFactory = _internal.payloadValidatorFactory()
 
   def withParsingOptions(parsingOptions: ParsingOptions): AMFGraphConfiguration =
     _internal.withParsingOptions(parsingOptions)

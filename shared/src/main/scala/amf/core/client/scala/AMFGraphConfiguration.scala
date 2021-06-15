@@ -11,12 +11,14 @@ import amf.core.client.scala.model.domain.AnnotationGraphLoader
 import amf.core.client.common.validation.ProfileName
 import amf.core.client.scala.transform.pipelines.{BasicTransformationPipeline, TransformationPipeline}
 import amf.core.client.scala.parse.document.ParserContext
+import amf.core.client.scala.validation.payload.ShapePayloadValidatorFactory
 import amf.core.internal.validation.core.ValidationProfile
 import amf.core.internal.parser.ParseConfiguration
 import amf.core.internal.plugins.AMFPlugin
 import amf.core.internal.resource.{AMFResolvers, ResourceLoader}
 import amf.core.internal.plugins.document.graph.entities.AMFGraphEntities
 import amf.core.internal.plugins.parse.AMFGraphParsePlugin
+import amf.core.internal.plugins.payload.DefaultShapePayloadValidatorFactory
 import amf.core.internal.plugins.render.{AMFGraphRenderPlugin, DefaultRenderConfiguration}
 import amf.core.internal.plugins.syntax.{SyamlSyntaxParsePlugin, SyamlSyntaxRenderPlugin}
 import amf.core.internal.registries.AMFRegistry
@@ -89,6 +91,8 @@ class AMFGraphConfiguration private[amf] (override private[amf] val resolvers: A
     extends BaseAMFConfigurationSetter(resolvers, errorHandlerProvider, registry, logger, listeners, options) { // break platform into more specific classes?
 
   def createClient(): AMFGraphClient = new AMFGraphClient(this)
+
+  def payloadValidatorFactory(): ShapePayloadValidatorFactory = DefaultShapePayloadValidatorFactory(this)
 
   def withParsingOptions(parsingOptions: ParsingOptions): AMFGraphConfiguration =
     super._withParsingOptions(parsingOptions)
