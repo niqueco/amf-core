@@ -386,19 +386,19 @@ class FlattenedGraphParser()(implicit val ctx: GraphParserContext) extends Graph
       val extensions = properties
         .flatMap { uri =>
           map
-            .key(compactUriFromContext(uri))
+            .key(transformIdFromContext(uri)) // See ADR adrs/0006-custom-domain-properties-json-ld-rendering.md last consequence item
             .map(entry => {
               val extension  = DomainExtension()
               val entryValue = entry.value
               val obj        = contentOfNode(entryValue).getOrElse(entryValue.as[YMap])
 
               parseScalarProperty(obj, DomainExtensionModel.Name)
-                .map(s => extension.set(DomainExtensionModel.Name,s))
+                .map(s => extension.set(DomainExtensionModel.Name, s))
               parseScalarProperty(obj, DomainExtensionModel.Element)
                 .map(extension.withElement)
 
               val definition = CustomDomainProperty()
-              definition.id = uri
+              definition.id = transformIdFromContext(uri)
               extension.withDefinedBy(definition)
 
               parse(obj).collect({ case d: DataNode => d }).foreach { pn =>

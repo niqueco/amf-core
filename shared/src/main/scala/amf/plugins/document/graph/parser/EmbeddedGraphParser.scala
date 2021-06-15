@@ -112,8 +112,8 @@ class EmbeddedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
                 val modelFields = model match {
                   case shapeModel: ShapeModel =>
                     shapeModel.fields ++ Seq(
-                      ShapeModel.CustomShapePropertyDefinitions,
-                      ShapeModel.CustomShapeProperties
+                        ShapeModel.CustomShapePropertyDefinitions,
+                        ShapeModel.CustomShapeProperties
                     )
                   case _ => model.fields
                 }
@@ -216,18 +216,18 @@ class EmbeddedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
       val extensions = properties
         .flatMap { uri =>
           map
-            .key(compactUriFromContext(uri))
+            .key(transformIdFromContext(uri)) // See ADR adrs/0006-custom-domain-properties-json-ld-rendering.md last consequence item
             .map(entry => {
               val extension = DomainExtension()
               val obj       = entry.value.as[YMap]
 
               parseScalarProperty(obj, DomainExtensionModel.Name)
-                .map(extension.set(DomainExtensionModel.Name,_))
+                .map(extension.set(DomainExtensionModel.Name, _))
               parseScalarProperty(obj, DomainExtensionModel.Element)
                 .map(extension.withElement)
 
               val definition = CustomDomainProperty()
-              definition.id = uri
+              definition.id = transformIdFromContext(uri)
               extension.withDefinedBy(definition)
 
               parse(obj).collect({ case d: DataNode => d }).foreach { pn =>
