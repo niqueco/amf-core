@@ -1,5 +1,5 @@
 package amf.core.resolution
 
-import amf.client.convert.NativeOpsFromJvm
+import amf.core.internal.convert.NativeOpsFromJvm
 
 class JvmBasicResolutionTest extends BasicResolutionTest with NativeOpsFromJvm

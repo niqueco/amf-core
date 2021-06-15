@@ -1,14 +1,13 @@
 package amf.core.resolution
 
-import amf.client.errorhandling.DefaultErrorHandler
-import amf.client.remod.AMFGraphConfiguration
-import amf.client.remod.amfcore.resolution.{PipelineName, TransformationPipelineBuilder}
-import amf.core.errorhandling.{AMFErrorHandler, UnhandledErrorHandler}
-import amf.core.model.document.{BaseUnit, Document}
-import amf.core.remote.Amf
-import amf.core.resolution.pipelines.{TransformationPipeline, TransformationPipelineRunner}
-import amf.core.resolution.stages.TransformationStep
-import amf.plugins.features.validation.CoreValidations
+import amf.core.client.scala.errorhandling.{AMFErrorHandler, DefaultErrorHandler, UnhandledErrorHandler}
+import amf.core.client.scala.AMFGraphConfiguration
+import amf.core.client.scala.model.document.{BaseUnit, Document}
+import amf.core.client.scala.transform.{PipelineName, TransformationPipelineBuilder}
+import amf.core.internal.remote.Amf
+import amf.core.client.scala.transform.pipelines.{TransformationPipeline, TransformationPipelineRunner}
+import amf.core.client.scala.transform.stages.TransformationStep
+import amf.core.internal.validation.CoreValidations
 import org.scalatest.{FunSuite, Matchers}
 
 class TransformationPipelineBuilderTest extends FunSuite with Matchers {

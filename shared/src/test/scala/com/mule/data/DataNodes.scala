@@ -1,7 +1,7 @@
 package com.mule.data
-import amf.core.model.DataType
-import amf.core.model.document.{Document, ExternalFragment, Fragment}
-import amf.core.model.domain.{ArrayNode, ObjectNode, ScalarNode}
+import amf.core.client.scala.model.DataType
+import amf.core.client.scala.model.document.{Document, ExternalFragment, Fragment}
+import amf.core.client.scala.model.domain.{ArrayNode, ObjectNode, ScalarNode}
 
 object DataNodes {
 

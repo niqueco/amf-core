@@ -1,10 +1,10 @@
 package amf.core.resolution
 
-import amf.client.convert.{BaseUnitConverter, NativeOps}
-import amf.client.model.document.Document
-import amf.client.resolve.AmfGraphResolver
+import amf.core.client.platform.AMFGraphConfiguration
+import amf.core.client.platform.model.document.Document
+import amf.core.client.scala.model.domain.extensions.CustomDomainProperty
+import amf.core.internal.convert.{BaseUnitConverter, NativeOps}
 import amf.core.io.FileAssertionTest
-import amf.core.model.domain.extensions.CustomDomainProperty
 import amf.core.render.ElementsFixture
 import org.scalatest.{AsyncFunSuite, Matchers}
 
@@ -25,11 +25,11 @@ trait BasicResolutionTest
     val domainProperty = CustomDomainProperty().withName("myProperty").withId("amf://id6")
     document.withEncodes(domainProperty.link("myLink"))
     document.encodes.asInstanceOf[CustomDomainProperty].linkTarget.isEmpty shouldBe false
-    val unit = new AmfGraphResolver().resolve(BaseUnitMatcher.asClient(document))
+    val unit = AMFGraphConfiguration.predefined().createClient().transform(BaseUnitMatcher.asClient(document))
     unit
       .asInstanceOf[Document]
       .encodes
-      .asInstanceOf[amf.client.model.domain.CustomDomainProperty]
+      .asInstanceOf[amf.core.client.platform.model.domain.CustomDomainProperty]
       .linkTarget
       .asOption
       .isEmpty shouldBe true
