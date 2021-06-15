@@ -2,6 +2,7 @@ package amf.core.internal.parser.domain
 
 import amf.core.client.scala.model.domain.{AmfArray, AmfElement, AmfScalar}
 import org.yaml.model._
+import amf.core.internal.parser._
 
 trait TypedNode {
 
