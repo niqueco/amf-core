@@ -32,7 +32,17 @@ object Validator {
   @JSExport
   def loadValidationProfile(url: String, env: Environment = DefaultEnvironment()): ClientFuture[ProfileName] = {
     implicit val executionContext: ExecutionContext = env.executionEnvironment.executionContext
-    RuntimeValidator.loadValidationProfile(url, env._internal, UnhandledErrorHandler, env.executionEnvironment).asClient
+    RuntimeValidator
+      .loadValidationProfile(url, env._internal, UnhandledErrorHandler, env.executionEnvironment)
+      .asClient
+  }
+
+  @JSExport
+  def loadValidationProfileString(url: String, env: Environment = DefaultEnvironment()): ClientFuture[ProfileName] = {
+    implicit val executionContext: ExecutionContext = env.executionEnvironment.executionContext
+    RuntimeValidator
+      .loadValidationProfileString(url, env._internal, UnhandledErrorHandler, env.executionEnvironment)
+      .asClient
   }
 
   @JSExport
