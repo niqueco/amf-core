@@ -200,10 +200,11 @@ class AMFCompiler(compilerContext: CompilerContext,
   }
 
   private def parseSyntaxForMediaType(content: Content, mime: String): Option[(String, ParsedDocument)] = {
+    val withContentUrl = compilerContext.parserContext.forLocation(content.url)
     // TODO ARM sort
     compilerContext.parserContext.config.sortedParseSyntax
       .find(_.applies(content.stream))
-      .map(p => (mime, p.parse(content.stream, mime, compilerContext.parserContext)))
+      .map(p => (mime, p.parse(content.stream, mime, withContentUrl)))
   }
 
   def parseExternalFragment(content: Content)(implicit executionContext: ExecutionContext): Future[BaseUnit] = Future {
