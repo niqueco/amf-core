@@ -5,7 +5,7 @@ import amf.core.emitter.RenderOptions
 import amf.core.errorhandling.ErrorHandler
 import amf.core.metamodel.Field
 import amf.core.model.document.BaseUnit
-import amf.core.model.domain.{AmfObject, DomainElement}
+import amf.core.model.domain.AmfObject
 import amf.core.parser.Annotations
 import amf.core.rdf.RdfModel
 import amf.core.services.RuntimeValidator.CustomShaclFunctions
@@ -13,6 +13,7 @@ import amf.core.unsafe.PlatformSecrets
 import amf.core.validation.core.{ValidationReport, ValidationSpecification}
 import amf.core.validation.{AMFValidationReport, AMFValidationResult, EffectiveValidations}
 import amf.internal.environment.Environment
+import amf.internal.resource.{ResourceLoader, StringResourceLoader}
 import amf.{AMFStyle, MessageStyle, ProfileName}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -50,6 +51,26 @@ trait RuntimeValidator extends PlatformSecrets {
                             errorHandler: ErrorHandler,
                             exec: BaseExecutionEnvironment): Future[ProfileName] =
     loadValidationProfile(validationProfilePath, Environment(exec), errorHandler, exec)
+
+  def loadValidationProfileString(
+      content: String,
+      env: Environment = Environment(),
+      errorHandler: ErrorHandler,
+      exec: BaseExecutionEnvironment = platform.defaultExecutionEnvironment): Future[ProfileName] = {
+
+    val DEFAULT_DOCUMENT_URL = "http://a.ml/amf/default_document"
+    def fromStream(stream: String): ResourceLoader =
+      StringResourceLoader(platform.resolvePath(DEFAULT_DOCUMENT_URL), stream)
+
+    val newEnv = env.add(fromStream(content))
+
+    loadValidationProfile(DEFAULT_DOCUMENT_URL, newEnv, errorHandler, exec)
+  }
+
+  def loadValidationProfileString(content: String,
+                                  errorHandler: ErrorHandler,
+                                  exec: BaseExecutionEnvironment): Future[ProfileName] =
+    loadValidationProfileString(content, Environment(exec), errorHandler, exec)
 
   /**
     * Low level validation returning a SHACL validation report
@@ -111,6 +132,17 @@ object RuntimeValidator {
                             errorHandler: ErrorHandler,
                             executionEnvironment: BaseExecutionEnvironment): Future[ProfileName] =
     validator.loadValidationProfile(validationProfilePath, env, errorHandler, executionEnvironment)
+
+  def loadValidationProfileString(content: String,
+                                  env: Environment = Environment(),
+                                  errorHandler: ErrorHandler): Future[ProfileName] =
+    validator.loadValidationProfileString(content, env, errorHandler)
+
+  def loadValidationProfileString(content: String,
+                                  env: Environment,
+                                  errorHandler: ErrorHandler,
+                                  executionEnvironment: BaseExecutionEnvironment): Future[ProfileName] =
+    validator.loadValidationProfileString(content, env, errorHandler, executionEnvironment)
 
   type PropertyInfo = (Annotations, Field)
   // When no property info is provided violation is thrown in domain element level

@@ -14,7 +14,6 @@ import amf.core.AMF
 import amf.core.unsafe.PlatformSecrets
 
 import scala.concurrent.ExecutionContext
-import scala.scalajs.js.annotation.JSExportAll
 
 object Core extends PlatformSecrets {
 
@@ -63,6 +62,12 @@ object Core extends PlatformSecrets {
 
   def loadValidationProfile(url: String): ClientFuture[ProfileName] =
     loadValidationProfile(url, DefaultEnvironment())
+
+  def loadValidationProfileString(content: String, env: Environment): ClientFuture[ProfileName] =
+    Validator.loadValidationProfileString(content, env)
+
+  def loadValidationProfileString(content: String): ClientFuture[ProfileName] =
+    loadValidationProfileString(content, DefaultEnvironment())
 
   def emitShapesGraph(profileName: ProfileName): String =
     Validator.emitShapesGraph(profileName)
