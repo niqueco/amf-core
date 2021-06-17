@@ -34,6 +34,7 @@ pipeline {
         anyOf {
           branch 'master'
           branch 'remod-breaking'
+          branch 'release/5.0.0-beta'
         }
       }
       steps {
