@@ -10,7 +10,7 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 @JSExportAll
 class AMFValidationReport(private[amf] val _internal: InternalValidationReport) {
 
-  @JSExportTopLevel("client.validate.AMFValidationReport")
+  @JSExportTopLevel("AMFValidationReport")
   def this(model: String, profile: ProfileName, results: ClientList[ValidationResult]) =
     this(InternalValidationReport(model, profile, results.asInternal))
 

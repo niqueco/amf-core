@@ -9,10 +9,10 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 @JSExportAll
 case class ScalarNode(override private[amf] val _internal: InternalScalarNode) extends DataNode {
 
-  @JSExportTopLevel("model.domain.ScalarNode")
+  @JSExportTopLevel("ScalarNode")
   def this() = this(InternalScalarNode())
 
-  @JSExportTopLevel("model.domain.ScalarNode")
+  @JSExportTopLevel("ScalarNode")
   def this(value: String, dataType: String) = this(InternalScalarNode(value, Option(dataType)))
 
   def value: StrField    = _internal.value

@@ -34,6 +34,6 @@ object VariableValue {
   def apply(annotations: Annotations): VariableValue = apply(Fields(), annotations)
 }
 
-@JSExportTopLevel("model.domain.Variable")
+@JSExportTopLevel("Variable")
 @JSExportAll
 case class Variable(name: String, value: DataNode)

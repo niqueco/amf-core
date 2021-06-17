@@ -1,7 +1,7 @@
 package amf.core.client.common.validation
 import amf.core.internal.convert.CoreClientConverters._
 
-import scala.scalajs.js.annotation.{JSExport, JSExportAll}
+import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel}
 import amf.core.internal.validation.core.{ValidationProfile => InternalValidationProfile}
 
 @JSExportAll

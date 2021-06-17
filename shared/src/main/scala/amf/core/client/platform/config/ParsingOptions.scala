@@ -7,7 +7,6 @@ import amf.core.client.scala.config.{ParsingOptions => InternalParsingOptions}
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 @JSExportAll
-@JSExportTopLevel("ParsingOptions")
 case class ParsingOptions(private[amf] val _internal: InternalParsingOptions) {
 
   @JSExportTopLevel("ParsingOptions")

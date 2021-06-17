@@ -11,7 +11,7 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 @JSExportAll
 case class ValidationShapeSet(private[amf] val _internal: InternalValidationShapeSet) {
 
-  @JSExportTopLevel("client.plugins.ValidationShapeSet")
+  @JSExportTopLevel("ValidationShapeSet")
   def this(candidates: ClientList[ValidationCandidate], closure: ClientList[Shape], defaultSeverity: String) =
     this(InternalValidationShapeSet(candidates.asInternal, defaultSeverity))
 
@@ -23,7 +23,7 @@ case class ValidationShapeSet(private[amf] val _internal: InternalValidationShap
 @JSExportAll
 case class ValidationCandidate(private[amf] val _internal: InternalValidationCandidate) {
 
-  @JSExportTopLevel("client.plugins.ValidationCandidate")
+  @JSExportTopLevel("ValidationCandidate")
   def this(shape: Shape, payload: PayloadFragment) =
     this(InternalValidationCandidate(shape._internal, payload._internal))
 

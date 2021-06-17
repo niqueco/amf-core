@@ -11,7 +11,7 @@ case class CustomDomainProperty(private[amf] val _internal: InternalCustomDomain
     extends DomainElement
     with Linkable {
 
-  @JSExportTopLevel("model.domain.CustomDomainProperty")
+  @JSExportTopLevel("CustomDomainProperty")
   def this() = this(InternalCustomDomainProperty())
 
   def name: StrField = _internal.name

@@ -8,6 +8,6 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 case class ExternalFragment(override private[amf] val _internal: InternalExternalFragment)
     extends Fragment(_internal) {
 
-  @JSExportTopLevel("model.document.ExternalFragment")
+  @JSExportTopLevel("ExternalFragment")
   def this() = this(InternalExternalFragment())
 }

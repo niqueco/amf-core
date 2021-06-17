@@ -8,7 +8,7 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 @JSExportAll
 case class ObjectNode(override private[amf] val _internal: InternalObjectNode) extends DataNode {
 
-  @JSExportTopLevel("model.domain.ObjectNode")
+  @JSExportTopLevel("ObjectNode")
   def this() = this(InternalObjectNode())
 
   def properties: ClientMap[DataNode] = _internal.allPropertiesWithName().asClient
