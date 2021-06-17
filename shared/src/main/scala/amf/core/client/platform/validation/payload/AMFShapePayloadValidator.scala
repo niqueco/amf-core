@@ -9,8 +9,9 @@ import scala.concurrent.ExecutionContext
 import scala.scalajs.js.annotation.JSExportAll
 
 @JSExportAll
-class AMFShapePayloadValidator(private[amf] val _internal: InternalPayloadValidator,
-                               private val exec: BaseExecutionEnvironment = platform.defaultExecutionEnvironment) {
+class AMFShapePayloadValidator private[amf] (private[amf] val _internal: InternalPayloadValidator,
+                                             private val exec: BaseExecutionEnvironment =
+                                               platform.defaultExecutionEnvironment) {
 
   private implicit val executionContext: ExecutionContext = exec.executionContext
 
