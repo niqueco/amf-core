@@ -2,6 +2,7 @@ package amf.core.internal.resource
 
 import amf.core.client.common.remote.Content
 import amf.core.client.platform.resource.{ResourceLoader => ClientResourceLoader}
+import amf.core.client.scala.resource.ResourceLoader
 import amf.core.internal.convert.CoreClientConverters._
 
 import scala.concurrent.{ExecutionContext, Future}

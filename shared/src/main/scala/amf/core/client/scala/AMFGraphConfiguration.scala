@@ -11,11 +11,12 @@ import amf.core.client.scala.model.domain.AnnotationGraphLoader
 import amf.core.client.common.validation.ProfileName
 import amf.core.client.scala.transform.pipelines.{BasicTransformationPipeline, TransformationPipeline}
 import amf.core.client.scala.parse.document.ParserContext
+import amf.core.client.scala.resource.ResourceLoader
 import amf.core.client.scala.validation.payload.ShapePayloadValidatorFactory
 import amf.core.internal.validation.core.ValidationProfile
 import amf.core.internal.parser.ParseConfiguration
 import amf.core.internal.plugins.AMFPlugin
-import amf.core.internal.resource.{AMFResolvers, ResourceLoader}
+import amf.core.internal.resource.AMFResolvers
 import amf.core.internal.plugins.document.graph.entities.AMFGraphEntities
 import amf.core.internal.plugins.parse.AMFGraphParsePlugin
 import amf.core.internal.plugins.payload.DefaultShapePayloadValidatorFactory

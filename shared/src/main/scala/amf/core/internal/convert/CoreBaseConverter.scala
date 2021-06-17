@@ -68,12 +68,13 @@ import amf.core.client.scala.transform.TransformationPipelineBuilder
 import amf.core.client.scala.transform.stages.TransformationStep
 import amf.core.client.scala.validation.payload.AMFShapePayloadValidator
 import amf.core.client.platform.validation.{AMFShapePayloadValidator => ClientAMFShapePayloadValidator}
+import amf.core.client.scala.resource.ResourceLoader
 import amf.core.client.scala.validation.{AMFValidationReport, AMFValidationResult}
 import amf.core.client.scala.{AMFGraphConfiguration, AMFResult}
 import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.reference.UnitCacheAdapter
 import amf.core.internal.remote.Vendor
-import amf.core.internal.resource.{ClientResourceLoaderAdapter, InternalResourceLoaderAdapter, ResourceLoader}
+import amf.core.internal.resource.{ClientResourceLoaderAdapter, InternalResourceLoaderAdapter}
 import amf.core.internal.unsafe.PlatformSecrets
 import amf.core.internal.validation.{ValidationCandidate, ValidationShapeSet}
 

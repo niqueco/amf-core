@@ -1,6 +1,7 @@
 package amf.core.internal.resource
 
 import amf.core.client.common.remote.Content
+import amf.core.client.scala.resource.ResourceLoader
 
 import scala.concurrent.Future
 

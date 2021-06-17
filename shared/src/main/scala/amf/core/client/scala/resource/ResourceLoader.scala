@@ -1,4 +1,4 @@
-package amf.core.internal.resource
+package amf.core.client.scala.resource
 
 import amf.core.client.common.remote.Content
 
