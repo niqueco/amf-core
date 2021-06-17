@@ -15,7 +15,7 @@ case class Module(private[amf] val _internal: InternalModule)
     with DeclaresModel
     with CustomizableElement {
 
-  @JSExportTopLevel("model.document.Module")
+  @JSExportTopLevel("Module")
   def this() = this(InternalModule())
 
   def customDomainProperties: ClientList[DomainExtension] = _internal.customDomainProperties.asClient

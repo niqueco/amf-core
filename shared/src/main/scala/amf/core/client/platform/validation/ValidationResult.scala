@@ -14,7 +14,7 @@ import amf.core.client.scala.validation.{AMFValidationResult => InternalValidati
 @JSExportAll
 class ValidationResult(private[amf] val _internal: AMFValidationResult) {
 
-  @JSExportTopLevel("client.validate.ValidationResult")
+  @JSExportTopLevel("ValidationResult")
   def this(message: String,
            level: String,
            targetNode: String,
@@ -50,7 +50,7 @@ class ValidationResult(private[amf] val _internal: AMFValidationResult) {
 @JSExportAll
 class PayloadParsingResult(private[amf] val _internal: InternalPayloadParsingResult) {
 
-  @JSExportTopLevel("client.validate.PayloadParsingResult")
+  @JSExportTopLevel("PayloadParsingResult")
   def this(fragment: PayloadFragment, results: ClientList[ValidationResult]) =
     this(InternalPayloadParsingResult(fragment._internal, results.asInternal.toList))
 

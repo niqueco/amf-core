@@ -6,7 +6,6 @@ import amf.core.client.scala.config.{RenderOptions => InternalRenderOptions}
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 @JSExportAll
-@JSExportTopLevel("RenderOptions")
 case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
 
   @JSExportTopLevel("RenderOptions")

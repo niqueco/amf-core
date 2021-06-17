@@ -8,7 +8,7 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 @JSExportAll
 case class ShapeExtension(override private[amf] val _internal: InternalShapeExtension) extends DomainElement {
 
-  @JSExportTopLevel("model.domain.ShapeExtension")
+  @JSExportTopLevel("ShapeExtension")
   def this() = this(InternalShapeExtension())
 
   def definedBy: PropertyShape = _internal.definedBy

@@ -4,7 +4,7 @@ import amf.core.client.scala.model.DataType
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 @JSExportAll
-@JSExportTopLevel("model.constants.DataTypes")
+@JSExportTopLevel("DataTypes")
 object DataTypes {
   val String: String       = DataType.String
   val Integer: String      = DataType.Integer

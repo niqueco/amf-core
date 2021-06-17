@@ -7,7 +7,7 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 /** Defines a position on an input */
 @JSExportAll
-@JSExportTopLevel("core.client.Position")
+@JSExportTopLevel("Position")
 case class Position(line: Int, column: Int) extends Comparable[Position] {
 
   /** Return true if position is less than specified position. */
@@ -33,7 +33,7 @@ case class Position(line: Int, column: Int) extends Comparable[Position] {
 
 /** Defines a range on an input */
 @JSExportAll
-@JSExportTopLevel("core.client.Range")
+@JSExportTopLevel("Range")
 case class Range(start: Position, end: Position) {
 
   /** Extent range */
@@ -41,7 +41,7 @@ case class Range(start: Position, end: Position) {
 
   override def toString: String = s"[$start-$end]"
 
-  def contains(other:Range): Boolean = {
+  def contains(other: Range): Boolean = {
     other.start.line >= start.line && other.end.line <= end.line
   }
 }

@@ -9,7 +9,7 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 @JSExportAll
 case class PropertyShape(override private[amf] val _internal: InternalPropertyShape) extends Shape {
 
-  @JSExportTopLevel("model.domain.PropertyShape")
+  @JSExportTopLevel("PropertyShape")
   def this() = this(InternalPropertyShape())
 
   def path: StrField        = _internal.path

@@ -9,7 +9,7 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 @JSExportAll
 case class ExternalDomainElement(private[amf] val _internal: InternalExternalDomainElement) extends DomainElement {
 
-  @JSExportTopLevel("model.domain.ExternalDomainElement")
+  @JSExportTopLevel("ExternalDomainElement")
   def this() = this(InternalExternalDomainElement())
 
   def raw: StrField       = _internal.raw

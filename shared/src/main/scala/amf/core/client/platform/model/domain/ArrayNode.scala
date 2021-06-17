@@ -8,7 +8,7 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 @JSExportAll
 case class ArrayNode(override private[amf] val _internal: InternalArrayNode) extends DataNode {
 
-  @JSExportTopLevel("model.domain.ArrayNode")
+  @JSExportTopLevel("ArrayNode")
   def this() = this(InternalArrayNode())
 
   def members: ClientList[DataNode] = _internal.members.asClient
