@@ -1,5 +1,6 @@
 package amf.core.client.scala.parse
 
+import amf.core.client.scala.resource.ResourceLoader
 import amf.core.internal.convert.CoreClientConverters.platform
 import amf.core.client.scala.{AMFGraphConfiguration, AMFObjectResult, AMFResult}
 import amf.core.internal.remote.{Cache, Context}
@@ -11,7 +12,7 @@ import amf.core.internal.parser.{
   CompilerContextBuilder,
   ParseConfiguration
 }
-import amf.core.internal.resource.{ResourceLoader, StringResourceLoader}
+import amf.core.internal.resource.StringResourceLoader
 
 import scala.concurrent.{ExecutionContext, Future}
 

@@ -3,6 +3,7 @@ package amf.core.internal.resource
 import amf.core.client.platform.execution.BaseExecutionEnvironment
 import amf.core.client.common.remote.Content
 import amf.core.client.scala.config.UnitCache
+import amf.core.client.scala.resource.ResourceLoader
 import amf.core.internal.remote.UnsupportedUrlScheme
 import amf.core.internal.unsafe.PlatformSecrets
 
@@ -11,7 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
   * Configuration object for resolvers
   *
-  * @param resourceLoaders  a list of [[amf.core.internal.resource.ResourceLoader]] to use
+  * @param resourceLoaders  a list of [[ResourceLoader]] to use
   * @param unitCache        a [[UnitCache]] that stores [[amf.core.client.scala.model.document.BaseUnit]] resolved
   * @param executionContext the [[amf.core.client.platform.execution.BaseExecutionEnvironment]] to use
   */

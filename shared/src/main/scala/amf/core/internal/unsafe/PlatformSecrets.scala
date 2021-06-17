@@ -6,6 +6,7 @@ import amf.core.client.scala.AMFGraphConfiguration
 import amf.core.client.scala.execution.ExecutionEnvironment
 import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.scala.rdf.RdfModel
+import amf.core.client.scala.resource.ResourceLoader
 import amf.core.internal.remote.{Platform, UnsupportedFileSystem}
 import amf.core.internal.validation.core.{
   SHACLValidator,
@@ -13,7 +14,6 @@ import amf.core.internal.validation.core.{
   ValidationReport,
   ValidationSpecification
 }
-import amf.core.internal.resource.ResourceLoader
 import org.mulesoft.common.io.FileSystem
 
 import scala.concurrent.{ExecutionContext, Future}

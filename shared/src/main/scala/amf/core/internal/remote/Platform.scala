@@ -8,10 +8,10 @@ import amf.core.internal.metamodel.Obj
 import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.scala.model.domain.{AmfObject, DomainElement}
 import amf.core.client.common.validation.ProfileName
+import amf.core.client.scala.resource.ResourceLoader
 import amf.core.internal.rdf.RdfFramework
 import amf.core.internal.validation.core.ValidationSpecification
 import amf.core.client.scala.vocabulary.Namespace
-import amf.core.internal.resource.ResourceLoader
 import org.mulesoft.common.io.{AsyncFile, FileSystem, SyncFile}
 
 import scala.collection.mutable
