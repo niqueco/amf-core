@@ -1,7 +1,7 @@
 package amf.core.internal.convert
 
 import amf.core.client.common.remote.Content
-import amf.core.client.common.validation.{ProfileName, ValidationProfile}
+import amf.core.client.common.validation.{ProfileName, ValidationMode, ValidationProfile}
 import amf.core.client.platform
 import amf.core.client.platform.config.{
   AMFEventConverter,
@@ -44,8 +44,13 @@ import amf.core.client.platform.model.{
 }
 import amf.core.client.platform.reference.{CachedReference => ClientCachedReference, UnitCache => ClientUnitCache}
 import amf.core.client.platform.resource.{ResourceLoader => ClientResourceLoader}
+import amf.core.client.platform.validation.payload.{
+  AMFShapePayloadValidator => ClientAMFShapePayloadValidator,
+  ShapePayloadValidatorFactory => ClientShapePayloadValidatorFactory
+}
 import amf.core.client.platform.transform.{TransformationPipelineBuilder => ClientTransformationPipelineBuilder}
 import amf.core.client.platform.validation.{
+  payload,
   AMFValidationReport => ClientValidationReport,
   ValidationCandidate => ClientValidationCandidate,
   ValidationResult => ClientValidationResult,
@@ -66,8 +71,8 @@ import amf.core.client.scala.model.domain.extensions.{
 import amf.core.client.scala.model.domain.templates.{AbstractDeclaration, ParametrizedDeclaration, VariableValue}
 import amf.core.client.scala.transform.TransformationPipelineBuilder
 import amf.core.client.scala.transform.stages.TransformationStep
-import amf.core.client.scala.validation.payload.AMFShapePayloadValidator
-import amf.core.client.platform.validation.{AMFShapePayloadValidator => ClientAMFShapePayloadValidator}
+import amf.core.client.scala.validation.payload.{AMFShapePayloadValidator, ShapePayloadValidatorFactory}
+import amf.core.client.platform.validation.payload.{AMFShapePayloadValidator => ClientAMFShapePayloadValidator}
 import amf.core.client.scala.resource.ResourceLoader
 import amf.core.client.scala.validation.{AMFValidationReport, AMFValidationResult}
 import amf.core.client.scala.{AMFGraphConfiguration, AMFResult}
@@ -116,7 +121,8 @@ trait CoreBaseConverter
     with TransformationPipelineBuilderConverter
     with AMFResultConverter
     with AMFEventListenerConverter
-    with ValidationProfileConverter {
+    with ValidationProfileConverter
+    with ShapePayloadValidatorFactoryConverter {
 
   implicit def asClient[Internal, Client](from: Internal)(
       implicit m: InternalClientMatcher[Internal, Client]): Client =
@@ -692,5 +698,21 @@ trait ValidationProfileConverter {
 
     override def asInternal(from: ValidationProfile): amf.core.internal.validation.core.ValidationProfile =
       from.internal
+  }
+}
+
+trait ShapePayloadValidatorFactoryConverter extends PayloadValidatorConverter {
+  implicit object ShapePayloadValidatorFactoryMatcher
+      extends InternalClientMatcher[ShapePayloadValidatorFactory, ClientShapePayloadValidatorFactory] {
+    override def asClient(from: ShapePayloadValidatorFactory): ClientShapePayloadValidatorFactory = {
+      new ClientShapePayloadValidatorFactory {
+        override def createFor(shape: ClientShape,
+                               mediaType: String,
+                               mode: ValidationMode): ClientAMFShapePayloadValidator =
+          PayloadValidatorMatcher.asClient(from.createFor(shape._internal, mediaType, mode))
+        override def createFor(shape: ClientShape, fragment: ClientPayloadFragment): ClientAMFShapePayloadValidator =
+          PayloadValidatorMatcher.asClient(from.createFor(shape._internal, fragment._internal))
+      }
+    }
   }
 }

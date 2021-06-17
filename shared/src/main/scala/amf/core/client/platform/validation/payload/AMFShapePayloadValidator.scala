@@ -1,9 +1,10 @@
-package amf.core.client.platform.validation
+package amf.core.client.platform.validation.payload
 
-import amf.core.internal.convert.CoreClientConverters._
 import amf.core.client.platform.execution.BaseExecutionEnvironment
 import amf.core.client.platform.model.document.PayloadFragment
+import amf.core.client.platform.validation.AMFValidationReport
 import amf.core.client.scala.validation.payload.{AMFShapePayloadValidator => InternalPayloadValidator}
+import amf.core.internal.convert.CoreClientConverters._
 import scala.concurrent.ExecutionContext
 import scala.scalajs.js.annotation.JSExportAll
 
