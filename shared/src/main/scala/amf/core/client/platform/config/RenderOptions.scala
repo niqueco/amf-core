@@ -27,10 +27,6 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
 
   def withoutCompactUris: RenderOptions = _internal.withoutCompactUris
 
-  def withFlattenedJsonLd: RenderOptions = _internal.withFlattenedJsonLd
-
-  def withoutFlattenedJsonLd: RenderOptions = _internal.withoutFlattenedJsonLd
-
   /**
     * Emit specific AMF JSON-LD serialization
     *
@@ -51,9 +47,8 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
 
   def isWithCompactUris: Boolean             = _internal.compactUris
   def isWithSourceMaps: Boolean              = _internal.sources
-  def isAmfJsonLdSerilization: Boolean       = _internal.amfJsonLdSerialization
+  def isAmfJsonLdSerialization: Boolean      = _internal.amfJsonLdSerialization
   def isPrettyPrint: Boolean                 = _internal.prettyPrint
   def isEmitNodeIds: Boolean                 = _internal.emitNodeIds
-  def isFlattenedJsonLd: Boolean             = _internal.isFlattenedJsonLd
   def shapeRenderOptions: ShapeRenderOptions = _internal.shapeRenderOptions
 }

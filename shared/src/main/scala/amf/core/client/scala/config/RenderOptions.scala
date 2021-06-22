@@ -14,7 +14,7 @@ case class RenderOptions(
     filterFields: Field => Boolean = (_: Field) => false,
     amfJsonLdSerialization: Boolean = true,
     useJsonLdEmitter: Boolean = false,
-    flattenedJsonLd: Boolean = false,
+    private[amf] val flattenedJsonLd: Boolean = true,
     prettyPrint: Boolean = false,
     emitNodeIds: Boolean = false,
     shapeRenderOptions: ShapeRenderOptions = ShapeRenderOptions()
@@ -66,14 +66,14 @@ case class RenderOptions(
   def withoutAmfJsonLdSerialization: RenderOptions = copy(amfJsonLdSerialization = false)
 
   /** Include FlattenedJsonLd when rendering to graph. */
-  def withFlattenedJsonLd: RenderOptions = copy(flattenedJsonLd = true)
+  private[amf] def withFlattenedJsonLd: RenderOptions = copy(flattenedJsonLd = true)
 
   /** Exclude FlattenedJsonLd when rendering to graph. */
-  def withoutFlattenedJsonLd: RenderOptions = copy(flattenedJsonLd = false)
+  private[amf] def withoutFlattenedJsonLd: RenderOptions = copy(flattenedJsonLd = false)
 
   def withShapeRenderOptions(s: ShapeRenderOptions): RenderOptions = copy(shapeRenderOptions = s)
 
-  def isFlattenedJsonLd: Boolean = flattenedJsonLd
+  private[amf] def isFlattenedJsonLd: Boolean = flattenedJsonLd
 
   def isCompactUris: Boolean             = compactUris
   def isWithSourceMaps: Boolean          = sources
