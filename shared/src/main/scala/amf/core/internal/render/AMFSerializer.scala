@@ -1,17 +1,11 @@
 package amf.core.internal.render
 
-import amf.core.client.scala.config.{
-  AMFEvent,
-  FinishedRenderingASTEvent,
-  FinishedRenderingSyntaxEvent,
-  StartingRenderToWriterEvent,
-  StartingRenderingEvent
-}
+import amf.core.client.scala.config._
 import amf.core.client.scala.model.document.{BaseUnit, ExternalFragment}
-import amf.core.client.scala.parse.document.{ParsedDocument, SyamlParsedDocument}
+import amf.core.client.scala.parse.document.{ParsedDocument, StringParsedDocument, SyamlParsedDocument}
 import amf.core.internal.plugins.document.graph._
 import amf.core.internal.plugins.render.{AMFGraphRenderPlugin, AMFRenderPlugin, RenderConfiguration, RenderInfo}
-import amf.core.internal.plugins.syntax.RdfSyntaxPlugin
+import amf.core.internal.plugins.syntax.{RdfSyntaxPlugin, StringDocBuilder}
 import amf.core.internal.rdf.RdfModelDocument
 import amf.core.internal.remote.{MediaTypeParser, Platform, Vendor}
 import amf.core.internal.unsafe.PlatformSecrets
@@ -61,6 +55,11 @@ class AMFSerializer(unit: BaseUnit, mediaType: String, config: RenderConfigurati
           case RdfSerialization()     => emitRdf(writer)
           case JsonLdSerialization(_) => emitJsonldToWriter(writer)
         }
+      case Vendor.PROTO3.mediaType| Vendor.GRPC.mediaType =>
+        val renderPlugin = getRenderPlugin
+        val rendered     = renderAsString(renderPlugin)
+        writer.append(rendered.ast.builder)
+        notifyEvent(FinishedRenderingSyntaxEvent(unit))
       case _ =>
         val renderPlugin = getRenderPlugin
         val ast          = renderAsYDocument(renderPlugin)
@@ -88,6 +87,18 @@ class AMFSerializer(unit: BaseUnit, mediaType: String, config: RenderConfigurati
     val renderPlugin = getRenderPlugin
     renderAsYDocument(renderPlugin)
   }
+
+  def renderAsString(renderPlugin: AMFRenderPlugin): StringParsedDocument = {
+
+    val builder = new StringDocBuilder()
+    notifyEvent(StartingRenderingEvent(unit, renderPlugin, mediaType))
+    if (renderPlugin.emitString(unit, builder, config)) {
+      val result = builder.result
+      notifyEvent(FinishedRenderingASTEvent(unit, result))
+      result
+    } else throw new Exception(s"Error unparsing syntax $mediaType with domain plugin ${renderPlugin.id}")
+  }
+
 
   private def getSyntaxPlugin(ast: SyamlParsedDocument, mediaType: String) = {
     val candidates = config.syntaxPlugin.filter(_.mediaTypes.contains(mediaType))

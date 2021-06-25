@@ -16,6 +16,8 @@ object ProfileNames {
   val ASYNC20: ProfileName = Async20Profile
   val AML: ProfileName     = AmlProfile
   val PAYLOAD: ProfileName = PayloadProfile
+  val GRPC:  ProfileName   = GrpcProfile
+  val PROTO3: ProfileName  = Proto3Profile
 
   lazy val specProfiles: Seq[ProfileName] =
     Seq(AmfProfile, Oas20Profile, Oas30Profile, Raml08Profile, Raml10Profile, AsyncProfile, Async20Profile)
@@ -52,6 +54,14 @@ object Raml10Profile extends ProfileName(Raml10.name, RAMLStyle) {
   override def isRaml(): Boolean = true
 }
 
+object GrpcProfile extends ProfileName(Grpc.name, AMFStyle) {
+  override def isRaml(): Boolean = false
+}
+
+object Proto3Profile extends ProfileName(Proto3.name, AMFStyle) {
+  override def isRaml(): Boolean = false
+}
+
 object AsyncProfile   extends ProfileName(AsyncApi.name, OASStyle)
 object Async20Profile extends ProfileName(AsyncApi20.name, OASStyle)
 object PayloadProfile extends ProfileName(Payload.name)
@@ -64,6 +74,8 @@ object ProfileName {
       case Raml08Profile.p  => Some(Raml08Profile)
       case AsyncProfile.p   => Some(AsyncProfile)
       case Async20Profile.p => Some(Async20Profile)
+      case GrpcProfile.p    => Some(GrpcProfile)
+      case Proto3Profile.p  => Some(Proto3Profile)
       case _                => None
     }
 
@@ -75,6 +87,8 @@ object ProfileName {
     case "RAML" | Raml10.name => Raml10Profile // for compatibility
     case AsyncApi.name        => AsyncProfile
     case AsyncApi20.name      => Async20Profile
+    case Proto3.name          => Proto3Profile
+    case Grpc.name            => GrpcProfile
     case custom               => new ProfileName(custom)
   }
 }

@@ -15,6 +15,8 @@ object Vendor {
       case Payload.name    => Some(Payload)
       case Aml.name        => Some(Aml)
       case JsonSchema.name => Some(JsonSchema)
+      case Grpc.name              => Some(Grpc)
+      case Proto3.name            => Some(Proto3)
       case _               => None
     }
   }
@@ -25,15 +27,18 @@ object Vendor {
     case _              => new UnknownVendor(name)
   }
 
-  @JSExport val RAML08: Vendor     = Raml08
-  @JSExport val RAML10: Vendor     = Raml10
-  @JSExport val OAS20: Vendor      = Oas20
-  @JSExport val OAS30: Vendor      = Oas30
-  @JSExport val ASYNC20: Vendor    = AsyncApi20
-  @JSExport val AMF: Vendor        = Amf
-  @JSExport val PAYLOAD: Vendor    = Payload
-  @JSExport val AML: Vendor        = Aml
-  @JSExport val JSONSCHEMA: Vendor = JsonSchema
+  @JSExport val RAML08: Vendor            = Raml08
+  @JSExport val RAML10: Vendor            = Raml10
+  @JSExport val OAS20: Vendor             = Oas20
+  @JSExport val OAS30: Vendor             = Oas30
+  @JSExport val ASYNC: Vendor             = AsyncApi
+  @JSExport val ASYNC20: Vendor           = AsyncApi20
+  @JSExport val AMF: Vendor               = Amf
+  @JSExport val PAYLOAD: Vendor           = Payload
+  @JSExport val AML: Vendor               = Aml
+  @JSExport val PROTO3: Vendor            = Proto3
+  @JSExport val GRPC: Vendor              = Grpc
+  @JSExport val JSONSCHEMA: Vendor        = JsonSchema
 }
 
 @JSExportAll
@@ -88,6 +93,16 @@ case object Oas20 extends Oas {
   override def version: String = "2.0"
 
   override val mediaType: String = "application/oas20"
+}
+
+case object Proto3 extends Vendor {
+  override val name: String = "Proto3"
+  override val mediaType: String = "application/x-protobuf"
+}
+
+case object Grpc extends Vendor {
+  override val name: String = "gRPC"
+  override val mediaType: String = "application/grpc"
 }
 
 case object Oas30 extends Oas {

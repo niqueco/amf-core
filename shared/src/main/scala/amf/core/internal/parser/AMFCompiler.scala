@@ -12,6 +12,7 @@ import amf.core.internal.remote._
 import amf.core.internal.utils.AmfStrings
 import amf.core.internal.validation.CoreValidations._
 import amf.core.internal.validation.core.ValidationSpecification
+import org.mulesoft.antlrast.ast.ASTElement
 import org.yaml.model.YPart
 
 import java.net.URISyntaxException
@@ -63,6 +64,10 @@ class CompilerContext(val url: String,
 
     allowedMediaTypes.foreach(builder.withAllowedMediaTypes)
     builder.build()
+  }
+
+  def violation(id: ValidationSpecification, node: String, message: String, ast: ASTElement): Unit = {
+    parserContext.eh.violation(id, node, message, org.mulesoft.lexer.SourceLocation(parserContext.rootContextDocument, 0,0,ast.start.line, ast.start.column, ast.end.line, ast.end.column))
   }
 
   def violation(id: ValidationSpecification, node: String, message: String, ast: YPart): Unit =
@@ -175,7 +180,8 @@ class AMFCompiler(compilerContext: CompilerContext,
             input.mime
               .flatMap(mime => parseSyntaxForMediaType(input, mime))
               .orElse {
-                inferMediaTypeFromFileExtension(input).flatMap(inferred => parseSyntaxForMediaType(input, inferred))
+                val autodetected = inferMediaTypeFromFileExtension(input)
+                autodetected.flatMap(inferred => parseSyntaxForMediaType(input, inferred))
               }
               .orElse {
                 autodetectSyntax(compilerContext.path, input.stream).flatMap(inferred =>
@@ -280,7 +286,6 @@ class AMFCompiler(compilerContext: CompilerContext,
     val parsed: Seq[Future[Option[ParsedReference]]] = refs.toReferences
       .filter(_.isRemote)
       .map { link =>
-        val nodes = link.refs.map(_.node)
         link.resolve(compilerContext, allowedMediaTypes, domainPlugin.allowRecursiveReferences) flatMap {
           case ReferenceResolutionResult(_, Some(unit)) =>
             val reference = ParsedReference(unit, link)
@@ -288,11 +293,22 @@ class AMFCompiler(compilerContext: CompilerContext,
           case ReferenceResolutionResult(Some(e), _) =>
             e match {
               case e: CyclicReferenceException if !domainPlugin.allowRecursiveReferences =>
-                compilerContext.violation(CycleReferenceError, link.url, e.getMessage, link.refs.head.node)
+                link.refs.head match {
+                  case SYamlRefContainer(_, node, _) =>
+                    compilerContext.violation(CycleReferenceError, link.url, e.getMessage, node)
+                  case AntlrRefContainer(_, node, _) =>
+                    compilerContext.violation(CycleReferenceError, link.url, e.getMessage, node)
+                }
+
                 Future(None)
               case _ =>
                 if (!link.isInferred) {
-                  nodes.foreach(compilerContext.violation(UnresolvedReference, link.url, e.getMessage, _))
+                  link.refs.foreach {
+                    case SYamlRefContainer(_, node, _) =>
+                      compilerContext.violation(UnresolvedReference, link.url, e.getMessage, node)
+                    case AntlrRefContainer(_, node, _) =>
+                      compilerContext.violation(UnresolvedReference, link.url, e.getMessage, node)
+                  }
                 }
                 Future(None)
             }
