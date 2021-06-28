@@ -7,8 +7,7 @@ import org.scalatest.{FunSuite, Matchers}
 
 class PluginContextTest extends FunSuite with Matchers {
 
-
-  test("Test types without blacklist") {
+  test("Test types without blocklist") {
     val ctx = PluginContext()
 
     CorePlugin.modelEntities.foreach { `type` =>
@@ -17,13 +16,13 @@ class PluginContextTest extends FunSuite with Matchers {
     }
 
     CorePlugin.modelEntities.filterNot(_ == SourceMapModel).foreach { `type` =>
-      val builder = ctx.buildType(`type`)
+      val builder  = ctx.buildType(`type`)
       val instance = builder(Annotations())
       instance.meta should be(`type`)
     }
   }
 
-  test("Test types with blacklist") {
+  test("Test types with blocklist") {
     val ctx = PluginContext(Seq(CorePlugin))
 
     CorePlugin.modelEntities.foreach { `type` =>

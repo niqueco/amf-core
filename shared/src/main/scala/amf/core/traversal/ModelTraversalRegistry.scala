@@ -14,10 +14,9 @@ case class ModelTraversalRegistry() {
   private var currentPath: Set[String] = Set.empty
 
   // IDs of elements that do not throw recursion errors
-  private var whiteList: Set[String] = Set()
+  private var allowedList: Set[String] = Set()
 
-
-  private var allowedCycleClasses : Seq[Class[_]] = Seq()
+  private var allowedCycleClasses: Seq[Class[_]] = Seq()
 
   // Function that skips elements
   private var skipFn: String => Boolean = (_: String) => false
@@ -48,10 +47,10 @@ case class ModelTraversalRegistry() {
       val a = (alias.aliasId.equals(shape.id) && currentPath.nonEmpty || isInCurrentPath(shape.id))
       val b = !isAllowedToCycle(shape)
       a && b
-    case None =>isInCurrentPath(shape.id) && !isAllowedToCycle(shape)
+    case None => isInCurrentPath(shape.id) && !isAllowedToCycle(shape)
   }
 
-  def avoidError(id: String): Boolean = whiteList.contains(id)
+  def avoidError(id: String): Boolean = allowedList.contains(id)
 
   def avoidError(r: RecursiveShape, checkId: Option[String] = None): Boolean =
     avoidError(r.id) || avoidError(r.fixpoint.option().getOrElse("")) || (checkId.isDefined && avoidError(checkId.get))
@@ -65,10 +64,10 @@ case class ModelTraversalRegistry() {
   def runWithIgnoredId(fnc: () => Shape, shapeId: String): Shape = runWithIgnoredIds(fnc, Set(shapeId))
 
   def runWithIgnoredIds(fnc: () => Shape, shapeIds: Set[String]): Shape = {
-    val previousWhiteList = whiteList
-    whiteList = whiteList ++ shapeIds
+    val previousAllowedList = allowedList
+    allowedList = allowedList ++ shapeIds
     val expanded = runNested(_ => fnc())
-    whiteList = previousWhiteList
+    allowedList = previousAllowedList
     expanded
   }
 
@@ -82,7 +81,7 @@ case class ModelTraversalRegistry() {
   // Runs a function and restores the currentPath to its original state after the run
   def runNested[T](fnc: ModelTraversalRegistry => T): T = {
     val previousPath = currentPath
-    val element = fnc(this)
+    val element      = fnc(this)
     currentPath = previousPath
     element
   }
