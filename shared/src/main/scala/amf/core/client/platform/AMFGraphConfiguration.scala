@@ -2,6 +2,7 @@ package amf.core.client.platform
 
 import amf.core.client.platform.config.{AMFEventListener, AMFLogger, ParsingOptions, RenderOptions}
 import amf.core.client.platform.errorhandling.ErrorHandlerProvider
+import amf.core.client.platform.execution.BaseExecutionEnvironment
 import amf.core.client.platform.reference.UnitCache
 import amf.core.client.platform.resource.ResourceLoader
 import amf.core.client.platform.transform.TransformationPipeline
@@ -13,8 +14,7 @@ import amf.core.internal.convert.TransformationPipelineConverter._
 import scala.concurrent.ExecutionContext
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 import amf.core.client.scala.{AMFGraphConfiguration => InternalGraphConfiguration}
-import amf.core.internal.registries.AMFRegistry
-import amf.core.internal.resource.AMFResolvers
+import amf.core.internal.convert.CoreClientConverters
 
 /** Base AMF configuration object */
 @JSExportAll
@@ -23,7 +23,8 @@ class AMFGraphConfiguration private[amf] (private[amf] val _internal: InternalGr
 
   def createClient(): AMFGraphClient = new AMFGraphClient(this)
 
-  def payloadValidatorFactory(): ShapePayloadValidatorFactory = _internal.payloadValidatorFactory()
+  def payloadValidatorFactory(): ShapePayloadValidatorFactory =
+    ShapePayloadValidatorFactoryMatcher.asClient(_internal.payloadValidatorFactory())
 
   def withParsingOptions(parsingOptions: ParsingOptions): AMFGraphConfiguration =
     _internal.withParsingOptions(parsingOptions)
@@ -49,6 +50,9 @@ class AMFGraphConfiguration private[amf] (private[amf] val _internal: InternalGr
   def withEventListener(listener: AMFEventListener): AMFGraphConfiguration = _internal.withEventListener(listener)
 
   def withLogger(logger: AMFLogger): AMFGraphConfiguration = _internal.withLogger(logger)
+
+  def withExecutionEnvironment(executionEnv: BaseExecutionEnvironment): AMFGraphConfiguration =
+    _internal.withExecutionEnvironment(executionEnv._internal)
 
   /**
     * Merges two environments taking into account specific attributes that can be merged.
