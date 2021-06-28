@@ -11,16 +11,16 @@ import org.mulesoft.common.functional.MonadInstances._
 import scala.collection.immutable.TreeSet
 
 /** Context for handling plugins registration. */
-case class PluginContext(blacklist: Seq[AMFPlugin]) {
+case class PluginContext(blockedPlugins: Seq[AMFPlugin]) {
 
-  private val blacklistedTypes = blacklist
+  private val blockedTypes = blockedPlugins
     .collect({
       case d: AMFDomainPlugin   => d.modelEntities
       case d: AMFDocumentPlugin => d.modelEntities
     })
     .flatten
 
-  private val blacklistedResolvers = blacklist
+  private val blockedResolvers = blockedPlugins
     .collect({
       case d: AMFDomainPlugin   => d.modelEntitiesResolver
       case d: AMFDocumentPlugin => d.modelEntitiesResolver
@@ -59,12 +59,12 @@ case class PluginContext(blacklist: Seq[AMFPlugin]) {
   def buildType(`type`: Obj): Annotations => AmfObject = buildType.runCached(`type`)
 
   private val types: Map[String, Obj] = {
-    val ignored = TreeSet(blacklistedTypes.map(defaultIri): _*)
+    val ignored = TreeSet(blockedTypes.map(defaultIri): _*)
     AMFDomainRegistry.metadataRegistry.toMap.filterKeys(k => !ignored.contains(k))
   }
 
   private val resolvers: Seq[AMFDomainEntityResolver] = {
-    AMFDomainRegistry.metadataResolverRegistry -- blacklistedResolvers
+    AMFDomainRegistry.metadataResolverRegistry -- blockedResolvers
   }
 }
 
