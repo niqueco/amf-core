@@ -1,5 +1,6 @@
 package amf.core.client.platform.config
 
+import amf.core.client.common.render.JSONSchemaVersion
 import amf.core.internal.convert.CoreClientConverters._
 import amf.core.client.scala.config.{RenderOptions => InternalRenderOptions}
 
@@ -43,12 +44,22 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
 
   def withNodeIds: RenderOptions = _internal.withNodeIds
 
-  def withShapeRenderOptions(s: ShapeRenderOptions): RenderOptions = _internal.withShapeRenderOptions(s)
+  /** Remove documentation info as examples, descriptions, display names, etc. (only supported for json schema rendering) */
+  def withoutDocumentation: RenderOptions = _internal.withoutDocumentation
 
-  def isWithCompactUris: Boolean             = _internal.compactUris
-  def isWithSourceMaps: Boolean              = _internal.sources
-  def isAmfJsonLdSerialization: Boolean      = _internal.amfJsonLdSerialization
-  def isPrettyPrint: Boolean                 = _internal.prettyPrint
-  def isEmitNodeIds: Boolean                 = _internal.emitNodeIds
-  def shapeRenderOptions: ShapeRenderOptions = _internal.shapeRenderOptions
+  /** Render shapes without extracting common types to definitions (feature is enable by default for OAS and json schema) */
+  def withoutCompactedEmission: RenderOptions = _internal.withoutCompactedEmission
+
+  /** Render shapes with specific json schema version (supported for json schema rendering) */
+  def withSchemaVersion(version: JSONSchemaVersion): RenderOptions = _internal.withSchemaVersion(version)
+
+  def isWithDocumentation: Boolean     = _internal.isWithDocumentation
+  def isWithCompactedEmission: Boolean = _internal.isWithCompactedEmission
+  def schemaVersion: JSONSchemaVersion = _internal.schemaVersion
+
+  def isWithCompactUris: Boolean        = _internal.compactUris
+  def isWithSourceMaps: Boolean         = _internal.sources
+  def isAmfJsonLdSerialization: Boolean = _internal.amfJsonLdSerialization
+  def isPrettyPrint: Boolean            = _internal.prettyPrint
+  def isEmitNodeIds: Boolean            = _internal.emitNodeIds
 }
