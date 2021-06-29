@@ -12,7 +12,7 @@ case class RenderOptions(
     compactUris: Boolean = false,
     rawSourceMaps: Boolean = false,
     validating: Boolean = false,
-    filterFields: Field => Boolean = (_: Field) => false,
+    private[amf] val filterFields: Field => Boolean = (_: Field) => false,
     amfJsonLdSerialization: Boolean = true,
     useJsonLdEmitter: Boolean = false,
     private[amf] val flattenedJsonLd: Boolean = true,
@@ -61,7 +61,7 @@ case class RenderOptions(
   def withoutNodeIds: RenderOptions = copy(emitNodeIds = false)
 
   /** Apply function to filter fields when rendering to graph. */
-  def withFilterFieldsFunc(f: Field => Boolean): RenderOptions = copy(filterFields = f)
+  private[amf] def withFilterFieldsFunc(f: Field => Boolean): RenderOptions = copy(filterFields = f)
 
   /** Include AmfJsonLdSerialization when rendering to graph. */
   def withAmfJsonLdSerialization: RenderOptions = copy(amfJsonLdSerialization = true)
@@ -99,7 +99,7 @@ case class RenderOptions(
   def isWithRawSourceMaps: Boolean       = rawSourceMaps
   def isAmfJsonLdSerialization: Boolean  = amfJsonLdSerialization
   def isValidation: Boolean              = validating
-  def renderField(field: Field): Boolean = !filterFields(field)
+  private[amf] def renderField(field: Field): Boolean = !filterFields(field)
   def isPrettyPrint: Boolean             = prettyPrint
   def isEmitNodeIds: Boolean             = emitNodeIds
 
