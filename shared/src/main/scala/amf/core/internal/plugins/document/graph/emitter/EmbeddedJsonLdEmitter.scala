@@ -24,7 +24,8 @@ import org.yaml.builder.DocBuilder.{Entry, Part, SType, Scalar}
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
-object EmbeddedJsonLdEmitter {
+// TODO: Should be erased. Left for backwards compatibility in AMF Tests
+private[amf] object EmbeddedJsonLdEmitter {
 
   def emit[T](unit: BaseUnit,
               builder: DocBuilder[T],
@@ -37,7 +38,8 @@ object EmbeddedJsonLdEmitter {
   }
 }
 
-class EmbeddedJsonLdEmitter[T](val builder: DocBuilder[T], val options: RenderOptions)(
+// TODO: Should be erased. Left for backwards compatibility in AMF Tests
+private[amf] class EmbeddedJsonLdEmitter[T] private (val builder: DocBuilder[T], val options: RenderOptions)(
     implicit ctx: GraphEmitterContext)
     extends CommonEmitter
     with MetaModelTypeMapping {

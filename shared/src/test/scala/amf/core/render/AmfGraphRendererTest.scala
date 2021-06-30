@@ -1,8 +1,8 @@
 package amf.core.render
 
+import amf.core.client.scala.AMFGraphConfiguration
+import amf.core.client.scala.config.RenderOptions
 import amf.core.internal.convert.{BaseUnitConverter, NativeOps}
-import amf.core.client.platform.AMFGraphConfiguration
-import amf.core.client.platform.config.RenderOptions
 import amf.core.io.FileAssertionTest
 import amf.core.internal.metamodel.domain.ArrayNodeModel
 import amf.core.client.scala.model.document.{Document, Module}
@@ -29,9 +29,9 @@ trait AmfGraphRendererTest
       rendered <- Future.successful(
           AMFGraphConfiguration
             .predefined()
-            .withRenderOptions(new RenderOptions().withPrettyPrint)
+            .withRenderOptions(RenderOptions().withPrettyPrint.withoutFlattenedJsonLd)
             .createClient()
-            .render(BaseUnitMatcher.asClient(document), AMF.mediaType))
+            .render(document, AMF.mediaType))
       file   <- writeTemporaryFile(golden)(rendered)
       result <- assertDifferences(file, golden)
     } yield result

@@ -130,10 +130,12 @@ case class NamespaceAliases private (ns: Map[Aliases.Alias, Namespace]) {
 }
 
 object NamespaceAliases {
+
   def apply(): NamespaceAliases                                       = NamespaceAliases(knownAliases)
   def withCustomAliases(ns: Map[String, Namespace]): NamespaceAliases = NamespaceAliases(knownAliases ++ ns)
 
-  private val knownAliases: Map[String, Namespace] = ListMap(
+  // Leave as function, throws NullPointerException on initialization if it is val.
+  private def knownAliases: Map[String, Namespace] = ListMap(
       "shacl"          -> Namespace.Shacl,
       "sh"             -> Namespace.Shacl,
       "raml-shapes"    -> Namespace.Shapes,

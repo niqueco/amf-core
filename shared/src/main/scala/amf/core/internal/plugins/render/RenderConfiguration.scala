@@ -1,5 +1,6 @@
 package amf.core.internal.plugins.render
 
+import amf.core.client.platform.config.AMFLogger
 import amf.core.client.scala.AMFGraphConfiguration
 import amf.core.client.scala.config.{AMFEventListener, RenderOptions}
 import amf.core.client.scala.errorhandling.AMFErrorHandler
@@ -13,6 +14,7 @@ trait RenderConfiguration {
   def errorHandler: AMFErrorHandler
   def listeners: Set[AMFEventListener]
   def syntaxPlugin: List[AMFSyntaxRenderPlugin]
+  def logger: AMFLogger
 }
 
 private[amf] case class DefaultRenderConfiguration(renderPlugins: List[AMFRenderPlugin],
@@ -20,18 +22,20 @@ private[amf] case class DefaultRenderConfiguration(renderPlugins: List[AMFRender
                                                    namespacePlugins: List[NamespaceAliasesPlugin],
                                                    renderOptions: RenderOptions,
                                                    errorHandler: AMFErrorHandler,
-                                                   listeners: Set[AMFEventListener])
+                                                   listeners: Set[AMFEventListener],
+                                                   logger: AMFLogger)
     extends RenderConfiguration {}
 
 object DefaultRenderConfiguration {
-  def apply(env: AMFGraphConfiguration): RenderConfiguration = {
+  def apply(config: AMFGraphConfiguration): RenderConfiguration = {
     DefaultRenderConfiguration(
-        env.registry.plugins.renderPlugins,
-        env.registry.plugins.syntaxRenderPlugins,
-        env.registry.plugins.namespacePlugins,
-        env.options.renderOptions,
-        env.errorHandlerProvider.errorHandler(),
-        env.listeners
+        config.registry.plugins.renderPlugins,
+        config.registry.plugins.syntaxRenderPlugins,
+        config.registry.plugins.namespacePlugins,
+        config.options.renderOptions,
+        config.errorHandlerProvider.errorHandler(),
+        config.listeners,
+        config.logger
     )
   }
 }
