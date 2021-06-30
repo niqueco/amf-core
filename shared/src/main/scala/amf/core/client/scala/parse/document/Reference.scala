@@ -1,9 +1,8 @@
 package amf.core.client.scala.parse.document
 
 import amf.core.client.scala.exception.CyclicReferenceException
-import amf.core.client.scala.parse.document
 import amf.core.client.scala.model.document.RecursiveUnit
-import amf.core.internal.benchmark.ExecutionLog
+import amf.core.client.scala.parse.document
 import amf.core.internal.parser.{AMFCompiler, CompilerContext}
 import amf.core.internal.unsafe.PlatformSecrets
 import org.yaml.model.YNode
@@ -63,7 +62,6 @@ case class Reference(url: String, refs: Seq[RefContainer]) extends PlatformSecre
 
   protected def resolveRecursiveUnit(fullUrl: String, compilerContext: CompilerContext)(
       implicit executionContext: ExecutionContext): Future[RecursiveUnit] = {
-    ExecutionLog.log(s"AMFCompiler#parserReferences: Recursive reference $fullUrl")
     compilerContext.parserContext.config.resolveContent(fullUrl) map { content =>
       val recUnit = RecursiveUnit().adopted(fullUrl).withLocation(fullUrl)
       recUnit.withRaw(content.stream.toString)

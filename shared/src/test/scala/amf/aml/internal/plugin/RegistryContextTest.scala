@@ -12,7 +12,7 @@ class RegistryContextTest extends FunSuite with Matchers {
 
   def defaultIri(metadata: Obj): String = metadata.`type`.head.iri()
 
-  test("Test types without blacklist") {
+  test("Test types without blocklist") {
     val ctx = RegistryContext(
         AMFRegistry.empty
           .withEntities(CoreEntities.entities ++ AMFGraphEntities.entities)

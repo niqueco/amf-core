@@ -1,13 +1,18 @@
 package amf.core.internal.render
 
-import amf.core.client.scala.config.{AMFEvent, FinishedRenderingASTEvent, FinishedRenderingSyntaxEvent, StartingRenderingEvent}
+import amf.core.client.scala.config.{
+  AMFEvent,
+  FinishedRenderingASTEvent,
+  FinishedRenderingSyntaxEvent,
+  StartingRenderToWriterEvent,
+  StartingRenderingEvent
+}
 import amf.core.client.scala.model.document.{BaseUnit, ExternalFragment}
 import amf.core.client.scala.parse.document.{ParsedDocument, SyamlParsedDocument}
-import amf.core.internal.rdf.RdfModelDocument
-import amf.core.internal.benchmark.ExecutionLog
 import amf.core.internal.plugins.document.graph._
 import amf.core.internal.plugins.render.{AMFGraphRenderPlugin, AMFRenderPlugin, RenderConfiguration, RenderInfo}
 import amf.core.internal.plugins.syntax.RdfSyntaxPlugin
+import amf.core.internal.rdf.RdfModelDocument
 import amf.core.internal.remote.{MediaTypeParser, Platform, Vendor}
 import amf.core.internal.unsafe.PlatformSecrets
 import amf.core.internal.validation.CoreValidations
@@ -49,7 +54,7 @@ class AMFSerializer(unit: BaseUnit, mediaType: String, config: RenderConfigurati
     remote.write(path, renderToString)
 
   private def render[W: Output](writer: W): Unit = {
-    ExecutionLog.log(s"AMFSerializer#render: Rendering to $mediaType ($mediaType file) ${unit.location()}")
+    notifyEvent(StartingRenderToWriterEvent(unit, mediaType))
     mediaTypeExp.getPureVendorExp match {
       case Vendor.AMF.mediaType =>
         config.renderOptions.toGraphSerialization match {
