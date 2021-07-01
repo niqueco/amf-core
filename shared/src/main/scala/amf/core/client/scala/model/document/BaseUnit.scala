@@ -33,18 +33,7 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
   // Set the default parsingRoot
   withRoot(false)
 
-  // We store the parser run here to be able to find runtime validations for this model
-  private var run: Option[Int]         = None
   protected[amf] var resolved: Boolean = false
-
-  private[amf] def withRunNumber(parserRun: Int): BaseUnit = {
-    if (this.run.nonEmpty) // todo: exception or what?
-      this
-    else {
-      this.run = Some(parserRun)
-      this
-    }
-  }
 
   /** Raw text  used to generated this unit */
   var raw: Option[String] = None
@@ -136,7 +125,6 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
 
   override def cloneElement(branch: mutable.Map[AmfObject, AmfObject]): AmfObject = {
     val cloned = super.cloneElement(branch).asInstanceOf[BaseUnit]
-    run.foreach(cloned.withRunNumber)
     cloned.raw = raw
     cloned
   }

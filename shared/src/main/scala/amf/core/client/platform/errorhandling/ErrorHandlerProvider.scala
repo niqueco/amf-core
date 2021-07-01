@@ -2,7 +2,7 @@ package amf.core.client.platform.errorhandling
 
 import amf.core.client.scala.errorhandling.{DefaultErrorHandlerProvider, IgnoringErrorHandler, UnhandledErrorHandler}
 
-import scala.scalajs.js.annotation.JSExportAll
+import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 import amf.core.internal.convert.ClientErrorHandlerConverter.convertToClient
 
 @JSExportAll
@@ -12,6 +12,7 @@ trait ErrorHandlerProvider {
 }
 
 @JSExportAll
+@JSExportTopLevel("ErrorHandlerProvider")
 object ErrorHandlerProvider {
   def unhandled(): ErrorHandlerProvider = () => convertToClient(UnhandledErrorHandler)
   def default(): ErrorHandlerProvider   = () => convertToClient(DefaultErrorHandlerProvider.errorHandler())

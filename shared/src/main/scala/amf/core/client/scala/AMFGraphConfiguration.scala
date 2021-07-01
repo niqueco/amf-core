@@ -172,9 +172,9 @@ class AMFGraphConfiguration private[amf] (override private[amf] val resolvers: A
   private[amf] def getUnitsCache: Option[UnitCache]         = resolvers.unitCache
   private[amf] def getExecutionContext: ExecutionContext    = resolvers.executionEnv.context
 
-  private[amf] lazy val parseConfiguration      = ParseConfiguration(this)
-  private[amf] lazy val renderConfiguration     = DefaultRenderConfiguration(this)
-  private[amf] lazy val validationConfiguration = new ValidationConfiguration(this)
+  private[amf] def parseConfiguration      = ParseConfiguration(this)
+  private[amf] def renderConfiguration     = DefaultRenderConfiguration(this)
+  private[amf] def validationConfiguration = new ValidationConfiguration(this)
 
 }
 
