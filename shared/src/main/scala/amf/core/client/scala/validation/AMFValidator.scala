@@ -16,7 +16,7 @@ import scala.concurrent.Future
 object VendorToProfile {
 
   private lazy val vendorProfileMapping = Map(
-      Vendor.ASYNC -> Async20Profile,
+      Vendor.ASYNC20 -> Async20Profile,
       Vendor.RAML10 -> Raml10Profile,
       Vendor.RAML08 -> Raml08Profile,
       Vendor.OAS20 -> Oas20Profile,
