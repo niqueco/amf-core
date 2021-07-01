@@ -16,7 +16,7 @@ case class HttpResourceLoader(executionContext: ExecutionContext)
 
   implicit val exec: ExecutionContext = executionContext
 
-  def this() = this(JvmPlatform.instance().defaultExecutionEnvironment.executionContext)
+  def this() = this(scala.concurrent.ExecutionContext.Implicits.global)
   def this(executionEnvironment: BaseExecutionEnvironment) = this(executionEnvironment.executionContext)
 
   override def withExecutionContext(newEc: ExecutionContext): ResourceLoader = HttpResourceLoader(newEc)

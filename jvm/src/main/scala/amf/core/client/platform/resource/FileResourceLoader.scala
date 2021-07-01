@@ -18,7 +18,7 @@ case class FileResourceLoader(executionContext: ExecutionContext)
 
   implicit val exec: ExecutionContext = executionContext
 
-  def this() = this(JvmPlatform.instance().defaultExecutionEnvironment.executionContext)
+  def this() = this(scala.concurrent.ExecutionContext.Implicits.global)
   def this(executionEnvironment: BaseExecutionEnvironment) = this(executionEnvironment.executionContext)
 
   override def withExecutionContext(newEc: ExecutionContext): ResourceLoader = FileResourceLoader(newEc)

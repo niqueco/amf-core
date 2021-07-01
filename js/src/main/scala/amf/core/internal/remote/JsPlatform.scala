@@ -28,6 +28,4 @@ trait JsPlatform extends Platform {
   override def normalizeURL(url: String): String = Path.normalize(url)
 
   override def normalizePath(url: String): String = fixFilePrefix(new URI(encodeURI(url)).normalize.toString)
-
-  override val defaultExecutionEnvironment: ExecutionEnvironment = DefaultExecutionEnvironment()
 }

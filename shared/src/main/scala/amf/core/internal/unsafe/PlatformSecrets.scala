@@ -111,7 +111,4 @@ case class TrunkPlatform(content: String,
 
   /** Return the OS (win, mac, nux). */
   override def operativeSystem(): String = "trunk"
-
-  override val defaultExecutionEnvironment: BaseExecutionEnvironment = new BaseExecutionEnvironment(
-      ExecutionEnvironment()) {}
 }

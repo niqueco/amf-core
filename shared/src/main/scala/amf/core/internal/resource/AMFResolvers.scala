@@ -94,8 +94,7 @@ object AMFResolvers extends PlatformSecrets {
     * @return
     */
   def predefined() = {
-    AMFResolvers(platform.loaders()((platform.defaultExecutionEnvironment).executionContext).toList,
-                 None,
-                 (platform.defaultExecutionEnvironment._internal))
+    implicit val globalContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+    AMFResolvers(platform.loaders()(globalContext).toList, None, ExecutionEnvironment(globalContext))
   }
 }
