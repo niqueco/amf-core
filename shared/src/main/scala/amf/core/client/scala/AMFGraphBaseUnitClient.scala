@@ -2,6 +2,7 @@ package amf.core.client.scala
 
 import amf.core.client.common.validation.ProfileName
 import amf.core.client.scala.model.document.BaseUnit
+import amf.core.client.common.transform.PipelineName
 import amf.core.client.scala.parse.AMFParser
 import amf.core.client.scala.parse.document.ParsedDocument
 import amf.core.client.scala.render.AMFRenderer
@@ -70,6 +71,9 @@ class AMFGraphBaseUnitClient private[amf] (protected val configuration: AMFGraph
     */
   def transform(baseUnit: BaseUnit, pipelineName: String): AMFResult =
     AMFTransformer.transform(baseUnit, pipelineName, configuration) // clone? BaseUnit.resolved
+
+  def transformWithPipelineId(baseUnit: BaseUnit, pipelineId: String): AMFResult =
+    AMFTransformer.transform(baseUnit, PipelineName.from(baseUnit.sourceMediaType, pipelineId), configuration)
 
   /**
     * Render a [[BaseUnit]] to its default type

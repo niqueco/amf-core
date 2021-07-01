@@ -73,6 +73,9 @@ class AMFGraphBaseUnitClient private[amf] (private val _internal: InternalAMFGra
     */
   def transform(baseUnit: BaseUnit, pipelineName: String): AMFResult = _internal.transform(baseUnit, pipelineName)
 
+  def transformWithPipelineId(baseUnit: BaseUnit, pipelineId: String): AMFResult =
+    _internal.transform(baseUnit, pipelineId)
+
   /**
     * Render a [[BaseUnit]] to its default type
     * @param baseUnit [[BaseUnit]] to be rendered
