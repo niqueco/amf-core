@@ -56,64 +56,66 @@ class AMFGraphBaseUnitClient private[amf] (protected val configuration: AMFGraph
 
   /**
     * Transforms a [[BaseUnit]] with the default configuration
-    * @param bu [[BaseUnit]] to transform
+    * @param baseUnit [[BaseUnit]] to transform
     * @return An [[AMFResult]] with the transformed BaseUnit and it's report
     */
-  def transform(bu: BaseUnit): AMFResult = AMFTransformer.transform(bu, configuration) // clone? BaseUnit.resolved
+  def transform(baseUnit: BaseUnit): AMFResult =
+    AMFTransformer.transform(baseUnit, configuration) // clone? BaseUnit.resolved
 
   /**
     * Transforms a [[BaseUnit]] with a specific pipeline
-    * @param bu [[BaseUnit]] to transform
+    * @param baseUnit [[BaseUnit]] to transform
     * @param pipelineName name of any custom or [[AMFGraphConfiguration.predefined predefined]] pipeline
     * @return An [[AMFResult]] with the transformed BaseUnit and it's report
     */
-  def transform(bu: BaseUnit, pipelineName: String): AMFResult =
-    AMFTransformer.transform(bu, pipelineName, configuration) // clone? BaseUnit.resolved
+  def transform(baseUnit: BaseUnit, pipelineName: String): AMFResult =
+    AMFTransformer.transform(baseUnit, pipelineName, configuration) // clone? BaseUnit.resolved
 
   /**
     * Render a [[BaseUnit]] to its default type
-    * @param bu [[BaseUnit]] to be rendered
+    * @param baseUnit [[BaseUnit]] to be rendered
     * @return The content rendered
     */
-  def render(bu: BaseUnit): String = AMFRenderer.render(bu, configuration)
+  def render(baseUnit: BaseUnit): String = AMFRenderer.render(baseUnit, configuration)
 
   /**
     * Render a [[BaseUnit]] and return the AST
-    * @param bu [[BaseUnit]] to be rendered
+    * @param baseUnit [[BaseUnit]] to be rendered
     * @return the AST as a [[ParsedDocument]]
     */
-  def renderAST(bu: BaseUnit): ParsedDocument = AMFRenderer.renderAST(bu, configuration)
+  def renderAST(baseUnit: BaseUnit): ParsedDocument = AMFRenderer.renderAST(baseUnit, configuration)
 
   /**
     * Render a [[BaseUnit]] to a certain mediaType
-    * @param bu [[BaseUnit]] to be rendered
+    * @param baseUnit [[BaseUnit]] to be rendered
     * @param mediaType The nature and format of the given content. Must be <code>"application/spec"</code> or <code>"application/spec+syntax"</code>.
     *                  Examples: <code>"application/raml10"</code> or <code>"application/raml10+yaml"</code>
     * @return The content rendered
     */
-  def render(bu: BaseUnit, mediaType: String): String = AMFRenderer.render(bu, mediaType, configuration)
+  def render(baseUnit: BaseUnit, mediaType: String): String = AMFRenderer.render(baseUnit, mediaType, configuration)
 
   /**
     * Render a [[BaseUnit]] to a certain mediaType and return the AST
-    * @param bu [[BaseUnit]] to be rendered
+    * @param baseUnit [[BaseUnit]] to be rendered
     * @param mediaType The nature and format of the given content. Must be <code>"application/spec"</code> or <code>"application/spec+syntax"</code>.
     *                  Examples: <code>"application/raml10"</code> or <code>"application/raml10+yaml"</code>
     * @return the AST as a [[ParsedDocument]]
     */
-  def renderAST(bu: BaseUnit, mediaType: String): ParsedDocument = AMFRenderer.renderAST(bu, mediaType, configuration)
+  def renderAST(baseUnit: BaseUnit, mediaType: String): ParsedDocument =
+    AMFRenderer.renderAST(baseUnit, mediaType, configuration)
 
   /**
     * Render a [[BaseUnit]] to a [[DocBuilder]] in the form of a graph (jsonld)
-    * @param bu [[BaseUnit]] to be rendered
+    * @param baseUnit [[BaseUnit]] to be rendered
     * @param builder [[DocBuilder]] which is used for rendering
     * @return The result produced by the DocBuilder after rendering
     */
-  def renderGraphToBuilder[T](bu: BaseUnit, builder: DocBuilder[T]): T =
-    AMFRenderer.renderGraphToBuilder(bu, builder, configuration)
+  def renderGraphToBuilder[T](baseUnit: BaseUnit, builder: DocBuilder[T]): T =
+    AMFRenderer.renderGraphToBuilder(baseUnit, builder, configuration)
 
   /**
     * Validate a [[BaseUnit]] with its default validation profile name
-    * @param bu [[BaseUnit]] to validate
+    * @param baseUnit [[BaseUnit]] to validate
     * @return an [[AMFValidationReport]]
     */
   def validate(bu: BaseUnit): Future[AMFValidationReport] = AMFValidator.validate(bu, configuration)

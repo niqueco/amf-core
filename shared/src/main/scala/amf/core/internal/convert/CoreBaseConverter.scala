@@ -52,7 +52,7 @@ import amf.core.client.platform.validation.{
   payload,
   AMFValidationReport => ClientValidationReport,
   ValidationCandidate => ClientValidationCandidate,
-  ValidationResult => ClientValidationResult,
+  AMFValidationResult => ClientValidationResult,
   ValidationShapeSet => ClientValidationShapeSet
 }
 import amf.core.client.platform.{config, transform, AMFResult => ClientAMFResult}

@@ -8,11 +8,10 @@ import amf.core.internal.convert.CoreClientConverters._
 import amf.core.client.platform.model.document.PayloadFragment
 import amf.core.client.common.position.Range
 import amf.core.client.scala.validation.payload.{PayloadParsingResult => InternalPayloadParsingResult}
-import amf.core.client.scala.validation.AMFValidationResult
 import amf.core.client.scala.validation.{AMFValidationResult => InternalValidationResult}
 
 @JSExportAll
-class ValidationResult(private[amf] val _internal: AMFValidationResult) {
+class AMFValidationResult(private[amf] val _internal: InternalValidationResult) {
 
   @JSExportTopLevel("ValidationResult")
   def this(message: String,
@@ -33,7 +32,7 @@ class ValidationResult(private[amf] val _internal: AMFValidationResult) {
                                  null))
 
   def message: String        = _internal.message
-  def level: String          = _internal.severityLevel
+  def severityLevel: String          = _internal.severityLevel
   def targetNode: String     = _internal.targetNode
   def targetProperty: String = _internal.targetProperty.orNull
   def validationId: String   = _internal.validationId
@@ -51,10 +50,10 @@ class ValidationResult(private[amf] val _internal: AMFValidationResult) {
 class PayloadParsingResult(private[amf] val _internal: InternalPayloadParsingResult) {
 
   @JSExportTopLevel("PayloadParsingResult")
-  def this(fragment: PayloadFragment, results: ClientList[ValidationResult]) =
+  def this(fragment: PayloadFragment, results: ClientList[AMFValidationResult]) =
     this(InternalPayloadParsingResult(fragment._internal, results.asInternal.toList))
 
   def fragment: PayloadFragment             = _internal.fragment
-  def results: ClientList[ValidationResult] = _internal.results.asClient
+  def results: ClientList[AMFValidationResult] = _internal.results.asClient
 
 }

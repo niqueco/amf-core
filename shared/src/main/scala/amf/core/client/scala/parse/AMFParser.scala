@@ -70,7 +70,7 @@ object AMFParser {
       .build()
     val compiler = new AMFGraphPartialCompiler(context, startingPoint)
     build(compiler, configuration).map { r =>
-      r.bu match {
+      r.baseUnit match {
         case container: AmfObjectUnitContainer => new AMFObjectResult(container.result, r.results)
         case _                                 => throw new UnsupportedOperationException("Unexpected result unit type for partial parsing")
       }

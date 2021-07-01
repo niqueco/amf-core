@@ -60,42 +60,43 @@ class AMFGraphBaseUnitClient private[amf] (private val _internal: InternalAMFGra
 
   /**
     * Transforms a [[BaseUnit]] with the default configuration
-    * @param bu [[BaseUnit]] to transform
+    * @param baseUnit [[BaseUnit]] to transform
     * @return An [[AMFResult]] with the transformed BaseUnit and it's report
     */
-  def transform(bu: BaseUnit): AMFResult = _internal.transform(bu)
+  def transform(baseUnit: BaseUnit): AMFResult = _internal.transform(baseUnit)
 
   /**
     * Transforms a [[BaseUnit]] with a specific pipeline
-    * @param bu [[BaseUnit]] to transform
+    * @param baseUnit [[BaseUnit]] to transform
     * @param pipelineName name of any custom or [[AMFGraphConfiguration.predefined predefined]] pipeline
     * @return An [[AMFResult]] with the transformed BaseUnit and it's report
     */
-  def transform(bu: BaseUnit, pipelineName: String): AMFResult = _internal.transform(bu, pipelineName)
+  def transform(baseUnit: BaseUnit, pipelineName: String): AMFResult = _internal.transform(baseUnit, pipelineName)
 
   /**
     * Render a [[BaseUnit]] to its default type
-    * @param bu [[BaseUnit]] to be rendered
+    * @param baseUnit [[BaseUnit]] to be rendered
     * @return The content rendered
     */
-  def render(bu: BaseUnit): String = _internal.render(bu)
+  def render(baseUnit: BaseUnit): String = _internal.render(baseUnit)
 
   /**
     * Render a [[BaseUnit]] to a certain mediaType
-    * @param bu [[BaseUnit]] to be rendered
+    * @param baseUnit [[BaseUnit]] to be rendered
     * @param mediaType The nature and format of the given content. Must be <code>"application/spec"</code> or <code>"application/spec+syntax"</code>.
     *                  Examples: <code>"application/raml10"</code> or <code>"application/raml10+yaml"</code>
     * @return The content rendered
     */
-  def render(bu: BaseUnit, mediaType: String): String = _internal.render(bu, mediaType)
+  def render(baseUnit: BaseUnit, mediaType: String): String = _internal.render(baseUnit, mediaType)
 
   /**
     * Render a [[BaseUnit]] to a [[DocBuilder]] in the form of a graph (jsonld)
-    * @param bu [[BaseUnit]] to be rendered
+    * @param baseUnit [[BaseUnit]] to be rendered
     * @param builder [[DocBuilder]] which is used for rendering
     * @return The result produced by the DocBuilder after rendering
     */
-  def renderGraphToBuilder[T](bu: BaseUnit, builder: DocBuilder[T]): T = _internal.renderGraphToBuilder(bu, builder)
+  def renderGraphToBuilder[T](baseUnit: BaseUnit, builder: DocBuilder[T]): T =
+    _internal.renderGraphToBuilder(baseUnit, builder)
 
   /**
     * Validate a [[BaseUnit]] with its default validation profile name
