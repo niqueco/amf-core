@@ -1,6 +1,6 @@
 package amf.core.client.platform
 
-import amf.core.client.platform.config.{AMFEventListener, AMFLogger, ParsingOptions, RenderOptions}
+import amf.core.client.platform.config.{AMFEventListener, ParsingOptions, RenderOptions}
 import amf.core.client.platform.errorhandling.ErrorHandlerProvider
 import amf.core.client.platform.execution.BaseExecutionEnvironment
 import amf.core.client.platform.reference.UnitCache
@@ -42,14 +42,12 @@ class AMFGraphConfiguration private[amf] (private[amf] val _internal: InternalGr
     _internal.withResourceLoaders(rl.asInternal.toList)
 
   def withUnitCache(cache: UnitCache): AMFGraphConfiguration =
-    _internal.withUnitCache(ReferenceResolverMatcher.asInternal(cache))
+    _internal.withUnitCache(UnitCacheMatcher.asInternal(cache))
 
   def withTransformationPipeline(pipeline: TransformationPipeline): AMFGraphConfiguration =
     _internal.withTransformationPipeline(pipeline)
 
   def withEventListener(listener: AMFEventListener): AMFGraphConfiguration = _internal.withEventListener(listener)
-
-  def withLogger(logger: AMFLogger): AMFGraphConfiguration = _internal.withLogger(logger)
 
   def withExecutionEnvironment(executionEnv: BaseExecutionEnvironment): AMFGraphConfiguration =
     _internal.withExecutionEnvironment(executionEnv._internal)

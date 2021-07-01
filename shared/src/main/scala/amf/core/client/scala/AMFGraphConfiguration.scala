@@ -1,30 +1,29 @@
 package amf.core.client.scala
 
-import amf.core.internal.convert.CoreRegister
-import amf.core.client.scala.errorhandling.{AMFErrorHandler, DefaultErrorHandlerProvider, ErrorHandlerProvider}
-import amf.core.client.platform.config.{AMFLogger, MutedLogger}
-import amf.core.client.scala.config.{AMFEventListener, AMFOptions, ParsingOptions, RenderOptions, UnitCache}
-import amf.core.internal.annotations.serializable.CoreSerializableAnnotations
-import amf.core.internal.entities.CoreEntities
-import amf.core.internal.metamodel.ModelDefaultBuilder
-import amf.core.client.scala.model.domain.AnnotationGraphLoader
 import amf.core.client.common.validation.ProfileName
+import amf.core.client.scala.config._
+import amf.core.client.scala.errorhandling.{AMFErrorHandler, DefaultErrorHandlerProvider, ErrorHandlerProvider}
 import amf.core.client.scala.execution.ExecutionEnvironment
-import amf.core.client.scala.transform.pipelines.{BasicTransformationPipeline, TransformationPipeline}
+import amf.core.client.scala.model.domain.AnnotationGraphLoader
 import amf.core.client.scala.parse.document.ParserContext
 import amf.core.client.scala.resource.ResourceLoader
+import amf.core.client.scala.transform.pipelines.{BasicTransformationPipeline, TransformationPipeline}
 import amf.core.client.scala.validation.payload.ShapePayloadValidatorFactory
-import amf.core.internal.validation.core.ValidationProfile
+import amf.core.internal.annotations.serializable.CoreSerializableAnnotations
+import amf.core.internal.convert.CoreRegister
+import amf.core.internal.entities.CoreEntities
+import amf.core.internal.metamodel.ModelDefaultBuilder
 import amf.core.internal.parser.CompilerConfiguration
 import amf.core.internal.plugins.AMFPlugin
-import amf.core.internal.resource.AMFResolvers
 import amf.core.internal.plugins.document.graph.entities.AMFGraphEntities
 import amf.core.internal.plugins.parse.AMFGraphParsePlugin
 import amf.core.internal.plugins.payload.DefaultShapePayloadValidatorFactory
 import amf.core.internal.plugins.render.{AMFGraphRenderPlugin, DefaultRenderConfiguration}
 import amf.core.internal.plugins.syntax.{SyamlSyntaxParsePlugin, SyamlSyntaxRenderPlugin}
 import amf.core.internal.registries.AMFRegistry
+import amf.core.internal.resource.AMFResolvers
 import amf.core.internal.validation.ValidationConfiguration
+import amf.core.internal.validation.core.ValidationProfile
 
 import scala.concurrent.ExecutionContext
 // all constructors only visible from amf. Users should always use builders or defaults
@@ -36,7 +35,6 @@ object AMFGraphConfiguration {
         AMFResolvers.predefined(),
         DefaultErrorHandlerProvider,
         AMFRegistry.empty,
-        MutedLogger,
         Set.empty,
         AMFOptions.default()
     )
@@ -47,7 +45,6 @@ object AMFGraphConfiguration {
     *   - AMF Resolvers [[AMFResolvers.predefined predefined]]
     *   - Default error handler provider that will create a [[amf.core.client.scala.errorhandling.DefaultErrorHandler]]
     *   - Empty [[AMFRegistry]]
-    *   - MutedLogger: [[amf.core.client.platform.config.MutedLogger]]
     *   - Without Any listener
     */
   def predefined(): AMFGraphConfiguration = {
@@ -58,7 +55,6 @@ object AMFGraphConfiguration {
         AMFRegistry.empty
           .withEntities(CoreEntities.entities ++ AMFGraphEntities.entities)
           .withAnnotations(CoreSerializableAnnotations.annotations),
-        MutedLogger,
         Set.empty,
         AMFOptions.default()
     ).withPlugins(List(AMFGraphParsePlugin, AMFGraphRenderPlugin, SyamlSyntaxParsePlugin, SyamlSyntaxRenderPlugin))
@@ -80,17 +76,15 @@ object AMFGraphConfiguration {
   * @param resolvers            [[AMFResolvers]]
   * @param errorHandlerProvider [[ErrorHandlerProvider]]
   * @param registry             [[AMFRegistry]]
-  * @param logger               [[amf.core.client.platform.config.AMFLogger]]
   * @param listeners            a Set of [[AMFEventListener]]
   * @param options              [[AMFOptions]]
   */
 class AMFGraphConfiguration private[amf] (override private[amf] val resolvers: AMFResolvers,
                                           override private[amf] val errorHandlerProvider: ErrorHandlerProvider,
                                           override private[amf] val registry: AMFRegistry,
-                                          override private[amf] val logger: AMFLogger,
                                           override private[amf] val listeners: Set[AMFEventListener],
                                           override private[amf] val options: AMFOptions)
-    extends BaseAMFConfigurationSetter(resolvers, errorHandlerProvider, registry, logger, listeners, options) { // break platform into more specific classes?
+    extends BaseAMFConfigurationSetter(resolvers, errorHandlerProvider, registry, listeners, options) { // break platform into more specific classes?
 
   def baseUnitClient(): AMFGraphBaseUnitClient = new AMFGraphBaseUnitClient(this)
 
@@ -145,8 +139,6 @@ class AMFGraphConfiguration private[amf] (override private[amf] val resolvers: A
 
   def withEventListener(listener: AMFEventListener): AMFGraphConfiguration = super._withEventListener(listener)
 
-  def withLogger(logger: AMFLogger): AMFGraphConfiguration = super._withLogger(logger)
-
   def withExecutionEnvironment(executionEnv: ExecutionEnvironment): AMFGraphConfiguration =
     super._withExecutionEnvironment(executionEnv)
 
@@ -159,10 +151,9 @@ class AMFGraphConfiguration private[amf] (override private[amf] val resolvers: A
   protected def copy(resolvers: AMFResolvers = resolvers,
                      errorHandlerProvider: ErrorHandlerProvider = errorHandlerProvider,
                      registry: AMFRegistry = registry,
-                     logger: AMFLogger = logger,
                      listeners: Set[AMFEventListener] = Set.empty,
                      options: AMFOptions = options): AMFGraphConfiguration = {
-    new AMFGraphConfiguration(resolvers, errorHandlerProvider, registry, logger, listeners, options)
+    new AMFGraphConfiguration(resolvers, errorHandlerProvider, registry, listeners, options)
 
   }
 
@@ -181,7 +172,6 @@ class AMFGraphConfiguration private[amf] (override private[amf] val resolvers: A
 sealed abstract class BaseAMFConfigurationSetter(private[amf] val resolvers: AMFResolvers,
                                                  private[amf] val errorHandlerProvider: ErrorHandlerProvider,
                                                  private[amf] val registry: AMFRegistry,
-                                                 private[amf] val logger: AMFLogger,
                                                  private[amf] val listeners: Set[AMFEventListener],
                                                  private[amf] val options: AMFOptions) {
   protected def _withParsingOptions[T](parsingOptions: ParsingOptions): T =
@@ -219,9 +209,6 @@ sealed abstract class BaseAMFConfigurationSetter(private[amf] val resolvers: AMF
   protected def _withEventListener[T](listener: AMFEventListener): T =
     copy(listeners = listeners + listener).asInstanceOf[T]
 
-  protected def _withLogger[T](logger: AMFLogger): T =
-    copy(logger = logger).asInstanceOf[T]
-
   // TODO - ARM: Should be erased as configuration should be incremental, not decremental
   protected def _removeValidationProfile[T](name: ProfileName): T =
     copy(registry = registry.removeConstraints(name)).asInstanceOf[T]
@@ -254,7 +241,6 @@ sealed abstract class BaseAMFConfigurationSetter(private[amf] val resolvers: AMF
   protected def copy(resolvers: AMFResolvers = resolvers,
                      errorHandlerProvider: ErrorHandlerProvider = errorHandlerProvider,
                      registry: AMFRegistry = registry,
-                     logger: AMFLogger = logger,
                      listeners: Set[AMFEventListener] = Set.empty,
                      options: AMFOptions = options): BaseAMFConfigurationSetter
 
