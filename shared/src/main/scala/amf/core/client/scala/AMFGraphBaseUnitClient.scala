@@ -12,10 +12,10 @@ import org.yaml.builder.DocBuilder
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
-  * Contains common AMF graph operations.
+  * Contains common AMF graph operations associated to documents.
   * Base client for <code>AMLClient</code> and <code>AMFClient</code>.
   */
-class AMFGraphClient(protected val configuration: AMFGraphConfiguration) {
+class AMFGraphBaseUnitClient private[amf] (protected val configuration: AMFGraphConfiguration) {
 
   implicit val exec: ExecutionContext = configuration.getExecutionContext
 

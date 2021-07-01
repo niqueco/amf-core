@@ -2,7 +2,7 @@ package amf.core.client.platform
 
 import amf.core.internal.convert.CoreClientConverters._
 import amf.core.client.platform.model.document.BaseUnit
-import amf.core.client.scala.{AMFGraphClient => InternalAMFGraphClient}
+import amf.core.client.scala.{AMFGraphBaseUnitClient => InternalAMFGraphBaseUnitClient}
 import amf.core.client.platform.validation.AMFValidationReport
 import amf.core.client.common.validation.ProfileName
 import org.yaml.builder.DocBuilder
@@ -14,14 +14,13 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
   * Base client for <code>AMLClient</code> and <code>AMFClient</code>.
   */
 @JSExportAll
-class AMFGraphClient private[amf] (private val _internal: InternalAMFGraphClient) {
+class AMFGraphBaseUnitClient private[amf] (private val _internal: InternalAMFGraphBaseUnitClient) {
+
+  private[amf] def this(configuration: AMFGraphConfiguration) = {
+    this(new InternalAMFGraphBaseUnitClient(configuration))
+  }
 
   private implicit val ec: ExecutionContext = _internal.getConfiguration.getExecutionContext
-
-  @JSExportTopLevel("AMFGraphClient")
-  def this(configuration: AMFGraphConfiguration) = {
-    this(new InternalAMFGraphClient(configuration))
-  }
 
   def getConfiguration(): AMFGraphConfiguration = _internal.getConfiguration
 
