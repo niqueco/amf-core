@@ -553,7 +553,7 @@ trait ResourceLoaderConverter {
 trait UnitCacheConverter {
   type ClientReference <: ClientUnitCache
 
-  implicit object ReferenceResolverMatcher extends BidirectionalMatcherWithEC[UnitCache, ClientUnitCache] {
+  implicit object UnitCacheMatcher extends BidirectionalMatcherWithEC[UnitCache, ClientUnitCache] {
     override def asInternal(from: ClientUnitCache)(implicit executionContext: ExecutionContext): UnitCache =
       UnitCacheAdapter(from)
 
