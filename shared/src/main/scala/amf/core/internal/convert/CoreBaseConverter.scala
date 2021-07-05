@@ -8,7 +8,6 @@ import amf.core.client.platform.config.{
   AMFEventListener => ClientAMFEventListener,
   ParsingOptions => ClientParsingOptions,
   RenderOptions => ClientRenderOptions,
-  ShapeRenderOptions => ClientShapeRenderOptions
 }
 import amf.core.client.platform.errorhandling.ClientErrorHandler
 import amf.core.client.platform.model.document.{
@@ -114,7 +113,6 @@ trait CoreBaseConverter
     with UnitCacheConverter
     with PayloadValidatorConverter
     with ParsingOptionsConverter
-    with ShapeRenderOptionsConverter
     with RenderOptionsConverter
     with AMFGraphConfigurationConverter
     with TransformationStepConverter
@@ -614,14 +612,6 @@ trait ParsingOptionsConverter {
   implicit object ParsingOptionsMatcher extends BidirectionalMatcher[ParsingOptions, config.ParsingOptions] {
     override def asClient(from: ParsingOptions): config.ParsingOptions   = ClientParsingOptions(from)
     override def asInternal(from: config.ParsingOptions): ParsingOptions = from._internal
-  }
-}
-
-trait ShapeRenderOptionsConverter {
-  implicit object ShapeRenderOptionsMatcher
-      extends BidirectionalMatcher[ShapeRenderOptions, config.ShapeRenderOptions] {
-    override def asClient(from: ShapeRenderOptions): config.ShapeRenderOptions   = ClientShapeRenderOptions(from)
-    override def asInternal(from: config.ShapeRenderOptions): ShapeRenderOptions = from._internal
   }
 }
 
