@@ -4,8 +4,6 @@ import amf.core.client.scala.lexer.{CharSequenceStream, CharStream}
 
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
-// TODO: Should remove @JSExportAll. ApiDesigner does stream.toString() and that's the reason why we can't hide these unusable params (stream, mime)
-@JSExportAll
 case class Content(stream: CharStream, url: String, mime: Option[String] = None) {
 
   @JSExportTopLevel("Content")
