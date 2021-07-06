@@ -4,43 +4,42 @@ import amf.core.client.common.remote.Content
 import amf.core.client.scala.AMFGraphConfiguration
 import amf.core.client.scala.config.{AMFEvent, ParsingOptions, UnitCache}
 import amf.core.client.scala.errorhandling.AMFErrorHandler
-import amf.core.client.scala.model.document.BaseUnit
-import amf.core.client.scala.parse.{AMFParsePlugin, AMFSyntaxParsePlugin}
-import amf.core.internal.plugins.parse.DomainParsingFallback
+import amf.core.client.scala.parse.AMFParsePlugin
 import amf.core.internal.rdf.helper.{EntitiesFacade, SerializableAnnotationsFacade}
-import amf.core.internal.registries.RegistryContext
+import amf.core.internal.registries.{AMFRegistry, RegistryContext}
 
 import scala.collection.immutable
-import scala.concurrent.{ExecutionContext, Future}
 
-case class ParseConfiguration private (config: AMFGraphConfiguration, eh: AMFErrorHandler) {
-
-  val executionContext: ExecutionContext           = config.resolvers.executionEnv.context
-  def resolveContent(url: String): Future[Content] = config.resolvers.resolveContent(url)
-
-  val sortedParsePlugins: immutable.Seq[AMFParsePlugin]      = config.registry.plugins.parsePlugins.sorted
-  val sortedParseSyntax: immutable.Seq[AMFSyntaxParsePlugin] = config.registry.plugins.syntaxParsePlugins.sorted
-  val domainFallback: DomainParsingFallback                  = config.registry.plugins.domainParsingFallback
-  val parsingOptions: ParsingOptions                         = config.options.parsingOptions
-  def notifyEvent(e: AMFEvent): Unit                         = config.listeners.foreach(_.notifyEvent(e))
-
-  def chooseFallback(document: Root, mediaType: Option[String]): BaseUnit =
-    domainFallback.chooseFallback(document, mediaType, sortedParsePlugins)
-
-  def getUnitsCache: Option[UnitCache] = config.getUnitsCache
-
-  private[amf] lazy val registryContext: RegistryContext = RegistryContext(config.getRegistry)
-
-  lazy val entitiesFacade                = new EntitiesFacade(this)
-  lazy val serializableAnnotationsFacade = new SerializableAnnotationsFacade(this)
-
+// configuration used by AMFParsePlugin
+trait ParseConfiguration {
+  def eh: AMFErrorHandler
+  def sortedParsePlugins: immutable.Seq[AMFParsePlugin]
+  def parsingOptions: ParsingOptions
+  def registryContext: RegistryContext
+  def entitiesFacade: EntitiesFacade
+  def serializableAnnotationsFacade: SerializableAnnotationsFacade
 }
 
-object ParseConfiguration {
+case class ParseConfig(config: AMFGraphConfiguration, eh: AMFErrorHandler) extends ParseConfiguration {
+  val sortedParsePlugins: immutable.Seq[AMFParsePlugin] = config.registry.plugins.parsePlugins.sorted
+  val parsingOptions: ParsingOptions                    = config.options.parsingOptions
+  lazy val registryContext: RegistryContext             = RegistryContext(config.getRegistry)
+  lazy val entitiesFacade                               = new EntitiesFacade(this)
+  lazy val serializableAnnotationsFacade                = new SerializableAnnotationsFacade(this)
+}
+
+object ParseConfig {
 
   /** use with caution, new error handler is created here */
   def apply(config: AMFGraphConfiguration): ParseConfiguration =
-    ParseConfiguration(config, config.errorHandlerProvider.errorHandler())
-  def apply(eh: AMFErrorHandler): ParseConfiguration =
-    ParseConfiguration(AMFGraphConfiguration.predefined(), eh)
+    ParseConfig(config, config.errorHandlerProvider.errorHandler())
+}
+
+/* Parse configuration that only contains error handler, all other content is left empty/default */
+case class LimitedParseConfig(eh: AMFErrorHandler) extends ParseConfiguration {
+  override def sortedParsePlugins: immutable.Seq[AMFParsePlugin]            = Nil
+  override def parsingOptions: ParsingOptions                               = ParsingOptions()
+  override def registryContext: RegistryContext                             = RegistryContext(AMFRegistry.empty)
+  override def entitiesFacade: EntitiesFacade                               = new EntitiesFacade(this)
+  override def serializableAnnotationsFacade: SerializableAnnotationsFacade = new SerializableAnnotationsFacade(this)
 }

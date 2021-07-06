@@ -21,7 +21,7 @@ case class Reference(url: String, refs: Seq[RefContainer]) extends PlatformSecre
       implicit executionContext: ExecutionContext): Future[ReferenceResolutionResult] = {
     // If there is any ReferenceResolver attached to the environment, then first try to get the cached reference if it exists. If not, load and parse as usual.
     try {
-      compilerContext.parserContext.config.getUnitsCache match {
+      compilerContext.compilerConfig.getUnitsCache match {
         case Some(resolver) =>
           // cached references do not take into account allowedVendorsToReference defined in plugin
           resolver.fetch(compilerContext.resolvePath(url)) flatMap { cachedReference =>
@@ -62,7 +62,7 @@ case class Reference(url: String, refs: Seq[RefContainer]) extends PlatformSecre
 
   protected def resolveRecursiveUnit(fullUrl: String, compilerContext: CompilerContext)(
       implicit executionContext: ExecutionContext): Future[RecursiveUnit] = {
-    compilerContext.parserContext.config.resolveContent(fullUrl) map { content =>
+    compilerContext.compilerConfig.resolveContent(fullUrl) map { content =>
       val recUnit = RecursiveUnit().adopted(fullUrl).withLocation(fullUrl)
       recUnit.withRaw(content.stream.toString)
       recUnit

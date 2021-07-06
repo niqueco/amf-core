@@ -7,12 +7,12 @@ import amf.core.client.scala.model.domain._
 import amf.core.client.scala.rdf.{Node, PropertyObject, RdfModel}
 import amf.core.internal.rdf.graph.NodeFinder
 import amf.core.internal.rdf.parsers._
-import amf.core.internal.parser.ParseConfiguration
+import amf.core.internal.parser.{ParseConfig, ParseConfiguration}
 import amf.core.internal.validation.CoreValidations.UnableToParseRdfDocument
 
 object RdfModelParser {
   def apply(config: ParseConfiguration): RdfModelParser       = new RdfModelParser(config)
-  def apply(amfConfig: AMFGraphConfiguration): RdfModelParser = apply(amfConfig.parseConfiguration)
+  def apply(amfConfig: AMFGraphConfiguration): RdfModelParser = apply(ParseConfig(amfConfig))
 }
 
 class RdfModelParser(config: ParseConfiguration) extends RdfParserCommon {

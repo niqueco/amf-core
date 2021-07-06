@@ -13,7 +13,7 @@ import amf.core.internal.parser._
 import amf.core.client.scala.parse.document.SyamlParsedDocument
 import amf.core.client.scala.vocabulary.Namespace.XsdTypes.xsdBoolean
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
-import amf.core.internal.parser.ParseConfiguration
+import amf.core.internal.parser.CompilerConfiguration
 import amf.core.internal.parser.domain.{Annotations, FieldEntry}
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
 import amf.core.internal.plugins.document.graph.MetaModelHelper._
@@ -25,8 +25,7 @@ import org.yaml.model._
 import scala.collection.mutable
 import scala.language.implicitConversions
 
-class FlattenedUnitGraphParser(configuration: ParseConfiguration)(implicit val ctx: GraphParserContext)
-    extends GraphParserHelpers {
+class FlattenedUnitGraphParser()(implicit val ctx: GraphParserContext) extends GraphParserHelpers {
 
   def parse(document: YDocument, location: String): BaseUnit = {
 
@@ -34,7 +33,7 @@ class FlattenedUnitGraphParser(configuration: ParseConfiguration)(implicit val c
 
     val unit = rootNode.flatMap(_.toOption[YMap]).flatMap(m => retrieveId(m, ctx)) match {
       case Some(rootId) =>
-        new FlattenedGraphParser(configuration, rootId)(ctx).parse(document) match {
+        new FlattenedGraphParser(rootId)(ctx).parse(document) match {
           case Some(b: BaseUnit) => b
           case Some(_) =>
             ctx.eh.violation(UnableToParseDocument, "", "Root node is not a Base Unit")
@@ -53,8 +52,7 @@ class FlattenedUnitGraphParser(configuration: ParseConfiguration)(implicit val c
   }
 }
 
-class FlattenedGraphParser(config: ParseConfiguration, startingPoint: String)(implicit val ctx: GraphParserContext)
-    extends GraphParserHelpers {
+class FlattenedGraphParser(startingPoint: String)(implicit val ctx: GraphParserContext) extends GraphParserHelpers {
 
   def parse(document: YDocument): Option[AmfObject] = {
     val parser = Parser(Map())
@@ -63,7 +61,7 @@ class FlattenedGraphParser(config: ParseConfiguration, startingPoint: String)(im
 
   // TODO ARM duplicated
   def annotations(nodes: Map[String, AmfElement], sources: SourceMap, key: String): Annotations =
-    config.serializableAnnotationsFacade.retrieveAnnotation(nodes, sources, key)
+    ctx.config.serializableAnnotationsFacade.retrieveAnnotation(nodes, sources, key)
 
   case class Parser(var nodes: Map[String, AmfElement]) extends GraphParserHelpers {
     private val unresolvedReferences = mutable.Map[String, Seq[DomainElement]]()
@@ -536,7 +534,7 @@ class FlattenedGraphParser(config: ParseConfiguration, startingPoint: String)(im
         .map(entry => value(field.`type`, entry.value).as[YScalar].text)
 
     private def findType(typeString: String): Option[ModelDefaultBuilder] =
-      config.registryContext.findType(typeString)
+      ctx.config.registryContext.findType(typeString)
 
     private def buildType(modelType: ModelDefaultBuilder, ann: Annotations): AmfObject = {
       val instance = modelType.modelInstance
@@ -549,10 +547,10 @@ class FlattenedGraphParser(config: ParseConfiguration, startingPoint: String)(im
 object FlattenedUnitGraphParser extends GraphContextHelper with GraphParserHelpers {
 
   def apply(config: ParseConfiguration): FlattenedUnitGraphParser = {
-    new FlattenedUnitGraphParser(config)(new GraphParserContext(eh = config.eh))
+    new FlattenedUnitGraphParser()(new GraphParserContext(config = config))
   }
   implicit val ctx: GraphParserContext = new GraphParserContext(
-      eh = IgnoringErrorHandler
+      config = LimitedParseConfig(IgnoringErrorHandler)
   )
 
   /**

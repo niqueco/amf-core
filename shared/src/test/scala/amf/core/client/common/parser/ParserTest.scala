@@ -6,8 +6,13 @@ import amf.core.client.scala.parse.document.{ParserContext, SyamlParsedDocument}
 import amf.core.client.scala.AMFGraphConfiguration
 import amf.core.client.scala.config.ParsingOptions
 import amf.core.client.scala.rdf.RdfModel
-import amf.core.internal.validation.core.{SHACLValidator, ShaclValidationOptions, ValidationReport, ValidationSpecification}
-import amf.core.internal.parser.ParseConfiguration
+import amf.core.internal.validation.core.{
+  SHACLValidator,
+  ShaclValidationOptions,
+  ValidationReport,
+  ValidationSpecification
+}
+import amf.core.internal.parser.{LimitedParseConfig, CompilerConfiguration}
 import amf.core.internal.plugins.syntax.SyamlSyntaxParsePlugin
 import org.scalatest.FunSuite
 import org.scalatest.Matchers._
@@ -89,7 +94,7 @@ class ParserTest extends FunSuite {
   }
 
   test("Test empty YAML with comment") {
-    val context = ParserContext("", Seq.empty, config = ParseConfiguration(UnhandledErrorHandler))
+    val context = ParserContext("", Seq.empty, config = LimitedParseConfig(UnhandledErrorHandler))
     val parsed  = SyamlSyntaxParsePlugin.parse("#%Header", "application/yaml", context)
     parsed match {
       case p: SyamlParsedDocument =>

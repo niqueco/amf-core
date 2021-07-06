@@ -5,7 +5,7 @@ import amf.core.internal.metamodel.document.{BaseUnitModel, DocumentModel}
 import amf.core.client.scala.model.document.{DeclaresModel, EncodesModel}
 import amf.core.client.scala.model.domain.AmfObject
 import amf.core.client.scala.rdf.Node
-import amf.core.internal.parser.ParseConfiguration
+import amf.core.internal.parser.{CompilerConfiguration, ParseConfiguration}
 import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.validation.CoreValidations.UnableToParseNode
 import org.mulesoft.common.core.CachedFunction

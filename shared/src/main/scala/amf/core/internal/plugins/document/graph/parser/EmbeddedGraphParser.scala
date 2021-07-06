@@ -13,7 +13,7 @@ import amf.core.internal.parser._
 import amf.core.internal.parser.domain.FieldEntry
 import amf.core.client.scala.parse.document.SyamlParsedDocument
 import amf.core.client.scala.vocabulary.Namespace
-import amf.core.internal.parser.ParseConfiguration
+import amf.core.internal.parser.CompilerConfiguration
 import amf.core.internal.parser.domain.{Annotations, FieldEntry}
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
 import amf.core.internal.validation.CoreValidations.{NotLinkable, UnableToParseDocument, UnableToParseNode}
@@ -26,8 +26,7 @@ import scala.collection.mutable.ListBuffer
 /**
   * AMF Graph parser
   */
-class EmbeddedGraphParser(config: ParseConfiguration)(implicit val ctx: GraphParserContext)
-    extends GraphParser(config) {
+class EmbeddedGraphParser()(implicit val ctx: GraphParserContext) extends GraphParser(ctx.config) {
 
   override def canParse(document: SyamlParsedDocument): Boolean = EmbeddedGraphParser.canParse(document)
 
@@ -323,7 +322,7 @@ class EmbeddedGraphParser(config: ParseConfiguration)(implicit val ctx: GraphPar
       .map(entry => value(field.`type`, entry.value).as[YScalar].text)
 
   private def findType(typeString: String): Option[ModelDefaultBuilder] = {
-    config.registryContext.findType(expandUriFromContext(typeString))
+    ctx.config.registryContext.findType(expandUriFromContext(typeString))
   }
 
   private def buildType(modelType: ModelDefaultBuilder, ann: Annotations): AmfObject = {
@@ -337,7 +336,7 @@ class EmbeddedGraphParser(config: ParseConfiguration)(implicit val ctx: GraphPar
 object EmbeddedGraphParser {
 
   def apply(config: ParseConfiguration): EmbeddedGraphParser =
-    new EmbeddedGraphParser(config)(new GraphParserContext(eh = config.eh))
+    new EmbeddedGraphParser()(new GraphParserContext(config = config))
 
   def canParse(document: SyamlParsedDocument): Boolean = {
     val maybeMaps = document.document.node.toOption[Seq[YMap]]
