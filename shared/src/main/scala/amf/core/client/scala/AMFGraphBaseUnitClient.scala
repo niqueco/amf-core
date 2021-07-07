@@ -1,19 +1,19 @@
 package amf.core.client.scala
 
+import amf.core.client.common.validation.ProfileName
+import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.scala.parse.AMFParser
+import amf.core.client.scala.parse.document.ParsedDocument
 import amf.core.client.scala.render.AMFRenderer
 import amf.core.client.scala.transform.AMFTransformer
 import amf.core.client.scala.validation.{AMFValidationReport, AMFValidator}
-import amf.core.client.scala.model.document.BaseUnit
-import amf.core.client.common.validation.ProfileName
-import amf.core.client.scala.parse.document.ParsedDocument
 import org.yaml.builder.DocBuilder
 
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * Contains common AMF graph operations associated to documents.
-  * Base client for <code>AMLClient</code> and <code>AMFClient</code>.
+  * Base client for <code>AMLBaseUnitClient</code> and <code>AMFBaseUnitClient</code>.
   */
 class AMFGraphBaseUnitClient private[amf] (protected val configuration: AMFGraphConfiguration) {
 

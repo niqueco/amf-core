@@ -1,17 +1,18 @@
 package amf.core.client.platform
 
-import amf.core.internal.convert.CoreClientConverters._
-import amf.core.client.platform.model.document.BaseUnit
-import amf.core.client.scala.{AMFGraphBaseUnitClient => InternalAMFGraphBaseUnitClient}
-import amf.core.client.platform.validation.AMFValidationReport
 import amf.core.client.common.validation.ProfileName
+import amf.core.client.platform.model.document.BaseUnit
+import amf.core.client.platform.validation.AMFValidationReport
+import amf.core.client.scala.{AMFGraphBaseUnitClient => InternalAMFGraphBaseUnitClient}
+import amf.core.internal.convert.CoreClientConverters._
 import org.yaml.builder.DocBuilder
+
 import scala.concurrent.ExecutionContext
-import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
+import scala.scalajs.js.annotation.JSExportAll
 
 /**
-  * Contains common AMF graph operations.
-  * Base client for <code>AMLClient</code> and <code>AMFClient</code>.
+  * Contains common AMF graph operations associated to documents.
+  * Base client for <code>AMLBaseUnitClient</code> and <code>AMFBaseUnitClient</code>.
   */
 @JSExportAll
 class AMFGraphBaseUnitClient private[amf] (private val _internal: InternalAMFGraphBaseUnitClient) {
