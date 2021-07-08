@@ -18,7 +18,7 @@ trait AMFEventListener {
   def notifyEvent(event: AMFEvent)
 }
 
-protected[amf] trait AMFEvent {
+trait AMFEvent {
   val name: String
 }
 
