@@ -13,42 +13,46 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
   def this() = this(InternalRenderOptions())
 
   /** Pretty print the graph. */
-  def withPrettyPrint: RenderOptions = _internal.withPrettyPrint
+  def withPrettyPrint(): RenderOptions = _internal.withPrettyPrint
 
   /** Not Pretty print the graph. */
-  def withoutPrettyPrint: RenderOptions = _internal.withoutPrettyPrint
+  def withoutPrettyPrint(): RenderOptions = _internal.withoutPrettyPrint
 
   /** Include source maps when rendering to graph. */
-  def withSourceMaps: RenderOptions = _internal.withSourceMaps
+  def withSourceMaps(): RenderOptions = _internal.withSourceMaps
 
   /** Include source maps when rendering to graph. */
-  def withoutSourceMaps: RenderOptions = _internal.withoutSourceMaps
+  def withoutSourceMaps(): RenderOptions = _internal.withoutSourceMaps
 
-  def withCompactUris: RenderOptions = _internal.withCompactUris
+  def withCompactUris(): RenderOptions = _internal.withCompactUris
 
-  def withoutCompactUris: RenderOptions = _internal.withoutCompactUris
+  def withoutCompactUris(): RenderOptions = _internal.withoutCompactUris
 
   /**
     * Emit specific AMF JSON-LD serialization
     *
     * @return
     */
-  def withoutAmfJsonLdSerialization: RenderOptions = _internal.withoutAmfJsonLdSerialization
+  def withoutAmfJsonLdSerialization(): RenderOptions = _internal.withoutAmfJsonLdSerialization
 
   /**
     * Emit regular JSON-LD serialization
     *
     * @return
     */
-  def withAmfJsonLdSerialization: RenderOptions = _internal.withAmfJsonLdSerialization
+  def withAmfJsonLdSerialization(): RenderOptions = _internal.withAmfJsonLdSerialization
 
-  def withNodeIds: RenderOptions = _internal.withNodeIds
+  def withNodeIds(): RenderOptions = _internal.withNodeIds
+
+  def withDocumentation(): RenderOptions = _internal.withDocumentation
 
   /** Remove documentation info as examples, descriptions, display names, etc. (only supported for json schema rendering) */
-  def withoutDocumentation: RenderOptions = _internal.withoutDocumentation
+  def withoutDocumentation(): RenderOptions = _internal.withoutDocumentation
 
-  /** Render shapes without extracting common types to definitions (feature is enable by default for OAS and json schema) */
-  def withoutCompactedEmission: RenderOptions = _internal.withoutCompactedEmission
+  /** Render shapes extracting common types to definitions (feature is enable by default for OAS and json schema) */
+  def withCompactedEmission(): RenderOptions = _internal.withCompactedEmission
+
+  def withoutCompactedEmission(): RenderOptions = _internal.withoutCompactedEmission
 
   /** Render shapes with specific json schema version (supported for json schema rendering) */
   def withSchemaVersion(version: JSONSchemaVersion): RenderOptions = _internal.withSchemaVersion(version)
