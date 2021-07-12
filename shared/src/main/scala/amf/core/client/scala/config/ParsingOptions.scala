@@ -17,7 +17,7 @@ case class ParsingOptions(amfJsonLdSerialization: Boolean = true,
   def withBaseUnitUrl(baseUnit: String): ParsingOptions = copy(baseUnitUrl = Some(baseUnit))
 
   /** Exclude the BaseUnit Url */
-  def withoutBaseUnitUrl(): ParsingOptions = copy(baseUnitUrl = None)
+  def withoutBaseUnitUrl: ParsingOptions = copy(baseUnitUrl = None)
 
   /** Defines an upper bound of yaml alias that will be resolved when parsing a DataNode */
   def setMaxYamlReferences(value: Int): ParsingOptions = copy(maxYamlReferences = Some(value))

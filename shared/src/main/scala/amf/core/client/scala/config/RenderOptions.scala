@@ -28,7 +28,7 @@ case class RenderOptions(
   def withPrettyPrint: RenderOptions = copy(prettyPrint = true)
 
   /** Exclude PrettyPrint when rendering to graph. */
-  def withoutPrettyPrint: RenderOptions = copy(prettyPrint = true)
+  def withoutPrettyPrint: RenderOptions = copy(prettyPrint = false)
 
   /** Include source maps when rendering to graph. */
   def withSourceMaps: RenderOptions = copy(sources = true)
@@ -77,10 +77,14 @@ case class RenderOptions(
 
   private[amf] def isFlattenedJsonLd: Boolean = flattenedJsonLd
 
+  def withDocumentation: RenderOptions = copy(documentation = true)
+
   /** Remove documentation info as examples, descriptions, display names, etc. (only supported for json schema rendering) */
   def withoutDocumentation: RenderOptions = copy(documentation = false)
 
-  /** Render shapes without extracting common types to definitions (feature is enable by default for OAS and json schema) */
+  /** Render shapes extracting common types to definitions (feature is enable by default for OAS and json schema) */
+  def withCompactedEmission: RenderOptions = copy(compactedEmission = true)
+
   def withoutCompactedEmission: RenderOptions = copy(compactedEmission = false)
 
   def withEmitWarningForUnsupportedValidationFacets(value: Boolean): RenderOptions =
