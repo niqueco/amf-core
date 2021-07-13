@@ -16,8 +16,6 @@ class JvmPlatform extends Platform {
   /** Underlying file system for platform. */
   override val fs: FileSystem = Fs
 
-  override val defaultExecutionEnvironment: ExecutionEnvironment = DefaultExecutionEnvironment()
-
   /** Platform out of the box [ResourceLoader]s */
   override def loaders()(implicit executionContext: ExecutionContext): Seq[ResourceLoader] = {
     Seq(

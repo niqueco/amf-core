@@ -15,7 +15,7 @@ import amf.core.client.scala.parse.document.ParserContext
 import amf.core.client.scala.resource.ResourceLoader
 import amf.core.client.scala.validation.payload.ShapePayloadValidatorFactory
 import amf.core.internal.validation.core.ValidationProfile
-import amf.core.internal.parser.ParseConfiguration
+import amf.core.internal.parser.CompilerConfiguration
 import amf.core.internal.plugins.AMFPlugin
 import amf.core.internal.resource.AMFResolvers
 import amf.core.internal.plugins.document.graph.entities.AMFGraphEntities
@@ -172,7 +172,7 @@ class AMFGraphConfiguration private[amf] (override private[amf] val resolvers: A
   private[amf] def getUnitsCache: Option[UnitCache]         = resolvers.unitCache
   private[amf] def getExecutionContext: ExecutionContext    = resolvers.executionEnv.context
 
-  private[amf] def parseConfiguration      = ParseConfiguration(this)
+  private[amf] def compilerConfiguration   = CompilerConfiguration(this)
   private[amf] def renderConfiguration     = DefaultRenderConfiguration(this)
   private[amf] def validationConfiguration = new ValidationConfiguration(this)
 
