@@ -19,10 +19,9 @@ trait UnitCache {
 case class CachedReference private[amf] (private[amf] val _internal: config.CachedReference) {
 
   @JSExportTopLevel("CachedReference")
-  def this(url: String, content: BaseUnit, resolved: Boolean) =
-    this(InternalCachedReference(url, content._internal, resolved))
+  def this(url: String, content: BaseUnit) =
+    this(InternalCachedReference(url, content._internal))
 
   def url: String       = _internal.url
   def content: BaseUnit = _internal.content
-  def resolved: Boolean = _internal.resolved
 }

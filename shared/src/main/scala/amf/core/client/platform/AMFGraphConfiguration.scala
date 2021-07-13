@@ -1,20 +1,20 @@
 package amf.core.client.platform
 
-import amf.core.client.platform.config.{AMFEventListener, AMFLogger, ParsingOptions, RenderOptions}
+import amf.core.client.platform.config.{AMFEventListener, ParsingOptions, RenderOptions}
 import amf.core.client.platform.errorhandling.ErrorHandlerProvider
 import amf.core.client.platform.execution.BaseExecutionEnvironment
 import amf.core.client.platform.reference.UnitCache
 import amf.core.client.platform.resource.ResourceLoader
 import amf.core.client.platform.transform.TransformationPipeline
-import amf.core.client.platform.validation.payload.ShapePayloadValidatorFactory
+import amf.core.client.platform.validation.payload.{AMFShapePayloadValidationPlugin, ShapePayloadValidatorFactory}
+import amf.core.client.scala.{AMFGraphConfiguration => InternalGraphConfiguration}
 import amf.core.internal.convert.ClientErrorHandlerConverter._
 import amf.core.internal.convert.CoreClientConverters._
 import amf.core.internal.convert.TransformationPipelineConverter._
+import amf.core.internal.convert.PayloadValidationPluginConverter._
 
 import scala.concurrent.ExecutionContext
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
-import amf.core.client.scala.{AMFGraphConfiguration => InternalGraphConfiguration}
-import amf.core.internal.convert.CoreClientConverters
 
 /** Base AMF configuration object */
 @JSExportAll
@@ -42,17 +42,18 @@ class AMFGraphConfiguration private[amf] (private[amf] val _internal: InternalGr
     _internal.withResourceLoaders(rl.asInternal.toList)
 
   def withUnitCache(cache: UnitCache): AMFGraphConfiguration =
-    _internal.withUnitCache(ReferenceResolverMatcher.asInternal(cache))
+    _internal.withUnitCache(UnitCacheMatcher.asInternal(cache))
 
   def withTransformationPipeline(pipeline: TransformationPipeline): AMFGraphConfiguration =
     _internal.withTransformationPipeline(pipeline)
 
   def withEventListener(listener: AMFEventListener): AMFGraphConfiguration = _internal.withEventListener(listener)
 
-  def withLogger(logger: AMFLogger): AMFGraphConfiguration = _internal.withLogger(logger)
-
   def withExecutionEnvironment(executionEnv: BaseExecutionEnvironment): AMFGraphConfiguration =
     _internal.withExecutionEnvironment(executionEnv._internal)
+
+  def withShapePayloadPlugin(plugin: AMFShapePayloadValidationPlugin): AMFGraphConfiguration =
+    _internal.withPlugin(PayloadValidationPluginMatcher.asInternal(plugin))
 
   /**
     * Merges two environments taking into account specific attributes that can be merged.

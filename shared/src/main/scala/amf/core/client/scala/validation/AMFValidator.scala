@@ -16,7 +16,7 @@ import scala.concurrent.Future
 object VendorToProfile {
 
   private lazy val vendorProfileMapping = Map(
-      Vendor.ASYNC -> Async20Profile,
+      Vendor.ASYNC20 -> Async20Profile,
       Vendor.RAML10 -> Raml10Profile,
       Vendor.RAML08 -> Raml08Profile,
       Vendor.OAS20 -> Oas20Profile,
@@ -28,16 +28,16 @@ object VendorToProfile {
 }
 
 object AMFValidator {
-  def validate(bu: BaseUnit, conf: AMFGraphConfiguration): Future[AMFValidationReport] = {
-    val guessedVendor = bu.sourceVendor.map(v => VendorToProfile.mapOrDefault(v)).getOrElse(AmfProfile)
-    validate(bu, guessedVendor, conf)
+  def validate(baseUnit: BaseUnit, conf: AMFGraphConfiguration): Future[AMFValidationReport] = {
+    val guessedVendor = baseUnit.sourceVendor.map(v => VendorToProfile.mapOrDefault(v)).getOrElse(AmfProfile)
+    validate(baseUnit, guessedVendor, conf)
   }
-  def validate(bu: BaseUnit, profileName: ProfileName, conf: AMFGraphConfiguration): Future[AMFValidationReport] = {
-    val plugins = conf.registry.plugins.validatePlugins.filter(_.applies(ValidationInfo(bu, profileName)))
+  def validate(baseUnit: BaseUnit, profileName: ProfileName, conf: AMFGraphConfiguration): Future[AMFValidationReport] = {
+    val plugins = conf.registry.plugins.validatePlugins.filter(_.applies(ValidationInfo(baseUnit, profileName)))
     val constraints = computeApplicableConstraints(profileName, conf.registry.constraintsRules)
     val options = ValidationOptions(profileName, constraints, ValidationConfiguration(conf))
     val runner = FailFastValidationRunner(plugins, options)
-    runner.run(bu)(conf.getExecutionContext)
+    runner.run(baseUnit)(conf.getExecutionContext)
   }
 
   private def computeApplicableConstraints(profileName: ProfileName, constraints: Map[ProfileName, ValidationProfile]): EffectiveValidations = {

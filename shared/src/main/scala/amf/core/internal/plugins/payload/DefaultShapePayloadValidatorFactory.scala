@@ -7,15 +7,15 @@ import amf.core.client.scala.model.domain.{RecursiveShape, Shape}
 import amf.core.client.scala.validation.payload.{
   AMFShapePayloadValidator,
   ShapePayloadValidatorFactory,
+  ShapeValidationConfiguration,
   ValidatePayloadRequest
 }
-import amf.core.internal.validation.ValidationConfiguration
 
 case class DefaultShapePayloadValidatorFactory private[amf] (config: AMFGraphConfiguration)
     extends ShapePayloadValidatorFactory {
 
   private lazy val plugins          = config.registry.plugins.payloadPlugins
-  private lazy val validationConfig = ValidationConfiguration(config)
+  private lazy val validationConfig = ShapeValidationConfiguration(config)
 
   def createFor(shape: Shape, mediaType: String, mode: ValidationMode): AMFShapePayloadValidator = {
     shape match {

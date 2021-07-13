@@ -2,7 +2,6 @@ package amf.core.internal.remote
 
 import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel}
 
-@JSExportTopLevel("Vendor")
 object Vendor {
   def unapply(name: String): Option[Vendor] = {
     name match {
@@ -10,7 +9,6 @@ object Vendor {
       case Raml08.name     => Some(Raml08)
       case Oas20.name      => Some(Oas20)
       case Oas30.name      => Some(Oas30)
-      case AsyncApi.name   => Some(AsyncApi)
       case AsyncApi20.name => Some(AsyncApi20)
       case Amf.name        => Some(Amf)
       case Payload.name    => Some(Payload)
@@ -20,25 +18,22 @@ object Vendor {
     }
   }
 
-  @JSExport("apply")
   def apply(name: String): Vendor = name match {
     case Vendor(vendor) => vendor
     case _              => new UnknownVendor(name)
   }
 
-  @JSExport val RAML08: Vendor     = Raml08
-  @JSExport val RAML10: Vendor     = Raml10
-  @JSExport val OAS20: Vendor      = Oas20
-  @JSExport val OAS30: Vendor      = Oas30
-  @JSExport val ASYNC: Vendor      = AsyncApi
-  @JSExport val ASYNC20: Vendor    = AsyncApi20
-  @JSExport val AMF: Vendor        = Amf
-  @JSExport val PAYLOAD: Vendor    = Payload
-  @JSExport val AML: Vendor        = Aml
-  @JSExport val JSONSCHEMA: Vendor = JsonSchema
+  val RAML08: Vendor     = Raml08
+  val RAML10: Vendor     = Raml10
+  val OAS20: Vendor      = Oas20
+  val OAS30: Vendor      = Oas30
+  val ASYNC20: Vendor    = AsyncApi20
+  val AMF: Vendor        = Amf
+  val PAYLOAD: Vendor    = Payload
+  val AML: Vendor        = Aml
+  val JSONSCHEMA: Vendor = JsonSchema
 }
 
-@JSExportAll
 trait Vendor {
   val name: String
 
