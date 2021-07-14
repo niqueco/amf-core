@@ -20,7 +20,7 @@ case class VariableValue(fields: Fields, annotations: Annotations) extends Domai
   override def meta: VariableValueModel.type = VariableValueModel
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  override def componentId: String = "/" + name.option().getOrElse("default-variable").urlComponentEncoded
+  private[amf] override def componentId: String = "/" + name.option().getOrElse("default-variable").urlComponentEncoded
 
   override protected def nameField: Field = Name
 }
@@ -34,6 +34,4 @@ object VariableValue {
   def apply(annotations: Annotations): VariableValue = apply(Fields(), annotations)
 }
 
-@JSExportTopLevel("Variable")
-@JSExportAll
-case class Variable(name: String, value: DataNode)
+private[amf] case class Variable(name: String, value: DataNode)

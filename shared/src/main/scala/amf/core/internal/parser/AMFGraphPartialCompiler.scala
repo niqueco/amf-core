@@ -30,7 +30,7 @@ class AMFGraphPartialCompiler(compilerContext: CompilerContext, startingPoint: S
       override val fields: Fields = Fields()
 
       /** Value , path + field value that is used to compose the id when the object its adopted */
-      override def componentId: String = "error"
+      private[amf] override def componentId: String = "error"
 
       /** Set of annotations for element. */
       override val annotations: Annotations = Annotations()
@@ -95,5 +95,5 @@ private[amf] case class AmfObjectUnitContainer(result: AmfObject,
   override def references: Seq[BaseUnit] = Nil
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  override def componentId: String = ""
+  private[amf] override def componentId: String = ""
 }

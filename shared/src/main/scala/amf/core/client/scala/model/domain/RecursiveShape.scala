@@ -40,7 +40,7 @@ class RecursiveShape(override val fields: Fields, override val annotations: Anno
   override def meta: RecursiveShapeModel.type = RecursiveShapeModel
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  override def componentId: String =
+  private[amf] override def componentId: String =
     name.option().map(name => s"/${name.urlComponentEncoded}").getOrElse("") + "/recursive"
 
   /** apply method for create a new instance with fields and annotations. Aux method for copy */

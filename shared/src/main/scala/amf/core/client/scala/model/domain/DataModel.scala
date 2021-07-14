@@ -30,7 +30,7 @@ abstract class DataNode(annotations: Annotations) extends DomainElement with Nam
     if (Option(id).isEmpty) simpleAdoption(parent) else this
   }
 
-  override def componentId: String =
+  private[amf] override def componentId: String =
     "/" + name.option().getOrElse("data-node").urlComponentEncoded
 
   /** Replace all raml variables (any name inside double chevrons -> '<<>>') with the provided values. */

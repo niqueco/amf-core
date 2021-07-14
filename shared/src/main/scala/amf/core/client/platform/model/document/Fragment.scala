@@ -1,8 +1,8 @@
 package amf.core.client.platform.model.document
 
+import amf.core.client.platform.model.StrField
 import amf.core.internal.convert.CoreClientConverters._
-import amf.core.client.platform.model.domain.{ArrayNode, ObjectNode, ScalarNode, DataNode}
-import amf.core.client.scala.model.StrField
+import amf.core.client.platform.model.domain.{ArrayNode, DataNode, ObjectNode, ScalarNode}
 import amf.core.client.scala.model.document.{Fragment => InternalFragment, PayloadFragment => InternalPayloadFragment}
 
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
