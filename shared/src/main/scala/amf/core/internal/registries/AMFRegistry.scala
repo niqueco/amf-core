@@ -3,8 +3,8 @@ package amf.core.internal.registries
 import amf.core.client.scala.model.domain.{AnnotationGraphLoader, DomainElement}
 import amf.core.client.scala.parse.AMFParsePlugin
 import amf.core.client.common.validation.ProfileName
+import amf.core.client.scala.transform.TransformationPipeline
 import amf.core.internal.metamodel.ModelDefaultBuilder
-import amf.core.client.scala.transform.pipelines.TransformationPipeline
 import amf.core.internal.validation.core.ValidationProfile
 import amf.core.internal.plugins.AMFPlugin
 import amf.core.internal.plugins.parse.DomainParsingFallback
@@ -15,7 +15,7 @@ import amf.core.internal.registries.domain.EntitiesRegistry
   *
   * @param plugins                 [[PluginsRegistry]]
   * @param entitiesRegistry        [[EntitiesRegistry]]
-  * @param transformationPipelines a map of [[amf.core.client.scala.transform.pipelines.TransformationPipeline]]s
+  * @param transformationPipelines a map of [[TransformationPipeline]]s
   * @param constraintsRules        a map of [[ProfileName]] -> [[amf.core.internal.validation.core.ValidationProfile]]
   */
 private[amf] case class AMFRegistry(plugins: PluginsRegistry,

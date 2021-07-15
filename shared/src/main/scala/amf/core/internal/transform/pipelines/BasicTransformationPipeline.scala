@@ -1,7 +1,8 @@
-package amf.core.client.scala.transform.pipelines
+package amf.core.internal.transform.pipelines
 
 import amf.core.client.common.transform.{PipelineId, PipelineName}
-import amf.core.client.scala.transform.stages.{ReferenceResolutionStage, TransformationStep}
+import amf.core.client.scala.transform.{TransformationPipeline, TransformationStep}
+import amf.core.internal.transform.stages.ReferenceResolutionStage
 import amf.core.internal.plugins.parse.AMFGraphParsePlugin
 import amf.core.internal.remote.Amf
 

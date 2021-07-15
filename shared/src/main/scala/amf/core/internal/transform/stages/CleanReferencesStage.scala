@@ -1,9 +1,10 @@
-package amf.core.client.scala.transform.stages
+package amf.core.internal.transform.stages
 
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.internal.annotations.References
 import amf.core.internal.metamodel.document.BaseUnitModel
 import amf.core.client.scala.model.document.{BaseUnit, Fragment, Module}
+import amf.core.client.scala.transform.TransformationStep
 
 class CleanReferencesStage() extends TransformationStep {
   override def transform(model: BaseUnit, errorHandler: AMFErrorHandler): BaseUnit = {

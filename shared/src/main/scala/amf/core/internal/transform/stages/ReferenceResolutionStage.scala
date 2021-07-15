@@ -1,12 +1,13 @@
-package amf.core.client.scala.transform.stages
+package amf.core.internal.transform.stages
 
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.internal.metamodel.document.DocumentModel
 import amf.core.client.scala.model.document.{BaseUnit, Document}
 import amf.core.client.scala.model.domain._
-import amf.core.client.scala.transform.stages.elements.resolution.{ElementResolutionStage, ElementStageTransformer, ReferenceResolution}
-import amf.core.client.scala.transform.stages.helpers.ModelReferenceResolver
-import amf.core.client.scala.transform.stages.selectors.{LinkNodeSelector, LinkSelector}
+import amf.core.client.scala.transform.TransformationStep
+import amf.core.internal.transform.stages.elements.resolution.{ElementResolutionStage, ElementStageTransformer, ReferenceResolution}
+import amf.core.internal.transform.stages.helpers.ModelReferenceResolver
+import amf.core.internal.transform.stages.selectors.{LinkNodeSelector, LinkSelector}
 
 import scala.collection.mutable
 

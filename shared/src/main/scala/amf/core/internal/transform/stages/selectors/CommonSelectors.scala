@@ -1,4 +1,4 @@
-package amf.core.client.scala.transform.stages.selectors
+package amf.core.internal.transform.stages.selectors
 
 import amf.core.internal.metamodel.domain.ExternalSourceElementModel
 import amf.core.internal.metamodel.{Obj, MetaModelTypeMapping}

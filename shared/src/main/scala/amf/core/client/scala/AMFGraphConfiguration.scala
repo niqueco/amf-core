@@ -7,7 +7,8 @@ import amf.core.client.scala.execution.ExecutionEnvironment
 import amf.core.client.scala.model.domain.AnnotationGraphLoader
 import amf.core.client.scala.parse.document.ParserContext
 import amf.core.client.scala.resource.ResourceLoader
-import amf.core.client.scala.transform.pipelines.{BasicTransformationPipeline, TransformationPipeline}
+import amf.core.client.scala.transform.TransformationPipeline
+import amf.core.internal.transform.pipelines.BasicTransformationPipeline
 import amf.core.client.scala.validation.payload.ShapePayloadValidatorFactory
 import amf.core.internal.annotations.serializable.CoreSerializableAnnotations
 import amf.core.internal.convert.CoreRegister
@@ -123,7 +124,7 @@ class AMFGraphConfiguration private[amf] (override private[amf] val resolvers: A
   /**
     * AMF internal method just to facilitate the construction
     *
-    * @param pipelines a list of [[amf.core.client.scala.transform.pipelines.TransformationPipeline]]
+    * @param pipelines a list of [[TransformationPipeline]]
     * @return
     */
   private[amf] def withTransformationPipelines(pipelines: List[TransformationPipeline]): AMFGraphConfiguration =

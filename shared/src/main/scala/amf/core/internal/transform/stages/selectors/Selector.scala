@@ -1,4 +1,4 @@
-package amf.core.client.scala.transform.stages.selectors
+package amf.core.internal.transform.stages.selectors
 
 import amf.core.client.scala.model.domain.DomainElement
 
