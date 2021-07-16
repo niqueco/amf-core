@@ -1,9 +1,8 @@
-package amf.core.client.scala.transform.pipelines
+package amf.core.client.scala.transform
 
 import amf.core.client.scala.config._
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model.document.BaseUnit
-import amf.core.client.scala.transform.stages.TransformationStep
 
 trait TransformationPipeline {
   val name: String

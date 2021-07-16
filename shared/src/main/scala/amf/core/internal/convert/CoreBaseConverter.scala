@@ -7,7 +7,7 @@ import amf.core.client.platform.config.{
   AMFEventConverter,
   AMFEventListener => ClientAMFEventListener,
   ParsingOptions => ClientParsingOptions,
-  RenderOptions => ClientRenderOptions,
+  RenderOptions => ClientRenderOptions
 }
 import amf.core.client.platform.errorhandling.ClientErrorHandler
 import amf.core.client.platform.model.document.{
@@ -65,8 +65,7 @@ import amf.core.client.scala.model.domain.extensions.{
 }
 import amf.core.client.scala.model.domain.templates.{AbstractDeclaration, ParametrizedDeclaration, VariableValue}
 import amf.core.client.scala.resource.ResourceLoader
-import amf.core.client.scala.transform.TransformationPipelineBuilder
-import amf.core.client.scala.transform.stages.TransformationStep
+import amf.core.client.scala.transform.{TransformationPipelineBuilder, TransformationStep}
 import amf.core.client.platform.validation.payload.{
   AMFShapePayloadValidator => ClientAMFShapePayloadValidator,
   ShapePayloadValidatorFactory => ClientShapePayloadValidatorFactory

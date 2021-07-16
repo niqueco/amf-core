@@ -1,4 +1,4 @@
-package amf.core.client.scala.transform.stages
+package amf.core.client.scala.transform
 
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model.document.BaseUnit

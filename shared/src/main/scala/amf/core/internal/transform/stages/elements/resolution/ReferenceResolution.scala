@@ -1,16 +1,16 @@
-package amf.core.client.scala.transform.stages.elements.resolution
+package amf.core.internal.transform.stages.elements.resolution
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.internal.annotations._
 import amf.core.internal.metamodel.document.DocumentModel
 import amf.core.client.scala.model.document.Document
 import amf.core.client.scala.model.domain.{AmfObject, DomainElement, LinkNode, Linkable, NamedDomainElement}
-import amf.core.client.scala.transform.stages.elements.resolution.ReferenceResolution.{
+import amf.core.internal.transform.stages.elements.resolution.ReferenceResolution.{
   Condition,
   VALID_DECLARATION_CONDITION
 }
-import amf.core.client.scala.transform.stages.helpers.{LinkNodeResolver, ModelReferenceResolver, ResolvedNamedEntity}
-import amf.core.client.scala.transform.stages.LinkNodeResolutionStage
-import amf.core.client.scala.transform.stages.selectors.{LinkNodeSelector, LinkSelector}
+import amf.core.internal.transform.stages.helpers.{LinkNodeResolver, ModelReferenceResolver, ResolvedNamedEntity}
+import amf.core.internal.transform.stages.LinkNodeResolutionStage
+import amf.core.internal.transform.stages.selectors.{LinkNodeSelector, LinkSelector}
 import amf.core.client.scala.traversal.{
   DomainElementSelectorAdapter,
   DomainElementTransformationAdapter,

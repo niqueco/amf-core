@@ -6,7 +6,6 @@ import amf.core.client.platform.model.domain.DomainElement
 import amf.core.client.platform.model.{AmfObjectWrapper, StrField}
 import amf.core.internal.annotations.AliasDeclaration
 import amf.core.client.scala.model.document.{BaseUnit => InternalBaseUnit}
-import amf.core.client.scala.rdf.RdfModel
 import amf.core.internal.remote.Vendor
 import amf.core.internal.unsafe.PlatformSecrets
 import amf.core.client.scala.vocabulary.Namespace

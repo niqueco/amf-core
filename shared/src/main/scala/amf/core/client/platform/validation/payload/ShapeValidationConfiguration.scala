@@ -3,7 +3,6 @@ package amf.core.client.platform.validation.payload
 import amf.core.client.platform.AMFGraphConfiguration
 import amf.core.client.platform.errorhandling.ClientErrorHandler
 import amf.core.client.platform.validation.AMFValidationResult
-import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.validation.payload.{ShapeValidationConfiguration => InternalShapeValidationConfiguration}
 import amf.core.internal.convert.CoreClientConverters
 

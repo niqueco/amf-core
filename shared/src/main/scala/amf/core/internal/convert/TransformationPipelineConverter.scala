@@ -1,9 +1,8 @@
 package amf.core.internal.convert
 
-import amf.core.client.scala.transform.pipelines.TransformationPipeline
-import amf.core.client.scala.transform.stages.TransformationStep
 import amf.core.internal.convert.CoreClientConverters._
 import amf.core.client.platform.transform
+import amf.core.client.scala.transform.{TransformationPipeline, TransformationStep}
 
 // not defined in CoreBaseConverter because conversion makes use of ClientList.
 object TransformationPipelineConverter {

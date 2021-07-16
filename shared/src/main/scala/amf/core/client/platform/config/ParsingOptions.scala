@@ -1,7 +1,6 @@
 package amf.core.client.platform.config
 
 import amf.core.internal.convert.CoreClientConverters._
-import amf.core.client.scala.config
 import amf.core.client.scala.config.{ParsingOptions => InternalParsingOptions}
 
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}

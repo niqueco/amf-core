@@ -9,12 +9,12 @@ import amf.core.internal.metamodel.domain.{ScalarNodeModel, _}
 import amf.core.client.scala.model.domain.ScalarNode.forDataType
 import amf.core.client.scala.model.domain.templates.Variable
 import amf.core.client.scala.model.{DataType, StrField}
-import amf.core.client.scala.transform.VariableReplacer
 import amf.core.internal.parser.domain.FieldEntry
 import amf.core.internal.utils._
 import amf.core.client.scala.vocabulary.Namespace.Data
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
 import amf.core.internal.parser.domain.{Annotations, FieldEntry, Fields, Value}
+import amf.core.internal.transform.VariableReplacer
 import org.yaml.model.{YPart, YScalar, YSequence}
 import amf.core.internal.utils.AmfStrings
 
@@ -30,7 +30,7 @@ abstract class DataNode(annotations: Annotations) extends DomainElement with Nam
     if (Option(id).isEmpty) simpleAdoption(parent) else this
   }
 
-  override def componentId: String =
+  private[amf] override def componentId: String =
     "/" + name.option().getOrElse("data-node").urlComponentEncoded
 
   /** Replace all raml variables (any name inside double chevrons -> '<<>>') with the provided values. */

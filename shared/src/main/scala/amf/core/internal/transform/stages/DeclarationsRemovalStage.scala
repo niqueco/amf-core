@@ -1,10 +1,11 @@
-package amf.core.client.scala.transform.stages
+package amf.core.internal.transform.stages
 
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.internal.annotations.Declares
 import amf.core.internal.metamodel.document.DocumentModel
 import amf.core.client.scala.model.document.{BaseUnit, DeclaresModel, EncodesModel}
 import amf.core.client.scala.model.domain.AmfArray
+import amf.core.client.scala.transform.TransformationStep
 
 class DeclarationsRemovalStage() extends TransformationStep {
 

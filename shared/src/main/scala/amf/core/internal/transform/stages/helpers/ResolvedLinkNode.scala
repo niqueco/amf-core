@@ -1,4 +1,4 @@
-package amf.core.client.scala.transform.stages.helpers
+package amf.core.internal.transform.stages.helpers
 
 import amf.core.client.scala.model.domain.{DomainElement, LinkNode}
 

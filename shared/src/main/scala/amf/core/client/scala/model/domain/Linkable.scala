@@ -78,10 +78,10 @@ trait Linkable extends AmfObject { this: DomainElement with Linkable =>
     * This can be overriden by subclasses to customise how the links to unresolved classes are generated.
     * By default it just generates a link.
     */
-  def resolveUnreferencedLink[T](label: String,
-                                 annotations: Annotations = Annotations(),
-                                 unresolved: T,
-                                 supportsRecursion: Boolean): T = {
+  private[amf] def resolveUnreferencedLink[T](label: String,
+                                              annotations: Annotations = Annotations(),
+                                              unresolved: T,
+                                              supportsRecursion: Boolean): T = {
     if (unresolved.asInstanceOf[Linkable].shouldLink) {
 
       val linked: T = link(AmfScalar(label), annotations, Annotations.synthesized())
@@ -94,17 +94,17 @@ trait Linkable extends AmfObject { this: DomainElement with Linkable =>
 
   protected val shouldLink: Boolean = true
 
-  def afterResolve(fatherSyntaxKey: Option[String], resolvedId: String): Unit = Unit
+  private[amf] def afterResolve(fatherSyntaxKey: Option[String], resolvedId: String): Unit = Unit
 
   // Unresolved references to things that can be linked
   // TODO: another trait?
-  var isUnresolved: Boolean                = false
-  var unresolvedSeverity: String           = "error"
-  var refName                              = ""
-  var refAst: Option[YPart]                = None
-  var refCtx: Option[UnresolvedComponents] = None
+  private[amf] var isUnresolved: Boolean           = false
+  private[amf] var refName                         = ""
+  private var unresolvedSeverity: String           = "error"
+  private var refAst: Option[YPart]                = None
+  private var refCtx: Option[UnresolvedComponents] = None
 
-  def unresolved(refName: String, refAst: YPart, unresolvedSeverity: String = "error")(
+  private[amf] def unresolved(refName: String, refAst: YPart, unresolvedSeverity: String = "error")(
       implicit ctx: UnresolvedComponents) = {
     isUnresolved = true
     this.unresolvedSeverity = unresolvedSeverity
@@ -114,7 +114,7 @@ trait Linkable extends AmfObject { this: DomainElement with Linkable =>
     this
   }
 
-  def toFutureRef(resolve: Linkable => Unit): Unit = {
+  private[amf] def toFutureRef(resolve: Linkable => Unit): Unit = {
     refCtx match {
       case Some(ctx) =>
         ctx.futureDeclarations.futureRef(

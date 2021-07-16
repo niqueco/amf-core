@@ -27,7 +27,7 @@ case class DomainExtension(fields: Fields, annotations: Annotations) extends Ext
   // for the extension point. ID is not required for serialisation
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  override def componentId: String = "/extension"
+  private[amf] override def componentId: String = "/extension"
 
   /** Call after object has been adopted by specified parent. */
   override def adopted(parent: String, cycle: Seq[String] = Seq()): this.type = {

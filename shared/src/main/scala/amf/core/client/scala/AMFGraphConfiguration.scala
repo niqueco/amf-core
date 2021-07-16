@@ -7,7 +7,8 @@ import amf.core.client.scala.execution.ExecutionEnvironment
 import amf.core.client.scala.model.domain.AnnotationGraphLoader
 import amf.core.client.scala.parse.document.ParserContext
 import amf.core.client.scala.resource.ResourceLoader
-import amf.core.client.scala.transform.pipelines.{BasicTransformationPipeline, TransformationPipeline}
+import amf.core.client.scala.transform.TransformationPipeline
+import amf.core.internal.transform.pipelines.BasicTransformationPipeline
 import amf.core.client.scala.validation.payload.ShapePayloadValidatorFactory
 import amf.core.internal.annotations.serializable.CoreSerializableAnnotations
 import amf.core.internal.convert.CoreRegister
@@ -62,9 +63,6 @@ object AMFGraphConfiguration {
       .withTransformationPipeline(BasicTransformationPipeline())
   }
 
-  //TODO: ARM remove
-  private[amf] def fromParseCtx(ctx: ParserContext) = fromEH(ctx.eh)
-
   private[amf] def fromEH(eh: AMFErrorHandler) = {
     AMFGraphConfiguration.predefined().withErrorHandlerProvider(() => eh)
   }
@@ -111,19 +109,14 @@ class AMFGraphConfiguration private[amf] (override private[amf] val resolvers: A
 
   def withPlugins(plugins: List[AMFPlugin[_]]): AMFGraphConfiguration = super._withPlugins(plugins)
 
-  def withEntities(entities: Map[String, ModelDefaultBuilder]): AMFGraphConfiguration = super._withEntities(entities)
+  private[amf] def withEntities(entities: Map[String, ModelDefaultBuilder]): AMFGraphConfiguration =
+    super._withEntities(entities)
 
-  def withAnnotations(annotations: Map[String, AnnotationGraphLoader]): AMFGraphConfiguration =
+  private[amf] def withAnnotations(annotations: Map[String, AnnotationGraphLoader]): AMFGraphConfiguration =
     super._withAnnotations(annotations)
 
-  // //TODO: ARM - delete
-  def removePlugin(id: String): AMFGraphConfiguration = super._removePlugin(id)
-
-  def withValidationProfile(profile: ValidationProfile): AMFGraphConfiguration =
+  private[amf] def withValidationProfile(profile: ValidationProfile): AMFGraphConfiguration =
     super._withValidationProfile(profile)
-
-  // TODO - ARM: Should be erased as configuration should be incremental, not decremental
-  def removeValidationProfile[T](name: ProfileName) = super._removeValidationProfile[T](name)
 
   def withTransformationPipeline(pipeline: TransformationPipeline): AMFGraphConfiguration =
     super._withTransformationPipeline(pipeline)
@@ -131,7 +124,7 @@ class AMFGraphConfiguration private[amf] (override private[amf] val resolvers: A
   /**
     * AMF internal method just to facilitate the construction
     *
-    * @param pipelines a list of [[amf.core.client.scala.transform.pipelines.TransformationPipeline]]
+    * @param pipelines a list of [[TransformationPipeline]]
     * @return
     */
   private[amf] def withTransformationPipelines(pipelines: List[TransformationPipeline]): AMFGraphConfiguration =
@@ -203,15 +196,8 @@ sealed abstract class BaseAMFConfigurationSetter(private[amf] val resolvers: AMF
   protected def _withAnnotations[T](ann: Map[String, AnnotationGraphLoader]): T =
     copy(registry = registry.withAnnotations(ann)).asInstanceOf[T]
 
-  // //TODO: ARM - delete
-  protected def _removePlugin[T](id: String): T = copy(registry = registry.removePlugin(id)).asInstanceOf[T]
-
   protected def _withEventListener[T](listener: AMFEventListener): T =
     copy(listeners = listeners + listener).asInstanceOf[T]
-
-  // TODO - ARM: Should be erased as configuration should be incremental, not decremental
-  protected def _removeValidationProfile[T](name: ProfileName): T =
-    copy(registry = registry.removeConstraints(name)).asInstanceOf[T]
 
   protected def _withValidationProfile[T](profile: ValidationProfile): T =
     copy(registry = registry.withConstraints(profile)).asInstanceOf[T]

@@ -1,9 +1,10 @@
-package amf.core.client.scala.transform.stages
+package amf.core.internal.transform.stages
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.internal.metamodel.Type.Iri
 import amf.core.internal.metamodel.domain.LinkableElementModel
 import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.scala.model.domain._
+import amf.core.client.scala.transform.TransformationStep
 import amf.core.internal.parser.domain.FieldEntry
 import amf.core.client.scala.vocabulary.Namespace
 import amf.core.internal.parser.domain.{Annotations, FieldEntry, Value}

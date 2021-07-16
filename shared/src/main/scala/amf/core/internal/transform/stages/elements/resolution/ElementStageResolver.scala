@@ -1,4 +1,4 @@
-package amf.core.client.scala.transform.stages.elements.resolution
+package amf.core.internal.transform.stages.elements.resolution
 
 import amf.core.client.scala.model.domain.DomainElement
 
