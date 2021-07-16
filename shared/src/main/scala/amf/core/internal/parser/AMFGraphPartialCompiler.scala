@@ -21,8 +21,6 @@ import amf.core.internal.plugins.document.graph.parser.{
 class AMFGraphPartialCompiler(compilerContext: CompilerContext, startingPoint: String)
     extends AMFCompiler(compilerContext, Some("application/graph+json")) {
 
-  implicit val executionContext = compilerContext.parserContext.config.executionContext
-
   private case class PartialGraphParsePlugin() extends AMFParsePlugin {
 
     private case class EmptyDomainElement() extends DomainElement {
@@ -32,7 +30,7 @@ class AMFGraphPartialCompiler(compilerContext: CompilerContext, startingPoint: S
       override val fields: Fields = Fields()
 
       /** Value , path + field value that is used to compose the id when the object its adopted */
-      override def componentId: String = "error"
+      private[amf] override def componentId: String = "error"
 
       /** Set of annotations for element. */
       override val annotations: Annotations = Annotations()
@@ -42,7 +40,7 @@ class AMFGraphPartialCompiler(compilerContext: CompilerContext, startingPoint: S
     override def parse(document: Root, ctx: ParserContext): BaseUnit = {
       document.parsed match {
         case s: SyamlParsedDocument =>
-          val parsed = new FlattenedGraphParser(ctx.config, startingPoint)(new GraphParserContext(eh = ctx.config.eh))
+          val parsed = new FlattenedGraphParser(startingPoint)(new GraphParserContext(config = ctx.config))
             .parse(s.document) match {
             case Some(obj) => obj
             case _         => EmptyDomainElement()
@@ -97,5 +95,5 @@ private[amf] case class AmfObjectUnitContainer(result: AmfObject,
   override def references: Seq[BaseUnit] = Nil
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  override def componentId: String = ""
+  private[amf] override def componentId: String = ""
 }

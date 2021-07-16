@@ -11,13 +11,13 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 class AMFValidationReport(private[amf] val _internal: InternalValidationReport) {
 
   @JSExportTopLevel("AMFValidationReport")
-  def this(model: String, profile: ProfileName, results: ClientList[ValidationResult]) =
+  def this(model: String, profile: ProfileName, results: ClientList[AMFValidationResult]) =
     this(InternalValidationReport(model, profile, results.asInternal))
 
-  def conforms: Boolean                     = _internal.conforms
-  def model: String                         = _internal.model
-  def profile: ProfileName                  = _internal.profile
-  def results: ClientList[ValidationResult] = _internal.results.asClient
+  def conforms: Boolean                        = _internal.conforms
+  def model: String                            = _internal.model
+  def profile: ProfileName                     = _internal.profile
+  def results: ClientList[AMFValidationResult] = _internal.results.asClient
 
   override def toString: String = _internal.toString
 

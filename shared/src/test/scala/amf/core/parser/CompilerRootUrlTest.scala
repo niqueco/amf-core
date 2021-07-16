@@ -31,7 +31,7 @@ class CompilerRootUrlTest extends AsyncFunSuite with PlatformSecrets with Matche
     val customLoader = new CustomContentUrlResourceLoader(customUrl)
 
     val config = AMFGraphConfiguration.predefined().withResourceLoaders(List(customLoader))
-    val context = new CompilerContextBuilder(url, platform, config.parseConfiguration)
+    val context = new CompilerContextBuilder(url, platform, config.compilerConfiguration)
       .build()
 
     new AMFCompiler(context, None).root().map { root =>

@@ -30,11 +30,12 @@ object AMFCompilerRunCount {
 
 class CompilerContext(val url: String,
                       val parserContext: ParserContext,
+                      val compilerConfig: CompilerConfiguration,
                       val fileContext: Context,
                       val allowedMediaTypes: Option[Seq[String]],
                       cache: Cache) {
 
-  implicit val executionContext: ExecutionContext = parserContext.config.executionContext
+  implicit val executionContext: ExecutionContext = compilerConfig.executionContext
 
   /**
     * The resolved path that result to be the normalized url
@@ -50,12 +51,12 @@ class CompilerContext(val url: String,
 
   def resolvePath(url: String): String = fileContext.resolve(fileContext.platform.normalizePath(url))
 
-  def fetchContent(): Future[Content] = parserContext.config.resolveContent(location)
+  def fetchContent(): Future[Content] = compilerConfig.resolveContent(location)
 
   def forReference(refUrl: String, allowedMediaTypes: Option[Seq[String]] = None)(
       implicit executionContext: ExecutionContext): CompilerContext = {
 
-    val builder = new CompilerContextBuilder(refUrl, fileContext.platform, parserContext.config)
+    val builder = new CompilerContextBuilder(refUrl, fileContext.platform, compilerConfig)
       .withFileContext(fileContext)
       .withBaseParserContext(parserContext)
       .withCache(cache)
@@ -65,12 +66,12 @@ class CompilerContext(val url: String,
   }
 
   def violation(id: ValidationSpecification, node: String, message: String, ast: YPart): Unit =
-    parserContext.eh.violation(id, node, message, ast)
+    compilerConfig.eh.violation(id, node, message, ast)
 
   def violation(id: ValidationSpecification, message: String, ast: YPart): Unit = violation(id, "", message, ast)
 }
 
-class CompilerContextBuilder(url: String, platform: Platform, config: ParseConfiguration) {
+class CompilerContextBuilder(url: String, platform: Platform, compilerConfig: CompilerConfiguration) {
 
   private var fileContext: Context                   = Context(platform)
   private var cache                                  = Cache()
@@ -105,7 +106,7 @@ class CompilerContextBuilder(url: String, platform: Platform, config: ParseConfi
       url.normalizePath
     } catch {
       case e: URISyntaxException =>
-        config.eh.violation(UriSyntaxError, url, e.getMessage)
+        compilerConfig.eh.violation(UriSyntaxError, url, e.getMessage)
         url
       case e: Exception => throw new PathResolutionError(e.getMessage)
     }
@@ -115,12 +116,12 @@ class CompilerContextBuilder(url: String, platform: Platform, config: ParseConfi
 
   private def buildParserContext(fc: Context) = givenContent match {
     case Some(given) => given.forLocation(fc.current)
-    case None        => ParserContext(fc.current, config = config)
+    case None        => ParserContext(fc.current, config = compilerConfig.generateParseConfiguration)
   }
 
   def build(): CompilerContext = {
     val fc = buildFileContext()
-    new CompilerContext(url, buildParserContext(fc), fc, allowedMediaTypes, cache)
+    new CompilerContext(url, buildParserContext(fc), compilerConfig, fc, allowedMediaTypes, cache)
   }
 }
 
@@ -128,7 +129,7 @@ class AMFCompiler(compilerContext: CompilerContext,
                   val mediaType: Option[String],
                   val referenceKind: ReferenceKind = UnspecifiedReference) {
 
-  private def notifyEvent(e: AMFEvent): Unit = compilerContext.parserContext.config.notifyEvent(e)
+  private def notifyEvent(e: AMFEvent): Unit = compilerContext.compilerConfig.notifyEvent(e)
 
   def build()(implicit executionContext: ExecutionContext): Future[BaseUnit] = {
     if (compilerContext.hasCycles) failed(new CyclicReferenceException(compilerContext.fileContext.history))
@@ -202,7 +203,7 @@ class AMFCompiler(compilerContext: CompilerContext,
   private def parseSyntaxForMediaType(content: Content, mime: String): Option[(String, ParsedDocument)] = {
     val withContentUrl = compilerContext.parserContext.forLocation(content.url)
     // TODO ARM sort
-    compilerContext.parserContext.config.sortedParseSyntax
+    compilerContext.compilerConfig.sortedParseSyntax
       .find(_.applies(content.stream))
       .map(p => (mime, p.parse(content.stream, mime, withContentUrl)))
   }
@@ -244,7 +245,7 @@ class AMFCompiler(compilerContext: CompilerContext,
           baseUnit.withRaw(document.raw).tagReferences(documentWithReferences)
         }
       case None =>
-        Future.successful { compilerContext.parserContext.config.chooseFallback(document, mediaType) }
+        Future.successful { compilerContext.compilerConfig.chooseFallback(document, mediaType) }
     }
     futureDocument map { unit =>
       // we setup the run for the parsed unit
@@ -258,7 +259,7 @@ class AMFCompiler(compilerContext: CompilerContext,
   }
 
   private[amf] def getDomainPluginFor(document: Root): Option[AMFParsePlugin] = {
-    val allowed = filterByAllowed(compilerContext.parserContext.config.sortedParsePlugins,
+    val allowed = filterByAllowed(compilerContext.compilerConfig.sortedParsePlugins,
                                   compilerContext.allowedMediaTypes.getOrElse(Nil) ++ mediaType)
     allowed.find(_.applies(document))
   }
@@ -272,7 +273,7 @@ class AMFCompiler(compilerContext: CompilerContext,
 
   private[amf] def parseReferences(root: Root, domainPlugin: AMFParsePlugin)(
       implicit executionContext: ExecutionContext): Future[Root] = {
-    val handler           = domainPlugin.referenceHandler(compilerContext.parserContext.eh)
+    val handler           = domainPlugin.referenceHandler(compilerContext.compilerConfig.eh)
     val allowedMediaTypes = domainPlugin.validMediaTypesToReference ++ domainPlugin.mediaTypes
     val refs              = handler.collect(root.parsed, compilerContext.parserContext)
     notifyEvent(FoundReferencesEvent(root.location, refs.toReferences.size))
@@ -307,7 +308,7 @@ class AMFCompiler(compilerContext: CompilerContext,
 
   def root()(implicit executionContext: ExecutionContext): Future[Root] = fetchContent().map(parseSyntax).flatMap {
     case Right(document: Root) =>
-      val parsePlugin = compilerContext.parserContext.config.sortedParsePlugins.find(_.applies(document))
+      val parsePlugin = compilerContext.compilerConfig.sortedParsePlugins.find(_.applies(document))
       parsePlugin match {
         case Some(domainPlugin) =>
           parseReferences(document, domainPlugin)
@@ -329,7 +330,7 @@ object AMFCompiler {
             mediaType: Option[String],
             base: Context,
             cache: Cache,
-            parserConfig: ParseConfiguration,
+            parserConfig: CompilerConfiguration,
             referenceKind: ReferenceKind = UnspecifiedReference): AMFCompiler = {
     val context = new CompilerContextBuilder(url, base.platform, parserConfig)
       .withCache(cache)

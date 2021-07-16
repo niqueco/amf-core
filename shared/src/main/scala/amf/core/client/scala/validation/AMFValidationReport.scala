@@ -51,7 +51,7 @@ object AMFValidationReport {
   /** used for storing results of parsing and transformation into report for tests */
   private[amf] def unknownProfile(result: AMFResult): AMFValidationReport = {
     val profileName = UnknownProfile
-    val model       = result.bu
+    val model       = result.baseUnit
     new AMFValidationReport(
         model.location().getOrElse(model.id),
         profileName,

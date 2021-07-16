@@ -10,7 +10,7 @@ import amf.core.internal.parser.{
   AMFGraphPartialCompiler,
   AmfObjectUnitContainer,
   CompilerContextBuilder,
-  ParseConfiguration
+  CompilerConfiguration
 }
 import amf.core.internal.resource.StringResourceLoader
 
@@ -62,7 +62,7 @@ object AMFParser {
   def parseStartingPoint(graphUrl: String,
                          startingPoint: String,
                          env: AMFGraphConfiguration): Future[AMFObjectResult] = {
-    val configuration                               = env.parseConfiguration
+    val configuration                               = env.compilerConfiguration
     implicit val executionContext: ExecutionContext = configuration.executionContext
     val context = new CompilerContextBuilder(graphUrl, platform, configuration)
       .withCache(Cache())
@@ -70,7 +70,7 @@ object AMFParser {
       .build()
     val compiler = new AMFGraphPartialCompiler(context, startingPoint)
     build(compiler, configuration).map { r =>
-      r.bu match {
+      r.baseUnit match {
         case container: AmfObjectUnitContainer => new AMFObjectResult(container.result, r.results)
         case _                                 => throw new UnsupportedOperationException("Unexpected result unit type for partial parsing")
       }
@@ -89,16 +89,16 @@ object AMFParser {
   private[amf] def parseAsync(url: String,
                               mediaType: Option[String],
                               amfConfig: AMFGraphConfiguration): Future[AMFResult] = {
-    val parseConfig                                 = amfConfig.parseConfiguration
-    implicit val executionContext: ExecutionContext = parseConfig.executionContext
-    build(AMFCompiler(url, mediaType, Context(platform), Cache(), parseConfig), parseConfig)
+    val compilerConfig                              = amfConfig.compilerConfiguration
+    implicit val executionContext: ExecutionContext = compilerConfig.executionContext
+    build(AMFCompiler(url, mediaType, Context(platform), Cache(), compilerConfig), compilerConfig)
   }
 
-  private def build(compiler: AMFCompiler, parserConfig: ParseConfiguration)(implicit context: ExecutionContext) = {
+  private def build(compiler: AMFCompiler, compilerConfig: CompilerConfiguration)(implicit context: ExecutionContext) = {
     compiler
       .build()
       .map { model =>
-        val results = parserConfig.eh.getResults
+        val results = compilerConfig.eh.getResults
         AMFResult(model, results)
       }
   }

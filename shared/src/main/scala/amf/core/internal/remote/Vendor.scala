@@ -10,7 +10,6 @@ object Vendor {
       case Raml08.name     => Some(Raml08)
       case Oas20.name      => Some(Oas20)
       case Oas30.name      => Some(Oas30)
-      case AsyncApi.name   => Some(AsyncApi)
       case AsyncApi20.name => Some(AsyncApi20)
       case Amf.name        => Some(Amf)
       case Payload.name    => Some(Payload)
@@ -30,7 +29,6 @@ object Vendor {
   @JSExport val RAML10: Vendor     = Raml10
   @JSExport val OAS20: Vendor      = Oas20
   @JSExport val OAS30: Vendor      = Oas30
-  @JSExport val ASYNC: Vendor      = AsyncApi
   @JSExport val ASYNC20: Vendor    = AsyncApi20
   @JSExport val AMF: Vendor        = Amf
   @JSExport val PAYLOAD: Vendor    = Payload

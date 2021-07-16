@@ -1,13 +1,13 @@
 package amf.core.client.platform.transform
 
+import amf.core.client.platform.AMFGraphConfiguration
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 import amf.core.client.scala.transform.{TransformationPipelineBuilder => InternalTransformationPipelineBuilder}
 import amf.core.internal.convert.CoreClientConverters._
 import amf.core.internal.convert.TransformationPipelineConverter._
-import amf.core.client.scala.{AMFGraphConfiguration, transform}
 
 @JSExportAll
-case class TransformationPipelineBuilder(private[amf] val _internal: transform.TransformationPipelineBuilder) {
+case class TransformationPipelineBuilder(private[amf] val _internal: InternalTransformationPipelineBuilder) {
 
   def build(): TransformationPipeline = _internal.build()
 

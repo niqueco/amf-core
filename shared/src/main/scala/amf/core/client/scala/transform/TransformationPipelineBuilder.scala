@@ -1,8 +1,6 @@
 package amf.core.client.scala.transform
 
 import amf.core.client.scala.AMFGraphConfiguration
-import amf.core.client.scala.transform.pipelines.TransformationPipeline
-import amf.core.client.scala.transform.stages.TransformationStep
 
 case class TransformationPipelineBuilder private (builderName: String, builderSteps: Seq[TransformationStep] = Nil) {
 

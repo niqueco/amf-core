@@ -6,8 +6,7 @@ import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.scala.parse.AMFParsePlugin
 import amf.core.client.scala.parse.document.ParsedDocument
 import amf.core.client.scala.rdf.RdfModel
-import amf.core.client.scala.transform.pipelines.TransformationPipeline
-import amf.core.client.scala.transform.stages.TransformationStep
+import amf.core.client.scala.transform.{TransformationPipeline, TransformationStep}
 import amf.core.client.scala.validation.AMFValidationReport
 import amf.core.internal.plugins.render.AMFRenderPlugin
 import amf.core.internal.plugins.validation.AMFValidatePlugin
@@ -18,7 +17,7 @@ trait AMFEventListener {
   def notifyEvent(event: AMFEvent)
 }
 
-protected[amf] trait AMFEvent {
+trait AMFEvent {
   val name: String
 }
 

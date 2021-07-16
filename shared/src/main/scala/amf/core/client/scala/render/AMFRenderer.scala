@@ -9,20 +9,21 @@ import amf.core.internal.render.AMFSerializer
 import org.yaml.builder.DocBuilder
 object AMFRenderer {
 
-  def render(bu: BaseUnit, configuration: AMFGraphConfiguration): String = render(bu, AMF.mediaType, configuration)
+  def render(baseUnit: BaseUnit, configuration: AMFGraphConfiguration): String =
+    render(baseUnit, AMF.mediaType, configuration)
 
-  def renderAST(bu: BaseUnit, configuration: AMFGraphConfiguration): ParsedDocument =
-    renderAST(bu, AMF.mediaType, configuration)
+  def renderAST(baseUnit: BaseUnit, configuration: AMFGraphConfiguration): ParsedDocument =
+    renderAST(baseUnit, AMF.mediaType, configuration)
 
-  def render(bu: BaseUnit, mediaType: String, configuration: AMFGraphConfiguration): String =
-    new AMFSerializer(bu, mediaType, configuration.renderConfiguration).renderToString
+  def render(baseUnit: BaseUnit, mediaType: String, configuration: AMFGraphConfiguration): String =
+    new AMFSerializer(baseUnit, mediaType, configuration.renderConfiguration).renderToString
 
-  def renderAST(bu: BaseUnit, mediaType: String, configuration: AMFGraphConfiguration): ParsedDocument =
-    new AMFSerializer(bu, mediaType, configuration.renderConfiguration).renderAST
+  def renderAST(baseUnit: BaseUnit, mediaType: String, configuration: AMFGraphConfiguration): ParsedDocument =
+    new AMFSerializer(baseUnit, mediaType, configuration.renderConfiguration).renderAST
 
-  def renderGraphToBuilder[T](bu: BaseUnit, builder: DocBuilder[T], conf: AMFGraphConfiguration): T = {
+  def renderGraphToBuilder[T](baseUnit: BaseUnit, builder: DocBuilder[T], conf: AMFGraphConfiguration): T = {
     // only plugin that currently supports rendering to builder interface
-    AMFGraphRenderPlugin.emit(bu, builder, conf.renderConfiguration)
+    AMFGraphRenderPlugin.emit(baseUnit, builder, conf.renderConfiguration)
     builder.result
   }
 

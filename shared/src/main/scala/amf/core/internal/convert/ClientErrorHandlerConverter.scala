@@ -1,7 +1,7 @@
 package amf.core.internal.convert
 
 import amf.core.client.platform.errorhandling.ClientErrorHandler
-import amf.core.client.platform.validation.ValidationResult
+import amf.core.client.platform.validation.{AMFValidationResult => ClientAMFValidationResult}
 import amf.core.client.common.position.Range
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.validation.AMFValidationResult
@@ -30,8 +30,9 @@ object ClientErrorHandlerConverter {
 
   def convertToClient(errorHandler: AMFErrorHandler): ClientErrorHandler =
     new ClientErrorHandler {
-      override def getResults: CoreClientConverters.ClientList[ValidationResult] = errorHandler.getResults.asClient
+      override def getResults: CoreClientConverters.ClientList[ClientAMFValidationResult] =
+        errorHandler.getResults.asClient
 
-      override def report(result: ValidationResult): Unit = errorHandler.report(result)
+      override def report(result: ClientAMFValidationResult): Unit = errorHandler.report(result)
     }
 }

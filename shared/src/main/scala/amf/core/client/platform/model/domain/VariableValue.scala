@@ -4,7 +4,7 @@ import amf.core.internal.convert.CoreClientConverters._
 import amf.core.client.platform.model.StrField
 import amf.core.client.scala.model.domain.templates.{VariableValue => InternalVariableValue}
 
-import scala.scalajs.js.annotation.JSExportAll
+import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 /**
   * VariableValue model class.
@@ -12,6 +12,7 @@ import scala.scalajs.js.annotation.JSExportAll
 @JSExportAll
 case class VariableValue private[amf] (private[amf] val _internal: InternalVariableValue) extends DomainElement {
 
+  @JSExportTopLevel("VariableValue")
   def this() = this(InternalVariableValue())
 
   def name: StrField  = _internal.name

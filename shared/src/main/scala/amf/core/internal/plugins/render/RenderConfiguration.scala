@@ -1,6 +1,5 @@
 package amf.core.internal.plugins.render
 
-import amf.core.client.platform.config.AMFLogger
 import amf.core.client.scala.AMFGraphConfiguration
 import amf.core.client.scala.config.{AMFEventListener, RenderOptions}
 import amf.core.client.scala.errorhandling.AMFErrorHandler
@@ -14,7 +13,6 @@ trait RenderConfiguration {
   def errorHandler: AMFErrorHandler
   def listeners: Set[AMFEventListener]
   def syntaxPlugin: List[AMFSyntaxRenderPlugin]
-  def logger: AMFLogger
 }
 
 private[amf] case class DefaultRenderConfiguration(renderPlugins: List[AMFRenderPlugin],
@@ -22,8 +20,7 @@ private[amf] case class DefaultRenderConfiguration(renderPlugins: List[AMFRender
                                                    namespacePlugins: List[NamespaceAliasesPlugin],
                                                    renderOptions: RenderOptions,
                                                    errorHandler: AMFErrorHandler,
-                                                   listeners: Set[AMFEventListener],
-                                                   logger: AMFLogger)
+                                                   listeners: Set[AMFEventListener])
     extends RenderConfiguration {}
 
 object DefaultRenderConfiguration {
@@ -34,8 +31,7 @@ object DefaultRenderConfiguration {
         config.registry.plugins.namespacePlugins,
         config.options.renderOptions,
         config.errorHandlerProvider.errorHandler(),
-        config.listeners,
-        config.logger
+        config.listeners
     )
   }
 }

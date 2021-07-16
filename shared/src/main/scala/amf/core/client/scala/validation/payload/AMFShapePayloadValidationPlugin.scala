@@ -6,11 +6,10 @@ import amf.core.client.scala.model.document.PayloadFragment
 import amf.core.client.scala.model.domain.Shape
 import amf.core.client.scala.validation.{AMFValidationReport, AMFValidationResult}
 import amf.core.internal.plugins.AMFPlugin
-import amf.core.internal.validation.ValidationConfiguration
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-case class ValidatePayloadRequest(shape: Shape, mediaType: String, config: ValidationConfiguration)
+case class ValidatePayloadRequest(shape: Shape, mediaType: String, config: ShapeValidationConfiguration)
 
 trait AMFShapePayloadValidationPlugin extends AMFPlugin[ValidatePayloadRequest] {
 
@@ -21,16 +20,15 @@ trait AMFShapePayloadValidationPlugin extends AMFPlugin[ValidatePayloadRequest] 
   // TODO ARM we can remove the validation mode and handle it on different plugins, o we can put the mode into the options
   def validator(shape: Shape,
                 mediaType: String,
-                config: ValidationConfiguration,
+                config: ShapeValidationConfiguration,
                 validationMode: ValidationMode = StrictValidationMode): AMFShapePayloadValidator
 
 }
 
 trait AMFShapePayloadValidator {
 
-  def validate(payload: String)(implicit executionContext: ExecutionContext): Future[AMFValidationReport]
-  def validate(payloadFragment: PayloadFragment)(
-      implicit executionContext: ExecutionContext): Future[AMFValidationReport]
+  def validate(payload: String): Future[AMFValidationReport]
+  def validate(payloadFragment: PayloadFragment): Future[AMFValidationReport]
   def syncValidate(payload: String): AMFValidationReport
 }
 

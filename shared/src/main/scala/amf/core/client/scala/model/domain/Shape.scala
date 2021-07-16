@@ -158,7 +158,7 @@ abstract class Shape extends DomainElement with Linkable with NamedDomainElement
     }
   }
 
-  def ramlSyntaxKey: String = "shape"
+  private[amf] def ramlSyntaxKey: String = "shape"
 
   def copyShape(): this.type = copyShape(annotations.copy())
 

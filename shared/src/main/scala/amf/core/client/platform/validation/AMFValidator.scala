@@ -11,15 +11,15 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 @JSExportAll
 @JSExportTopLevel("AMFValidator")
 object AMFValidator {
-  def validate(bu: BaseUnit, conf: AMFGraphConfiguration): ClientFuture[AMFValidationReport] = {
+  def validate(baseUnit: BaseUnit, conf: AMFGraphConfiguration): ClientFuture[AMFValidationReport] = {
     implicit val contextForImplicitConversion: ExecutionContext = conf.getExecutionContext
-    InternalAMFValidator.validate(bu, conf).asClient
+    InternalAMFValidator.validate(baseUnit, conf).asClient
   }
 
-  def validate(bu: BaseUnit,
+  def validate(baseUnit: BaseUnit,
                profileName: ProfileName,
                conf: AMFGraphConfiguration): ClientFuture[AMFValidationReport] = {
     implicit val contextForImplicitConversion: ExecutionContext = conf.getExecutionContext
-    InternalAMFValidator.validate(bu, profileName, conf).asClient
+    InternalAMFValidator.validate(baseUnit, profileName, conf).asClient
   }
 }

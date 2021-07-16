@@ -7,6 +7,7 @@ import amf.core.client.scala.model.domain.Shape
 import amf.core.client.scala.validation.payload.{
   AMFShapePayloadValidationPlugin,
   AMFShapePayloadValidator,
+  ShapeValidationConfiguration,
   ValidatePayloadRequest
 }
 import amf.core.client.scala.validation.{AMFValidationReport, AMFValidationResult}
@@ -26,22 +27,22 @@ private[amf] case class ErrorFallbackValidationPlugin(defaultSeverity: String = 
 
   override def validator(s: Shape,
                          mediaType: String,
-                         config: ValidationConfiguration,
+                         config: ShapeValidationConfiguration,
                          validationMode: ValidationMode): AMFShapePayloadValidator =
-    ErrorFallbackPayloadValidator(s, mediaType, defaultSeverity)
+    ErrorFallbackPayloadValidator(s, mediaType, defaultSeverity)(config.executionContext)
 
   override def priority: PluginPriority = LowPriority
 }
 
-case class ErrorFallbackPayloadValidator(shape: Shape, mediaType: String, defaultSeverity: String)
+case class ErrorFallbackPayloadValidator(shape: Shape, mediaType: String, defaultSeverity: String)(
+    implicit executionContext: ExecutionContext)
     extends AMFShapePayloadValidator {
 
-  override def validate(payload: String)(implicit executionContext: ExecutionContext): Future[AMFValidationReport] = {
+  override def validate(payload: String): Future[AMFValidationReport] = {
     Future.successful(syncValidate(payload))
   }
 
-  override def validate(payloadFragment: PayloadFragment)(
-      implicit executionContext: ExecutionContext): Future[AMFValidationReport] = {
+  override def validate(payloadFragment: PayloadFragment): Future[AMFValidationReport] = {
     val results = createResult(payloadFragment)
     Future.successful(AMFValidationReport("", ProfileName(""), Seq(results)))
   }

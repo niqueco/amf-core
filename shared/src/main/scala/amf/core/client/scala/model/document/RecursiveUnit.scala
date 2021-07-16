@@ -17,7 +17,7 @@ case class RecursiveUnit(fields: Fields, annotations: Annotations) extends Fragm
     override def modelInstance: AmfObject = RecursiveUnit()
   }
 
-  override def componentId: String = "/recursive"
+  private[amf] override def componentId: String = "/recursive"
 }
 
 object RecursiveUnit {

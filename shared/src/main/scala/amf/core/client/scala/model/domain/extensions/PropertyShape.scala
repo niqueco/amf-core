@@ -51,7 +51,8 @@ case class PropertyShape(fields: Fields, annotations: Annotations) extends Shape
   }
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  override def componentId: String = "/property/" + name.option().getOrElse("default-property").urlComponentEncoded
+  private[amf] override def componentId: String =
+    "/property/" + name.option().getOrElse("default-property").urlComponentEncoded
 
   /** apply method for create a new instance with fields and annotations. Aux method for copy */
   override protected def classConstructor: (Fields, Annotations) => Linkable with DomainElement = PropertyShape.apply

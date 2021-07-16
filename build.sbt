@@ -17,7 +17,7 @@ name := "amf-core"
 //
 //  if (branch.contains("master")) s"$major.$minor.$build" else s"$major.${minor + 1}.0-SNAPSHOT"
 //}
-version in ThisBuild := "5.0.0-beta.1"
+version in ThisBuild := "5.0.0-beta.2"
 
 publish := {}
 
@@ -58,7 +58,7 @@ lazy val workspaceDirectory: File =
     case _       => Path.userHome / "mulesoft"
   }
 
-val syamlVersion = "1.1.308"
+val syamlVersion = "1.1.309"
 
 lazy val syamlJVMRef = ProjectRef(workspaceDirectory / "syaml", "syamlJVM")
 lazy val syamlJSRef  = ProjectRef(workspaceDirectory / "syaml", "syamlJS")
