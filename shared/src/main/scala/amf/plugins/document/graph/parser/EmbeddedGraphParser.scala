@@ -14,6 +14,7 @@ import amf.core.parser.{Annotations, _}
 import amf.core.registries.AMFDomainRegistry
 import amf.core.vocabulary.Namespace
 import amf.plugins.document.graph.JsonLdKeywords
+import amf.plugins.document.graph.MetaModelHelper.extendedFieldsFrom
 import amf.plugins.features.validation.CoreValidations.{
   NodeNotFound,
   NotLinkable,
@@ -137,7 +138,7 @@ class EmbeddedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
                       collector.fields.fields().foreach { f =>
                         instance.extendedFields.setWithoutId(f.field, f.value.value, f.value.annotations)
                       }
-                    case _            => // ignore
+                    case _ => // ignore
                   }
                 }
 
