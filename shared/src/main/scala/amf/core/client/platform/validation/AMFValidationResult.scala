@@ -45,15 +45,3 @@ class AMFValidationResult(private[amf] val _internal: InternalValidationResult) 
 
   def location: ClientOption[String] = _internal.location.asClient
 }
-
-@JSExportAll
-class PayloadParsingResult(private[amf] val _internal: InternalPayloadParsingResult) {
-
-  @JSExportTopLevel("PayloadParsingResult")
-  def this(fragment: PayloadFragment, results: ClientList[AMFValidationResult]) =
-    this(InternalPayloadParsingResult(fragment._internal, results.asInternal.toList))
-
-  def fragment: PayloadFragment                = _internal.fragment
-  def results: ClientList[AMFValidationResult] = _internal.results.asClient
-
-}

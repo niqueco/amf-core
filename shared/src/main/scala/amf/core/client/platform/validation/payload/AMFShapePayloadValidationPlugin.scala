@@ -12,7 +12,7 @@ import amf.core.internal.convert.CoreClientConverters._
 import scala.scalajs.js.annotation.JSExportAll
 
 @JSExportAll
-case class ValidatePayloadRequest private[amf] (_internal: InternalValidatePayloadRequest) {
+case class ValidatePayloadRequest private[amf] (private[amf] val _internal: InternalValidatePayloadRequest) {
   def shape: Shape                         = _internal.shape
   def mediaType: String                    = _internal.mediaType
   def config: ShapeValidationConfiguration = _internal.config
@@ -29,9 +29,4 @@ trait AMFShapePayloadValidationPlugin extends AMFPlugin[ValidatePayloadRequest] 
                 mediaType: String,
                 config: ShapeValidationConfiguration,
                 validationMode: ValidationMode = StrictValidationMode): AMFShapePayloadValidator
-}
-
-@JSExportAll
-case class PayloadParsingResult private[amf] (fragment: PayloadFragment, results: List[AMFValidationResult]) {
-  def hasError: Boolean = results.nonEmpty
 }
