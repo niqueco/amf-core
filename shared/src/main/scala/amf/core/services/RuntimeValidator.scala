@@ -93,7 +93,7 @@ trait RuntimeValidator extends PlatformSecrets {
     */
   def shaclModel(validations: Seq[ValidationSpecification],
                  validationFunctionUrl: String,
-                 messgeStyle: MessageStyle = AMFStyle): RdfModel
+                 messageStyle: MessageStyle = AMFStyle): RdfModel
 
   /**
     * Main validation function returning an AMF validation report linking validation errors
@@ -144,9 +144,12 @@ object RuntimeValidator {
                                   executionEnvironment: BaseExecutionEnvironment): Future[ProfileName] =
     validator.loadValidationProfileString(content, env, errorHandler, executionEnvironment)
 
-  type PropertyInfo = (Annotations, Field)
-  // When no property info is provided violation is thrown in domain element level
-  type CustomShaclFunction  = (AmfObject, Option[PropertyInfo] => Unit) => Unit
+  case class ValidationInfo(field: Field, message: Option[String] = None)
+  trait CustomShaclFunction {
+    val name: String
+    // When no validation info is provided, the validation is thrown in domain element level
+    def run(element: AmfObject, validate: Option[ValidationInfo] => Unit): Unit
+  }
   type CustomShaclFunctions = Map[String, CustomShaclFunction]
 
   def shaclValidation(
