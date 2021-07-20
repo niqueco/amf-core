@@ -34,6 +34,7 @@ pipeline {
         anyOf {
           branch 'master'
           branch 'remod-breaking'
+          branch 'jsonld-schema-internal-snapshot'
         }
       }
       steps {
