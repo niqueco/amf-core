@@ -4,7 +4,6 @@ import amf.core.internal.convert.CoreClientConverters._
 import amf.core.client.platform.config.RenderOptions
 import amf.core.client.platform.model.domain.DomainElement
 import amf.core.client.platform.model.{AmfObjectWrapper, StrField}
-import amf.core.internal.annotations.AliasDeclaration
 import amf.core.client.scala.model.document.{BaseUnit => InternalBaseUnit}
 import amf.core.internal.remote.Spec
 import amf.core.internal.unsafe.PlatformSecrets
