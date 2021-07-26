@@ -12,8 +12,7 @@ import amf.core.internal.remote._
 import amf.core.internal.utils.AmfStrings
 import amf.core.internal.validation.CoreValidations._
 import amf.core.internal.validation.core.ValidationSpecification
-import org.mulesoft.antlrast.ast.ASTElement
-import org.yaml.model.YPart
+import org.mulesoft.lexer.SourceLocation
 
 import java.net.URISyntaxException
 import scala.concurrent.Future.failed
@@ -66,14 +65,11 @@ class CompilerContext(val url: String,
     builder.build()
   }
 
-  def violation(id: ValidationSpecification, node: String, message: String, ast: ASTElement): Unit = {
-    parserContext.eh.violation(id, node, message, org.mulesoft.lexer.SourceLocation(parserContext.rootContextDocument, 0,0,ast.start.line, ast.start.column, ast.end.line, ast.end.column))
+  def violation(id: ValidationSpecification, node: String, message: String, location: SourceLocation): Unit = {
+    parserContext.eh.violation(id, node, None, message, location)
   }
 
-  def violation(id: ValidationSpecification, node: String, message: String, ast: YPart): Unit =
-    compilerConfig.eh.violation(id, node, message, ast)
-
-  def violation(id: ValidationSpecification, message: String, ast: YPart): Unit = violation(id, "", message, ast)
+  def violation(id: ValidationSpecification, message: String, location: SourceLocation): Unit = violation(id, "", message, location)
 }
 
 class CompilerContextBuilder(url: String, platform: Platform, compilerConfig: CompilerConfiguration) {
@@ -294,20 +290,16 @@ class AMFCompiler(compilerContext: CompilerContext,
             e match {
               case e: CyclicReferenceException if !domainPlugin.allowRecursiveReferences =>
                 link.refs.head match {
-                  case SYamlRefContainer(_, node, _) =>
-                    compilerContext.violation(CycleReferenceError, link.url, e.getMessage, node)
-                  case AntlrRefContainer(_, node, _) =>
-                    compilerContext.violation(CycleReferenceError, link.url, e.getMessage, node)
+                  case ASTRefContainer(_, pos, _) =>
+                    compilerContext.violation(CycleReferenceError, link.url, e.getMessage, pos)
                 }
 
                 Future(None)
               case _ =>
                 if (!link.isInferred) {
                   link.refs.foreach {
-                    case SYamlRefContainer(_, node, _) =>
-                      compilerContext.violation(UnresolvedReference, link.url, e.getMessage, node)
-                    case AntlrRefContainer(_, node, _) =>
-                      compilerContext.violation(UnresolvedReference, link.url, e.getMessage, node)
+                    case ASTRefContainer(_, pos, _) =>
+                      compilerContext.violation(UnresolvedReference, link.url, e.getMessage, pos)
                   }
                 }
                 Future(None)
