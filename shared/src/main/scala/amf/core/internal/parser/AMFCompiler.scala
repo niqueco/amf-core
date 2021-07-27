@@ -2,12 +2,14 @@ package amf.core.internal.parser
 
 import amf.core.client.common.remote.Content
 import amf.core.client.scala.config._
+import amf.core.client.scala.errorhandling.DefaultErrorHandler
 import amf.core.client.scala.exception.{CyclicReferenceException, UnsupportedMediaTypeException}
 import amf.core.client.scala.model.document.{BaseUnit, ExternalFragment}
 import amf.core.client.scala.model.domain.ExternalDomainElement
 import amf.core.client.scala.parse.AMFParsePlugin
 import amf.core.client.scala.parse.TaggedReferences._
-import amf.core.client.scala.parse.document.{UnresolvedReference => _, _}
+import amf.core.client.scala.parse.document.{ASTRefContainer, UnresolvedReference => _, _}
+import amf.core.internal.plugins.syntax.SYamlAMFParserErrorHandler
 import amf.core.internal.remote._
 import amf.core.internal.utils.AmfStrings
 import amf.core.internal.validation.CoreValidations._
@@ -290,16 +292,16 @@ class AMFCompiler(compilerContext: CompilerContext,
             e match {
               case e: CyclicReferenceException if !domainPlugin.allowRecursiveReferences =>
                 link.refs.head match {
-                  case ASTRefContainer(_, pos, _) =>
-                    compilerContext.violation(CycleReferenceError, link.url, e.getMessage, pos)
+                  case ref: ASTRefContainer =>
+                    compilerContext.violation(CycleReferenceError, link.url, e.getMessage, ref.pos)
                 }
 
                 Future(None)
               case _ =>
                 if (!link.isInferred) {
                   link.refs.foreach {
-                    case ASTRefContainer(_, pos, _) =>
-                      compilerContext.violation(UnresolvedReference, link.url, e.getMessage, pos)
+                    case ref: ASTRefContainer =>
+                      compilerContext.violation(UnresolvedReference, link.url, e.getMessage, ref.pos)
                   }
                 }
                 Future(None)
