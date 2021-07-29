@@ -6,7 +6,7 @@ import amf.core.client.scala.model.{BoolField => InternalBoolField}
 import scala.scalajs.js.annotation.JSExportAll
 
 @JSExportAll
-case class BoolField(private val _internal: InternalBoolField) extends BaseAnyValField[Boolean] {
+case class BoolField(private val _internal: InternalBoolField) extends ValueField[Boolean] {
 
   override protected val _option: Option[Boolean] = _internal.option()
 

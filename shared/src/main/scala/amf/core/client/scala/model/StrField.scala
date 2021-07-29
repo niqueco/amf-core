@@ -1,6 +1,6 @@
 package amf.core.client.scala.model
 
-trait StrField extends BaseField with ValueField[String] {
+trait StrField extends ValueField[String] {
 
   /** Return value or null if value is null or undefined. */
   override def value(): String = option().orNull

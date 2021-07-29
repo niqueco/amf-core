@@ -6,7 +6,7 @@ import amf.core.client.scala.model.{StrField => InternalStrField}
 import scala.scalajs.js.annotation.JSExportAll
 
 @JSExportAll
-case class StrField(private val _internal: InternalStrField) extends BaseField with ValueField[String] {
+case class StrField(private val _internal: InternalStrField) extends ValueField[String] {
 
   override protected val _option: Option[String] = _internal.option()
 
