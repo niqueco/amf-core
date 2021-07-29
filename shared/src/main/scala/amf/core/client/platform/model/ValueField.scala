@@ -6,7 +6,7 @@ import amf.core.client.scala.model.{ValueField => InternalValueField}
 import scala.scalajs.js.annotation.JSExportAll
 
 @JSExportAll
-trait ValueField[T] {
+trait ValueField[T] extends Annotable {
 
   protected val _option: Option[T]
 

@@ -6,7 +6,7 @@ import amf.core.client.scala.model.{DoubleField => InternalDoubleField}
 import scala.scalajs.js.annotation.JSExportAll
 
 @JSExportAll
-case class DoubleField(private val _internal: InternalDoubleField) extends BaseAnyValField[Double] {
+case class DoubleField(private val _internal: InternalDoubleField) extends ValueField[Double] {
 
   override protected val _option: Option[Double] = _internal.option()
 
