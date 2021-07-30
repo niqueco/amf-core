@@ -36,6 +36,9 @@ object CoreRegister {
     platform.registerWrapper(amf.core.internal.metamodel.domain.extensions.DomainExtensionModel) {
       case e: amf.core.client.scala.model.domain.extensions.DomainExtension => DomainExtension(e)
     }
+    platform.registerWrapper(amf.core.internal.metamodel.domain.extensions.ShapeExtensionModel) {
+      case e: amf.core.client.scala.model.domain.extensions.ShapeExtension => ShapeExtension(e)
+    }
     platform.registerWrapper(amf.core.internal.metamodel.domain.extensions.PropertyShapeModel) {
       case e: amf.core.client.scala.model.domain.extensions.PropertyShape => PropertyShape(e)
     }
@@ -44,6 +47,9 @@ object CoreRegister {
     }
     platform.registerWrapper(amf.core.internal.metamodel.domain.ScalarNodeModel) {
       case d: amf.core.client.scala.model.domain.ScalarNode => ScalarNodeMatcher.asClient(d)
+    }
+    platform.registerWrapper(amf.core.internal.metamodel.domain.LinkNodeModel) {
+      case d: amf.core.client.scala.model.domain.LinkNode => LinkNode(d)
     }
     // hack for variable value accessor
     platform.registerWrapper(amf.core.internal.metamodel.domain.ArrayNodeModel) {
