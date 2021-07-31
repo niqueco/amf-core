@@ -105,6 +105,11 @@ case object Grpc extends Vendor {
   override val mediaType: String = "application/grpc"
 }
 
+case object GraphQL extends Vendor {
+  override val name: String = "GraphQL"
+  override val mediaType: String = "application/graphql"
+}
+
 case object Oas30 extends Oas {
   override def version: String = "3.0"
 

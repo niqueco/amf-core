@@ -7,6 +7,7 @@ object Mimes {
   val `TEXT/YAML`: String                 = "text/yaml"
   val `TEXT/X-YAML`: String               = "text/x-yaml"
   val `TEXT/VND.YAML`: String             = "text/vnd.yaml"
+  val `APPLICATION/GRAPHQL`: String       = "application/graphql"
   val `APPLICATION/GRPC`: String          = "application/grpc"
   val `APPLICATION/GRPC+PROTO`: String    = "application/grpc+proto"
   val `APPLICATION/X-PROTOBUF`: String    = "application/x-protobuf"
