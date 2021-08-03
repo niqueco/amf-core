@@ -29,6 +29,6 @@ trait AMFParsePlugin extends AMFPlugin[Root] {
 
   def referenceHandler(eh: AMFErrorHandler): ReferenceHandler
 
-  // move to some vendor/dialect configuration?
+  // move to some spec/dialect configuration?
   def allowRecursiveReferences: Boolean
 }

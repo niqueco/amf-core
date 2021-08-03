@@ -4,7 +4,7 @@ import org.scalatest.{FunSpec, Matchers}
 
 class MediaTypeParserTest extends FunSpec with Matchers {
 
-  case class Fixture(source: String, vendor: String, syntax: Option[String])
+  case class Fixture(source: String, spec: String, syntax: Option[String])
   val fixture = Seq(
       Fixture("application/raml", "application/raml", None),
       Fixture("application/raml10", "application/raml10", None),
@@ -17,8 +17,8 @@ class MediaTypeParserTest extends FunSpec with Matchers {
   fixture.foreach { f =>
     describe(s"A mediaType ${f.source}") {
       val parser = new MediaTypeParser(f.source)
-      it(s"have vendor ${f.vendor}") {
-        parser.getVendorExp should be(f.vendor)
+      it(s"have spec ${f.spec}") {
+        parser.getVendorExp should be(f.spec)
       }
       f.syntax.foreach(s => {
         it(s"should have syntax $s") {

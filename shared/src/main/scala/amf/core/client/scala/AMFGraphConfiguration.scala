@@ -137,12 +137,6 @@ class AMFGraphConfiguration private[amf] (override private[amf] val resolvers: A
   def withExecutionEnvironment(executionEnv: ExecutionEnvironment): AMFGraphConfiguration =
     super._withExecutionEnvironment(executionEnv)
 
-  /**
-    * Merges two environments taking into account specific attributes that can be merged.
-    * This is currently limited to: registry plugins, registry transformation pipelines.
-    */
-  protected[amf] def merge(other: AMFGraphConfiguration): AMFGraphConfiguration = super._merge(other)
-
   protected def copy(resolvers: AMFResolvers = resolvers,
                      errorHandlerProvider: ErrorHandlerProvider = errorHandlerProvider,
                      registry: AMFRegistry = registry,
@@ -218,16 +212,6 @@ sealed abstract class BaseAMFConfigurationSetter(private[amf] val resolvers: AMF
 
   protected def _withExecutionEnvironment[T](executionEnv: ExecutionEnvironment): T =
     copy(resolvers = resolvers.withExecutionEnvironment(executionEnv)).asInstanceOf[T]
-
-  protected def _merge[T <: BaseAMFConfigurationSetter](other: T): T = {
-    this
-      ._withPlugins(other.registry.getAllPlugins())
-      .asInstanceOf[T]
-      ._withTransformationPipelines(other.registry.transformationPipelines.values.toList)
-      .asInstanceOf[T]
-      ._withConstraintsRules(other.registry.constraintsRules)
-      .asInstanceOf[T]
-  }
 
   protected def copy(resolvers: AMFResolvers = resolvers,
                      errorHandlerProvider: ErrorHandlerProvider = errorHandlerProvider,

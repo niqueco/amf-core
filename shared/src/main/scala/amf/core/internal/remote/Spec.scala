@@ -8,23 +8,23 @@ import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel}
 object Spec {
   def unapply(name: String): Option[Spec] = {
     name match {
-      case Raml10.`id`     => Some(Raml10)
-      case Raml08.`id`     => Some(Raml08)
-      case Oas20.`id`      => Some(Oas20)
-      case Oas30.`id`      => Some(Oas30)
-      case AsyncApi20.`id` => Some(AsyncApi20)
-      case Amf.`id`        => Some(Amf)
-      case Payload.`id`    => Some(Payload)
-      case Aml.`id`        => Some(Aml)
-      case JsonSchema.`id` => Some(JsonSchema)
-      case _               => None
+      case Raml10.id     => Some(Raml10)
+      case Raml08.id     => Some(Raml08)
+      case Oas20.id      => Some(Oas20)
+      case Oas30.id      => Some(Oas30)
+      case AsyncApi20.id => Some(AsyncApi20)
+      case Amf.id        => Some(Amf)
+      case Payload.id    => Some(Payload)
+      case Aml.id        => Some(Aml)
+      case JsonSchema.id => Some(JsonSchema)
+      case _             => None
     }
   }
 
   @JSExport("apply")
   def apply(name: String): Spec = name match {
-    case Spec(vendor) => vendor
-    case _            => UnknownSpec(name)
+    case Spec(spec) => spec
+    case _          => UnknownSpec(name)
   }
 
   @JSExport val RAML08: Spec     = Raml08

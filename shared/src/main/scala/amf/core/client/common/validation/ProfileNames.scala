@@ -68,23 +68,23 @@ object ProfileName {
     }
 
   def apply(profile: String): ProfileName = profile match {
-    case Amf.`id`             => AmfProfile
-    case "OAS" | Oas20.`id`   => Oas20Profile // for compatibility
-    case Oas30.`id`           => Oas30Profile
-    case Raml08.`id`          => Raml08Profile
-    case "RAML" | Raml10.`id` => Raml10Profile // for compatibility
-    case AsyncApi.`id`        => AsyncProfile
-    case AsyncApi20.`id`      => Async20Profile
-    case custom               => new ProfileName(custom)
+    case Amf.id             => AmfProfile
+    case "OAS" | Oas20.id   => Oas20Profile // for compatibility
+    case Oas30.id           => Oas30Profile
+    case Raml08.id          => Raml08Profile
+    case "RAML" | Raml10.id => Raml10Profile // for compatibility
+    case AsyncApi.id        => AsyncProfile
+    case AsyncApi20.id      => Async20Profile
+    case custom             => new ProfileName(custom)
   }
 }
 
 object MessageStyle {
   def apply(name: String): MessageStyle = name match {
-    case Raml10.`id` | Raml08.`id`       => RAMLStyle
-    case Oas20.`id` | Oas30.`id`         => OASStyle
-    case AsyncApi.`id` | AsyncApi20.`id` => OASStyle
-    case _                               => AMFStyle
+    case Raml10.id | Raml08.id       => RAMLStyle
+    case Oas20.id | Oas30.id         => OASStyle
+    case AsyncApi.id | AsyncApi20.id => OASStyle
+    case _                           => AMFStyle
   }
 }
 
