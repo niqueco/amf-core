@@ -26,34 +26,34 @@ trait DomainParsingFallback {
 case class ExternalFragmentDomainFallback(strict: Boolean = true) extends DomainParsingFallback {
   override def chooseFallback(root: Root, availablePlugins: Seq[AMFParsePlugin], isRoot: Boolean): AMFParsePlugin = {
     if (isRoot && strict) throw UnsupportedDomainForDocumentException(root.location)
-    else {
-      new AMFParsePlugin {
-        override def spec: Spec = UnknownSpec("external-fragment")
+    else ExternalDomainFallbackPlugin(root)
+  }
 
-        override def parse(document: Root, ctx: ParserContext): BaseUnit = {
-          ExternalFragment()
-            .withId(root.location)
-            .withLocation(root.location)
-            .withEncodes(
-                ExternalDomainElement()
-                  .withRaw(root.raw)
-                  .withMediaType(root.mediatype))
-        }
+  case class ExternalDomainFallbackPlugin(root: Root) extends AMFParsePlugin {
 
-        /**
-          * media types which specifies vendors that are parsed by this plugin.
-          */
-        override def mediaTypes: Seq[String] = Seq(root.mediatype)
+    override def spec: Spec = UnknownSpec("external-fragment")
 
-        override def referenceHandler(eh: AMFErrorHandler): ReferenceHandler = SimpleReferenceHandler
-
-        override def allowRecursiveReferences: Boolean = false
-
-        override def applies(element: Root): Boolean = true
-
-        override def priority: PluginPriority = LowPriority
-      }
-
+    override def parse(document: Root, ctx: ParserContext): BaseUnit = {
+      ExternalFragment()
+        .withId(root.location)
+        .withLocation(root.location)
+        .withEncodes(
+            ExternalDomainElement()
+              .withRaw(root.raw)
+              .withMediaType(root.mediatype))
     }
+
+    /**
+      * media types which specifies vendors that are parsed by this plugin.
+      */
+    override def mediaTypes: Seq[String] = Seq(root.mediatype)
+
+    override def referenceHandler(eh: AMFErrorHandler): ReferenceHandler = SimpleReferenceHandler
+
+    override def allowRecursiveReferences: Boolean = false
+
+    override def applies(element: Root): Boolean = true
+
+    override def priority: PluginPriority = LowPriority
   }
 }
