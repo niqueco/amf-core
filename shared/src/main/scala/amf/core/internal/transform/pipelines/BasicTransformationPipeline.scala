@@ -6,6 +6,7 @@ import amf.core.internal.transform.stages.ReferenceResolutionStage
 import amf.core.internal.plugins.parse.AMFGraphParsePlugin
 import amf.core.internal.remote.Amf
 
+// TODO ARM: Erase ??
 class BasicTransformationPipeline private (override val name: String) extends TransformationPipeline() {
   private def references = new ReferenceResolutionStage(keepEditingInfo = false)
 

@@ -9,7 +9,7 @@ trait BaseSourceSpec extends SerializableAnnotation {
 }
 
 case class SourceSpec(override val spec: Spec) extends BaseSourceSpec with PerpetualAnnotation {
-  override val name: String = "source-vendor"
+  override val name: String = "source-vendor" // TODO ARM: Change
 }
 
 object SourceSpec extends AnnotationGraphLoader {
