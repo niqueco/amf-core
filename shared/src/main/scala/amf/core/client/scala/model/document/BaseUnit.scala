@@ -1,7 +1,7 @@
 package amf.core.client.scala.model.document
 
 import amf.core.client.scala.errorhandling.AMFErrorHandler
-import amf.core.internal.annotations.SourceVendor
+import amf.core.internal.annotations.SourceSpec
 import amf.core.internal.metamodel.MetaModelTypeMapping
 import amf.core.internal.metamodel.document.BaseUnitModel
 import amf.core.internal.metamodel.document.BaseUnitModel.{Location, ModelVersion, Root, Usage}
@@ -12,7 +12,7 @@ import amf.core.client.scala.model.{BoolField, StrField}
 import amf.core.client.common.validation.ProfileName
 import amf.core.client.scala.rdf.RdfModel
 import amf.core.internal.rdf.RdfModelParser
-import amf.core.internal.remote.{Amf, Vendor}
+import amf.core.internal.remote.{Amf, Spec}
 import amf.core.client.scala.traversal.iterator._
 import amf.core.client.scala.traversal.{
   DomainElementSelectorAdapter,
@@ -110,16 +110,14 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
 
   def findInReferences(id: String): Option[BaseUnit] = references.find(_.id == id)
 
-  private[amf] def sourceVendor: Option[Vendor] = this match {
+  def sourceSpec: Option[Spec] = this match {
     case e: EncodesModel if Option(e.encodes).isDefined =>
-      e.encodes.annotations.find(classOf[SourceVendor]).map(a => a.vendor)
-    case d: DeclaresModel => d.annotations.find(classOf[SourceVendor]).map(a => a.vendor)
+      e.encodes.annotations.find(classOf[SourceSpec]).map(a => a.spec)
+    case d: DeclaresModel => d.annotations.find(classOf[SourceSpec]).map(a => a.spec)
     case _                => None
   }
 
-  protected[amf] def profileName: Option[ProfileName] = sourceVendor.map(v => ProfileName.apply(v.name))
-
-  def sourceMediaType: String = sourceVendor.map(_.mediaType).getOrElse(Amf.mediaType)
+  protected[amf] def profileName: Option[ProfileName] = sourceSpec.map(v => ProfileName.apply(v.id))
 
   def cloneUnit(): BaseUnit = cloneElement(mutable.Map.empty).asInstanceOf[BaseUnit]
 

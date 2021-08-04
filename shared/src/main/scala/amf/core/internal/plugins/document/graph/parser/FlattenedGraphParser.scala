@@ -439,11 +439,14 @@ class FlattenedGraphParser(startingPoint: String)(implicit val ctx: GraphParserC
 
     private def parseObjectNodeProperties(obj: ObjectNode, map: YMap, fields: Seq[Field]): Unit = {
       val ignoredFields: Seq[String] =
-        Seq(JsonLdKeywords.Id,
+        Seq(
+            JsonLdKeywords.Id,
             JsonLdKeywords.Type,
             "smaps",
             DomainElementModel.Sources.value.iri(),
-            (Namespace.Document + "name").iri())
+            (Namespace.Document + "name").iri(),
+            (Namespace.Core + "extensionName").iri()
+        )
 
       map.entries.foreach { entry =>
         val fieldUri        = expandUriFromContext(entry.key.as[String])

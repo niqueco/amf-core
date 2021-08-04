@@ -30,23 +30,14 @@ class AMFGraphBaseUnitClient private[amf] (private val _internal: InternalAMFGra
     * @param url Location of the file to parse
     * @return A CompletableFuture of [[AMFResult]]
     */
-  def parse(url: String): ClientFuture[AMFResult] = _internal.parse(url).asClient
-
-  /**
-    * Asynchronously generate a BaseUnit from the content located in the given url.
-    * @param url Location of the file to parse
-    * @param mediaType The nature and format of the given content. Must be <code>"application/spec"</code> or <code>"application/spec+syntax"</code>.
-    *                  Examples: <code>"application/raml10"</code> or <code>"application/raml10+yaml"</code>
-    * @return A CompletableFuture of [[AMFResult]]
-    */
-  def parse(url: String, mediaType: String): ClientFuture[AMFResult] = _internal.parse(url, mediaType).asClient
+  def parse(url: String): ClientFuture[AMFParseResult] = _internal.parse(url).asClient
 
   /**
     * Asynchronously generate a BaseUnit from a given string.
     * @param content The content as a string
     * @return A CompletableFuture of [[AMFResult]]
     */
-  def parseContent(content: String): ClientFuture[AMFResult] = _internal.parseContent(content).asClient
+  def parseContent(content: String): ClientFuture[AMFParseResult] = _internal.parseContent(content).asClient
 
   /**
     * Asynchronously generate a BaseUnit from a given string.
@@ -55,7 +46,7 @@ class AMFGraphBaseUnitClient private[amf] (private val _internal: InternalAMFGra
     *                  Examples: <code>"application/raml10"</code> or <code>"application/raml10+yaml"</code>
     * @return A CompletableFuture of [[AMFResult]]
     */
-  def parseContent(content: String, mediaType: String): ClientFuture[AMFResult] =
+  def parseContent(content: String, mediaType: String): ClientFuture[AMFParseResult] =
     _internal.parseContent(content, mediaType).asClient
 
   /**
@@ -68,13 +59,10 @@ class AMFGraphBaseUnitClient private[amf] (private val _internal: InternalAMFGra
   /**
     * Transforms a [[BaseUnit]] with a specific pipeline
     * @param baseUnit [[BaseUnit]] to transform
-    * @param pipelineName name of any custom or [[AMFGraphConfiguration.predefined predefined]] pipeline
+    * @param pipeline name of any custom or [[AMFGraphConfiguration.predefined predefined]] pipeline
     * @return An [[AMFResult]] with the transformed BaseUnit and it's report
     */
-  def transform(baseUnit: BaseUnit, pipelineName: String): AMFResult = _internal.transform(baseUnit, pipelineName)
-
-  def transformWithPipelineId(baseUnit: BaseUnit, pipelineId: String): AMFResult =
-    _internal.transform(baseUnit, pipelineId)
+  def transform(baseUnit: BaseUnit, pipeline: String): AMFResult = _internal.transform(baseUnit, pipeline)
 
   /**
     * Render a [[BaseUnit]] to its default type
@@ -107,13 +95,4 @@ class AMFGraphBaseUnitClient private[amf] (private val _internal: InternalAMFGra
     * @return an [[AMFValidationReport]]
     */
   def validate(bu: BaseUnit): ClientFuture[AMFValidationReport] = _internal.validate(bu).asClient
-
-  /**
-    * Validate a [[BaseUnit]] with a specific validation profile name
-    * @param bu [[BaseUnit]] to validate
-    * @param profileName the [[ProfileName]] of the desired validation profile
-    * @return an [[AMFValidationReport]]
-    */
-  def validate(bu: BaseUnit, profileName: ProfileName): ClientFuture[AMFValidationReport] =
-    _internal.validate(bu, profileName).asClient
 }

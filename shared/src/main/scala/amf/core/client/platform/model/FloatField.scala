@@ -6,7 +6,7 @@ import amf.core.client.scala.model.{FloatField => InternalFloatField}
 import scala.scalajs.js.annotation.JSExportAll
 
 @JSExportAll
-case class FloatField(private val _internal: InternalFloatField) extends BaseAnyValField[Float] {
+case class FloatField(private val _internal: InternalFloatField) extends ValueField[Float] {
 
   override protected val _option: Option[Float] = _internal.option()
 

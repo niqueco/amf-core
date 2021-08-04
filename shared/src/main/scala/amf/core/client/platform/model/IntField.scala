@@ -6,7 +6,7 @@ import amf.core.client.scala.model.{IntField => InternalIntField}
 import scala.scalajs.js.annotation.JSExportAll
 
 @JSExportAll
-case class IntField(private val _internal: InternalIntField) extends BaseAnyValField[Int] {
+case class IntField(private val _internal: InternalIntField) extends ValueField[Int] {
 
   override protected val _option: Option[Int] = _internal.option()
 

@@ -1,6 +1,6 @@
 package amf.core.client.scala.model
 
-trait DoubleField extends BaseAnyValField[Double] {
+trait DoubleField extends ValueField[Double] {
 
   /** Return double value or `0.0` if value is null or undefined. */
   override def value(): Double = option() match {

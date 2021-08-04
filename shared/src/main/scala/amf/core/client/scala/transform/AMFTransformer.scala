@@ -9,13 +9,12 @@ import amf.core.internal.validation.CoreValidations.ResolutionValidation
 object AMFTransformer {
 
   def transform(unit: BaseUnit, conf: AMFGraphConfiguration): AMFResult = {
-    val guessedMediaType = unit.sourceVendor.getOrElse(Amf).mediaType
-    transform(unit, PipelineName.from(guessedMediaType, PipelineId.Default), conf)
+    transform(unit, PipelineId.Default, conf)
   }
 
-  def transform(unit: BaseUnit, pipelineName: String, conf: AMFGraphConfiguration): AMFResult = {
+  def transform(unit: BaseUnit, pipelineId: String, conf: AMFGraphConfiguration): AMFResult = {
     val pipelines = conf.registry.transformationPipelines
-    val pipeline  = pipelines.get(pipelineName)
+    val pipeline  = pipelines.get(pipelineId)
     val handler   = conf.errorHandlerProvider.errorHandler()
     val resolved = pipeline match {
       case Some(pipeline) =>
@@ -26,7 +25,7 @@ object AMFTransformer {
             ResolutionValidation,
             unit.id,
             None,
-            s"Cannot find transformation pipeline with name $pipelineName",
+            s"Cannot find transformation pipeline with name $pipelineId",
             unit.position(),
             unit.location()
         )

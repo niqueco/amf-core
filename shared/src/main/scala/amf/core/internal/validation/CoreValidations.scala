@@ -133,7 +133,7 @@ object CoreValidations extends Validations {
 
   val UnhandledDomainElement = validation(
       "unhandled-element",
-      "Unhandled domain element for given vendor"
+      "Unhandled domain element for given spec"
   )
 
   override val levels: Map[String, Map[ProfileName, String]] = Map(

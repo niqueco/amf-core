@@ -12,4 +12,5 @@ trait AMFSyntaxParsePlugin extends AMFPlugin[CharSequence] {
     */
   def mediaTypes: Seq[String]
 
+  def mainMediaType: String
 }

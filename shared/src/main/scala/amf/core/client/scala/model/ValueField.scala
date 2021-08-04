@@ -1,6 +1,6 @@
 package amf.core.client.scala.model
 
-trait ValueField[T] {
+trait ValueField[T] extends Annotable {
 
   /** Return string value as option. */
   def option(): Option[T]

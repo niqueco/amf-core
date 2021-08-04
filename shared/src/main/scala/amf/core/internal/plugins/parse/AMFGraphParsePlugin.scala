@@ -9,16 +9,17 @@ import amf.core.client.scala.parse.AMFParsePlugin
 import amf.core.client.scala.parse.document.{ParserContext, ReferenceHandler, SyamlParsedDocument}
 import amf.core.internal.rdf.{RdfModelDocument, RdfModelParser}
 import amf.core.internal.parser.Root
-import amf.core.internal.remote.Vendor
+import amf.core.internal.remote.{Mimes, Spec}
 import amf.core.internal.plugins.document.graph.parser.{
   EmbeddedGraphParser,
   FlattenedUnitGraphParser,
   GraphDependenciesReferenceHandler
 }
+import amf.core.internal.remote.Spec.AMF
 
 object AMFGraphParsePlugin extends AMFParsePlugin {
 
-  override val id: String = Vendor.AMF.name
+  override def spec: Spec = AMF
 
   override def applies(element: Root): Boolean = element.parsed match {
     case parsed: SyamlParsedDocument =>
@@ -40,16 +41,7 @@ object AMFGraphParsePlugin extends AMFParsePlugin {
     case _ => throw UnsupportedParsedDocumentException
   }
 
-  override def mediaTypes: Seq[String] = Seq(
-      "application/graph",
-      "application/graph+json",
-      "application/graph+jsonld",
-      "application/amf",
-      "application/amf+json",
-      "application/amf+jsonld"
-  )
-
-  override def validMediaTypesToReference: Seq[String] = Seq.empty
+  override def mediaTypes: Seq[String] = Seq(Mimes.`application/ld+json`, Mimes.`application/graph`)
 
   override def referenceHandler(eh: AMFErrorHandler): ReferenceHandler = GraphDependenciesReferenceHandler
 
@@ -61,4 +53,9 @@ object AMFGraphParsePlugin extends AMFParsePlugin {
       case None      => location
     }
   }
+
+  /**
+    * media types which specifies vendors that may be referenced.
+    */
+  override def validSpecsToReference: Seq[Spec] = Seq(AMF)
 }

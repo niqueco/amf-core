@@ -2,12 +2,17 @@ package amf.core.internal.parser
 
 import amf.core.client.common.remote.Content
 import amf.core.client.scala.config._
-import amf.core.client.scala.exception.{CyclicReferenceException, UnsupportedMediaTypeException}
+import amf.core.client.scala.exception.{
+  CyclicReferenceException,
+  UnsupportedMediaTypeException,
+  UnsupportedSyntaxForDocumentException
+}
 import amf.core.client.scala.model.document.{BaseUnit, ExternalFragment}
 import amf.core.client.scala.model.domain.ExternalDomainElement
 import amf.core.client.scala.parse.AMFParsePlugin
 import amf.core.client.scala.parse.TaggedReferences._
 import amf.core.client.scala.parse.document.{UnresolvedReference => _, _}
+import amf.core.internal.remote.Mimes._
 import amf.core.internal.remote._
 import amf.core.internal.utils.AmfStrings
 import amf.core.internal.validation.CoreValidations._
@@ -18,116 +23,7 @@ import java.net.URISyntaxException
 import scala.concurrent.Future.failed
 import scala.concurrent.{ExecutionContext, Future}
 
-object AMFCompilerRunCount {
-  val NONE: Int = -1
-  var count     = 0
-
-  def nextRun(): Int = synchronized {
-    count += 1
-    count
-  }
-}
-
-class CompilerContext(val url: String,
-                      val parserContext: ParserContext,
-                      val compilerConfig: CompilerConfiguration,
-                      val fileContext: Context,
-                      val allowedMediaTypes: Option[Seq[String]],
-                      cache: Cache) {
-
-  implicit val executionContext: ExecutionContext = compilerConfig.executionContext
-
-  /**
-    * The resolved path that result to be the normalized url
-    */
-  val location: String = fileContext.current
-  val path: String     = url.normalizePath
-
-  def runInCache(fn: () => Future[BaseUnit]): Future[BaseUnit] = cache.getOrUpdate(location, fileContext)(fn)
-
-  lazy val hasCycles: Boolean = fileContext.hasCycles
-
-  lazy val platform: Platform = fileContext.platform
-
-  def resolvePath(url: String): String = fileContext.resolve(fileContext.platform.normalizePath(url))
-
-  def fetchContent(): Future[Content] = compilerConfig.resolveContent(location)
-
-  def forReference(refUrl: String, allowedMediaTypes: Option[Seq[String]] = None)(
-      implicit executionContext: ExecutionContext): CompilerContext = {
-
-    val builder = new CompilerContextBuilder(refUrl, fileContext.platform, compilerConfig)
-      .withFileContext(fileContext)
-      .withBaseParserContext(parserContext)
-      .withCache(cache)
-
-    allowedMediaTypes.foreach(builder.withAllowedMediaTypes)
-    builder.build()
-  }
-
-  def violation(id: ValidationSpecification, node: String, message: String, ast: YPart): Unit =
-    compilerConfig.eh.violation(id, node, message, ast)
-
-  def violation(id: ValidationSpecification, message: String, ast: YPart): Unit = violation(id, "", message, ast)
-}
-
-class CompilerContextBuilder(url: String, platform: Platform, compilerConfig: CompilerConfiguration) {
-
-  private var fileContext: Context                   = Context(platform)
-  private var cache                                  = Cache()
-  private var givenContent: Option[ParserContext]    = None
-  private var allowedMediaTypes: Option[Seq[String]] = None
-
-  def withFileContext(fc: Context): CompilerContextBuilder = {
-    fileContext = fc
-    this
-  }
-
-  def withCache(cache: Cache): CompilerContextBuilder = {
-    this.cache = cache
-    this
-  }
-
-  def withAllowedMediaTypes(allowed: Seq[String]): CompilerContextBuilder = {
-    this.allowedMediaTypes = Some(allowed)
-    this
-  }
-
-  def withBaseParserContext(parserContext: ParserContext): this.type = {
-    givenContent = Some(parserContext)
-    this
-  }
-
-  /**
-    * normalized url
-    * */
-  private def path: String = {
-    try {
-      url.normalizePath
-    } catch {
-      case e: URISyntaxException =>
-        compilerConfig.eh.violation(UriSyntaxError, url, e.getMessage)
-        url
-      case e: Exception => throw new PathResolutionError(e.getMessage)
-    }
-  }
-
-  private def buildFileContext() = fileContext.update(path)
-
-  private def buildParserContext(fc: Context) = givenContent match {
-    case Some(given) => given.forLocation(fc.current)
-    case None        => ParserContext(fc.current, config = compilerConfig.generateParseConfiguration)
-  }
-
-  def build(): CompilerContext = {
-    val fc = buildFileContext()
-    new CompilerContext(url, buildParserContext(fc), compilerConfig, fc, allowedMediaTypes, cache)
-  }
-}
-
-class AMFCompiler(compilerContext: CompilerContext,
-                  val mediaType: Option[String],
-                  val referenceKind: ReferenceKind = UnspecifiedReference) {
+class AMFCompiler(compilerContext: CompilerContext, val referenceKind: ReferenceKind = UnspecifiedReference) {
 
   private def notifyEvent(e: AMFEvent): Unit = compilerContext.compilerConfig.notifyEvent(e)
 
@@ -137,7 +33,7 @@ class AMFCompiler(compilerContext: CompilerContext,
   }
 
   private def compile()(implicit executionContext: ExecutionContext): Future[BaseUnit] = {
-    notifyEvent(StartingParsingEvent(compilerContext.path, mediaType))
+    notifyEvent(StartingParsingEvent(compilerContext.path))
     for {
       content <- fetchContent()
       ast     <- Future.successful(parseSyntax(content))
@@ -150,15 +46,15 @@ class AMFCompiler(compilerContext: CompilerContext,
 
   private def autodetectSyntax(location: String, stream: CharSequence): Option[String] = {
     if (stream.length() > 2 && stream.charAt(0) == '#' && stream.charAt(1) == '%') {
-      notifyEvent(DetectedSyntaxMediaTypeEvent(location, "application/yaml"))
-      Some("application/yaml")
+      notifyEvent(DetectedSyntaxMediaTypeEvent(location, `application/yaml`))
+      Some(`application/yaml`)
     } else {
       compilerContext.platform.findCharInCharSequence(stream) { c =>
         c != '\n' && c != '\t' && c != '\r' && c != ' '
       } match {
         case Some(c) if c == '{' || c == '[' =>
-          notifyEvent(DetectedSyntaxMediaTypeEvent(location, "application/json"))
-          Some("application/json")
+          notifyEvent(DetectedSyntaxMediaTypeEvent(location, `application/json`))
+          Some(`application/json`)
         case _ => None
       }
     }
@@ -166,24 +62,16 @@ class AMFCompiler(compilerContext: CompilerContext,
 
   private[amf] def parseSyntax(input: Content): Either[Content, Root] = {
     notifyEvent(StartingContentParsingEvent(compilerContext.path, input))
-    val contentType: Option[String] = mediaType.flatMap(mt => new MediaTypeParser(mt).getSyntaxExp)
-    val parsed: Option[(String, ParsedDocument)] = contentType
-      .flatMap(mime => parseSyntaxForMediaType(input, mime))
-      .orElse {
-        contentType match {
-          case None =>
-            input.mime
-              .flatMap(mime => parseSyntaxForMediaType(input, mime))
-              .orElse {
-                inferMediaTypeFromFileExtension(input).flatMap(inferred => parseSyntaxForMediaType(input, inferred))
-              }
-              .orElse {
-                autodetectSyntax(compilerContext.path, input.stream).flatMap(inferred =>
-                  parseSyntaxForMediaType(input, inferred))
-              }
-          case _ => None
+    val parsed: Option[(String, ParsedDocument)] =
+      input.mime
+        .flatMap(mime => parseSyntaxForMediaType(input, mime))
+        .orElse {
+          inferMediaTypeFromFileExtension(input).flatMap(inferred => parseSyntaxForMediaType(input, inferred))
         }
-      }
+        .orElse {
+          autodetectSyntax(compilerContext.path, input.stream).flatMap(inferred =>
+            parseSyntaxForMediaType(input, inferred))
+        }
 
     parsed match {
       case Some((effective, document)) =>
@@ -202,7 +90,6 @@ class AMFCompiler(compilerContext: CompilerContext,
 
   private def parseSyntaxForMediaType(content: Content, mime: String): Option[(String, ParsedDocument)] = {
     val withContentUrl = compilerContext.parserContext.forLocation(content.url)
-    // TODO ARM sort
     compilerContext.compilerConfig.sortedParseSyntax
       .find(_.applies(content.stream))
       .map(p => (mime, p.parse(content.stream, mime, withContentUrl)))
@@ -221,33 +108,24 @@ class AMFCompiler(compilerContext: CompilerContext,
   private def parseDomain(parsed: Either[Content, Root])(
       implicit executionContext: ExecutionContext): Future[BaseUnit] = {
     parsed match {
-      case Left(content) =>
-        mediaType match {
-          // if is Left (empty or other error) and is root (context.history.length == 1), then return an error
-          case Some(mime) if isRoot => throw new UnsupportedMediaTypeException(mime)
-          case _                    => parseExternalFragment(content)
-        }
-      case Right(document) => parseDomain(document)
+      case Left(content) if isRoot => throw UnsupportedSyntaxForDocumentException(content.url)
+      case Left(content)           => parseExternalFragment(content)
+      case Right(document)         => parseDomain(document)
     }
   }
 
   private def isRoot = compilerContext.fileContext.history.length == 1
 
   private def parseDomain(document: Root)(implicit executionContext: ExecutionContext): Future[BaseUnit] = {
-    val domainPluginOption = getDomainPluginFor(document)
-    val futureDocument: Future[BaseUnit] = domainPluginOption match {
-      case Some(domainPlugin) =>
-        notifyEvent(SelectedParsePluginEvent(document.location, domainPlugin))
-        parseReferences(document, domainPlugin) map { documentWithReferences =>
-          val baseUnit =
-            domainPlugin.parse(documentWithReferences, compilerContext.parserContext.copyWithSonsReferences())
-          if (document.location == compilerContext.fileContext.root) baseUnit.withRoot(true)
-          baseUnit.withRaw(document.raw).tagReferences(documentWithReferences)
-        }
-      case None =>
-        Future.successful { compilerContext.compilerConfig.chooseFallback(document, mediaType) }
-    }
-    futureDocument map { unit =>
+    val domainPlugin =
+      getDomainPluginFor(document).getOrElse(compilerContext.compilerConfig.chooseFallback(document, isRoot))
+    notifyEvent(SelectedParsePluginEvent(document.location, domainPlugin))
+    parseReferences(document, domainPlugin) map { documentWithReferences =>
+      val baseUnit =
+        domainPlugin.parse(documentWithReferences, compilerContext.parserContext.copyWithSonsReferences())
+      if (document.location == compilerContext.fileContext.root) baseUnit.withRoot(true)
+      baseUnit.withRaw(document.raw).tagReferences(documentWithReferences)
+    } map { unit =>
       // we setup the run for the parsed unit
       parsedModelEvent(unit)
       unit
@@ -259,29 +137,32 @@ class AMFCompiler(compilerContext: CompilerContext,
   }
 
   private[amf] def getDomainPluginFor(document: Root): Option[AMFParsePlugin] = {
-    val allowed = filterByAllowed(compilerContext.compilerConfig.sortedParsePlugins,
-                                  compilerContext.allowedMediaTypes.getOrElse(Nil) ++ mediaType)
+    val allowed =
+      if (isRoot) compilerContext.compilerConfig.sortedParsePlugins
+      else {
+        filterByAllowed(compilerContext.compilerConfig.sortedParsePlugins, compilerContext.allowedSpecs)
+      }
     allowed.find(_.applies(document))
   }
 
   /**
     * filters plugins that are allowed given the current compiler context.
     */
-  private def filterByAllowed(plugins: Seq[AMFParsePlugin], allowed: Seq[String]): Seq[AMFParsePlugin] =
-    if (allowed.nonEmpty) plugins.filter(_.mediaTypes.exists(allowed.contains(_)))
+  private def filterByAllowed(plugins: Seq[AMFParsePlugin], allowed: Seq[Spec]): Seq[AMFParsePlugin] =
+    if (allowed.nonEmpty) plugins.filter(p => allowed.contains(p.spec))
     else plugins
 
   private[amf] def parseReferences(root: Root, domainPlugin: AMFParsePlugin)(
       implicit executionContext: ExecutionContext): Future[Root] = {
-    val handler           = domainPlugin.referenceHandler(compilerContext.compilerConfig.eh)
-    val allowedMediaTypes = domainPlugin.validMediaTypesToReference ++ domainPlugin.mediaTypes
-    val refs              = handler.collect(root.parsed, compilerContext.parserContext)
+    val handler      = domainPlugin.referenceHandler(compilerContext.compilerConfig.eh)
+    val allowedSpecs = domainPlugin.validSpecsToReference
+    val refs         = handler.collect(root.parsed, compilerContext.parserContext)
     notifyEvent(FoundReferencesEvent(root.location, refs.toReferences.size))
     val parsed: Seq[Future[Option[ParsedReference]]] = refs.toReferences
       .filter(_.isRemote)
       .map { link =>
         val nodes = link.refs.map(_.node)
-        link.resolve(compilerContext, allowedMediaTypes, domainPlugin.allowRecursiveReferences) flatMap {
+        link.resolve(compilerContext, allowedSpecs, domainPlugin.allowRecursiveReferences) flatMap {
           case ReferenceResolutionResult(_, Some(unit)) =>
             val reference = ParsedReference(unit, link)
             handler.update(reference, compilerContext).map(Some(_))
@@ -327,7 +208,6 @@ object AMFCompiler {
 
   // interface used by amf-service
   def apply(url: String,
-            mediaType: Option[String],
             base: Context,
             cache: Cache,
             parserConfig: CompilerConfiguration,
@@ -336,13 +216,11 @@ object AMFCompiler {
       .withCache(cache)
       .withFileContext(base)
       .build()
-    forContext(context, mediaType, referenceKind)
+    forContext(context, referenceKind)
   }
 
   // could not add new environment in this method as it forces breaking changes in ReferenceHandler
-  def forContext(compilerContext: CompilerContext,
-                 mediaType: Option[String],
-                 referenceKind: ReferenceKind = UnspecifiedReference): AMFCompiler = {
-    new AMFCompiler(compilerContext, mediaType, referenceKind)
+  def forContext(compilerContext: CompilerContext, referenceKind: ReferenceKind = UnspecifiedReference): AMFCompiler = {
+    new AMFCompiler(compilerContext, referenceKind)
   }
 }
