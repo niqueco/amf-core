@@ -4,6 +4,7 @@ import amf.core.client.common.{NormalPriority, PluginPriority}
 import amf.core.client.scala.parse.AMFSyntaxParsePlugin
 import amf.core.client.scala.parse.document.{ParsedDocument, ParserContext, SyamlParsedDocument}
 import amf.core.internal.parser.domain.JsonParserFactory
+import amf.core.internal.remote.Mimes
 import amf.core.internal.remote.Mimes._
 import amf.core.internal.unsafe.PlatformSecrets
 import org.yaml.model.{YComment, YDocument, YMap, YNode}
@@ -46,6 +47,8 @@ object SyamlSyntaxParsePlugin extends AMFSyntaxParsePlugin with PlatformSecrets 
         `application/json`,
         `text/json`,
         `text/vnd.yaml`)
+
+  override def mainMediaType: String = `application/yaml`
 
   override val id: String = "syaml-parse"
 
