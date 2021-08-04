@@ -4,7 +4,7 @@ import amf.core.internal.remote.Mimes._
 
 import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel}
 
-@JSExportTopLevel("SpecId")
+@JSExportTopLevel("Spec")
 object Spec {
   def unapply(name: String): Option[Spec] = {
     name match {

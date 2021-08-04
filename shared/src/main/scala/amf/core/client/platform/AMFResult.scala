@@ -26,6 +26,7 @@ case class AMFResult(private[amf] val _internal: InternalAMFResult) {
   def baseUnit: BaseUnit = _internal.baseUnit
 }
 
+@JSExportAll
 class AMFParseResult(private[amf] override val _internal: InternalAMFParseResult) extends AMFResult(_internal) {
   def rootSpec: Spec = _internal.rootSpec
 }
