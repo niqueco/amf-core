@@ -32,8 +32,11 @@ object AMFParser {
     * @param configuration [[AMFGraphConfiguration]]
     * @return A CompletableFuture of [[AMFResult]]
     */
-  def parseContent(content: String, env: AMFGraphConfiguration): Future[AMFParseResult] =
-    parseContent(content, DEFAULT_DOCUMENT_URL, None, env)
+  def parseContent(content: String, env: AMFGraphConfiguration): Future[AMFParseResult] = {
+    val preferredSyntaxPlugin = env.registry.plugins.syntaxParsePlugins.sorted.headOption
+    val defaultMediaType      = preferredSyntaxPlugin.map(_.mainMediaType)
+    parseContent(content, DEFAULT_DOCUMENT_URL, defaultMediaType, env)
+  }
 
   /**
     * Asynchronously generate a BaseUnit from a given string.

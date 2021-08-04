@@ -4,6 +4,8 @@ import amf.core.client.common.{LowPriority, PluginPriority}
 import amf.core.client.scala.parse.AMFSyntaxParsePlugin
 import amf.core.client.scala.parse.document.{ParsedDocument, ParserContext}
 import amf.core.internal.rdf.RdfModelDocument
+import amf.core.internal.remote.Mimes
+import amf.core.internal.remote.Mimes.`text/n3`
 import amf.core.internal.unsafe.PlatformSecrets
 import org.mulesoft.common.io.Output
 
@@ -23,6 +25,8 @@ object RdfSyntaxPlugin extends AMFSyntaxParsePlugin with PlatformSecrets {
       case _                                                       => throw new UnsupportedOperationException
     }
   }
+
+  override def mainMediaType: String = `text/n3`
 
   /**
     * media types which specifies vendors that are parsed by this plugin.
