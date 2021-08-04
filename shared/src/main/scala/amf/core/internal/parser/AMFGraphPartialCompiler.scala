@@ -17,9 +17,11 @@ import amf.core.internal.plugins.document.graph.parser.{
   GraphDependenciesReferenceHandler,
   GraphParserContext
 }
+import amf.core.internal.remote.Spec.AMF
+import amf.core.internal.remote.{Mimes, Spec}
 
 class AMFGraphPartialCompiler(compilerContext: CompilerContext, startingPoint: String)
-    extends AMFCompiler(compilerContext, Some("application/graph+json")) {
+    extends AMFCompiler(compilerContext) {
 
   private case class PartialGraphParsePlugin() extends AMFParsePlugin {
 
@@ -55,12 +57,7 @@ class AMFGraphPartialCompiler(compilerContext: CompilerContext, startingPoint: S
     /**
       * media types which specifies vendors that are parsed by this plugin.
       */
-    override def mediaTypes: Seq[String] = Seq("application/graph+json")
-
-    /**
-      * media types which specifies vendors that may be referenced.
-      */
-    override def validMediaTypesToReference: Seq[String] = Nil
+    override def mediaTypes: Seq[String] = Seq(Mimes.`application/graph`, Mimes.`application/ld+json`)
 
     override def referenceHandler(eh: AMFErrorHandler): ReferenceHandler = GraphDependenciesReferenceHandler
 
@@ -72,6 +69,12 @@ class AMFGraphPartialCompiler(compilerContext: CompilerContext, startingPoint: S
 
     override def priority: PluginPriority = HighPriority
 
+    override def spec: Spec = AMF
+
+    /**
+      * media types which specifies vendors that may be referenced.
+      */
+    override def validSpecsToReference: Seq[Spec] = Seq(AMF)
   }
   private val parsePlugin = PartialGraphParsePlugin()
 

@@ -20,7 +20,7 @@ trait DomainElementEmitter[T] {
         YDocument(b => emitter.emit(b)).node
       }
       .getOrElse {
-        eh.violation(CoreValidations.UnhandledDomainElement, id, "Unhandled domain element for given vendor")
+        eh.violation(CoreValidations.UnhandledDomainElement, id, "Unhandled domain element for given spec")
         YNode.Empty
       }
   }

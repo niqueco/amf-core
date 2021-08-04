@@ -1,8 +1,6 @@
 package amf.core.client.scala
 
-import amf.core.client.common.validation.ProfileName
 import amf.core.client.scala.model.document.BaseUnit
-import amf.core.client.common.transform.PipelineName
 import amf.core.client.scala.parse.AMFParser
 import amf.core.client.scala.parse.document.ParsedDocument
 import amf.core.client.scala.render.AMFRenderer
@@ -27,23 +25,14 @@ class AMFGraphBaseUnitClient private[amf] (protected val configuration: AMFGraph
     * @param url Location of the file to parse
     * @return A CompletableFuture of [[AMFResult]]
     */
-  def parse(url: String): Future[AMFResult] = AMFParser.parse(url, configuration)
-
-  /**
-    * Asynchronously generate a BaseUnit from the content located in the given url.
-    * @param url Location of the file to parse
-    * @param mediaType The nature and format of the given content. Must be <code>"application/spec"</code> or <code>"application/spec+syntax"</code>.
-    *                  Examples: <code>"application/raml10"</code> or <code>"application/raml10+yaml"</code>
-    * @return A CompletableFuture of [[AMFResult]]
-    */
-  def parse(url: String, mediaType: String): Future[AMFResult] = AMFParser.parse(url, mediaType, configuration)
+  def parse(url: String): Future[AMFParseResult] = AMFParser.parse(url, configuration)
 
   /**
     * Asynchronously generate a BaseUnit from a given string.
     * @param content The content as a string
     * @return A CompletableFuture of [[AMFResult]]
     */
-  def parseContent(content: String): Future[AMFResult] = AMFParser.parseContent(content, configuration)
+  def parseContent(content: String): Future[AMFParseResult] = AMFParser.parseContent(content, configuration)
 
   /**
     * Asynchronously generate a BaseUnit from a given string.
@@ -52,7 +41,7 @@ class AMFGraphBaseUnitClient private[amf] (protected val configuration: AMFGraph
     *                  Examples: <code>"application/raml10"</code> or <code>"application/raml10+yaml"</code>
     * @return A CompletableFuture of [[AMFResult]]
     */
-  def parseContent(content: String, mediaType: String): Future[AMFResult] =
+  def parseContent(content: String, mediaType: String): Future[AMFParseResult] =
     AMFParser.parseContent(content, mediaType, configuration)
 
   /**
@@ -66,14 +55,11 @@ class AMFGraphBaseUnitClient private[amf] (protected val configuration: AMFGraph
   /**
     * Transforms a [[BaseUnit]] with a specific pipeline
     * @param baseUnit [[BaseUnit]] to transform
-    * @param pipelineName name of any custom or [[AMFGraphConfiguration.predefined predefined]] pipeline
+    * @param pipeline name of any custom or [[AMFGraphConfiguration.predefined predefined]] pipeline
     * @return An [[AMFResult]] with the transformed BaseUnit and it's report
     */
-  def transform(baseUnit: BaseUnit, pipelineName: String): AMFResult =
-    AMFTransformer.transform(baseUnit, pipelineName, configuration) // clone? BaseUnit.resolved
-
-  def transformWithPipelineId(baseUnit: BaseUnit, pipelineId: String): AMFResult =
-    AMFTransformer.transform(baseUnit, PipelineName.from(baseUnit.sourceMediaType, pipelineId), configuration)
+  def transform(baseUnit: BaseUnit, pipeline: String): AMFResult =
+    AMFTransformer.transform(baseUnit, pipeline, configuration) // clone? BaseUnit.resolved
 
   /**
     * Render a [[BaseUnit]] to its default type
@@ -123,13 +109,4 @@ class AMFGraphBaseUnitClient private[amf] (protected val configuration: AMFGraph
     * @return an [[AMFValidationReport]]
     */
   def validate(bu: BaseUnit): Future[AMFValidationReport] = AMFValidator.validate(bu, configuration)
-
-  /**
-    * Validate a [[BaseUnit]] with a specific validation profile name
-    * @param bu [[BaseUnit]] to validate
-    * @param profileName the [[ProfileName]] of the desired validation profile
-    * @return an [[AMFValidationReport]]
-    */
-  def validate(bu: BaseUnit, profileName: ProfileName): Future[AMFValidationReport] =
-    AMFValidator.validate(bu, profileName, configuration)
 }
