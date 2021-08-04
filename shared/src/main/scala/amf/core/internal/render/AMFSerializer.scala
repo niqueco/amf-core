@@ -1,26 +1,16 @@
 package amf.core.internal.render
 
-import amf.core.client.scala.config.{
-  AMFEvent,
-  FinishedRenderingASTEvent,
-  FinishedRenderingSyntaxEvent,
-  StartingRenderToWriterEvent,
-  StartingRenderingEvent
-}
+import amf.core.client.scala.config._
 import amf.core.client.scala.model.document.{BaseUnit, ExternalFragment}
 import amf.core.client.scala.parse.document.{ParsedDocument, SyamlParsedDocument}
-import amf.core.internal.plugins.document.graph._
 import amf.core.internal.plugins.render.{AMFGraphRenderPlugin, AMFRenderPlugin, RenderConfiguration, RenderInfo}
-import amf.core.internal.plugins.syntax.RdfSyntaxPlugin
-import amf.core.internal.rdf.RdfModelDocument
 import amf.core.internal.remote.Mimes.`application/ld+json`
-import amf.core.internal.remote.{MediaTypeParser, Mimes, Platform, Spec}
+import amf.core.internal.remote.Platform
 import amf.core.internal.unsafe.PlatformSecrets
-import amf.core.internal.validation.CoreValidations
 import org.mulesoft.common.io.Output
 import org.mulesoft.common.io.Output._
 import org.yaml.builder.{JsonOutputBuilder, YDocumentBuilder}
-import org.yaml.model.{YDocument, YNode}
+import org.yaml.model.YDocument
 
 import java.io.StringWriter
 import scala.concurrent.{ExecutionContext, Future}
@@ -88,19 +78,6 @@ class AMFSerializer(unit: BaseUnit, config: RenderConfiguration, mediaType: Opti
   private def emitJsonldToWriter[W: Output](writer: W): Unit = {
     val b = JsonOutputBuilder[W](writer, options.isPrettyPrint)
     AMFGraphRenderPlugin.emit(unit, b, config)
-  }
-
-  private def emitRdf[W: Output](writer: W): Unit =
-    toRdfModelDoc.foreach(RdfSyntaxPlugin.unparse(mediaType.getOrElse(Mimes.`text/rdf+n3`), _, writer))
-
-  private def toRdfModelDoc: Option[RdfModelDocument] = {
-    platform.rdfFramework match {
-      case Some(r) => Some(RdfModelDocument(r.unitToRdfModel(unit, config.renderOptions)))
-      case _ =>
-        config.errorHandler
-          .violation(CoreValidations.UnableToParseRdfDocument, unit.id, "Unable to generate RDF Model")
-        None
-    }
   }
 
   private[amf] def render(): String = {
