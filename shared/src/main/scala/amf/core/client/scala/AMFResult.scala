@@ -12,7 +12,8 @@ import amf.core.internal.remote.{Amf, Spec, UnknownSpec}
   *  - The most complete unit that could be built, and a list of [[AMFValidationResult]] with errors/warnings found
   * @param results list of [[AMFValidationResult]] obtained from AMF parse or transform
   */
-case class AMFResult(baseUnit: BaseUnit, results: Seq[AMFValidationResult]) extends AMFObjectResult(baseUnit, results)
+case class AMFResult(baseUnit: BaseUnit, override val results: Seq[AMFValidationResult])
+    extends AMFObjectResult(baseUnit, results)
 
 class AMFParseResult(override val baseUnit: BaseUnit, override val results: Seq[AMFValidationResult])
     extends AMFResult(baseUnit, results) {

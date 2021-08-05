@@ -33,6 +33,7 @@ import amf.core.client.platform.model.domain.{
   VariableValue => ClientVariableValue
 }
 import amf.core.client.platform.model.{
+  AmfObjectWrapper,
   Annotations => ClientAnnotations,
   AnyField => ClientAnyField,
   BoolField => ClientBoolField,
@@ -77,7 +78,7 @@ import amf.core.client.scala.validation.payload.{
   ValidatePayloadRequest
 }
 import amf.core.client.scala.validation.{AMFValidationReport, AMFValidationResult}
-import amf.core.client.scala.{AMFGraphConfiguration, AMFParseResult, AMFResult}
+import amf.core.client.scala.{AMFGraphConfiguration, AMFObjectResult, AMFParseResult, AMFResult}
 import amf.core.internal.convert.PayloadValidatorConverter.PayloadValidatorMatcher
 import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.reference.UnitCacheAdapter
@@ -126,7 +127,9 @@ trait CoreBaseConverter
     with ValidationProfileConverter
     with ShapeValidationConfigurationConverter
     with ValidatePayloadRequestConverter
-    with ShapePayloadValidatorFactoryConverter {
+    with ShapePayloadValidatorFactoryConverter
+    with AmfObjectConverter
+    with AmfObjectResultConverter {
 
   implicit def asClient[Internal, Client](from: Internal)(
       implicit m: InternalClientMatcher[Internal, Client]): Client =
@@ -728,5 +731,21 @@ trait ShapePayloadValidatorFactoryConverter {
           PayloadValidatorMatcher.asClient(from.createFor(shape._internal, fragment._internal))
       }
     }
+  }
+}
+
+trait AmfObjectConverter extends PlatformSecrets {
+  implicit object AmfObjectMatcher extends BidirectionalMatcher[AmfObject, AmfObjectWrapper] {
+    override def asInternal(from: AmfObjectWrapper): AmfObject = from._internal
+
+    override def asClient(from: AmfObject): AmfObjectWrapper = platform.wrap(from)
+  }
+}
+
+trait AmfObjectResultConverter {
+  implicit object AmfObjectResultMatcher extends BidirectionalMatcher[AMFObjectResult, platform.AMFObjectResult] {
+    override def asInternal(from: platform.AMFObjectResult): AMFObjectResult = from._internal
+
+    override def asClient(from: AMFObjectResult): platform.AMFObjectResult = new platform.AMFObjectResult(from)
   }
 }

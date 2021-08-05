@@ -1,6 +1,6 @@
 package amf.core.client.platform.parse
 
-import amf.core.client.platform.{AMFGraphConfiguration, AMFParseResult, AMFResult}
+import amf.core.client.platform.{AMFGraphConfiguration, AMFObjectResult, AMFParseResult}
 import amf.core.client.scala.parse.{AMFParser => InternalAMFParser}
 import amf.core.internal.convert.CoreClientConverters._
 
@@ -48,5 +48,10 @@ object AMFParser {
     InternalAMFParser.parseContent(content, mediaType, configuration).asClient
   }
 
-  // TODO: content and url? no usage in mulesoft org so this can be ignored.
+  def parseStartingPoint(graphUrl: String,
+                         startingPoint: String,
+                         env: AMFGraphConfiguration): ClientFuture[AMFObjectResult] = {
+    implicit val context: ExecutionContext = env._internal.getExecutionContext
+    InternalAMFParser.parseStartingPoint(graphUrl, startingPoint, env).asClient
+  }
 }
