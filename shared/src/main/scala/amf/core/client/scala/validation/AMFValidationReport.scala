@@ -3,7 +3,7 @@ package amf.core.client.scala.validation
 import amf.core.client.scala.AMFResult
 import amf.core.client.common.validation.{ProfileName, SeverityLevels, UnknownProfile}
 
-case class AMFValidationReport(model: String, profile: ProfileName, results: Seq[AMFValidationResult])
+case class AMFValidationReport(model: String, profile: ProfileName, override val results: Seq[AMFValidationResult])
     extends ReportConformance(results) {
 
   private val DefaultMax = 30
@@ -60,6 +60,6 @@ object AMFValidationReport {
   }
 }
 
-abstract class ReportConformance(results: Seq[AMFValidationResult]) {
+abstract class ReportConformance(val results: Seq[AMFValidationResult]) {
   lazy val conforms: Boolean = !results.exists(r => r.severityLevel == SeverityLevels.VIOLATION)
 }
