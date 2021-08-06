@@ -17,14 +17,14 @@ import amf.core.internal.plugins.validation.AMFValidatePlugin
   * @param renderPlugins         a list of [[AMFRenderPlugin]]
   * @param domainParsingFallback [[DomainParsingFallback]]
   */
-case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin],
-                                         validatePlugins: List[AMFValidatePlugin],
-                                         renderPlugins: List[AMFRenderPlugin],
-                                         payloadPlugins: List[AMFShapePayloadValidationPlugin],
-                                         namespacePlugins: List[NamespaceAliasesPlugin],
-                                         syntaxParsePlugins: List[AMFSyntaxParsePlugin],
-                                         syntaxRenderPlugins: List[AMFSyntaxRenderPlugin],
-                                         elementRenderPlugins: List[AMFElementRenderPlugin],
+case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin] = Nil,
+                                         validatePlugins: List[AMFValidatePlugin] = Nil,
+                                         renderPlugins: List[AMFRenderPlugin] = Nil,
+                                         payloadPlugins: List[AMFShapePayloadValidationPlugin] = Nil,
+                                         namespacePlugins: List[NamespaceAliasesPlugin] = Nil,
+                                         syntaxParsePlugins: List[AMFSyntaxParsePlugin] = Nil,
+                                         syntaxRenderPlugins: List[AMFSyntaxRenderPlugin] = Nil,
+                                         elementRenderPlugins: List[AMFElementRenderPlugin] = Nil,
                                          domainParsingFallback: DomainParsingFallback) {
 
   lazy val allPlugins: List[AMFPlugin[_]] = parsePlugins ++ validatePlugins ++ renderPlugins ++ payloadPlugins ++
@@ -32,22 +32,22 @@ case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin],
 
   def withPlugin(plugin: AMFPlugin[_]): PluginsRegistry = {
     plugin match {
-      case p: AMFParsePlugin if !parsePlugins.exists(_.id == p.id) =>
-        copy(parsePlugins = parsePlugins :+ p)
-      case v: AMFValidatePlugin if !validatePlugins.exists(_.id == v.id) =>
-        copy(validatePlugins = validatePlugins :+ v)
-      case r: AMFRenderPlugin if !renderPlugins.exists(_.id == r.id) =>
-        copy(renderPlugins = renderPlugins :+ r)
-      case r: NamespaceAliasesPlugin if !namespacePlugins.exists(_.id == r.id) =>
-        copy(namespacePlugins = namespacePlugins :+ r)
-      case r: AMFSyntaxParsePlugin if !syntaxParsePlugins.exists(_.id == r.id) =>
-        copy(syntaxParsePlugins = syntaxParsePlugins :+ r)
-      case r: AMFSyntaxRenderPlugin if !syntaxRenderPlugins.exists(_.id == r.id) =>
-        copy(syntaxRenderPlugins = syntaxRenderPlugins :+ r)
-      case r: AMFShapePayloadValidationPlugin if !payloadPlugins.exists(_.id == r.id) =>
-        copy(payloadPlugins = payloadPlugins :+ r)
-      case r: AMFElementRenderPlugin if !elementRenderPlugins.exists(_.id == r.id) =>
-        copy(elementRenderPlugins = elementRenderPlugins :+ r)
+      case p: AMFParsePlugin =>
+        copy(parsePlugins = parsePlugins.filter(_.id != p.id) :+ p)
+      case v: AMFValidatePlugin =>
+        copy(validatePlugins = validatePlugins.filter(_.id != v.id) :+ v)
+      case r: AMFRenderPlugin =>
+        copy(renderPlugins = renderPlugins.filter(_.id != r.id) :+ r)
+      case r: NamespaceAliasesPlugin =>
+        copy(namespacePlugins = namespacePlugins.filter(_.id != r.id) :+ r)
+      case r: AMFSyntaxParsePlugin =>
+        copy(syntaxParsePlugins = syntaxParsePlugins.filter(_.id != r.id) :+ r)
+      case r: AMFSyntaxRenderPlugin =>
+        copy(syntaxRenderPlugins = syntaxRenderPlugins.filter(_.id != r.id) :+ r)
+      case r: AMFShapePayloadValidationPlugin =>
+        copy(payloadPlugins = payloadPlugins.filter(_.id != r.id) :+ r)
+      case r: AMFElementRenderPlugin =>
+        copy(elementRenderPlugins = elementRenderPlugins.filter(_.id != r.id) :+ r)
       case _ => this
     }
   }
@@ -73,6 +73,5 @@ case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin],
 object PluginsRegistry {
 
   /** Creates an empty PluginsRegistry */
-  val empty: PluginsRegistry =
-    PluginsRegistry(Nil, Nil, Nil, Nil, Nil, Nil, Nil, Nil, ExternalFragmentDomainFallback())
+  val empty: PluginsRegistry = PluginsRegistry(domainParsingFallback = ExternalFragmentDomainFallback())
 }
