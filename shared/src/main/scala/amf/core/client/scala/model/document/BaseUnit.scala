@@ -10,8 +10,6 @@ import amf.core.client.scala.model.document.FieldsFilter.Local
 import amf.core.client.scala.model.domain._
 import amf.core.client.scala.model.{BoolField, StrField}
 import amf.core.client.common.validation.ProfileName
-import amf.core.client.scala.rdf.RdfModel
-import amf.core.internal.rdf.RdfModelParser
 import amf.core.internal.remote.{Amf, Spec}
 import amf.core.client.scala.traversal.iterator._
 import amf.core.client.scala.traversal.{
