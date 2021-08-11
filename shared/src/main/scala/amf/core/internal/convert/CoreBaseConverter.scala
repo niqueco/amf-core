@@ -67,13 +67,8 @@ import amf.core.client.scala.model.domain.extensions.{
 import amf.core.client.scala.model.domain.templates.{AbstractDeclaration, ParametrizedDeclaration, VariableValue}
 import amf.core.client.scala.resource.ResourceLoader
 import amf.core.client.scala.transform.{TransformationPipelineBuilder, TransformationStep}
-import amf.core.client.platform.validation.payload.{
-  AMFShapePayloadValidator => ClientAMFShapePayloadValidator,
-  ShapePayloadValidatorFactory => ClientShapePayloadValidatorFactory
-}
 import amf.core.client.scala.validation.payload.{
   AMFShapePayloadValidator,
-  ShapePayloadValidatorFactory,
   ShapeValidationConfiguration,
   ValidatePayloadRequest
 }
@@ -127,7 +122,6 @@ trait CoreBaseConverter
     with ValidationProfileConverter
     with ShapeValidationConfigurationConverter
     with ValidatePayloadRequestConverter
-    with ShapePayloadValidatorFactoryConverter
     with AmfObjectConverter
     with AmfObjectResultConverter {
 
@@ -714,23 +708,6 @@ trait ValidatePayloadRequestConverter {
     override def asInternal(from: payload.ValidatePayloadRequest): ValidatePayloadRequest = from._internal
     override def asClient(from: ValidatePayloadRequest): payload.ValidatePayloadRequest =
       payload.ValidatePayloadRequest(from)
-  }
-}
-
-trait ShapePayloadValidatorFactoryConverter {
-  implicit object ShapePayloadValidatorFactoryMatcher
-      extends InternalClientMatcherWithEC[ShapePayloadValidatorFactory, ClientShapePayloadValidatorFactory] {
-    override def asClient(from: ShapePayloadValidatorFactory)(
-        implicit executionContext: ExecutionContext): ClientShapePayloadValidatorFactory = {
-      new ClientShapePayloadValidatorFactory {
-        override def createFor(shape: ClientShape,
-                               mediaType: String,
-                               mode: ValidationMode): ClientAMFShapePayloadValidator =
-          PayloadValidatorMatcher.asClient(from.createFor(shape._internal, mediaType, mode))
-        override def createFor(shape: ClientShape, fragment: ClientPayloadFragment): ClientAMFShapePayloadValidator =
-          PayloadValidatorMatcher.asClient(from.createFor(shape._internal, fragment._internal))
-      }
-    }
   }
 }
 

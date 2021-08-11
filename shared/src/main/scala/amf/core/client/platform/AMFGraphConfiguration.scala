@@ -6,7 +6,7 @@ import amf.core.client.platform.execution.BaseExecutionEnvironment
 import amf.core.client.platform.reference.UnitCache
 import amf.core.client.platform.resource.ResourceLoader
 import amf.core.client.platform.transform.TransformationPipeline
-import amf.core.client.platform.validation.payload.{AMFShapePayloadValidationPlugin, ShapePayloadValidatorFactory}
+import amf.core.client.platform.validation.payload.AMFShapePayloadValidationPlugin
 import amf.core.client.scala.{AMFGraphConfiguration => InternalGraphConfiguration}
 import amf.core.internal.convert.ClientErrorHandlerConverter._
 import amf.core.internal.convert.CoreClientConverters._
@@ -22,9 +22,7 @@ class AMFGraphConfiguration private[amf] (private[amf] val _internal: InternalGr
   private implicit val ec: ExecutionContext = _internal.getExecutionContext
 
   def baseUnitClient(): AMFGraphBaseUnitClient = new AMFGraphBaseUnitClient(this)
-
-  def payloadValidatorFactory(): ShapePayloadValidatorFactory =
-    ShapePayloadValidatorFactoryMatcher.asClient(_internal.payloadValidatorFactory())
+  def elementClient(): AMFGraphElementClient   = new AMFGraphElementClient(this)
 
   def withParsingOptions(parsingOptions: ParsingOptions): AMFGraphConfiguration =
     _internal.withParsingOptions(parsingOptions)
