@@ -6,7 +6,6 @@ import amf.core.client.scala.model.document.PayloadFragment
 import amf.core.client.scala.model.domain.{RecursiveShape, Shape}
 import amf.core.client.scala.validation.payload.{
   AMFShapePayloadValidator,
-  ShapePayloadValidatorFactory,
   ShapeValidationConfiguration,
   ValidatePayloadRequest
 }
