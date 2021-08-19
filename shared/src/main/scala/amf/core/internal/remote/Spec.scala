@@ -158,3 +158,8 @@ private[amf] case object Grpc extends Spec {
   override val id: String        = "Grpc"
   override val mediaType: String = `application/grpc`
 }
+
+private[amf] case object GraphQL extends Spec {
+  override val id: String        = "GraphQL"
+  override val mediaType: String = `application/graphql`
+}
