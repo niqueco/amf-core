@@ -1,40 +1,14 @@
 package amf.core.client.scala.validation
 
-import amf.core.client.scala.AMFResult
 import amf.core.client.common.validation.{ProfileName, SeverityLevels, UnknownProfile}
+import amf.core.client.scala.AMFResult
 
 case class AMFValidationReport(model: String, profile: ProfileName, override val results: Seq[AMFValidationResult])
     extends ReportConformance(results) {
 
   private val DefaultMax = 30
 
-  def toString(max: Int): String = {
-    val str         = StringBuilder.newBuilder
-    val validations = results.take(max).sortWith((c1, c2) => c1.compare(c2) < 0).groupBy(_.severityLevel)
-
-    str.append(s"Model: $model\n")
-    str.append(s"Profile: ${profile}\n")
-    str.append(s"Conforms? $conforms\n")
-    str.append(s"Number of results: ${results.length}\n")
-
-    appendValidations(str, validations, SeverityLevels.VIOLATION)
-    appendValidations(str, validations, SeverityLevels.WARNING)
-    appendValidations(str, validations, SeverityLevels.INFO)
-
-    str.toString
-  }
-
-  private def appendValidations(str: StringBuilder,
-                                validations: Map[String, Seq[AMFValidationResult]],
-                                level: String): Unit =
-    validations.get(level) match {
-      case Some(l) =>
-        str.append(s"\nLevel: $level\n")
-        for { result <- l } {
-          str.append(result)
-        }
-      case None =>
-    }
+  def toString(max: Int): String = AMFValidationReportPrinter.print(this, max)
 
   override def toString: String = toString(DefaultMax)
 
