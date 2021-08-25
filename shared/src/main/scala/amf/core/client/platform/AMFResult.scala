@@ -31,6 +31,8 @@ case class AMFResult(private[amf] val _internal: InternalAMFResult) {
     *  - The most complete unit that could be built, and an [[AMFValidationReport]] report with errors/warnings found
     */
   def baseUnit: BaseUnit = _internal.baseUnit
+
+  override def toString: String = _internal.toString
 }
 
 @JSExportAll

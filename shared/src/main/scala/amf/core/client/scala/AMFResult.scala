@@ -2,8 +2,9 @@ package amf.core.client.scala
 
 import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.scala.model.domain.AmfObject
+import amf.core.client.scala.printer.AMFResultPrinter
 import amf.core.client.scala.validation.{AMFValidationResult, ReportConformance}
-import amf.core.internal.remote.{Amf, Spec, UnknownSpec}
+import amf.core.internal.remote.{Amf, Spec}
 
 /**
   *
@@ -13,7 +14,10 @@ import amf.core.internal.remote.{Amf, Spec, UnknownSpec}
   * @param results list of [[AMFValidationResult]] obtained from AMF parse or transform
   */
 case class AMFResult(baseUnit: BaseUnit, override val results: Seq[AMFValidationResult])
-    extends AMFObjectResult(baseUnit, results)
+    extends AMFObjectResult(baseUnit, results) {
+
+  override def toString: String = AMFResultPrinter.print(this)
+}
 
 class AMFParseResult(override val baseUnit: BaseUnit, override val results: Seq[AMFValidationResult])
     extends AMFResult(baseUnit, results) {
