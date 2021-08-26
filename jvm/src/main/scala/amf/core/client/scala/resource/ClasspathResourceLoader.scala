@@ -9,7 +9,7 @@ import scala.io.BufferedSource
 import scala.io.Source.fromInputStream
 import scala.util.{Failure, Success, Try}
 
-object ClassResourceLoader extends ResourceLoader {
+object ClasspathResourceLoader extends ResourceLoader {
 
   override def fetch(resource: String): Future[Content] = {
     Future.successful {

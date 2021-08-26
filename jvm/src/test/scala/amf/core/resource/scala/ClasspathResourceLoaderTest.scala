@@ -6,18 +6,18 @@ import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model.document.{BaseUnit, Document}
 import amf.core.client.scala.parse.AMFParsePlugin
 import amf.core.client.scala.parse.document.{ParserContext, ReferenceHandler, SimpleReferenceHandler}
-import amf.core.client.scala.resource.ClassResourceLoader
+import amf.core.client.scala.resource.ClasspathResourceLoader
 import amf.core.internal.parser.Root
 import amf.core.internal.remote.Mimes.`application/yaml`
 import amf.core.internal.remote.{Mimes, Spec}
 import org.scalatest.{AsyncFunSuite, Matchers}
 
-class ClassResourceLoaderTest extends AsyncFunSuite with Matchers {
+class ClasspathResourceLoaderTest extends AsyncFunSuite with Matchers {
 
   test("The class resource loader can fetch a file from class jar") {
     val config = AMFGraphConfiguration
       .predefined()
-      .withResourceLoader(ClassResourceLoader)
+      .withResourceLoader(ClasspathResourceLoader)
       .withPlugin(DummyParsePlugin)
 
     for {
