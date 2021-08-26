@@ -28,10 +28,14 @@ trait Linkable { this: DomainElement with Linkable =>
     this
   }
 
-  def link[T](label: Option[String] = None): T = {
-    val copy = linkCopy()
-      .withLinkTarget(this)
-    label.foreach(copy.withLinkLabel)
+  def link[T](): T = {
+    val copy = linkCopy().withLinkTarget(this)
+    copy.asInstanceOf[T]
+  }
+
+  def link[T](label: String): T = {
+    val copy = linkCopy().withLinkTarget(this)
+    copy.withLinkLabel(label)
     copy.asInstanceOf[T]
   }
 }
