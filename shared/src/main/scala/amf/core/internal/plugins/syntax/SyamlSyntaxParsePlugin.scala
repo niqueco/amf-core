@@ -41,13 +41,12 @@ class SyamlAMFErrorHandler(val eh: AMFErrorHandler)
     extends AMFErrorHandler
     with ParseErrorHandler
     with IllegalTypeHandler {
-  val syamleh = new SYamlAMFParserErrorHandler(eh)
+  override def report(result: AMFValidationResult): Unit = eh.report(result)
+  override def getResults: List[AMFValidationResult]     = eh.getResults
 
-  override val results: mutable.LinkedHashSet[AMFValidationResult] = eh.results
-
+  val syamleh                                                            = new SYamlAMFParserErrorHandler(eh)
   override def handle(location: SourceLocation, e: SyamlException): Unit = syamleh.handle(location, e)
-
-  override def handle[T](error: YError, defaultValue: T): T = syamleh.handle(error, defaultValue)
+  override def handle[T](error: YError, defaultValue: T): T              = syamleh.handle(error, defaultValue)
 }
 
 object SyamlSyntaxParsePlugin extends AMFSyntaxParsePlugin with PlatformSecrets {

@@ -14,7 +14,7 @@ import scala.collection.mutable
 
 trait AMFErrorHandler {
 
-  val results: mutable.LinkedHashSet[AMFValidationResult] = mutable.LinkedHashSet()
+  private val results: mutable.LinkedHashSet[AMFValidationResult] = mutable.LinkedHashSet()
 
   def getResults: List[AMFValidationResult] = results.toList
 
