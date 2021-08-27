@@ -93,5 +93,5 @@ object AMFParser {
   private def fromStream(url: String, stream: String, mediaType: Option[String]): ResourceLoader =
     StringResourceLoader(platform.resolvePath(url), stream, mediaType)
 
-  private val DEFAULT_DOCUMENT_URL = "http://a.ml/amf/default_document"
+  private[amf] val DEFAULT_DOCUMENT_URL = "http://a.ml/amf/default_document"
 }
