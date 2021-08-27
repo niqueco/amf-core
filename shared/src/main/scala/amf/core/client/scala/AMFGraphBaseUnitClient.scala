@@ -37,8 +37,7 @@ class AMFGraphBaseUnitClient private[amf] (protected val configuration: AMFGraph
   /**
     * Asynchronously generate a BaseUnit from a given string.
     * @param content The content as a string
-    * @param mediaType The nature and format of the given content. Must be <code>"application/spec"</code> or <code>"application/spec+syntax"</code>.
-    *                  Examples: <code>"application/raml10"</code> or <code>"application/raml10+yaml"</code>
+    * @param mediaType The nature and format of the given content e.g. <code>application/yaml</code> or <code>application/json</code>
     * @return A CompletableFuture of [[AMFResult]]
     */
   def parseContent(content: String, mediaType: String): Future[AMFParseResult] =
@@ -78,8 +77,7 @@ class AMFGraphBaseUnitClient private[amf] (protected val configuration: AMFGraph
   /**
     * Render a [[BaseUnit]] to a certain mediaType
     * @param baseUnit [[BaseUnit]] to be rendered
-    * @param mediaType The nature and format of the given content. Must be <code>"application/spec"</code> or <code>"application/spec+syntax"</code>.
-    *                  Examples: <code>"application/raml10"</code> or <code>"application/raml10+yaml"</code>
+    * @param mediaType The nature and format of the given content e.g. <code>application/yaml</code> or <code>application/json</code>
     * @return The content rendered
     */
   def render(baseUnit: BaseUnit, mediaType: String): String = AMFRenderer.render(baseUnit, mediaType, configuration)
@@ -87,8 +85,7 @@ class AMFGraphBaseUnitClient private[amf] (protected val configuration: AMFGraph
   /**
     * Render a [[BaseUnit]] to a certain mediaType and return the AST
     * @param baseUnit [[BaseUnit]] to be rendered
-    * @param mediaType The nature and format of the given content. Must be <code>"application/spec"</code> or <code>"application/spec+syntax"</code>.
-    *                  Examples: <code>"application/raml10"</code> or <code>"application/raml10+yaml"</code>
+    * @param mediaType The nature and format of the given content e.g. <code>application/yaml</code> or <code>application/json</code>
     * @return the AST as a [[ParsedDocument]]
     */
   def renderAST(baseUnit: BaseUnit, mediaType: String): ParsedDocument =

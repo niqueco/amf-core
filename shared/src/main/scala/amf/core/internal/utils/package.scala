@@ -47,6 +47,8 @@ package object utils {
       else "file://" + str
     }
 
+    def noSpaces: String = str.replace(" ", "")
+
     /** normalize and check that the string its a valid URI */
     def normalizePath: String = platform.normalizePath(str)
 

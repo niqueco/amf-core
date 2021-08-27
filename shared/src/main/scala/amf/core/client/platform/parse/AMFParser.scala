@@ -36,8 +36,7 @@ object AMFParser {
   /**
     * Asynchronously generate a BaseUnit from a given string.
     * @param content The unit as a string
-    * @param mediaType The nature and format of the given content. Must be <code>"application/spec"</code> or <code>"application/spec+syntax"</code>.
-    *                  Examples: <code>"application/raml10"</code> or <code>"application/raml10+yaml"</code>
+    * @param mediaType The nature and format of the given content e.g. <code>application/yaml</code> or <code>application/json</code>
     * @param configuration [[AMFGraphConfiguration]]
     * @return A CompletableFuture of [[AMFResult]]
     */
