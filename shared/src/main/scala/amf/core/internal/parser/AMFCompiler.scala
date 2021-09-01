@@ -17,7 +17,7 @@ import amf.core.internal.remote._
 import amf.core.internal.utils.AmfStrings
 import amf.core.internal.validation.CoreValidations._
 import amf.core.internal.validation.core.ValidationSpecification
-import org.yaml.model.YPart
+import org.mulesoft.lexer.SourceLocation
 
 import java.net.URISyntaxException
 import scala.concurrent.Future.failed
@@ -161,7 +161,6 @@ class AMFCompiler(compilerContext: CompilerContext, val referenceKind: Reference
     val parsed: Seq[Future[Option[ParsedReference]]] = refs.toReferences
       .filter(_.isRemote)
       .map { link =>
-        val nodes = link.refs.map(_.node)
         link.resolve(compilerContext, allowedSpecs, domainPlugin.allowRecursiveReferences) flatMap {
           case ReferenceResolutionResult(_, Some(unit)) =>
             val reference = ParsedReference(unit, link)
@@ -169,11 +168,18 @@ class AMFCompiler(compilerContext: CompilerContext, val referenceKind: Reference
           case ReferenceResolutionResult(Some(e), _) =>
             e match {
               case e: CyclicReferenceException if !domainPlugin.allowRecursiveReferences =>
-                compilerContext.violation(CycleReferenceError, link.url, e.getMessage, link.refs.head.node)
+                link.refs.head match {
+                  case ref: ASTRefContainer =>
+                    compilerContext.violation(CycleReferenceError, link.url, e.getMessage, ref.pos)
+                }
+
                 Future(None)
               case _ =>
                 if (!link.isInferred) {
-                  nodes.foreach(compilerContext.violation(UnresolvedReference, link.url, e.getMessage, _))
+                  link.refs.foreach {
+                    case ref: ASTRefContainer =>
+                      compilerContext.violation(UnresolvedReference, link.url, e.getMessage, ref.pos)
+                  }
                 }
                 Future(None)
             }

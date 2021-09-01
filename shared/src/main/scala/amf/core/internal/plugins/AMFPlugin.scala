@@ -5,8 +5,12 @@ import amf.core.client.common.PluginPriority
 private[amf] trait AMFPlugin[T] {
   val id: String
   def applies(element: T): Boolean
-  // test for collisions?
-  def priority: PluginPriority //?
+  def priority: PluginPriority
+
+  override def equals(obj: Any): Boolean = obj match {
+    case plugin: AMFPlugin[_] => plugin.id == id
+    case _                    => false
+  }
 }
 
 object AMFPlugin {

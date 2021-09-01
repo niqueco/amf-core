@@ -7,7 +7,6 @@ import sbtsonar.SonarPlugin.autoImport.sonarProperties
 val ivyLocal = Resolver.file("ivy", file(Path.userHome.absolutePath + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 
 name := "amf-core"
-
 //version in ThisBuild := {
 //  val major = 4
 //  val minor = 2
@@ -17,7 +16,8 @@ name := "amf-core"
 //
 //  if (branch.contains("master")) s"$major.$minor.$build" else s"$major.${minor + 1}.0-SNAPSHOT"
 //}
-version in ThisBuild := "5.0.0-beta.3"
+
+version in ThisBuild := "5.0.0-beta.4"
 
 publish := {}
 
@@ -65,6 +65,9 @@ lazy val syamlJSRef  = ProjectRef(workspaceDirectory / "syaml", "syamlJS")
 lazy val syamlLibJVM = "org.mule.syaml" %% "syaml" % syamlVersion
 lazy val syamlLibJS  = "org.mule.syaml" %% "syaml_sjs0.6" % syamlVersion
 
+
+
+
 lazy val defaultProfilesGenerationTask = TaskKey[Unit](
   "defaultValidationProfilesGeneration",
   "Generates the validation dialect documents for the standard profiles")
@@ -89,5 +92,8 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
   )
   .disablePlugins(SonarPlugin)
 
-lazy val coreJVM = core.jvm.in(file("./jvm")).sourceDependency(syamlJVMRef, syamlLibJVM)
-lazy val coreJS  = core.js.in(file("./js")).sourceDependency(syamlJSRef, syamlLibJS).disablePlugins(SonarPlugin)
+lazy val coreJVM = core.jvm.in(file("./jvm"))
+  .sourceDependency(syamlJVMRef, syamlLibJVM)
+
+lazy val coreJS  = core.js.in(file("./js"))
+  .sourceDependency(syamlJSRef, syamlLibJS).disablePlugins(SonarPlugin)

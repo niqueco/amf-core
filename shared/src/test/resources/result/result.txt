@@ -1,0 +1,41 @@
+Model: baseDoc
+Conforms? false
+Number of results: 4
+
+Level: Violation
+
+- Source: b
+  Message: aMessage1
+  Level: Violation
+  Target: a
+  Property: 
+  Position: None
+  Location: 
+
+Level: Warning
+
+- Source: d
+  Message: aMessage2
+  Level: Warning
+  Target: c
+  Property: 
+  Position: None
+  Location: 
+
+- Source: i
+  Message: aMessage4
+  Level: Warning
+  Target: h
+  Property: 
+  Position: None
+  Location: 
+
+Level: Info
+
+- Source: g
+  Message: aMessage3
+  Level: Info
+  Target: f
+  Property: 
+  Position: None
+  Location: 

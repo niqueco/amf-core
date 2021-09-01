@@ -7,6 +7,7 @@ import amf.core.internal.annotations.{LexicalInformation, SourceLocation}
 import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.validation.core.ValidationResult
 
+import java.io.StringWriter
 import java.util.Objects
 
 case class AMFValidationResult(message: String,
@@ -18,17 +19,8 @@ case class AMFValidationResult(message: String,
                                location: Option[String],
                                source: Any)
     extends Ordered[AMFValidationResult] {
-  override def toString: String = {
-    val str = StringBuilder.newBuilder
-    str.append(s"\n- Source: $validationId\n")
-    str.append(s"  Message: $message\n")
-    str.append(s"  Level: $severityLevel\n")
-    str.append(s"  Target: $targetNode\n")
-    str.append(s"  Property: ${targetProperty.getOrElse("")}\n")
-    str.append(s"  Position: $position\n")
-    str.append(s"  Location: ${location.getOrElse("")}\n")
-    str.toString
-  }
+
+  override def toString: String = AMFValidationReportPrinter.print(this)
 
   override def equals(obj: Any): Boolean = obj match {
     case other: AMFValidationResult =>

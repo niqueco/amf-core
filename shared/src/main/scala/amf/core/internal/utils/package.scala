@@ -24,7 +24,7 @@ package object utils {
     def guessMediaType(isScalar: Boolean): String = { // move to objects
       if (isXml && !isScalar) `application/xml`
       else if (isJson && !isScalar) `application/json`
-      else `text/vnd.yaml` // by default, we will try to parse it as YAML
+      else `application/yaml` // by default, we will try to parse it as YAML
     }
 
     def isXml: Boolean = content.trim.startsWith("<")
@@ -46,6 +46,8 @@ package object utils {
       else if (str.startsWith("/")) "file:/" + str
       else "file://" + str
     }
+
+    def noSpaces: String = str.replace(" ", "")
 
     /** normalize and check that the string its a valid URI */
     def normalizePath: String = platform.normalizePath(str)

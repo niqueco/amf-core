@@ -15,13 +15,14 @@ import amf.core.internal.plugins.document.graph.JsonLdKeywords
 import org.mulesoft.common.functional.MonadInstances._
 import org.yaml.model._
 import amf.core.internal.parser._
+import amf.core.internal.plugins.syntax.{SYamlAMFParserErrorHandler, SYamlBasedErrorHandler, SyamlAMFErrorHandler}
 
 object GraphDependenciesReferenceHandler extends ReferenceHandler {
 
   val graphDependenciesPredicate: String = (Namespace.Document + "graphDependencies").iri()
 
   override def collect(inputParsed: ParsedDocument, ctx: ParserContext): CompilerReferenceCollector = {
-    implicit val errorHandler: AMFErrorHandler = ctx.eh
+    implicit val errorHandler: SyamlAMFErrorHandler = new SyamlAMFErrorHandler(ctx.eh)
 
     inputParsed match {
       case parsed: SyamlParsedDocument =>
@@ -66,7 +67,7 @@ object GraphDependenciesReferenceHandler extends ReferenceHandler {
         val links: IndexedSeq[(String, YNode)] = collectLinks(entry)
         val collector                          = CompilerReferenceCollector()
         links.foreach {
-          case (link, linkEntry) => collector += (link, UnspecifiedReference, linkEntry)
+          case (link, linkEntry) => collector += (link, UnspecifiedReference, linkEntry.location)
         }
         collector
     }

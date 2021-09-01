@@ -1,6 +1,6 @@
 package amf.core.client.platform.parse
 
-import amf.core.client.platform.{AMFGraphConfiguration, AMFParseResult, AMFResult}
+import amf.core.client.platform.{AMFGraphConfiguration, AMFObjectResult, AMFParseResult}
 import amf.core.client.scala.parse.{AMFParser => InternalAMFParser}
 import amf.core.internal.convert.CoreClientConverters._
 
@@ -36,8 +36,7 @@ object AMFParser {
   /**
     * Asynchronously generate a BaseUnit from a given string.
     * @param content The unit as a string
-    * @param mediaType The nature and format of the given content. Must be <code>"application/spec"</code> or <code>"application/spec+syntax"</code>.
-    *                  Examples: <code>"application/raml10"</code> or <code>"application/raml10+yaml"</code>
+    * @param mediaType The nature and format of the given content e.g. <code>application/yaml</code> or <code>application/json</code>
     * @param configuration [[AMFGraphConfiguration]]
     * @return A CompletableFuture of [[AMFResult]]
     */
@@ -48,5 +47,10 @@ object AMFParser {
     InternalAMFParser.parseContent(content, mediaType, configuration).asClient
   }
 
-  // TODO: content and url? no usage in mulesoft org so this can be ignored.
+  def parseStartingPoint(graphUrl: String,
+                         startingPoint: String,
+                         env: AMFGraphConfiguration): ClientFuture[AMFObjectResult] = {
+    implicit val context: ExecutionContext = env._internal.getExecutionContext
+    InternalAMFParser.parseStartingPoint(graphUrl, startingPoint, env).asClient
+  }
 }

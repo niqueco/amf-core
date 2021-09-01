@@ -4,21 +4,21 @@ import amf.core.client.scala.config.ParsingOptions
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.scala.parse.document
-import amf.core.internal.validation.core.ValidationSpecification
 import amf.core.internal.parser.ParseConfiguration
 import amf.core.internal.parser.domain.FutureDeclarations
-import org.mulesoft.lexer.SourceLocation
-import org.yaml.model.{IllegalTypeHandler, ParseErrorHandler, SyamlException, YError}
+import amf.core.internal.plugins.syntax.SYamlBasedErrorHandler
+import amf.core.internal.validation.core.ValidationSpecification
 
 import scala.collection.mutable
 
-abstract class ErrorHandlingContext(implicit val eh: AMFErrorHandler)
-    extends ParseErrorHandler
-    with IllegalTypeHandler {
-  override def handle(location: SourceLocation, e: SyamlException): Unit = eh.handle(location, e)
+class SyamlBasedParserErrorHandler(override val rootContextDocument: String = "",
+                                   override val refs: Seq[ParsedReference] = Seq.empty,
+                                   override val futureDeclarations: FutureDeclarations = EmptyFutureDeclarations(),
+                                   override val config: ParseConfiguration)
+    extends ParserContext(rootContextDocument, refs, futureDeclarations, config)
+    with SYamlBasedErrorHandler
 
-  override def handle[T](error: YError, defaultValue: T): T = eh.handle(error, defaultValue)
-
+abstract class ErrorHandlingContext(implicit val eh: AMFErrorHandler) {
   def violation(violationId: ValidationSpecification, node: String, message: String)
 }
 
@@ -36,8 +36,7 @@ case class ParserContext(rootContextDocument: String = "",
                          futureDeclarations: FutureDeclarations = EmptyFutureDeclarations(),
                          config: ParseConfiguration)
     extends ErrorHandlingContext()(config.eh)
-    with UnresolvedComponents
-    with IllegalTypeHandler {
+    with UnresolvedComponents {
 
   var globalSpace: mutable.Map[String, Any] = mutable.Map()
 
@@ -66,10 +65,6 @@ case class ParserContext(rootContextDocument: String = "",
     context.globalSpace = this.globalSpace
     context
   }
-
-  override def handle(location: SourceLocation, e: SyamlException): Unit = eh.handle(location, e)
-
-  override def handle[T](error: YError, defaultValue: T): T = eh.handle(error, defaultValue)
 
   def violation(violationId: ValidationSpecification, node: String, message: String): Unit =
     eh.violation(violationId, node, message, rootContextDocument)

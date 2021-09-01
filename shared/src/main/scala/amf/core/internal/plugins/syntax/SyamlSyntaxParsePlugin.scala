@@ -1,27 +1,65 @@
 package amf.core.internal.plugins.syntax
 
 import amf.core.client.common.{NormalPriority, PluginPriority}
+import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.parse.AMFSyntaxParsePlugin
 import amf.core.client.scala.parse.document.{ParsedDocument, ParserContext, SyamlParsedDocument}
+import amf.core.client.scala.validation.AMFValidationResult
 import amf.core.internal.parser.domain.JsonParserFactory
 import amf.core.internal.remote.Mimes
 import amf.core.internal.remote.Mimes._
 import amf.core.internal.unsafe.PlatformSecrets
-import org.yaml.model.{YComment, YDocument, YMap, YNode}
+import amf.core.internal.validation.CoreValidations.SyamlError
+import org.mulesoft.lexer.SourceLocation
+import org.yaml.model._
 import org.yaml.parser.YamlParser
+
+import scala.collection.mutable
+
+class SYamlAMFParserErrorHandler(eh: AMFErrorHandler) extends ParseErrorHandler with IllegalTypeHandler {
+  override def handle[T](error: YError, defaultValue: T): T = {
+    eh.violation(SyamlError, "", error.error, part(error).location)
+    defaultValue
+  }
+
+  final def handle(node: YPart, e: SyamlException): Unit = handle(node.location, e)
+
+  override def handle(location: SourceLocation, e: SyamlException): Unit =
+    eh.violation(SyamlError, "", e.getMessage, location)
+
+  protected def part(error: YError): YPart = {
+    error.node match {
+      case d: YDocument => d
+      case n: YNode     => n
+      case s: YSuccess  => s.node
+      case f: YFail     => part(f.error)
+    }
+  }
+}
+
+class SyamlAMFErrorHandler(val eh: AMFErrorHandler)
+    extends AMFErrorHandler
+    with ParseErrorHandler
+    with IllegalTypeHandler {
+  override def report(result: AMFValidationResult): Unit = eh.report(result)
+  override def getResults: List[AMFValidationResult]     = eh.getResults
+
+  val syamleh                                                            = new SYamlAMFParserErrorHandler(eh)
+  override def handle(location: SourceLocation, e: SyamlException): Unit = syamleh.handle(location, e)
+  override def handle[T](error: YError, defaultValue: T): T              = syamleh.handle(error, defaultValue)
+}
 
 object SyamlSyntaxParsePlugin extends AMFSyntaxParsePlugin with PlatformSecrets {
 
   private def getFormat(mediaType: String): String = if (mediaType.contains("json")) "json" else "yaml"
 
   override def parse(text: CharSequence, mediaType: String, ctx: ParserContext): ParsedDocument = {
+    val syamlEH = new SyamlAMFErrorHandler(ctx.eh)
     if (text.length() == 0) SyamlParsedDocument(YDocument(YNode.Null))
-    else if ((mediaType == `application/ld+json` || mediaType == `application/json`) && !ctx.parsingOptions.isAmfJsonLdSerialization && platform.rdfFramework.isDefined) {
-      platform.rdfFramework.get.syntaxToRdfModel(mediaType, text)
-    } else {
+    else {
       val parser = getFormat(mediaType) match {
-        case "json" => JsonParserFactory.fromCharsWithSource(text, ctx.rootContextDocument)(ctx.eh)
-        case _      => YamlParser(text, ctx.rootContextDocument)(ctx.eh).withIncludeTag("!include")
+        case "json" => JsonParserFactory.fromCharsWithSource(text, ctx.rootContextDocument)(syamlEH)
+        case _      => YamlParser(text, ctx.rootContextDocument)(syamlEH).withIncludeTag("!include")
       }
       val document1 = parser.document()
       val (document, comment) = document1 match {

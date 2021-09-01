@@ -42,8 +42,7 @@ class AMFGraphBaseUnitClient private[amf] (private val _internal: InternalAMFGra
   /**
     * Asynchronously generate a BaseUnit from a given string.
     * @param content The content as a string
-    * @param mediaType The nature and format of the given content. Must be <code>"application/spec"</code> or <code>"application/spec+syntax"</code>.
-    *                  Examples: <code>"application/raml10"</code> or <code>"application/raml10+yaml"</code>
+    * @param mediaType The nature and format of the given content e.g. <code>application/yaml</code> or <code>application/json</code>
     * @return A CompletableFuture of [[AMFResult]]
     */
   def parseContent(content: String, mediaType: String): ClientFuture[AMFParseResult] =
@@ -74,8 +73,7 @@ class AMFGraphBaseUnitClient private[amf] (private val _internal: InternalAMFGra
   /**
     * Render a [[BaseUnit]] to a certain mediaType
     * @param baseUnit [[BaseUnit]] to be rendered
-    * @param mediaType The nature and format of the given content. Must be <code>"application/spec"</code> or <code>"application/spec+syntax"</code>.
-    *                  Examples: <code>"application/raml10"</code> or <code>"application/raml10+yaml"</code>
+    * @param mediaType The nature and format of the given content e.g. <code>application/yaml</code> or <code>application/json</code>
     * @return The content rendered
     */
   def render(baseUnit: BaseUnit, mediaType: String): String = _internal.render(baseUnit, mediaType)

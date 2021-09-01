@@ -3,6 +3,7 @@ package amf.core.internal.plugins.document.graph.parser
 import amf.core.internal.parser._
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
 import amf.core.internal.plugins.document.graph.context.GraphContext
+import amf.core.internal.plugins.syntax.SYamlAMFParserErrorHandler
 import org.yaml.model._
 
 case class JsonLdGraphContextParser(node: YNode, parserContext: GraphParserContext) {

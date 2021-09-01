@@ -52,7 +52,7 @@ pipeline {
         anyOf {
           branch 'master'
           branch 'support/*'
-	  branch 'release/5.0.0-beta'
+	      branch 'release/5.0.0-beta'
         }
       }
       steps {

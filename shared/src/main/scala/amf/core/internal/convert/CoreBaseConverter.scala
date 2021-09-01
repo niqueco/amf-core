@@ -33,6 +33,7 @@ import amf.core.client.platform.model.domain.{
   VariableValue => ClientVariableValue
 }
 import amf.core.client.platform.model.{
+  AmfObjectWrapper,
   Annotations => ClientAnnotations,
   AnyField => ClientAnyField,
   BoolField => ClientBoolField,
@@ -66,18 +67,13 @@ import amf.core.client.scala.model.domain.extensions.{
 import amf.core.client.scala.model.domain.templates.{AbstractDeclaration, ParametrizedDeclaration, VariableValue}
 import amf.core.client.scala.resource.ResourceLoader
 import amf.core.client.scala.transform.{TransformationPipelineBuilder, TransformationStep}
-import amf.core.client.platform.validation.payload.{
-  AMFShapePayloadValidator => ClientAMFShapePayloadValidator,
-  ShapePayloadValidatorFactory => ClientShapePayloadValidatorFactory
-}
 import amf.core.client.scala.validation.payload.{
   AMFShapePayloadValidator,
-  ShapePayloadValidatorFactory,
   ShapeValidationConfiguration,
   ValidatePayloadRequest
 }
 import amf.core.client.scala.validation.{AMFValidationReport, AMFValidationResult}
-import amf.core.client.scala.{AMFGraphConfiguration, AMFParseResult, AMFResult}
+import amf.core.client.scala.{AMFGraphConfiguration, AMFObjectResult, AMFParseResult, AMFResult}
 import amf.core.internal.convert.PayloadValidatorConverter.PayloadValidatorMatcher
 import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.reference.UnitCacheAdapter
@@ -126,7 +122,8 @@ trait CoreBaseConverter
     with ValidationProfileConverter
     with ShapeValidationConfigurationConverter
     with ValidatePayloadRequestConverter
-    with ShapePayloadValidatorFactoryConverter {
+    with AmfObjectConverter
+    with AmfObjectResultConverter {
 
   implicit def asClient[Internal, Client](from: Internal)(
       implicit m: InternalClientMatcher[Internal, Client]): Client =
@@ -714,19 +711,18 @@ trait ValidatePayloadRequestConverter {
   }
 }
 
-trait ShapePayloadValidatorFactoryConverter {
-  implicit object ShapePayloadValidatorFactoryMatcher
-      extends InternalClientMatcherWithEC[ShapePayloadValidatorFactory, ClientShapePayloadValidatorFactory] {
-    override def asClient(from: ShapePayloadValidatorFactory)(
-        implicit executionContext: ExecutionContext): ClientShapePayloadValidatorFactory = {
-      new ClientShapePayloadValidatorFactory {
-        override def createFor(shape: ClientShape,
-                               mediaType: String,
-                               mode: ValidationMode): ClientAMFShapePayloadValidator =
-          PayloadValidatorMatcher.asClient(from.createFor(shape._internal, mediaType, mode))
-        override def createFor(shape: ClientShape, fragment: ClientPayloadFragment): ClientAMFShapePayloadValidator =
-          PayloadValidatorMatcher.asClient(from.createFor(shape._internal, fragment._internal))
-      }
-    }
+trait AmfObjectConverter extends PlatformSecrets {
+  implicit object AmfObjectMatcher extends BidirectionalMatcher[AmfObject, AmfObjectWrapper] {
+    override def asInternal(from: AmfObjectWrapper): AmfObject = from._internal
+
+    override def asClient(from: AmfObject): AmfObjectWrapper = platform.wrap(from)
+  }
+}
+
+trait AmfObjectResultConverter {
+  implicit object AmfObjectResultMatcher extends BidirectionalMatcher[AMFObjectResult, platform.AMFObjectResult] {
+    override def asInternal(from: platform.AMFObjectResult): AMFObjectResult = from._internal
+
+    override def asClient(from: AMFObjectResult): platform.AMFObjectResult = new platform.AMFObjectResult(from)
   }
 }
