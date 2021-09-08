@@ -7,14 +7,21 @@ import amf.core.internal.convert.ClientErrorHandlerConverter.convertToClient
 
 @JSExportAll
 trait ErrorHandlerProvider {
-  // Returns a new instance of error handler to collect results
+
+  /** Return a new instance of error handler to collect results */
   def errorHandler(): ClientErrorHandler
 }
 
 @JSExportAll
 @JSExportTopLevel("ErrorHandlerProvider")
 object ErrorHandlerProvider {
+
+  /** Error handler that throws Exception when a constraint is reported */
   def unhandled(): ErrorHandlerProvider = () => convertToClient(UnhandledErrorHandler)
-  def default(): ErrorHandlerProvider   = () => convertToClient(DefaultErrorHandlerProvider.errorHandler())
-  def ignoring(): ErrorHandlerProvider  = () => convertToClient(IgnoringErrorHandler)
+
+  /** Default error handler */
+  def default(): ErrorHandlerProvider = () => convertToClient(DefaultErrorHandlerProvider.errorHandler())
+
+  /** Error handler that ignores error reports  */
+  def ignoring(): ErrorHandlerProvider = () => convertToClient(IgnoringErrorHandler)
 }

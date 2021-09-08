@@ -69,10 +69,10 @@ case class RenderOptions(
   /** Exclude AmfJsonLdSerialization when rendering to graph. */
   def withoutAmfJsonLdSerialization: RenderOptions = copy(amfJsonLdSerialization = false)
 
-  /** Include FlattenedJsonLd when rendering to graph. */
+  /** Emit regular JSON-LD serialization */
   private[amf] def withFlattenedJsonLd: RenderOptions = copy(flattenedJsonLd = true)
 
-  /** Exclude FlattenedJsonLd when rendering to graph. */
+  /** Emit specific AMF JSON-LD serialization */
   private[amf] def withoutFlattenedJsonLd: RenderOptions = copy(flattenedJsonLd = false)
 
   private[amf] def isFlattenedJsonLd: Boolean = flattenedJsonLd
@@ -85,6 +85,7 @@ case class RenderOptions(
   /** Render shapes extracting common types to definitions (feature is enable by default for OAS and json schema) */
   def withCompactedEmission: RenderOptions = copy(compactedEmission = true)
 
+  /** Do not extract common types to definitions */
   def withoutCompactedEmission: RenderOptions = copy(compactedEmission = false)
 
   def withEmitWarningForUnsupportedValidationFacets(value: Boolean): RenderOptions =

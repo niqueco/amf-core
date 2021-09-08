@@ -13,17 +13,13 @@ case class TransformationPipelineBuilder private (builderName: String, builderSt
     this.copy(builderName = newName)
   }
 
-  /**
-    * inserts stage at the end of the pipeline
-    */
+  /** inserts stage at the end of the pipeline */
   def append(newStage: TransformationStep): TransformationPipelineBuilder = {
     this.copy(builderSteps = builderSteps :+ newStage)
 
   }
 
-  /**
-    * inserts stage at the beginning of pipeline
-    */
+  /** inserts stage at the beginning of pipeline */
   def prepend(newStage: TransformationStep): TransformationPipelineBuilder = {
     this.copy(builderSteps = newStage +: builderSteps)
   }

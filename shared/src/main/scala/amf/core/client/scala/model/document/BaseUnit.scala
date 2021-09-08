@@ -45,6 +45,7 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
   /** Returns the list document URIs referenced from the document that has been parsed to generate this model */
   def references: Seq[BaseUnit]
 
+  /** Returns package */
   def pkg: StrField = fields.field(Package)
 
   /** Returns the file location for the document that has been parsed to generate this model */
@@ -68,10 +69,25 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
     this
   }
 
+  /**
+    * Set references
+    * @param references references to set
+    * @return Previous [[BaseUnit]] with references set
+    */
   def withReferences(references: Seq[BaseUnit]): this.type = setArrayWithoutId(References, references)
 
+  /**
+    * Set location
+    * @param location location to set
+    * @return Previous [[BaseUnit]] with location set
+    */
   def withLocation(location: String): this.type = set(Location, location)
 
+  /**
+    * Set usage
+    * @param usage usage to set
+    * @return Previous [[BaseUnit]] with usage set
+    */
   def withUsage(usage: String): this.type = set(Usage, usage)
 
   private def withModelVersion(version: String): this.type = set(ModelVersion, version)

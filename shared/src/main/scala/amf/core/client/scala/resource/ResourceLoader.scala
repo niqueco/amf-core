@@ -6,9 +6,10 @@ import scala.concurrent.Future
 
 trait ResourceLoader {
 
-  /** Fetch specified resource and return associated content. Resource should have benn previously accepted. */
+  /** Fetch specified resource and return associated content. Resource should have been previously accepted.
+    * If the resource not exists, you should return a future failed with an ResourceNotFound exception. */
   def fetch(resource: String): Future[Content]
 
-  /** Accepts specified resource. */
+  /** Checks if the resource loader specified resource. */
   def accepts(resource: String): Boolean
 }

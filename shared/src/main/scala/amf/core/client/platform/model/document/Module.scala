@@ -6,9 +6,7 @@ import amf.core.client.scala.model.document.{Module => InternalModule}
 
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
-/**
-  * Module model class
-  */
+/** Units containing abstract fragments that can be referenced from other fragments */
 @JSExportAll
 case class Module(private[amf] val _internal: InternalModule)
     extends BaseUnit

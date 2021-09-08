@@ -2,7 +2,7 @@ package amf.core.client.scala.errorhandling
 
 trait ErrorHandlerProvider {
 
-  // Returns a new instance of error handler to collect results
+  /** Return a new instance of error handler to collect results */
   def errorHandler(): AMFErrorHandler
 }
 

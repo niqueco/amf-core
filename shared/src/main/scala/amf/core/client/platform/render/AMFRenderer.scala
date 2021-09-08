@@ -12,17 +12,17 @@ import org.yaml.builder.DocBuilder
 @JSExportTopLevel("AMFRenderer")
 object AMFRenderer {
 
-  def render(baseUnit: BaseUnit, env: AMFGraphConfiguration): String = {
-    implicit val executionContext: ExecutionContext = env.getExecutionContext
-    InternalAMFRenderer.render(baseUnit, env)
+  def render(baseUnit: BaseUnit, configuration: AMFGraphConfiguration): String = {
+    implicit val executionContext: ExecutionContext = configuration.getExecutionContext
+    InternalAMFRenderer.render(baseUnit, configuration)
   }
 
-  def render(baseUnit: BaseUnit, mediaType: String, env: AMFGraphConfiguration): String = {
-    implicit val executionContext: ExecutionContext = env.getExecutionContext
-    InternalAMFRenderer.render(baseUnit, mediaType, env)
+  def render(baseUnit: BaseUnit, mediaType: String, configuration: AMFGraphConfiguration): String = {
+    implicit val executionContext: ExecutionContext = configuration.getExecutionContext
+    InternalAMFRenderer.render(baseUnit, mediaType, configuration)
   }
 
-  def renderGraphToBuilder[T](baseUnit: BaseUnit, builder: DocBuilder[T], config: AMFGraphConfiguration): T =
-    InternalAMFRenderer.renderGraphToBuilder(baseUnit, builder, config)
+  def renderGraphToBuilder[T](baseUnit: BaseUnit, builder: DocBuilder[T], configuration: AMFGraphConfiguration): T =
+    InternalAMFRenderer.renderGraphToBuilder(baseUnit, builder, configuration)
 
 }

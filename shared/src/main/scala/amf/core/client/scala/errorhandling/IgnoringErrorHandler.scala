@@ -5,13 +5,14 @@ import amf.core.internal.validation.core.ValidationSpecification
 import org.mulesoft.lexer.SourceLocation
 import org.yaml.model.{SyamlException, YError}
 
+/** Error handler that ignores constraint reports */
 object IgnoringErrorHandler extends AMFErrorHandler {
   override def warning(id: ValidationSpecification,
                        node: String,
                        property: Option[String],
                        message: String,
                        lexical: Option[LexicalInformation],
-                       location: Option[String]): Unit              = {}
-  override def report(result: AMFValidationResult): Unit            = {}
-  override def getResults: List[AMFValidationResult]                = Nil
+                       location: Option[String]): Unit   = {}
+  override def report(result: AMFValidationResult): Unit = {}
+  override def getResults: List[AMFValidationResult]     = Nil
 }

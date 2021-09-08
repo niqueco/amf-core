@@ -7,7 +7,7 @@ import amf.core.client.scala.model.domain.templates.{ParametrizedDeclaration => 
 import scala.scalajs.js.annotation.JSExportAll
 
 /**
-  * AbstractDeclaration model class.
+  * ParametrizedDeclaration model class.
   */
 @JSExportAll
 trait ParametrizedDeclaration extends DomainElement with NamedDomainElement {

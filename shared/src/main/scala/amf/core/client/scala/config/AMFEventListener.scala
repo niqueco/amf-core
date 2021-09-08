@@ -68,16 +68,31 @@ case class ParsedModelEvent(url: String, unit: BaseUnit) extends AMFEvent with G
   override val groupKey: String = url
 }
 
+/**
+  * notifies when an [[AMFParsePlugin]] has been selected
+  * @param rootLocation location of the document being parsed
+  * @param plugin selected [[AMFParsePlugin]]
+  */
 case class SelectedParsePluginEvent(rootLocation: String, plugin: AMFParsePlugin) extends AMFEvent with GroupedEvent {
   override val name: String     = SelectedParsePlugin
   override val groupKey: String = rootLocation
 }
 
+/**
+  * notifies when references have been found while parsing
+  * @param rootLocation location of the document being parsed
+  * @param amount amount of references found
+  */
 case class FoundReferencesEvent(rootLocation: String, amount: Int) extends AMFEvent with GroupedEvent {
   override val name: String     = FoundReferences
   override val groupKey: String = rootLocation
 }
 
+/**
+  * notifies when a syntax mediatype has been automatically detected
+  * @param location location of the document being parsed
+  * @param mediaType mediatype detected
+  */
 case class DetectedSyntaxMediaTypeEvent(location: String, mediaType: String) extends AMFEvent with GroupedEvent {
   override val name: String     = DetectedSyntaxMediaType
   override val groupKey: String = location
@@ -95,45 +110,87 @@ case class FinishedParsingEvent(url: String, unit: BaseUnit) extends AMFEvent wi
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Transformation Events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+/**
+  * notifies when a [[TransformationPipeline]] starts
+  * @param pipeline [[TransformationPipeline]] that's starting
+  */
 case class StartingTransformationEvent(pipeline: TransformationPipeline) extends AMFEvent {
   override val name: String = StartedTransformation
 }
 
+/**
+  * notifies when a [[TransformationStep]] starts
+  * @param step [[TransformationStep]] that's starting
+  * @param index index of the step in the pipeline
+  */
 case class StartedTransformationStepEvent(step: TransformationStep, index: Int) extends AMFEvent with GroupedEvent {
   override val name: String     = StartedTransformationStep
   override val groupKey: String = s"transform/step-$index"
 }
 
+/**
+  * notifies when a [[TransformationStep]] finishes
+  * @param step [[TransformationStep]] that finished
+  * @param index index of the step in the pipeline
+  */
 case class FinishedTransformationStepEvent(step: TransformationStep, index: Int) extends AMFEvent with GroupedEvent {
   override val name: String     = FinishedTransformationStep
   override val groupKey: String = s"transform/step-$index"
 }
 
+/**
+  * notifies when a [[TransformationPipeline]] ends
+  * @param unit the transformed model
+  */
 case class FinishedTransformationEvent(unit: BaseUnit) extends AMFEvent {
   override val name: String = FinishedTransformation
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Validation Events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+/**
+  * notifies when validation starts
+  * @param totalPlugins
+  */
 case class StartingValidationEvent(totalPlugins: Int) extends AMFEvent {
   override val name: String = StartingValidation
 }
 
+/**
+  * notifies every time an [[AMFValidatePlugin]] finishes
+  * @param plugin the [[AMFValidatePlugin]] that finished
+  * @param result the resulting [[AMFValidationReport]]
+  */
 case class FinishedValidationPluginEvent(plugin: AMFValidatePlugin, result: AMFValidationReport) extends AMFEvent {
   override val name: String = FinishedValidationPlugin
 }
 
+/**
+  * notifies when validation ends
+  * @param result the resulting [[AMFValidationReport]]
+  */
 case class FinishedValidationEvent(result: AMFValidationReport) extends AMFEvent {
   override val name: String = FinishedValidation
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Render Events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+/**
+  * notifies when starting to render to writer
+  * @param unit [[BaseUnit]] to render
+  * @param mediaType optional mediatype to render to
+  */
 case class StartingRenderToWriterEvent(unit: BaseUnit, mediaType: Option[String]) extends AMFEvent with GroupedEvent {
   override val name: String     = StartedRenderToWriter
   override val groupKey: String = unit.id
 }
 
+/**
+  * notifies when rendering starts
+  * @param unit [[BaseUnit]] to render
+  * @param plugin [[AMFRenderPlugin]] being used
+  * @param mediaType optional mediatype to render to
+  */
 case class StartingRenderingEvent(unit: BaseUnit, plugin: AMFRenderPlugin, mediaType: Option[String])
     extends AMFEvent
     with GroupedEvent {
@@ -141,11 +198,20 @@ case class StartingRenderingEvent(unit: BaseUnit, plugin: AMFRenderPlugin, media
   override val groupKey: String = unit.id
 }
 
+/**
+  * notifies when every time an AST finishes rendering
+  * @param unit [[BaseUnit]] that was rendered
+  * @param renderedAST resultant document
+  */
 case class FinishedRenderingASTEvent(unit: BaseUnit, renderedAST: ParsedDocument) extends AMFEvent with GroupedEvent {
   override val name: String     = FinishedASTRender
   override val groupKey: String = unit.id
 }
 
+/**
+  * notifies when an [[amf.core.client.scala.render.AMFSyntaxRenderPlugin]] finishes rendering
+  * @param unit [[BaseUnit]] rendered
+  */
 case class FinishedRenderingSyntaxEvent(unit: BaseUnit) extends AMFEvent with GroupedEvent {
   override val name: String     = FinishedSyntaxRender
   override val groupKey: String = unit.id

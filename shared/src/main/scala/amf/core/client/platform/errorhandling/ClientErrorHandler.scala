@@ -8,7 +8,9 @@ import scala.scalajs.js.annotation.JSExportAll
 @JSExportAll
 trait ClientErrorHandler {
 
+  /** Get all [[AMFValidationResult]] reported */
   def getResults: ClientList[AMFValidationResult]
 
+  /** Report an [[AMFValidationResult]] */
   def report(result: AMFValidationResult): Unit
 }

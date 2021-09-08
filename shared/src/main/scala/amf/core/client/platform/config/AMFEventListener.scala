@@ -124,12 +124,18 @@ class FinishedParsingEvent(private val _internal: config.FinishedParsingEvent) e
 
 // Resolution Events
 
+/**
+  * every client invocation to the transformation logic
+  */
 @JSExportAll
 class StartingTransformationEvent(private val _internal: config.StartingTransformationEvent)
     extends ClientEvent(_internal) {
   def pipeline: TransformationPipeline = _internal.pipeline
 }
 
+/**
+  * notifies every time a transformation step finishes
+  */
 @JSExportAll
 class FinishedTransformationStepEvent(private val _internal: config.FinishedTransformationStepEvent)
     extends ClientEvent(_internal) {
@@ -137,6 +143,9 @@ class FinishedTransformationStepEvent(private val _internal: config.FinishedTran
   def index: Int               = _internal.index
 }
 
+/**
+  * notifies every time a transformation pipeline finishes
+  */
 @JSExportAll
 class FinishedTransformationEvent(private val _internal: config.FinishedTransformationEvent)
     extends ClientEvent(_internal) {
@@ -145,17 +154,26 @@ class FinishedTransformationEvent(private val _internal: config.FinishedTransfor
 
 // Validation Events
 
+/**
+  * notifies when validation starts
+  */
 @JSExportAll
 class StartingValidationEvent(private val _internal: config.StartingValidationEvent) extends ClientEvent(_internal) {
   def totalPlugins: Int = _internal.totalPlugins
 }
 
+/**
+  * notifies every time a validation plugin finishes
+  */
 @JSExportAll
 class FinishedValidationPluginEvent(private val _internal: config.FinishedValidationPluginEvent)
     extends ClientEvent(_internal) {
   def result: AMFValidationReport = _internal.result
 }
 
+/**
+  * notifies every time validation logic finishes
+  */
 @JSExportAll
 class FinishedValidationEvent(private val _internal: config.FinishedValidationEvent) extends ClientEvent(_internal) {
   def result: AMFValidationReport = _internal.result
@@ -163,39 +181,63 @@ class FinishedValidationEvent(private val _internal: config.FinishedValidationEv
 
 // Rendering Events
 
+/**
+  * notifies when rendering starts
+  */
 @JSExportAll
 class StartingRenderingEvent(private val _internal: config.StartingRenderingEvent) extends ClientEvent(_internal) {
   def unit: BaseUnit                  = _internal.unit
   def mediaType: ClientOption[String] = _internal.mediaType.asClient
 }
 
+/**
+  * notifies when starting to render to writer
+  */
+@JSExportAll
+case class StartingRenderToWriterEvent(private val _internal: config.StartingRenderToWriterEvent)
+    extends ClientEvent(_internal) {}
+
+/**
+  * notifies when an AST finishes rendering
+  */
 @JSExportAll
 class FinishedRenderingASTEvent(private val _internal: config.FinishedRenderingASTEvent)
     extends ClientEvent(_internal) {
   def unit: BaseUnit = _internal.unit
 }
 
+/**
+  * notifies when a syntax finishes rendering
+  */
 @JSExportAll
 class FinishedRenderingSyntaxEvent(private val _internal: config.FinishedRenderingSyntaxEvent)
     extends ClientEvent(_internal) {
   def unit: BaseUnit = _internal.unit
 }
 
+/**
+  * notifies when a parse plugin has been selected
+  */
 @JSExportAll
 case class SelectedParsePluginEvent(private val _internal: config.SelectedParsePluginEvent)
     extends ClientEvent(_internal) {}
 
+/**
+  * notifies when references are found in parsing
+  */
 @JSExportAll
 case class FoundReferencesEvent(private val _internal: config.FoundReferencesEvent) extends ClientEvent(_internal) {}
 
+/**
+  * notifies when a mediatype has been auto detected
+  */
 @JSExportAll
 case class DetectedSyntaxMediaTypeEvent(private val _internal: config.DetectedSyntaxMediaTypeEvent)
     extends ClientEvent(_internal) {}
 
+/**
+  * notifies when a transformation step starts
+  */
 @JSExportAll
 case class StartedTransformationStepEvent(private val _internal: config.StartedTransformationStepEvent)
-    extends ClientEvent(_internal) {}
-
-@JSExportAll
-case class StartingRenderToWriterEvent(private val _internal: config.StartingRenderToWriterEvent)
     extends ClientEvent(_internal) {}
