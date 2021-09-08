@@ -108,8 +108,8 @@ trait BaseUnit extends AmfObjectWrapper with PlatformSecrets {
 
   def cloneUnit(): BaseUnit = _internal.cloneUnit()
 
-  def withReferenceAlias(alias: String, fullUrl: String, relativeUrl: String): BaseUnit = {
-    AliasDeclaration(_internal, alias, fullUrl, relativeUrl)
+  def withReferenceAlias(alias: String, id: String, fullUrl: String, relativeUrl: String): BaseUnit = {
+    _internal.withReferenceAlias(alias, id, fullUrl, relativeUrl)
     this
   }
 

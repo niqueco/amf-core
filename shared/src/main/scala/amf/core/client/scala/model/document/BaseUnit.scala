@@ -12,7 +12,7 @@ import amf.core.client.scala.traversal.{
   TransformationData,
   TransformationTraversal
 }
-import amf.core.internal.annotations.SourceSpec
+import amf.core.internal.annotations.{Aliases, ReferencedInfo, SourceSpec}
 import amf.core.internal.metamodel.MetaModelTypeMapping
 import amf.core.internal.metamodel.document.BaseUnitModel
 import amf.core.internal.metamodel.document.BaseUnitModel._
@@ -155,6 +155,17 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
   }
 
   protected[amf] def profileName: Option[ProfileName] = sourceSpec.map(v => ProfileName.apply(v.id))
+
+  def withReferenceAlias(alias: String, id: String, fullUrl: String, relativeUrl: String): BaseUnit = {
+    val aliasTuple = (alias, ReferencedInfo(id, fullUrl, relativeUrl))
+    this.annotations.find(classOf[Aliases]) match {
+      case Some(aliases) =>
+        this.annotations.reject(_.isInstanceOf[Aliases])
+        this.add(aliases.copy(aliases = aliases.aliases + aliasTuple))
+      case None => this.add(Aliases(Set(aliasTuple)))
+    }
+    this
+  }
 
   def cloneUnit(): BaseUnit = cloneElement(mutable.Map.empty).asInstanceOf[BaseUnit]
 
