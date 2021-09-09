@@ -12,6 +12,9 @@ import amf.core.internal.plugins.validation.AMFValidatePlugin
 
 // interface is duplicated in exported package to maintain separate hierarchy of AMFEvents
 
+/**
+  * Defines an event listener linked to a specific [[AMFEvent]]
+  */
 trait AMFEventListener {
   def notifyEvent(event: AMFEvent)
 }
@@ -27,7 +30,7 @@ protected[amf] trait GroupedEvent { event: AMFEvent =>
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Parsing Events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /**
-  * every client invocation to the parsing logic
+  * Every client invocation to the parsing logic
   * @param url URL of the top level document being parsed
   */
 case class StartingParsingEvent(url: String) extends AMFEvent with GroupedEvent {
@@ -36,7 +39,7 @@ case class StartingParsingEvent(url: String) extends AMFEvent with GroupedEvent 
 }
 
 /**
-  * called before parsing syntax of certain content.
+  * Called before parsing syntax of certain content.
   * @param url URL of the document being parsed
   * @param content original content that was parsed
   */
@@ -46,7 +49,7 @@ case class StartingContentParsingEvent(url: String, content: Content) extends AM
 }
 
 /**
-  * every successful syntax AST being parsed for any document
+  * Every successful syntax AST being parsed for any document
   * @param url URL of the document being parsed
   * @param content original content that was parsed
   * @param parsedAST Parsed document AST
@@ -59,7 +62,7 @@ case class ParsedSyntaxEvent(url: String, content: Content, parsedAST: ParsedDoc
 }
 
 /**
-  * every successful domain model being parsed for any document
+  * Every successful domain model being parsed for any document
   * @param url URL of the document being parsed
   * @param unit Parsed domain unit
   */
@@ -69,7 +72,7 @@ case class ParsedModelEvent(url: String, unit: BaseUnit) extends AMFEvent with G
 }
 
 /**
-  * notifies when an [[AMFParsePlugin]] has been selected
+  * Notifies when an [[AMFParsePlugin]] has been selected
   * @param rootLocation location of the document being parsed
   * @param plugin selected [[AMFParsePlugin]]
   */
@@ -79,7 +82,7 @@ case class SelectedParsePluginEvent(rootLocation: String, plugin: AMFParsePlugin
 }
 
 /**
-  * notifies when references have been found while parsing
+  * Notifies when references have been found while parsing
   * @param rootLocation location of the document being parsed
   * @param amount amount of references found
   */
@@ -89,7 +92,7 @@ case class FoundReferencesEvent(rootLocation: String, amount: Int) extends AMFEv
 }
 
 /**
-  * notifies when a syntax mediatype has been automatically detected
+  * Notifies when a syntax mediatype has been automatically detected
   * @param location location of the document being parsed
   * @param mediaType mediatype detected
   */
@@ -99,7 +102,7 @@ case class DetectedSyntaxMediaTypeEvent(location: String, mediaType: String) ext
 }
 
 /**
-  * every successful parser invocation containing the top level domain unit being parsed
+  * Every successful parser invocation containing the top level domain unit being parsed
   * @param url URL of the top level document being parsed
   * @param unit parsed domain unit for the top level document
   */
@@ -111,7 +114,7 @@ case class FinishedParsingEvent(url: String, unit: BaseUnit) extends AMFEvent wi
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Transformation Events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /**
-  * notifies when a [[TransformationPipeline]] starts
+  * Notifies when a [[TransformationPipeline]] starts
   * @param pipeline [[TransformationPipeline]] that's starting
   */
 case class StartingTransformationEvent(pipeline: TransformationPipeline) extends AMFEvent {
@@ -119,7 +122,7 @@ case class StartingTransformationEvent(pipeline: TransformationPipeline) extends
 }
 
 /**
-  * notifies when a [[TransformationStep]] starts
+  * Notifies when a [[TransformationStep]] starts
   * @param step [[TransformationStep]] that's starting
   * @param index index of the step in the pipeline
   */
@@ -129,7 +132,7 @@ case class StartedTransformationStepEvent(step: TransformationStep, index: Int) 
 }
 
 /**
-  * notifies when a [[TransformationStep]] finishes
+  * Notifies when a [[TransformationStep]] finishes
   * @param step [[TransformationStep]] that finished
   * @param index index of the step in the pipeline
   */
@@ -139,7 +142,7 @@ case class FinishedTransformationStepEvent(step: TransformationStep, index: Int)
 }
 
 /**
-  * notifies when a [[TransformationPipeline]] ends
+  * Notifies when a [[TransformationPipeline]] ends
   * @param unit the transformed model
   */
 case class FinishedTransformationEvent(unit: BaseUnit) extends AMFEvent {
@@ -149,7 +152,7 @@ case class FinishedTransformationEvent(unit: BaseUnit) extends AMFEvent {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Validation Events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /**
-  * notifies when validation starts
+  * Notifies when validation starts
   * @param totalPlugins
   */
 case class StartingValidationEvent(totalPlugins: Int) extends AMFEvent {
@@ -157,7 +160,7 @@ case class StartingValidationEvent(totalPlugins: Int) extends AMFEvent {
 }
 
 /**
-  * notifies every time an [[AMFValidatePlugin]] finishes
+  * Notifies Every time an [[AMFValidatePlugin]] finishes
   * @param plugin the [[AMFValidatePlugin]] that finished
   * @param result the resulting [[AMFValidationReport]]
   */
@@ -166,7 +169,7 @@ case class FinishedValidationPluginEvent(plugin: AMFValidatePlugin, result: AMFV
 }
 
 /**
-  * notifies when validation ends
+  * Notifies when validation ends
   * @param result the resulting [[AMFValidationReport]]
   */
 case class FinishedValidationEvent(result: AMFValidationReport) extends AMFEvent {
@@ -176,7 +179,7 @@ case class FinishedValidationEvent(result: AMFValidationReport) extends AMFEvent
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Render Events ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /**
-  * notifies when starting to render to writer
+  * Notifies when starting to render to writer
   * @param unit [[BaseUnit]] to render
   * @param mediaType optional mediatype to render to
   */
@@ -186,7 +189,7 @@ case class StartingRenderToWriterEvent(unit: BaseUnit, mediaType: Option[String]
 }
 
 /**
-  * notifies when rendering starts
+  * Notifies when rendering starts
   * @param unit [[BaseUnit]] to render
   * @param plugin [[AMFRenderPlugin]] being used
   * @param mediaType optional mediatype to render to
@@ -199,7 +202,7 @@ case class StartingRenderingEvent(unit: BaseUnit, plugin: AMFRenderPlugin, media
 }
 
 /**
-  * notifies when every time an AST finishes rendering
+  * Notifies when Every time an AST finishes rendering
   * @param unit [[BaseUnit]] that was rendered
   * @param renderedAST resultant document
   */
@@ -209,7 +212,7 @@ case class FinishedRenderingASTEvent(unit: BaseUnit, renderedAST: ParsedDocument
 }
 
 /**
-  * notifies when an [[amf.core.client.scala.render.AMFSyntaxRenderPlugin]] finishes rendering
+  * Notifies when an [[amf.core.client.scala.render.AMFSyntaxRenderPlugin]] finishes rendering
   * @param unit [[BaseUnit]] rendered
   */
 case class FinishedRenderingSyntaxEvent(unit: BaseUnit) extends AMFEvent with GroupedEvent {

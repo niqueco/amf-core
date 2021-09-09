@@ -78,7 +78,7 @@ abstract class ClientEvent(private val _internal: config.AMFEvent) extends AMFEv
 // Parsing Events
 
 /**
-  * every client invocation to the parsing logic
+  * Every client invocation to the parsing logic
   */
 @JSExportAll
 class StartingParsingEvent(private val _internal: config.StartingParsingEvent) extends ClientEvent(_internal) {
@@ -86,7 +86,7 @@ class StartingParsingEvent(private val _internal: config.StartingParsingEvent) e
 }
 
 /**
-  * called before parsing syntax of certain content.
+  * Called before parsing syntax of certain content.
   */
 @JSExportAll
 class StartingContentParsingEvent(private val _internal: config.StartingContentParsingEvent)
@@ -96,7 +96,7 @@ class StartingContentParsingEvent(private val _internal: config.StartingContentP
 }
 
 /**
-  * every successful syntax AST being parsed for any document
+  * Every successful syntax AST being parsed for any document
   */
 @JSExportAll
 class ParsedSyntaxEvent(private val _internal: config.ParsedSyntaxEvent) extends ClientEvent(_internal) {
@@ -105,7 +105,7 @@ class ParsedSyntaxEvent(private val _internal: config.ParsedSyntaxEvent) extends
 }
 
 /**
-  * every successful domain model being parsed for any document
+  * Every successful domain model being parsed for any document
   */
 @JSExportAll
 class ParsedModelEvent(private val _internal: config.ParsedModelEvent) extends ClientEvent(_internal) {
@@ -114,7 +114,7 @@ class ParsedModelEvent(private val _internal: config.ParsedModelEvent) extends C
 }
 
 /**
-  * every successful parser invocation containing the top level domain unit being parsed
+  * Every successful parser invocation containing the top level domain unit being parsed
   */
 @JSExportAll
 class FinishedParsingEvent(private val _internal: config.FinishedParsingEvent) extends ClientEvent(_internal) {
@@ -125,7 +125,7 @@ class FinishedParsingEvent(private val _internal: config.FinishedParsingEvent) e
 // Resolution Events
 
 /**
-  * every client invocation to the transformation logic
+  * Every client invocation to the transformation logic
   */
 @JSExportAll
 class StartingTransformationEvent(private val _internal: config.StartingTransformationEvent)
@@ -134,7 +134,7 @@ class StartingTransformationEvent(private val _internal: config.StartingTransfor
 }
 
 /**
-  * notifies every time a transformation step finishes
+  * Notifies every time a transformation step finishes
   */
 @JSExportAll
 class FinishedTransformationStepEvent(private val _internal: config.FinishedTransformationStepEvent)
@@ -144,7 +144,7 @@ class FinishedTransformationStepEvent(private val _internal: config.FinishedTran
 }
 
 /**
-  * notifies every time a transformation pipeline finishes
+  * Notifies every time a transformation pipeline finishes
   */
 @JSExportAll
 class FinishedTransformationEvent(private val _internal: config.FinishedTransformationEvent)
@@ -155,7 +155,7 @@ class FinishedTransformationEvent(private val _internal: config.FinishedTransfor
 // Validation Events
 
 /**
-  * notifies when validation starts
+  * Notifies when validation starts
   */
 @JSExportAll
 class StartingValidationEvent(private val _internal: config.StartingValidationEvent) extends ClientEvent(_internal) {
@@ -163,7 +163,7 @@ class StartingValidationEvent(private val _internal: config.StartingValidationEv
 }
 
 /**
-  * notifies every time a validation plugin finishes
+  * Notifies every time a validation plugin finishes
   */
 @JSExportAll
 class FinishedValidationPluginEvent(private val _internal: config.FinishedValidationPluginEvent)
@@ -172,7 +172,7 @@ class FinishedValidationPluginEvent(private val _internal: config.FinishedValida
 }
 
 /**
-  * notifies every time validation logic finishes
+  * Notifies every time validation logic finishes
   */
 @JSExportAll
 class FinishedValidationEvent(private val _internal: config.FinishedValidationEvent) extends ClientEvent(_internal) {
@@ -182,7 +182,7 @@ class FinishedValidationEvent(private val _internal: config.FinishedValidationEv
 // Rendering Events
 
 /**
-  * notifies when rendering starts
+  * Notifies when rendering starts
   */
 @JSExportAll
 class StartingRenderingEvent(private val _internal: config.StartingRenderingEvent) extends ClientEvent(_internal) {
@@ -191,14 +191,14 @@ class StartingRenderingEvent(private val _internal: config.StartingRenderingEven
 }
 
 /**
-  * notifies when starting to render to writer
+  * Notifies when starting to render to writer
   */
 @JSExportAll
 case class StartingRenderToWriterEvent(private val _internal: config.StartingRenderToWriterEvent)
     extends ClientEvent(_internal) {}
 
 /**
-  * notifies when an AST finishes rendering
+  * Notifies when an AST finishes rendering
   */
 @JSExportAll
 class FinishedRenderingASTEvent(private val _internal: config.FinishedRenderingASTEvent)
@@ -207,7 +207,7 @@ class FinishedRenderingASTEvent(private val _internal: config.FinishedRenderingA
 }
 
 /**
-  * notifies when a syntax finishes rendering
+  * Notifies when a syntax finishes rendering
   */
 @JSExportAll
 class FinishedRenderingSyntaxEvent(private val _internal: config.FinishedRenderingSyntaxEvent)
@@ -216,27 +216,27 @@ class FinishedRenderingSyntaxEvent(private val _internal: config.FinishedRenderi
 }
 
 /**
-  * notifies when a parse plugin has been selected
+  * Notifies when a parse plugin has been selected
   */
 @JSExportAll
 case class SelectedParsePluginEvent(private val _internal: config.SelectedParsePluginEvent)
     extends ClientEvent(_internal) {}
 
 /**
-  * notifies when references are found in parsing
+  * Notifies when references are found in parsing
   */
 @JSExportAll
 case class FoundReferencesEvent(private val _internal: config.FoundReferencesEvent) extends ClientEvent(_internal) {}
 
 /**
-  * notifies when a mediatype has been auto detected
+  * Notifies when a mediatype has been auto detected
   */
 @JSExportAll
 case class DetectedSyntaxMediaTypeEvent(private val _internal: config.DetectedSyntaxMediaTypeEvent)
     extends ClientEvent(_internal) {}
 
 /**
-  * notifies when a transformation step starts
+  * Notifies when a transformation step starts
   */
 @JSExportAll
 case class StartedTransformationStepEvent(private val _internal: config.StartedTransformationStepEvent)

@@ -24,16 +24,16 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
   /** Include source maps when rendering to graph. */
   def withoutSourceMaps(): RenderOptions = _internal.withoutSourceMaps
 
-  /** Include CompactUris when rendering to graph. */
+  /** Emits JSON-LD with compact IRIs when rendering to graph. */
   def withCompactUris(): RenderOptions = _internal.withCompactUris
 
-  /** Exclude CompactUris when rendering to graph. */
+  /** Don't emit JSON-LD with compact IRIs when rendering to graph. */
   def withoutCompactUris(): RenderOptions = _internal.withoutCompactUris
 
   /** Emit specific AMF JSON-LD serialization */
   def withoutAmfJsonLdSerialization(): RenderOptions = _internal.withoutAmfJsonLdSerialization
 
-  /** Emit regular JSON-LD serialization */
+  /** Emit flattened JSON-LD serialization */
   def withAmfJsonLdSerialization(): RenderOptions = _internal.withAmfJsonLdSerialization
 
   /** Include Node IDs in rendering */

@@ -16,7 +16,7 @@ case class TransformationPipelineBuilder(private[amf] val _internal: InternalTra
   /** inserts stage at the end of the pipeline */
   def append(newStage: TransformationStep): TransformationPipelineBuilder = _internal.append(newStage)
 
-  /** inserts stage at the beginning of pipeline */
+  /** Onserts stage at the beginning of pipeline */
   def prepend(newStage: TransformationStep): TransformationPipelineBuilder = _internal.prepend(newStage)
 }
 

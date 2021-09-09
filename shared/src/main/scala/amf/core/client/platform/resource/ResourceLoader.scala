@@ -9,10 +9,10 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 trait ResourceLoader {
 
   /** Fetch specified resource and return associated content. Resource should have been previously accepted.
-    * If the resource not exists, you should return a future failed with an ResourceNotFound exception. */
+    * If the resource doesn't exists, it returns a failed future caused by a ResourceNotFound exception. */
   def fetch(resource: String): ClientFuture[Content]
 
-  /** Checks if the resource loader specified resource. */
+  /** Checks if the resource loader accepts the specified resource. */
   def accepts(resource: String): Boolean = true
 }
 

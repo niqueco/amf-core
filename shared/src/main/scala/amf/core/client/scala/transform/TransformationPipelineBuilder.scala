@@ -19,7 +19,7 @@ case class TransformationPipelineBuilder private (builderName: String, builderSt
 
   }
 
-  /** inserts stage at the beginning of pipeline */
+  /** Onserts stage at the beginning of pipeline */
   def prepend(newStage: TransformationStep): TransformationPipelineBuilder = {
     this.copy(builderSteps = newStage +: builderSteps)
   }

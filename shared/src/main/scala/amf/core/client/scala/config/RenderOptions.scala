@@ -36,10 +36,10 @@ case class RenderOptions(
   /** Exclude source maps when rendering to graph. */
   def withoutSourceMaps: RenderOptions = copy(sources = false)
 
-  /** Include CompactUris when rendering to graph. */
+  /** Emits JSON-LD with compact IRIs when rendering to graph. */
   def withCompactUris: RenderOptions = copy(compactUris = true)
 
-  /** Exclude CompactUris when rendering to graph. */
+  /** Don't emit JSON-LD with compact IRIs when rendering to graph. */
   def withoutCompactUris: RenderOptions = copy(compactUris = false)
 
   /** Include RawSourceMaps when rendering to graph. */
@@ -69,7 +69,6 @@ case class RenderOptions(
   /** Exclude AmfJsonLdSerialization when rendering to graph. */
   def withoutAmfJsonLdSerialization: RenderOptions = copy(amfJsonLdSerialization = false)
 
-  /** Emit regular JSON-LD serialization */
   private[amf] def withFlattenedJsonLd: RenderOptions = copy(flattenedJsonLd = true)
 
   /** Emit specific AMF JSON-LD serialization */

@@ -5,7 +5,7 @@ import amf.core.internal.validation.core.ValidationSpecification
 import org.mulesoft.lexer.SourceLocation
 import org.yaml.model.{SyamlException, YError}
 
-/** Error handler that ignores constraint reports */
+/** Error handler that ignores errors */
 object IgnoringErrorHandler extends AMFErrorHandler {
   override def warning(id: ValidationSpecification,
                        node: String,

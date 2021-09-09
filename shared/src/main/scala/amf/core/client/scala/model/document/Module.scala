@@ -10,7 +10,7 @@ import amf.core.internal.parser.domain.Fields
 import amf.core.internal.parser.domain.{Annotations, Fields}
 import org.yaml.model.YDocument
 
-/** Units containing abstract fragments that can be referenced from other fragments */
+/** Module model class */
 case class Module(fields: Fields, annotations: Annotations)
     extends BaseUnit
     with DeclaresModel
