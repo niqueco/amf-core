@@ -2,8 +2,7 @@ package amf.core.client.platform
 
 import amf.core.client.platform.model.AmfObjectWrapper
 import amf.core.client.platform.model.document.BaseUnit
-import amf.core.client.platform.validation.AMFValidationResult
-import amf.core.client.platform.validation.AMFValidationResult
+import amf.core.client.platform.validation.{AMFValidationReport, AMFValidationResult}
 import amf.core.client.scala.{
   AMFObjectResult => InternalAMFObjectResult,
   AMFParseResult => InternalAMFParseResult,
@@ -16,14 +15,14 @@ import amf.core.internal.unsafe.PlatformSecrets
 import scala.scalajs.js.annotation.JSExportAll
 
 @JSExportAll
-case class AMFResult(private[amf] val _internal: InternalAMFResult) {
+case class AMFResult(override private[amf] val _internal: InternalAMFResult) extends AMFObjectResult(_internal) {
 
   def conforms: Boolean = _internal.conforms
 
   /**
     * @return list of the resultant [[AMFValidationResult]] of the BaseUnit
     */
-  def results: ClientList[AMFValidationResult] = _internal.results.asClient
+  override def results: ClientList[AMFValidationResult] = _internal.results.asClient
 
   /**
     * @return [[BaseUnit]] returned from AMF parse or transform. It can be:
@@ -33,6 +32,8 @@ case class AMFResult(private[amf] val _internal: InternalAMFResult) {
   def baseUnit: BaseUnit = _internal.baseUnit
 
   override def toString: String = _internal.toString
+
+  def merge(report: AMFValidationReport): AMFResult = AMFResult(_internal.merge(report._internal))
 }
 
 @JSExportAll
