@@ -2,6 +2,7 @@ package amf.core.client.scala.errorhandling
 
 import amf.core.internal.annotations.LexicalInformation
 
+/** Error handler that throws Exception when a constraint is reported */
 trait UnhandledErrorHandler extends AMFErrorHandler {
 
   override def reportConstraint(id: String,

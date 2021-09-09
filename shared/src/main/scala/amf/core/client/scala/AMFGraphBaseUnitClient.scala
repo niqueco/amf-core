@@ -105,5 +105,5 @@ class AMFGraphBaseUnitClient private[amf] (protected val configuration: AMFGraph
     * @param baseUnit [[BaseUnit]] to validate
     * @return an [[AMFValidationReport]]
     */
-  def validate(bu: BaseUnit): Future[AMFValidationReport] = AMFValidator.validate(bu, configuration)
+  def validate(baseUnit: BaseUnit): Future[AMFValidationReport] = AMFValidator.validate(baseUnit, configuration)
 }

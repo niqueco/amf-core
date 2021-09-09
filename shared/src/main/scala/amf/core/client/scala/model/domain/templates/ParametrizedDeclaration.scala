@@ -12,7 +12,10 @@ abstract class ParametrizedDeclaration(fields: Fields, annotations: Annotations)
   def target: AbstractDeclaration   = fields.field(Target)
   def variables: Seq[VariableValue] = fields.field(Variables)
 
-  def withTarget(target: AbstractDeclaration): this.type      = set(Target, target)
+  /** Set the target property. */
+  def withTarget(target: AbstractDeclaration): this.type = set(Target, target)
+
+  /** Set variables property. */
   def withVariables(variables: Seq[VariableValue]): this.type = setArray(Variables, variables)
 
   private[amf] override def componentId: String =

@@ -82,8 +82,11 @@ class AMFGraphConfiguration private[amf] (override private[amf] val resolvers: A
                                           override private[amf] val options: AMFOptions)
     extends BaseAMFConfigurationSetter(resolvers, errorHandlerProvider, registry, listeners, options) { // break platform into more specific classes?
 
+  /** Contains common AMF graph operations associated to documents */
   def baseUnitClient(): AMFGraphBaseUnitClient = new AMFGraphBaseUnitClient(this)
-  def elementClient(): AMFGraphElementClient   = new AMFGraphElementClient(this)
+
+  /** Contains functionality associated with specific elements of the AMF model */
+  def elementClient(): AMFGraphElementClient = new AMFGraphElementClient(this)
 
   def withParsingOptions(parsingOptions: ParsingOptions): AMFGraphConfiguration =
     super._withParsingOptions(parsingOptions)

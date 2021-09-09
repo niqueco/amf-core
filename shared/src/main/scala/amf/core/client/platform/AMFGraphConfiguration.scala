@@ -21,8 +21,11 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 class AMFGraphConfiguration private[amf] (private[amf] val _internal: InternalGraphConfiguration) {
   private implicit val ec: ExecutionContext = _internal.getExecutionContext
 
+  /** Contains common AMF graph operations associated to documents */
   def baseUnitClient(): AMFGraphBaseUnitClient = new AMFGraphBaseUnitClient(this)
-  def elementClient(): AMFGraphElementClient   = new AMFGraphElementClient(this)
+
+  /** Contains functionality associated with specific elements of the AMF model */
+  def elementClient(): AMFGraphElementClient = new AMFGraphElementClient(this)
 
   def withParsingOptions(parsingOptions: ParsingOptions): AMFGraphConfiguration =
     _internal.withParsingOptions(parsingOptions)
@@ -62,13 +65,6 @@ class AMFGraphConfiguration private[amf] (private[amf] val _internal: InternalGr
 object AMFGraphConfiguration {
   def empty(): AMFGraphConfiguration = InternalGraphConfiguration.empty()
 
-  /**
-    * Predefined AMF core environment with:
-    *   - AMF Resolvers [[AMFResolvers.predefined predefined]]
-    *   - Default error handler provider that will create a [[amf.core.client.scala.errorhandling.DefaultErrorHandler]]
-    *   - Empty [[AMFRegistry]]
-    *   - MutedLogger: [[amf.core.client.platform.config.MutedLogger]]
-    *   - Without Any listener
-    */
+  /** Predefined AMF core environment */
   def predefined(): AMFGraphConfiguration = InternalGraphConfiguration.predefined()
 }

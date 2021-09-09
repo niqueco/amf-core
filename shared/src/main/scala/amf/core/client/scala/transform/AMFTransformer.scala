@@ -8,24 +8,37 @@ import amf.core.internal.validation.CoreValidations.ResolutionValidation
 
 object AMFTransformer {
 
-  def transform(unit: BaseUnit, conf: AMFGraphConfiguration): AMFResult = {
-    transform(unit, PipelineId.Default, conf)
+  /**
+    * Transforms a [[BaseUnit]] with a specific configuration and the default pipeline.
+    * @param unit [[BaseUnit]] to transform
+    * @param configuration [[AMFGraphConfiguration]] required to transform
+    * @return [[AMFResult]]
+    */
+  def transform(unit: BaseUnit, configuration: AMFGraphConfiguration): AMFResult = {
+    transform(unit, PipelineId.Default, configuration)
   }
 
-  def transform(unit: BaseUnit, pipelineId: String, conf: AMFGraphConfiguration): AMFResult = {
-    val pipelines = conf.registry.transformationPipelines
-    val pipeline  = pipelines.get(pipelineId)
-    val handler   = conf.errorHandlerProvider.errorHandler()
+  /**
+    * Transforms a [[BaseUnit]] with a specific configuration and a specific pipeline.
+    * @param unit [[BaseUnit]] to transform
+    * @param pipelineName specific pipeline to use in transformation
+    * @param configuration [[AMFGraphConfiguration]] required to transform
+    * @return [[AMFResult]]
+    */
+  def transform(unit: BaseUnit, pipelineName: String, configuration: AMFGraphConfiguration): AMFResult = {
+    val pipelines = configuration.registry.transformationPipelines
+    val pipeline  = pipelines.get(pipelineName)
+    val handler   = configuration.errorHandlerProvider.errorHandler()
     val resolved = pipeline match {
       case Some(pipeline) =>
-        val runner = TransformationPipelineRunner(handler, conf.listeners.toList)
+        val runner = TransformationPipelineRunner(handler, configuration.listeners.toList)
         runner.run(unit, pipeline)
       case None =>
         handler.violation(
             ResolutionValidation,
             unit.id,
             None,
-            s"Cannot find transformation pipeline with name $pipelineId",
+            s"Cannot find transformation pipeline with name $pipelineName",
             unit.position(),
             unit.location()
         )

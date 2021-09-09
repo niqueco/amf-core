@@ -23,6 +23,7 @@ trait BaseUnit extends AmfObjectWrapper with PlatformSecrets {
   /** Returns the list document URIs referenced from the document that has been parsed to generate this model */
   def references(): ClientList[BaseUnit] = _internal.references.asClient
 
+  /** Returns package */
   def pkg(): StrField = _internal.pkg
 
   /** Raw text  used to generated this unit */
@@ -37,31 +38,61 @@ trait BaseUnit extends AmfObjectWrapper with PlatformSecrets {
   /** Returns the version. */
   def modelVersion: StrField = _internal.modelVersion
 
+  /**
+    * Set references
+    * @param references references to set
+    * @return Previous [[BaseUnit]] with references set
+    */
   def withReferences(references: ClientList[BaseUnit]): this.type = {
     _internal.withReferences(references.asInternal)
     this
   }
 
+  /**
+    * Set package
+    * @param pkg package to set
+    * @return Previous [[BaseUnit]] with package set
+    */
   def withPkg(pkg: String): this.type = {
     _internal.withPkg(pkg)
     this
   }
 
+  /**
+    * Set id
+    * @param id id to set
+    * @return Previous [[BaseUnit]] with id set
+    */
   def withId(id: String): this.type = {
     _internal.withId(id)
     this
   }
 
+  /**
+    * Set raw text
+    * @param raw raw text to set
+    * @return Previous [[BaseUnit]] with raw text set
+    */
   def withRaw(raw: String): this.type = {
     _internal.withRaw(raw)
     this
   }
 
+  /**
+    * Set location
+    * @param location location to set
+    * @return Previous [[BaseUnit]] with location set
+    */
   def withLocation(location: String): this.type = {
     _internal.withLocation(location)
     this
   }
 
+  /**
+    * Set usage
+    * @param usage usage to set
+    * @return Previous [[BaseUnit]] with usage set
+    */
   def withUsage(usage: String): this.type = {
     _internal.withUsage(usage)
     this

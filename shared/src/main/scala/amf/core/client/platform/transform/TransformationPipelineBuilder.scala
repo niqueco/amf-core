@@ -13,14 +13,10 @@ case class TransformationPipelineBuilder(private[amf] val _internal: InternalTra
 
   def withName(newName: String): TransformationPipelineBuilder = _internal.withName(newName)
 
-  /**
-    * inserts stage at the end of the pipeline
-    */
+  /** inserts stage at the end of the pipeline */
   def append(newStage: TransformationStep): TransformationPipelineBuilder = _internal.append(newStage)
 
-  /**
-    * inserts stage at the beginning of pipeline
-    */
+  /** Onserts stage at the beginning of pipeline */
   def prepend(newStage: TransformationStep): TransformationPipelineBuilder = _internal.prepend(newStage)
 }
 

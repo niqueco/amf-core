@@ -24,26 +24,22 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
   /** Include source maps when rendering to graph. */
   def withoutSourceMaps(): RenderOptions = _internal.withoutSourceMaps
 
+  /** Emits JSON-LD with compact IRIs when rendering to graph. */
   def withCompactUris(): RenderOptions = _internal.withCompactUris
 
+  /** Don't emit JSON-LD with compact IRIs when rendering to graph. */
   def withoutCompactUris(): RenderOptions = _internal.withoutCompactUris
 
-  /**
-    * Emit specific AMF JSON-LD serialization
-    *
-    * @return
-    */
+  /** Emit specific AMF JSON-LD serialization */
   def withoutAmfJsonLdSerialization(): RenderOptions = _internal.withoutAmfJsonLdSerialization
 
-  /**
-    * Emit regular JSON-LD serialization
-    *
-    * @return
-    */
+  /** Emit flattened JSON-LD serialization */
   def withAmfJsonLdSerialization(): RenderOptions = _internal.withAmfJsonLdSerialization
 
+  /** Include Node IDs in rendering */
   def withNodeIds(): RenderOptions = _internal.withNodeIds
 
+  /** Include documentation info in rendering such as examples, descriptions, display names, etc. (only supported for json schema rendering) */
   def withDocumentation(): RenderOptions = _internal.withDocumentation
 
   /** Remove documentation info as examples, descriptions, display names, etc. (only supported for json schema rendering) */
@@ -52,6 +48,7 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
   /** Render shapes extracting common types to definitions (feature is enable by default for OAS and json schema) */
   def withCompactedEmission(): RenderOptions = _internal.withCompactedEmission
 
+  /** Do not extract common types to definitions */
   def withoutCompactedEmission(): RenderOptions = _internal.withoutCompactedEmission
 
   /** Render shapes with specific json schema version (supported for json schema rendering) */

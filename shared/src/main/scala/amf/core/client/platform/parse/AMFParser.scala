@@ -49,8 +49,8 @@ object AMFParser {
 
   def parseStartingPoint(graphUrl: String,
                          startingPoint: String,
-                         env: AMFGraphConfiguration): ClientFuture[AMFObjectResult] = {
-    implicit val context: ExecutionContext = env._internal.getExecutionContext
-    InternalAMFParser.parseStartingPoint(graphUrl, startingPoint, env).asClient
+                         configuration: AMFGraphConfiguration): ClientFuture[AMFObjectResult] = {
+    implicit val context: ExecutionContext = configuration._internal.getExecutionContext
+    InternalAMFParser.parseStartingPoint(graphUrl, startingPoint, configuration).asClient
   }
 }

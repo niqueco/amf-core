@@ -36,10 +36,10 @@ case class RenderOptions(
   /** Exclude source maps when rendering to graph. */
   def withoutSourceMaps: RenderOptions = copy(sources = false)
 
-  /** Include CompactUris when rendering to graph. */
+  /** Emits JSON-LD with compact IRIs when rendering to graph. */
   def withCompactUris: RenderOptions = copy(compactUris = true)
 
-  /** Exclude CompactUris when rendering to graph. */
+  /** Don't emit JSON-LD with compact IRIs when rendering to graph. */
   def withoutCompactUris: RenderOptions = copy(compactUris = false)
 
   /** Include RawSourceMaps when rendering to graph. */
@@ -69,10 +69,9 @@ case class RenderOptions(
   /** Exclude AmfJsonLdSerialization when rendering to graph. */
   def withoutAmfJsonLdSerialization: RenderOptions = copy(amfJsonLdSerialization = false)
 
-  /** Include FlattenedJsonLd when rendering to graph. */
   private[amf] def withFlattenedJsonLd: RenderOptions = copy(flattenedJsonLd = true)
 
-  /** Exclude FlattenedJsonLd when rendering to graph. */
+  /** Emit specific AMF JSON-LD serialization */
   private[amf] def withoutFlattenedJsonLd: RenderOptions = copy(flattenedJsonLd = false)
 
   private[amf] def isFlattenedJsonLd: Boolean = flattenedJsonLd
@@ -85,6 +84,7 @@ case class RenderOptions(
   /** Render shapes extracting common types to definitions (feature is enable by default for OAS and json schema) */
   def withCompactedEmission: RenderOptions = copy(compactedEmission = true)
 
+  /** Do not extract common types to definitions */
   def withoutCompactedEmission: RenderOptions = copy(compactedEmission = false)
 
   def withEmitWarningForUnsupportedValidationFacets(value: Boolean): RenderOptions =

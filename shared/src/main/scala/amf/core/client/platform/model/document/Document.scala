@@ -7,7 +7,8 @@ import amf.core.client.scala.model.document.{Document => InternalDocument}
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 /**
-  * Document model class.
+  * A [[Document]] is a parsing Unit that encodes a DomainElement.
+  * The encoded DomainElement can reference other DomainElements.
   */
 @JSExportAll
 class Document(private[amf] val _internal: InternalDocument) extends BaseUnit with EncodesModel with DeclaresModel {

@@ -32,10 +32,10 @@ object AMFParser {
     * @param configuration [[AMFGraphConfiguration]]
     * @return A CompletableFuture of [[AMFResult]]
     */
-  def parseContent(content: String, env: AMFGraphConfiguration): Future[AMFParseResult] = {
-    val preferredSyntaxPlugin = env.registry.plugins.syntaxParsePlugins.sorted.headOption
+  def parseContent(content: String, configuration: AMFGraphConfiguration): Future[AMFParseResult] = {
+    val preferredSyntaxPlugin = configuration.registry.plugins.syntaxParsePlugins.sorted.headOption
     val defaultMediaType      = preferredSyntaxPlugin.map(_.mainMediaType)
-    parseContent(content, DEFAULT_DOCUMENT_URL, defaultMediaType, env)
+    parseContent(content, DEFAULT_DOCUMENT_URL, defaultMediaType, configuration)
   }
 
   /**
@@ -50,15 +50,15 @@ object AMFParser {
 
   def parseStartingPoint(graphUrl: String,
                          startingPoint: String,
-                         env: AMFGraphConfiguration): Future[AMFObjectResult] = {
-    val configuration                               = env.compilerConfiguration
-    implicit val executionContext: ExecutionContext = configuration.executionContext
-    val context = new CompilerContextBuilder(graphUrl, platform, configuration)
+                         configuration: AMFGraphConfiguration): Future[AMFObjectResult] = {
+    val compilerConfiguration                       = configuration.compilerConfiguration
+    implicit val executionContext: ExecutionContext = compilerConfiguration.executionContext
+    val context = new CompilerContextBuilder(graphUrl, platform, compilerConfiguration)
       .withCache(Cache())
       .withFileContext(Context(platform))
       .build()
     val compiler = new AMFGraphPartialCompiler(context, startingPoint)
-    build(compiler, configuration).map { r =>
+    build(compiler, compilerConfiguration).map { r =>
       r.baseUnit match {
         case container: AmfObjectUnitContainer => new AMFObjectResult(container.result, r.results)
         case _                                 => throw new UnsupportedOperationException("Unexpected result unit type for partial parsing")
@@ -69,9 +69,9 @@ object AMFParser {
   private[amf] def parseContent(content: String,
                                 url: String,
                                 mediaType: Option[String],
-                                env: AMFGraphConfiguration): Future[AMFParseResult] = {
+                                configuration: AMFGraphConfiguration): Future[AMFParseResult] = {
     val loader     = fromStream(url, content, mediaType)
-    val withLoader = env.withResourceLoader(loader)
+    val withLoader = configuration.withResourceLoader(loader)
     parseAsync(url, withLoader)
   }
 

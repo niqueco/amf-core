@@ -16,8 +16,10 @@ trait AMFErrorHandler {
 
   private val results: mutable.LinkedHashSet[AMFValidationResult] = mutable.LinkedHashSet()
 
+  /** Get all [[AMFValidationResult]] reported */
   def getResults: List[AMFValidationResult] = results.toList
 
+  /** Report an [[AMFValidationResult]] */
   def report(result: AMFValidationResult): Unit = synchronized {
     if (!results.contains(result)) { // TODO ARM check this assertion
       results += result

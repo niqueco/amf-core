@@ -20,9 +20,9 @@ object AMFRenderer {
   def renderAST(baseUnit: BaseUnit, mediaType: String, configuration: AMFGraphConfiguration): ParsedDocument =
     new AMFSerializer(baseUnit, configuration.renderConfiguration, Some(mediaType)).renderAST
 
-  def renderGraphToBuilder[T](baseUnit: BaseUnit, builder: DocBuilder[T], conf: AMFGraphConfiguration): T = {
+  def renderGraphToBuilder[T](baseUnit: BaseUnit, builder: DocBuilder[T], configuration: AMFGraphConfiguration): T = {
     // only plugin that currently supports rendering to builder interface
-    AMFGraphRenderPlugin.emitToYDocBuilder(baseUnit, builder, conf.renderConfiguration)
+    AMFGraphRenderPlugin.emitToYDocBuilder(baseUnit, builder, configuration.renderConfiguration)
     builder.result
   }
 

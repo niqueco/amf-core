@@ -15,39 +15,44 @@ import scala.concurrent.{ExecutionContext, Future}
   *
   * @param resourceLoaders  a list of [[ResourceLoader]] to use
   * @param unitCache        a [[UnitCache]] that stores [[amf.core.client.scala.model.document.BaseUnit]] resolved
-  * @param executionContext the [[amf.core.client.platform.execution.BaseExecutionEnvironment]] to use
+  * @param executionEnv the [[amf.core.client.platform.execution.BaseExecutionEnvironment]] to use
   */
 private[amf] case class AMFResolvers(resourceLoaders: List[ResourceLoader],
                                      unitCache: Option[UnitCache],
                                      executionEnv: ExecutionEnvironment) {
 
   /**
-    *
-    * @param resourceLoader
-    * @return
+    * Add a resource loader to the [[AMFResolvers]]
+    * @param resourceLoader [[ResourceLoader]] to add
+    * @return an [[AMFResolvers]] with the [[ResourceLoader]] added
     */
   def withResourceLoader(resourceLoader: ResourceLoader): AMFResolvers = {
     copy(resourceLoaders = resourceLoader +: resourceLoaders)
   }
 
   /**
-    *
-    * @param newLoaders
-    * @return
+    * Add a list of [[ResourceLoader]]s
+    * @param newLoaders a list of [[ResourceLoader]]s to add
+    * @return an [[AMFResolvers]] with the [[ResourceLoader]]s added
     */
   def withResourceLoaders(newLoaders: List[ResourceLoader]): AMFResolvers = {
     copy(resourceLoaders = newLoaders)
   }
 
   /**
-    *
-    * @param cache
-    * @return
+    * Add a [[UnitCache]] to the [[AMFResolvers]]
+    * @param cache [[UnitCache]] to add
+    * @return an [[AMFResolvers]] with the [[UnitCache]] added
     */
   def withCache(cache: UnitCache): AMFResolvers = {
     copy(unitCache = Some(cache))
   }
 
+  /**
+    * Add an [[ExecutionEnvironment]] to the [[AMFResolvers]]
+    * @param ee the [[ExecutionEnvironment]] to add
+    * @return an [[AMFResolvers]] with the [[ExecutionEnvironment]] added
+    */
   def withExecutionEnvironment(ee: ExecutionEnvironment): AMFResolvers = {
     val newLoaders = adaptLoadersToNewContext(ee)
     copy(executionEnv = ee, resourceLoaders = newLoaders)
