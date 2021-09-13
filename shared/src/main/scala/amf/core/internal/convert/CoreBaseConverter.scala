@@ -621,22 +621,28 @@ trait AMFGraphConfigurationConverter {
   }
 }
 
-trait TransformationStepConverter extends BaseUnitConverter {
+trait TransformationStepConverter extends BaseUnitConverter with AMFGraphConfigurationConverter {
   implicit object TransformationStepMatcher
       extends BidirectionalMatcher[TransformationStep, transform.TransformationStep] {
     override def asClient(from: TransformationStep): transform.TransformationStep = {
-      (model: ClientBaseUnit, errorHandler: ClientErrorHandler) =>
+      (model: ClientBaseUnit,
+       errorHandler: ClientErrorHandler,
+       configuration: amf.core.client.platform.AMFGraphConfiguration) =>
         {
           val result: BaseUnit =
-            from.transform(BaseUnitMatcher.asInternal(model), ClientErrorHandlerConverter.convert(errorHandler))
+            from.transform(BaseUnitMatcher.asInternal(model),
+                           ClientErrorHandlerConverter.convert(errorHandler),
+                           AMFGraphConfigurationMatcher.asInternal(configuration))
           BaseUnitMatcher.asClient(result)
         }
     }
     override def asInternal(from: transform.TransformationStep): TransformationStep = {
-      (model: BaseUnit, errorHandler: AMFErrorHandler) =>
+      (model: BaseUnit, errorHandler: AMFErrorHandler, configuration: AMFGraphConfiguration) =>
         {
           val result: ClientBaseUnit =
-            from.transform(BaseUnitMatcher.asClient(model), ClientErrorHandlerConverter.convertToClient(errorHandler))
+            from.transform(BaseUnitMatcher.asClient(model),
+                           ClientErrorHandlerConverter.convertToClient(errorHandler),
+                           AMFGraphConfigurationMatcher.asClient(configuration))
           BaseUnitMatcher.asInternal(result)
         }
     }

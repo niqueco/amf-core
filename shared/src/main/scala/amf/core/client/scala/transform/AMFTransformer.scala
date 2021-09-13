@@ -31,7 +31,7 @@ object AMFTransformer {
     val handler   = configuration.errorHandlerProvider.errorHandler()
     val resolved = pipeline match {
       case Some(pipeline) =>
-        val runner = TransformationPipelineRunner(handler, configuration.listeners.toList)
+        val runner = TransformationPipelineRunner(handler, configuration)
         runner.run(unit, pipeline)
       case None =>
         handler.violation(

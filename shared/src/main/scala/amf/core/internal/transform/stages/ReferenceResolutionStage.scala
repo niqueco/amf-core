@@ -1,5 +1,6 @@
 package amf.core.internal.transform.stages
 
+import amf.core.client.scala.AMFGraphConfiguration
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.internal.metamodel.document.DocumentModel
 import amf.core.client.scala.model.document.{BaseUnit, Document}
@@ -16,30 +17,24 @@ import amf.core.internal.transform.stages.selectors.{LinkNodeSelector, LinkSelec
 import scala.collection.mutable
 
 class ReferenceResolutionStage(keepEditingInfo: Boolean) extends TransformationStep {
-  override def transform(model: BaseUnit, errorHandler: AMFErrorHandler): BaseUnit = {
-    new ReferenceResolutionInnerClass()(errorHandler).transform(model)
+  override def transform(model: BaseUnit,
+                         errorHandler: AMFErrorHandler,
+                         configuration: AMFGraphConfiguration): BaseUnit = {
+    new ReferenceResolutionInnerClass()(errorHandler).transform(model, configuration)
   }
 
   // TODO should be in an Adapter specific for ExtendsResolution
-  def resolveDomainElement[T <: DomainElement](element: T, errorHandler: AMFErrorHandler): T = {
+  def resolveDomainElement[T <: DomainElement](element: T,
+                                               errorHandler: AMFErrorHandler,
+                                               configuration: AMFGraphConfiguration): T = {
     val doc = Document().withId("http://resolutionstage.com/test#")
     if (element.id != null) {
       doc.fields.setWithoutId(DocumentModel.Encodes, element)
     } else {
       doc.withEncodes(element)
     }
-    transform(doc, errorHandler)
+    transform(doc, errorHandler, configuration)
     doc.encodes.asInstanceOf[T]
-  }
-
-  // TODO should be in an Adapter specific for ExtendsResolution
-  def resolveDomainElementSet[T <: DomainElement](elements: Seq[T],
-                                                  errorHandler: AMFErrorHandler): Seq[DomainElement] = {
-    val doc = Document().withId("http://resolutionstage.com/test#")
-
-    doc.withDeclares(elements)
-    transform(doc, errorHandler)
-    doc.declares
   }
 
   protected def customDomainElementTransformation: (DomainElement, Linkable) => DomainElement =
@@ -51,13 +46,18 @@ class ReferenceResolutionStage(keepEditingInfo: Boolean) extends TransformationS
     var modelResolver: Option[ModelReferenceResolver] = None
     val cache: mutable.Map[String, DomainElement]     = mutable.Map()
 
-    def transform[T <: BaseUnit](model: T): T = {
+    def transform[T <: BaseUnit](model: T, configuration: AMFGraphConfiguration): T = {
       this.modelResolver = Some(new ModelReferenceResolver(model))
-      model.transform(LinkSelector || LinkNodeSelector, transformation).asInstanceOf[T]
+      model
+        .transform(LinkSelector || LinkNodeSelector,
+                   (element: DomainElement, isCycle: Boolean) => transformation(element, isCycle, configuration))
+        .asInstanceOf[T]
     }
 
-    private def transformation(element: DomainElement, isCycle: Boolean): Option[DomainElement] =
-      transformer.transform(element)
+    private def transformation(element: DomainElement,
+                               isCycle: Boolean,
+                               configuration: AMFGraphConfiguration): Option[DomainElement] =
+      transformer.transform(element, configuration)
 
     override def transformer: ElementStageTransformer[DomainElement] =
       new ReferenceResolution(
