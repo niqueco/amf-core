@@ -70,7 +70,7 @@ class TransformationPipelineBuilderTest extends FunSuite with Matchers {
     val pipeline = builder
       .append(new TransformationStep {
         override def transform(baseUnit: BaseUnit, errorHandler: AMFErrorHandler): BaseUnit = {
-          errorHandler.violation(CoreValidations.ResolutionValidation, "node", "some error")
+          errorHandler.violation(CoreValidations.TransformationValidation, "node", "some error")
           baseUnit
         }
       })

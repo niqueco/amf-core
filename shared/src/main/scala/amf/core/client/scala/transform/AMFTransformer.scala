@@ -4,7 +4,7 @@ import amf.core.client.common.transform.{PipelineId, PipelineName}
 import amf.core.client.scala.{AMFGraphConfiguration, AMFResult}
 import amf.core.client.scala.model.document.BaseUnit
 import amf.core.internal.remote.Amf
-import amf.core.internal.validation.CoreValidations.ResolutionValidation
+import amf.core.internal.validation.CoreValidations.TransformationValidation
 
 object AMFTransformer {
 
@@ -35,7 +35,7 @@ object AMFTransformer {
         runner.run(unit, pipeline)
       case None =>
         handler.violation(
-            ResolutionValidation,
+            TransformationValidation,
             unit.id,
             None,
             s"Cannot find transformation pipeline with name $pipelineName",

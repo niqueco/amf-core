@@ -8,7 +8,7 @@ abstract class ElementTransformationPipeline[T <: DomainElement](element: T, err
 
   val steps: Seq[ElementStageTransformer[T]]
 
-  final def resolve(): T = {
+  final def transform(): T = {
     var result: T = element
     steps.foreach { s =>
       s.transform(result).foreach(result = _)

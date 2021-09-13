@@ -5,7 +5,11 @@ import amf.core.internal.metamodel.document.DocumentModel
 import amf.core.client.scala.model.document.{BaseUnit, Document}
 import amf.core.client.scala.model.domain._
 import amf.core.client.scala.transform.TransformationStep
-import amf.core.internal.transform.stages.elements.resolution.{ElementResolutionStage, ElementStageTransformer, ReferenceResolution}
+import amf.core.internal.transform.stages.elements.resolution.{
+  ElementResolutionStage,
+  ElementStageTransformer,
+  ReferenceResolution
+}
 import amf.core.internal.transform.stages.helpers.ModelReferenceResolver
 import amf.core.internal.transform.stages.selectors.{LinkNodeSelector, LinkSelector}
 
@@ -13,7 +17,7 @@ import scala.collection.mutable
 
 class ReferenceResolutionStage(keepEditingInfo: Boolean) extends TransformationStep {
   override def transform(model: BaseUnit, errorHandler: AMFErrorHandler): BaseUnit = {
-    new ReferenceResolutionInnerClass()(errorHandler).resolve(model)
+    new ReferenceResolutionInnerClass()(errorHandler).transform(model)
   }
 
   // TODO should be in an Adapter specific for ExtendsResolution
@@ -47,7 +51,7 @@ class ReferenceResolutionStage(keepEditingInfo: Boolean) extends TransformationS
     var modelResolver: Option[ModelReferenceResolver] = None
     val cache: mutable.Map[String, DomainElement]     = mutable.Map()
 
-    def resolve[T <: BaseUnit](model: T): T = {
+    def transform[T <: BaseUnit](model: T): T = {
       this.modelResolver = Some(new ModelReferenceResolver(model))
       model.transform(LinkSelector || LinkNodeSelector, transformation).asInstanceOf[T]
     }
