@@ -1,6 +1,8 @@
 package amf.core.client.scala.validation
 
+import amf.core.client.common.position.{Position, Range}
 import amf.core.client.common.validation.SeverityLevels.{INFO, VIOLATION, WARNING}
+import amf.core.internal.annotations.LexicalInformation
 import org.mulesoft.common.io.Output
 import org.mulesoft.common.io.Output._
 
@@ -20,13 +22,13 @@ object AMFValidationReportPrinter {
 
     val AMFValidationReport(model, profile, _) = report
 
-    writer.append(s"Model: $model\n")
+    writer.append(s"ModelId: $model\n")
     writer.append(s"Profile: $profile\n")
     printConformance(report, writer, max)
   }
 
   def printConformance[W: Output](conformance: ReportConformance, writer: W, max: Int): Unit = {
-    writer.append(s"Conforms? ${conformance.conforms}\n")
+    writer.append(s"Conforms: ${conformance.conforms}\n")
     writer.append(s"Number of results: ${conformance.results.length}\n")
 
     val groupedValidations =
@@ -48,13 +50,24 @@ object AMFValidationReportPrinter {
     val AMFValidationResult(message, severityLevel, targetNode, targetProperty, validationId, position, location, _) =
       result
 
-    writer.append(s"- Source: $validationId\n")
+    writer.append(s"- Constraint: $validationId\n")
     writer.append(s"  Message: $message\n")
-    writer.append(s"  Level: $severityLevel\n")
+    writer.append(s"  Severity: $severityLevel\n")
     writer.append(s"  Target: $targetNode\n")
     writer.append(s"  Property: ${targetProperty.getOrElse("")}\n")
-    writer.append(s"  Position: $position\n")
+    writer.append(s"  Range: ${serialize(position)}\n")
     writer.append(s"  Location: ${location.getOrElse("")}\n")
+  }
+
+  private def serialize(maybeLexical: Option[LexicalInformation]): String = {
+    maybeLexical
+      .map { lexical =>
+        val Range(start, end)             = lexical.range
+        val Position(startLine, startCol) = start
+        val Position(endLine, endCol)     = end
+        s"[($startLine,$startCol)-($endLine,$endCol)]"
+      }
+      .getOrElse("")
   }
 
   private def appendValidations[W: Output](level: String, validations: Seq[AMFValidationResult], writer: W): Unit = {

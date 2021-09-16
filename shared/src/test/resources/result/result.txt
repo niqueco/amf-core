@@ -1,41 +1,41 @@
 Model: baseDoc
-Conforms? false
+Conforms: false
 Number of results: 4
 
 Level: Violation
 
-- Source: b
+- Constraint: b
   Message: aMessage1
-  Level: Violation
+  Severity: Violation
   Target: a
   Property: 
-  Position: None
+  Range: 
   Location: 
 
 Level: Warning
 
-- Source: d
+- Constraint: d
   Message: aMessage2
-  Level: Warning
+  Severity: Warning
   Target: c
   Property: 
-  Position: None
+  Range: 
   Location: 
 
-- Source: i
+- Constraint: i
   Message: aMessage4
-  Level: Warning
+  Severity: Warning
   Target: h
   Property: 
-  Position: None
+  Range: 
   Location: 
 
 Level: Info
 
-- Source: g
+- Constraint: g
   Message: aMessage3
-  Level: Info
+  Severity: Info
   Target: f
   Property: 
-  Position: None
+  Range: 
   Location: 
