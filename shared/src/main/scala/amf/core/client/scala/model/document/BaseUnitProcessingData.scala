@@ -5,6 +5,7 @@ import amf.core.client.scala.model.domain.{AmfObject, DomainElement}
 import amf.core.internal.metamodel.document.BaseUnitProcessingDataModel
 import amf.core.internal.metamodel.document.BaseUnitProcessingDataModel._
 import amf.core.internal.parser.domain.{Annotations, Fields}
+import amf.core.internal.remote.Spec
 
 class BaseUnitProcessingData(val fields: Fields, val annotations: Annotations) extends AmfObject {
 
@@ -17,6 +18,8 @@ class BaseUnitProcessingData(val fields: Fields, val annotations: Annotations) e
 
   override def meta: BaseUnitProcessingDataModel = BaseUnitProcessingDataModel
 
+  // Done this to provide API Contract Specs
+  protected[amf] def sourceSpecProvider: Option[Spec] = None
 }
 
 object BaseUnitProcessingData {

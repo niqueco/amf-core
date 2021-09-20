@@ -143,11 +143,15 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
 
   def findInReferences(id: String): Option[BaseUnit] = references.find(_.id == id)
 
-  def sourceSpec: Option[Spec] = this match {
-    case e: EncodesModel if Option(e.encodes).isDefined =>
-      e.encodes.annotations.find(classOf[SourceSpec]).map(a => a.spec)
-    case d: DeclaresModel => d.annotations.find(classOf[SourceSpec]).map(a => a.spec)
-    case _                => None
+  def sourceSpec: Option[Spec] = {
+    processingData.sourceSpecProvider.orElse {
+      this match {
+        case e: EncodesModel if Option(e.encodes).isDefined =>
+          e.encodes.annotations.find(classOf[SourceSpec]).map(a => a.spec)
+        case d: DeclaresModel => d.annotations.find(classOf[SourceSpec]).map(a => a.spec)
+        case _                => None
+      }
+    }
   }
 
   protected[amf] def profileName: Option[ProfileName] = sourceSpec.map(v => ProfileName.apply(v.id))
