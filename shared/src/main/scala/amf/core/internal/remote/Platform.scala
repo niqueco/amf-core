@@ -72,6 +72,9 @@ trait Platform extends FileMediaType {
         case Some(builder) => builder(entity).asInstanceOf[T]
         case None          => wrapFn(d)
       }
+    case o: AmfObject if wrappersRegistry.contains(o.meta.`type`.head.iri()) =>
+      val builder = wrappersRegistry(o.meta.`type`.head.iri())
+      builder(entity).asInstanceOf[T]
     case null => null.asInstanceOf[T] // TODO solve this in a better way
     case _    => wrapFn(entity)
   }

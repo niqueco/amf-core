@@ -5,7 +5,7 @@ import amf.core.client.scala.config.RenderOptions
 import amf.core.internal.convert.{BaseUnitConverter, NativeOps}
 import amf.core.io.FileAssertionTest
 import amf.core.internal.metamodel.domain.ArrayNodeModel
-import amf.core.client.scala.model.document.{Document, Module}
+import amf.core.client.scala.model.document.{BaseUnitProcessingData, Document, Module}
 import amf.core.client.scala.model.domain.{ArrayNode, ObjectNode, ScalarNode}
 import amf.core.internal.remote.Spec.AMF
 import amf.core.client.scala.vocabulary.Namespace

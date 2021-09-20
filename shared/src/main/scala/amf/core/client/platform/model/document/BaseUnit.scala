@@ -36,6 +36,7 @@ trait BaseUnit extends AmfObjectWrapper with PlatformSecrets {
   def usage: StrField = _internal.usage
 
   /** Returns the version. */
+  @deprecated("Use processingData.modelVersion for API Contract Base Units instead", "AMF 5.0.0 & AML 6.0.0")
   def modelVersion: StrField = _internal.modelVersion
 
   /**
@@ -110,6 +111,13 @@ trait BaseUnit extends AmfObjectWrapper with PlatformSecrets {
 
   def withReferenceAlias(alias: String, fullUrl: String, relativeUrl: String): BaseUnit = {
     AliasDeclaration(_internal, alias, fullUrl, relativeUrl)
+    this
+  }
+
+  def processingData: BaseUnitProcessingData = _internal.processingData
+
+  def withProcessingData(data: BaseUnitProcessingData): this.type = {
+    _internal.withProcessingData(data)
     this
   }
 }

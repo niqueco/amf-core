@@ -5,8 +5,6 @@ import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model.document.FieldsFilter.Local
 import amf.core.client.scala.model.domain._
 import amf.core.client.scala.model.{BoolField, StrField}
-import amf.core.client.common.validation.ProfileName
-import amf.core.internal.remote.{Amf, Spec}
 import amf.core.client.scala.traversal.iterator._
 import amf.core.client.scala.traversal.{
   DomainElementSelectorAdapter,
@@ -17,7 +15,7 @@ import amf.core.client.scala.traversal.{
 import amf.core.internal.annotations.SourceSpec
 import amf.core.internal.metamodel.MetaModelTypeMapping
 import amf.core.internal.metamodel.document.BaseUnitModel
-import amf.core.internal.metamodel.document.BaseUnitModel.{Location, ModelVersion, Package, Root, Usage}
+import amf.core.internal.metamodel.document.BaseUnitModel._
 import amf.core.internal.metamodel.document.DocumentModel.References
 import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.remote.Spec
@@ -28,12 +26,18 @@ import scala.collection.mutable
 /** Any parseable unit, backed by a source URI. */
 trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets {
 
-  // Set the current model version
-  withModelVersion("3.1.0")
-
   // Set the default parsingRoot
   withRoot(false)
 
+  // Set default processing data
+  setDefaultProcessingData()
+
+  private[amf] def setDefaultProcessingData(): Unit =
+    withProcessingData {
+      BaseUnitProcessingData().withTransformed(false)
+    }
+
+  @deprecated("Use processingData.transformed instead", "AMF 5.0.0 & AML 6.0.0")
   protected[amf] var resolved: Boolean = false
 
   /** Raw text  used to generated this unit */
@@ -61,6 +65,7 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
   def root: BoolField = fields.field(Root)
 
   /** Returns the version. */
+  @deprecated("Use processingData.modelVersion for API Contract Base Units only", "AMF 5.0.0 & AML 6.0.0")
   def modelVersion: StrField = fields.field(ModelVersion)
 
   /** Set the raw value for the base unit */
@@ -90,6 +95,11 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
     */
   def withUsage(usage: String): this.type = set(Usage, usage)
 
+  def processingData: BaseUnitProcessingData = fields.field(ProcessingData)
+
+  def withProcessingData(data: BaseUnitProcessingData): this.type = set(ProcessingData, data)
+
+  @deprecated("Use processingData.withModelVersion for API Contract Base Units only", "AMF 5.0.0 & AML 6.0.0")
   private def withModelVersion(version: String): this.type = set(ModelVersion, version)
 
   def withRoot(value: Boolean): this.type = set(Root, value)

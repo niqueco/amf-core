@@ -1,7 +1,13 @@
 package amf.core.internal.entities
 
 import amf.core.internal.metamodel.{ModelDefaultBuilder, Obj}
-import amf.core.internal.metamodel.document.{DocumentModel, ExternalFragmentModel, ModuleModel, SourceMapModel}
+import amf.core.internal.metamodel.document.{
+  BaseUnitProcessingDataModel,
+  DocumentModel,
+  ExternalFragmentModel,
+  ModuleModel,
+  SourceMapModel
+}
 import amf.core.internal.metamodel.domain.{ExternalDomainElementModel, RecursiveShapeModel}
 import amf.core.internal.metamodel.domain.extensions.{
   CustomDomainPropertyModel,
@@ -23,7 +29,8 @@ private[amf] object CoreEntities extends Entities {
       CustomDomainPropertyModel,
       ExternalFragmentModel,
       ExternalDomainElementModel,
-      DomainExtensionModel
+      DomainExtensionModel,
+      BaseUnitProcessingDataModel
   )
 
 }

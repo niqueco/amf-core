@@ -1,10 +1,11 @@
 package amf.core.internal.metamodel.document
 
-import amf.core.internal.metamodel.Type.{Array, Bool, Iri, Str}
-import amf.core.internal.metamodel.domain.{ModelDoc, ModelVocabularies}
-import amf.core.internal.metamodel.{Field, ModelDefaultBuilder, Obj}
 import amf.core.client.scala.vocabulary.Namespace.Document
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
+import amf.core.internal.metamodel.Type.{Array, Bool, Iri, Str}
+import amf.core.internal.metamodel.domain.{ModelDoc, ModelVocabularies}
+import amf.core.internal.metamodel.{Field, ModelDefaultBuilder}
+import com.github.ghik.silencer.silent
 
 /**
   * BaseUnit metamodel
@@ -28,11 +29,12 @@ trait BaseUnitModel extends ModelDefaultBuilder {
                                        "location",
                                        "Location of the metadata document that generated this base unit"))
 
-  val Package: Field = Field(Str,
-    Document + "package",
-    ModelDoc(ModelVocabularies.AmlDoc,
-      "package",
-      "Logical identifier providing a common namespace for the information in this base unit")
+  val Package: Field = Field(
+      Str,
+      Document + "package",
+      ModelDoc(ModelVocabularies.AmlDoc,
+               "package",
+               "Logical identifier providing a common namespace for the information in this base unit")
   )
 
   val References: Field = Field(Array(BaseUnitModel),
@@ -48,18 +50,31 @@ trait BaseUnitModel extends ModelDefaultBuilder {
                superClasses = Seq((Namespace.Core + "description").iri()))
   )
 
-  // TODO: This is specific to AML, we should remove this from here
+  @deprecated("Use DialectInstanceProcessingDataModel.DefinedBy instead", "AMF 5.0.0 & AML 6.0.0")
   val DescribedBy: Field = Field(
       Iri,
       ValueType(Namespace.Meta, "describedBy"),
       ModelDoc(ModelVocabularies.AmlDoc,
                "describedBy",
-               "Link to the AML dialect describing a particular subgraph of information")
+               "Link to the AML dialect describing a particular subgraph of information"),
+      deprecated = true
   )
 
-  // TODO: This is specific to web api, we should remove this from here
+  @deprecated("Use APIContractProcessingDataModel.APIContractModelVersion instead", "AMF 5.0.0 & AML 6.0.0")
   val ModelVersion: Field =
-    Field(Str, Document + "version", ModelDoc(ModelVocabularies.AmlDoc, "version", "Version of the current model"))
+    Field(Str,
+          Document + "version",
+          ModelDoc(ModelVocabularies.AmlDoc, "version", "Version of the current model"),
+          deprecated = true)
+
+  val ProcessingData: Field =
+    Field(
+        BaseUnitProcessingDataModel,
+        Document + "processingData",
+        ModelDoc(ModelVocabularies.AmlDoc,
+                 "processingData",
+                 "Field with utility data to be used in Base Unit processing")
+    )
 
 }
 
@@ -67,7 +82,8 @@ object BaseUnitModel extends BaseUnitModel {
 
   override val `type`: List[ValueType] = List(Document + "Unit")
 
-  override val fields: List[Field] = List(ModelVersion, References, Usage, DescribedBy, Root, Package)
+  @silent("deprecated")
+  override val fields: List[Field] = List(ModelVersion, References, Usage, DescribedBy, Root, Package, ProcessingData)
 
   override def modelInstance = throw new Exception("BaseUnit is an abstract class")
 

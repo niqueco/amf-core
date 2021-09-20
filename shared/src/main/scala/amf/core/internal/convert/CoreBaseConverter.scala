@@ -56,7 +56,7 @@ import amf.core.client.platform.{config, transform, AMFResult => ClientAMFResult
 import amf.core.client.scala.config._
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model._
-import amf.core.client.scala.model.document.{BaseUnit, Document, Module, PayloadFragment}
+import amf.core.client.scala.model.document.{BaseUnit, BaseUnitProcessingData, Document, Module, PayloadFragment}
 import amf.core.client.scala.model.domain._
 import amf.core.client.scala.model.domain.extensions.{
   CustomDomainProperty,
@@ -123,7 +123,8 @@ trait CoreBaseConverter
     with ShapeValidationConfigurationConverter
     with ValidatePayloadRequestConverter
     with AmfObjectConverter
-    with AmfObjectResultConverter {
+    with AmfObjectResultConverter
+    with BaseUnitProcessingDataConverter {
 
   implicit def asClient[Internal, Client](from: Internal)(
       implicit m: InternalClientMatcher[Internal, Client]): Client =
@@ -730,5 +731,16 @@ trait AmfObjectResultConverter {
     override def asInternal(from: platform.AMFObjectResult): AMFObjectResult = from._internal
 
     override def asClient(from: AMFObjectResult): platform.AMFObjectResult = new platform.AMFObjectResult(from)
+  }
+}
+
+trait BaseUnitProcessingDataConverter {
+  implicit object BaseUnitProcessingDataMatcher
+      extends BidirectionalMatcher[BaseUnitProcessingData, platform.model.document.BaseUnitProcessingData] {
+    override def asInternal(from: platform.model.document.BaseUnitProcessingData): BaseUnitProcessingData =
+      from._internal
+
+    override def asClient(from: BaseUnitProcessingData): platform.model.document.BaseUnitProcessingData =
+      new platform.model.document.BaseUnitProcessingData(from)
   }
 }
