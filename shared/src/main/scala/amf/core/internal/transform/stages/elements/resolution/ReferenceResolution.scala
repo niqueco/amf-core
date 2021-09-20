@@ -1,4 +1,5 @@
 package amf.core.internal.transform.stages.elements.resolution
+import amf.core.client.scala.AMFGraphConfiguration
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.internal.annotations._
 import amf.core.internal.metamodel.document.DocumentModel
@@ -30,10 +31,12 @@ class ReferenceResolution(errorHandler: AMFErrorHandler,
                             (d: DomainElement, _: Linkable) => d)
     extends ElementStageTransformer[DomainElement] {
 
-  override def transform(element: DomainElement): Option[DomainElement] =
-    transform(element, Seq(VALID_DECLARATION_CONDITION))
+  override def transform(element: DomainElement, configuration: AMFGraphConfiguration): Option[DomainElement] =
+    transform(element, Seq(VALID_DECLARATION_CONDITION), configuration)
 
-  def transform(element: DomainElement, conditions: Seq[Condition]): Option[DomainElement] = {
+  def transform(element: DomainElement,
+                conditions: Seq[Condition],
+                configuration: AMFGraphConfiguration): Option[DomainElement] = {
     element match {
       case l: Linkable if l.isLink =>
         if (cache.contains(l.linkTarget.get.id)) Some(cache(l.linkTarget.get.id))
@@ -42,7 +45,7 @@ class ReferenceResolution(errorHandler: AMFErrorHandler,
           Some(copyEffectiveLinkTarget(element, cached.asInstanceOf[DomainElement with Linkable]))
         } else {
           val target   = resolveLinkTarget(element, conditions, l)
-          var resolved = innerLinkNodeResolution(target)
+          var resolved = innerLinkNodeResolution(target, configuration)
           resolved match {
             case linkable: Linkable if l.supportsRecursion.option().getOrElse(false) =>
               linkable.withSupportsRecursion(true)
@@ -52,7 +55,7 @@ class ReferenceResolution(errorHandler: AMFErrorHandler,
           resolved.annotations += ResolvedInheritance()
           if (keepEditingInfo) addResolvedLinkAnnotations(l, resolved)
           addIntermediateLinkTargetsToCache(element, resolved)
-          resolved = traverseNestedLinksIfCopy(element, conditions, l, resolved)
+          resolved = traverseNestedLinksIfCopy(element, conditions, l, resolved, configuration)
           Some(resolved)
         }
       case ln: LinkNode => LinkNodeResolver.resolveDynamicLink(ln, modelResolver, keepEditingInfo)
@@ -63,11 +66,12 @@ class ReferenceResolution(errorHandler: AMFErrorHandler,
   private def traverseNestedLinksIfCopy(element: DomainElement,
                                         conditions: Seq[Condition],
                                         l: DomainElement with Linkable,
-                                        resolved: DomainElement) = {
+                                        resolved: DomainElement,
+                                        configuration: AMFGraphConfiguration) = {
     l.effectiveLinkTarget() match {
       case t: DomainElement with Linkable if shouldCopyElement(conditions, l, t) =>
         cache.put(element.id, resolved)
-        resolveNestedLinks(resolved)
+        resolveNestedLinks(resolved, configuration)
       case _ => resolved
     }
   }
@@ -78,9 +82,9 @@ class ReferenceResolution(errorHandler: AMFErrorHandler,
     conditions.forall(condition => condition(linkable, linkableAsElement))
   }
 
-  private def resolveNestedLinks(domainElement: DomainElement): DomainElement = {
+  private def resolveNestedLinks(domainElement: DomainElement, configuration: AMFGraphConfiguration): DomainElement = {
     val selectorAdapter       = new DomainElementSelectorAdapter(LinkSelector || LinkNodeSelector)
-    val transformationAdapter = new DomainElementTransformationAdapter((elem, _) => transform(elem))
+    val transformationAdapter = new DomainElementTransformationAdapter((elem, _) => transform(elem, configuration))
     new TransformationTraversal(TransformationData(selectorAdapter, transformationAdapter))
       .traverse(domainElement)
       .asInstanceOf[DomainElement]
@@ -160,10 +164,10 @@ class ReferenceResolution(errorHandler: AMFErrorHandler,
     }
   }
 
-  private def innerLinkNodeResolution(target: DomainElement): DomainElement = {
+  private def innerLinkNodeResolution(target: DomainElement, configuration: AMFGraphConfiguration): DomainElement = {
     val nested = Document()
     nested.fields.setWithoutId(DocumentModel.Encodes, target)
-    val result = new LinkNodeResolutionStage(keepEditingInfo).transform(nested, errorHandler)
+    val result = new LinkNodeResolutionStage(keepEditingInfo).transform(nested, errorHandler, configuration)
     result.asInstanceOf[Document].encodes
   }
 

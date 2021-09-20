@@ -17,7 +17,9 @@ import org.scalatest.{FunSuite, Matchers}
 class TransformationPipelineBuilderTest extends FunSuite with Matchers {
 
   private case class AddToIdCustomStage(content: String) extends TransformationStep {
-    override def transform(baseUnit: BaseUnit, errorHandler: AMFErrorHandler): BaseUnit = {
+    override def transform(baseUnit: BaseUnit,
+                           errorHandler: AMFErrorHandler,
+                           configuration: AMFGraphConfiguration): BaseUnit = {
       baseUnit.withId(baseUnit.id + content)
     }
   }
@@ -26,7 +28,7 @@ class TransformationPipelineBuilderTest extends FunSuite with Matchers {
     val pipeline = TransformationPipelineBuilder.empty("defaultName").append(AddToIdCustomStage("modified")).build()
 
     val unit = Document().withId("")
-    TransformationPipelineRunner(UnhandledErrorHandler).run(unit, pipeline)
+    TransformationPipelineRunner(UnhandledErrorHandler, AMFGraphConfiguration.empty()).run(unit, pipeline)
     unit.id should be("modified")
   }
 
@@ -41,7 +43,7 @@ class TransformationPipelineBuilderTest extends FunSuite with Matchers {
       .append(AddToIdCustomStage("last"))
     val unit     = Document().withId("")
     val pipeline = builder.build()
-    TransformationPipelineRunner(UnhandledErrorHandler).run(unit, pipeline)
+    TransformationPipelineRunner(UnhandledErrorHandler, AMFGraphConfiguration.empty()).run(unit, pipeline)
     unit.id should be("first middle last")
   }
 
@@ -69,15 +71,17 @@ class TransformationPipelineBuilderTest extends FunSuite with Matchers {
     val builder = TransformationPipelineBuilder.empty("defaultName")
     val pipeline = builder
       .append(new TransformationStep {
-        override def transform(baseUnit: BaseUnit, errorHandler: AMFErrorHandler): BaseUnit = {
-          errorHandler.violation(CoreValidations.ResolutionValidation, "node", "some error")
+        override def transform(baseUnit: BaseUnit,
+                               errorHandler: AMFErrorHandler,
+                               configuration: AMFGraphConfiguration): BaseUnit = {
+          errorHandler.violation(CoreValidations.TransformationValidation, "node", "some error")
           baseUnit
         }
       })
       .build()
 
     val eh = DefaultErrorHandler()
-    TransformationPipelineRunner(eh).run(Document(), pipeline)
+    TransformationPipelineRunner(eh, AMFGraphConfiguration.empty()).run(Document(), pipeline)
     eh.getResults.size should be(1)
   }
 

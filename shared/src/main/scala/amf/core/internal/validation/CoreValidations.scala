@@ -117,7 +117,7 @@ object CoreValidations extends Validations {
       "Missing @type in json-ld node"
   )
 
-  // Used in resolution
+  // Used in transformation
   val RecursiveShapeSpecification = validation(
       "recursive-shape",
       "Recursive shape",
@@ -125,10 +125,10 @@ object CoreValidations extends Validations {
       Some("Recursive schema")
   )
 
-  // Used in resolution
-  val ResolutionValidation = validation(
-      "resolution-validation",
-      "Default resolution validation"
+  // Used in transformation
+  val TransformationValidation = validation(
+      "transformation-validation",
+      "Default transformation validation"
   )
 
   val UnhandledDomainElement = validation(
@@ -168,7 +168,7 @@ object CoreValidations extends Validations {
       InvalidCrossSpec,
       InvalidFragmentRef,
       RecursiveShapeSpecification,
-      ResolutionValidation,
+      TransformationValidation,
       UnhandledDomainElement
   )
 }
