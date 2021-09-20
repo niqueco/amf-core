@@ -8,6 +8,8 @@ case class Hint(spec: Spec, syntax: Syntax, kind: ReferenceKind = UnspecifiedRef
 
 }
 
+object GraphQLHint extends Hint(GraphQL, Syntax.GraphQL)
+
 object GrpcProtoHint extends Hint(Grpc, Protobuf)
 
 object Raml10YamlHint extends Hint(Raml10, Yaml)

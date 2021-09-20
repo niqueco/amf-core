@@ -19,6 +19,7 @@ trait FileMediaType {
       case "json"                          => Some(Mimes.`application/json`)
       case "yaml" | "yam" | "yml" | "raml" => Some(Mimes.`application/yaml`)
       case "jsonld" | "amf"                => Some(Mimes.`application/ld+json`)
+      case "graphql"                        => Some(Mimes.`application/graphql`)
       case _                               => None
     }
 
