@@ -6,7 +6,11 @@ import amf.core.client.scala.vocabulary.ValueType
 /**
   * Field
   */
-case class Field(`type`: Type, value: ValueType, doc: ModelDoc = ModelDoc(), jsonldField: Boolean = true) {
+case class Field(`type`: Type,
+                 value: ValueType,
+                 doc: ModelDoc = ModelDoc(),
+                 jsonldField: Boolean = true,
+                 deprecated: Boolean = false) {
   override def toString: String = value.iri()
 
   override def canEqual(a: Any) = Option(a).isDefined && a.isInstanceOf[Field]

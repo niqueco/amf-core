@@ -3,7 +3,7 @@ package amf.core.client.scala.transform
 import amf.core.client.scala.AMFGraphConfiguration
 import amf.core.client.scala.config._
 import amf.core.client.scala.errorhandling.AMFErrorHandler
-import amf.core.client.scala.model.document.BaseUnit
+import amf.core.client.scala.model.document.{BaseUnit, BaseUnitProcessingData}
 
 trait TransformationPipeline {
   val name: String
@@ -26,8 +26,10 @@ private[amf] case class TransformationPipelineRunner(errorHandler: AMFErrorHandl
         transformedModel = step.transform(transformedModel, errorHandler, configuration)
         notifyEvent(FinishedTransformationStepEvent(step, index))
     }
-    // TODO: should be unit metadata
-    transformedModel.resolved = true
+
+    val processingData = Option(transformedModel.processingData).getOrElse(BaseUnitProcessingData())
+    processingData.withTransformed(true)
+
     notifyEvent(FinishedTransformationEvent(transformedModel))
     transformedModel
   }
