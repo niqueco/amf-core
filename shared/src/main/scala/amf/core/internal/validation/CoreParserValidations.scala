@@ -15,8 +15,21 @@ object CoreParserValidations extends Validations {
       "unsupported-example-media-type",
       "Cannot validate example with unsupported media type"
   )
+
+  val CantReferenceSpecInFileTree: ValidationSpecification = validation(
+      "cant-reference-spec-in-file-tree",
+      "Cant reference spec in file tree"
+  )
+
+  val CouldntGuessRoot: ValidationSpecification = validation(
+      "couldnt-guess-root",
+      "Couldnt guess root"
+  )
+
   override val validations: List[ValidationSpecification] = List(
-      UnsupportedExampleMediaTypeErrorSpecification
+      UnsupportedExampleMediaTypeErrorSpecification,
+      CantReferenceSpecInFileTree,
+      CouldntGuessRoot
   )
   override val levels: Map[String, Map[ProfileName, String]] = Map.empty
 }
