@@ -2,21 +2,14 @@ package amf.core.internal.plugins.parse
 
 import amf.core.client.common.{LowPriority, PluginPriority}
 import amf.core.client.scala.errorhandling.AMFErrorHandler
-import amf.core.client.scala.exception.{UnsupportedDomainForDocumentException, UnsupportedParsedDocumentException}
+import amf.core.client.scala.exception.UnsupportedDomainForDocumentException
 import amf.core.client.scala.model.document.{BaseUnit, ExternalFragment}
 import amf.core.client.scala.model.domain.ExternalDomainElement
 import amf.core.client.scala.parse.AMFParsePlugin
-import amf.core.client.scala.parse.document.{
-  ParserContext,
-  ReferenceHandler,
-  SimpleReferenceHandler,
-  SyamlParsedDocument
-}
+import amf.core.client.scala.parse.document.{ParserContext, ReferenceHandler, SimpleReferenceHandler}
 import amf.core.internal.parser.Root
-import amf.core.internal.parser.domain.Annotations
-import amf.core.internal.remote.{JSONRefs, Mimes, Spec, UnknownSpec}
-import amf.core.internal.remote.Mimes.{`application/json`, `application/yaml`}
-import amf.core.internal.utils.MediaTypeMatcher
+import amf.core.internal.remote.{Spec, UnknownSpec}
+import amf.core.internal.validation.CoreParserValidations.CantReferenceSpecInFileTree
 
 trait DomainParsingFallback {
 
