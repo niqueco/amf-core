@@ -12,7 +12,7 @@ We need to start deprecating old fields and have no mechanism to do so.
 
 ## Decision
 
-We will start deprecating fields. Deprecated fields should no longer be emitted nor set, but should still be parsed from JSON-LD. Getter/setter methods in Scala and Platform classes will be deprecated also.
+We will start deprecating fields. Getter/setter methods in Scala and Platform classes will be deprecated also. Deprecated fields will still be set alongside new fields until these are removed in the next major version. 
 
 How to deprecate a field:
 1. Deprecate field definition in model class
@@ -20,9 +20,10 @@ How to deprecate a field:
    2. Deprecate field definition with the `deprecated=true` paramter from the `Field` class
    3. Annotate the `fields` value assignment with `@silent("deprecated")` annotation to avoid compilation errors from deprecated fields
 2. Deprecate getter/setter methods in Scala and Platform classes with `@deprecated` annotation
-3. Update usages of getter/setter methods
+3. Update usages of getter/setter methods to use both legacy and new fields (with the `@silent("deprecated")` annotation)
 
 ## Consequences
 
-Raw JSON-LD consumers will experience breaking changes. Consumers that parse JSON-LD with AMF will be unaffected until the removal of the getter/setter methods in the next release.
-Braking in JSON-LD emission can still be emitted at the cost of having to silence (`@silent` annotation) all usages of deprecated fields across the AMF code.
+* The `@silent("deprecated")` annotation should be used to discard compilation errors from the use of deprecated methods. Note this annotation **can only be used in assignment expressions**
+* We will have "trash" code setting the legacy fields, just for the sake of backwards compatibility
+* No migration from old fields to new fields are provided. Only when parsing a "YAML Spec" (API, Dialect, Dialect Instance, etc.) both the legacy and new fields will be set.
