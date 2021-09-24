@@ -5,20 +5,21 @@ import amf.core.client.scala.parse.document.UnresolvedComponents
 import amf.core.internal.metamodel.domain.LinkableElementModel
 import amf.core.internal.parser.domain.{Annotations, DeclarationPromise, Fields, ScalarNode => ScalarNodeObj}
 import amf.core.internal.utils.IdCounter
+import amf.core.internal.adoption.AdoptionDependantCalls
 import amf.core.internal.validation.CoreValidations.{UnresolvedReference, UnresolvedReferenceWarning}
 import org.mulesoft.lexer.SourceLocation
 
-trait Linkable extends AmfObject { this: DomainElement with Linkable =>
+trait Linkable extends AmfObject with AdoptionDependantCalls { this: DomainElement with Linkable =>
 
   def linkTarget: Option[DomainElement]    = Option(fields(LinkableElementModel.Target))
   var linkAnnotations: Option[Annotations] = None
   def supportsRecursion: BoolField         = fields.field(LinkableElementModel.SupportsRecursion)
-  def effectiveLinkTarget(links: Seq[String] = Seq()): DomainElement =
+  def effectiveLinkTarget(links: Set[Linkable] = Set()): DomainElement =
     linkTarget
       .map {
         case linkable: Linkable if linkTarget.isDefined =>
-          if (links.contains(linkable.id)) linkable.linkTarget.get
-          else linkable.effectiveLinkTarget(linkable.id +: links)
+          if (links.contains(linkable)) linkable.linkTarget.get
+          else linkable.effectiveLinkTarget(links + linkable)
         case other => other
       }
       .getOrElse(this)
@@ -31,6 +32,12 @@ trait Linkable extends AmfObject { this: DomainElement with Linkable =>
   def withLinkTarget(target: DomainElement): this.type = {
     fields.setWithoutId(LinkableElementModel.Target, target, Annotations.synthesized())
     set(LinkableElementModel.TargetId, AmfScalar(target.id), Annotations.synthesized())
+  }
+
+  callAfterAdoption { () =>
+    linkTarget
+      .map(_.id)
+      .foreach(targetId => set(LinkableElementModel.TargetId, AmfScalar(targetId), Annotations.synthesized()))
   }
 
   def withLinkLabel(label: String, annotations: Annotations = Annotations()): this.type =
@@ -121,10 +128,10 @@ trait Linkable extends AmfObject { this: DomainElement with Linkable =>
             resolve,
             () =>
               if (unresolvedSeverity == "warning") {
-                ctx.eh.warning(UnresolvedReferenceWarning, id, s"Unresolved reference '$refName'", astPos.get)
+                ctx.eh.warning(UnresolvedReferenceWarning, this, s"Unresolved reference '$refName'", astPos.get)
 
               } else
-                ctx.eh.violation(UnresolvedReference, id, s"Unresolved reference '$refName'", astPos.get)
+                ctx.eh.violation(UnresolvedReference, this, s"Unresolved reference '$refName'", astPos.get)
         )
         (Seq(refName) ++ refAliases).foreach { ref =>
           ctx.futureDeclarations.futureRef(

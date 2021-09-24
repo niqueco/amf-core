@@ -3,6 +3,7 @@ package amf.core.client.scala.model.document
 import amf.core.internal.metamodel.document.DocumentModel._
 import amf.core.internal.metamodel.document.{DocumentModel, ExtensionLikeModel}
 import amf.core.client.scala.model.domain.DomainElement
+import amf.core.internal.adoption.AdoptionDependantCalls
 import amf.core.internal.parser.domain.Fields
 import amf.core.internal.parser.domain.{Annotations, Fields}
 
@@ -32,9 +33,10 @@ object Document {
 }
 
 abstract class ExtensionLike[T <: DomainElement](override val fields: Fields, override val annotations: Annotations)
-    extends Document(fields, annotations) {
+    extends Document(fields, annotations)
+    with AdoptionDependantCalls {
   override def encodes: T = super.encodes.asInstanceOf[T]
   def extend: String      = fields(ExtensionLikeModel.Extends)
 
-  def withExtend(extend: BaseUnit): this.type = set(ExtensionLikeModel.Extends, extend)
+  def withExtend(extend: String): this.type = set(ExtensionLikeModel.Extends, extend)
 }

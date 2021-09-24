@@ -1,6 +1,11 @@
 package amf.core.internal.transform.stages.helpers
 
-import amf.core.internal.annotations.{DeclaredElement, ResolvedInheritance, ResolvedLinkAnnotation, ResolvedLinkTargetAnnotation}
+import amf.core.internal.annotations.{
+  DeclaredElement,
+  ResolvedInheritance,
+  ResolvedLinkAnnotation,
+  ResolvedLinkTargetAnnotation
+}
 import amf.core.client.scala.model.domain.{DomainElement, LinkNode}
 
 object LinkNodeResolver {
