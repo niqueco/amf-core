@@ -50,6 +50,8 @@ private[amf] case class AMFRegistry(plugins: PluginsRegistry,
   def withEntities(entities: Map[String, ModelDefaultBuilder]): AMFRegistry =
     copy(entitiesRegistry = entitiesRegistry.withEntities(entities))
 
+  def emptyEntities(): AMFRegistry = copy(entitiesRegistry = entitiesRegistry.removeAllEntities())
+
   def withAnnotations(annotations: Map[String, AnnotationGraphLoader]): AMFRegistry =
     copy(entitiesRegistry = entitiesRegistry.withAnnotations(annotations))
 
