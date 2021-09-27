@@ -4,7 +4,7 @@ import amf.core.internal.entities.Entities
 import amf.core.internal.metamodel.{ModelDefaultBuilder, Obj}
 import amf.core.internal.metamodel.domain._
 
-private[amf] object AMFGraphEntities extends Entities {
+private[amf] object DataNodeEntities extends Entities {
 
   override protected val innerEntities: Seq[ModelDefaultBuilder] = Seq(
       ObjectNodeModel,
