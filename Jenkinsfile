@@ -36,7 +36,7 @@ pipeline {
       when {
         anyOf {
           branch 'master'
-          branch 'remod-breaking'
+          branch 'release/*'
         }
       }
       steps {
