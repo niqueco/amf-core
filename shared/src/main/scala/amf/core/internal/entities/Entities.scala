@@ -12,4 +12,7 @@ private[amf] trait Entities {
 
   private def defaultIri(metadata: ModelDefaultBuilder): String = metadata.`type`.head.iri()
 
+  protected[amf] def contains(element: ModelDefaultBuilder) = innerEntities.exists { entity =>
+    defaultIri(entity) == defaultIri(element)
+  }
 }
