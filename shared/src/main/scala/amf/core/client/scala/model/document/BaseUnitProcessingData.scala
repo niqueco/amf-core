@@ -16,10 +16,14 @@ class BaseUnitProcessingData(val fields: Fields, val annotations: Annotations) e
 
   def withTransformed(value: Boolean): this.type = set(Transformed, value)
 
+  def sourceSpec: StrField = fields.field(SourceSpec)
+
+  def withSourceSpec(spec: String): this.type = set(SourceSpec, Spec(spec).id)
+  def withSourceSpec(spec: Spec): this.type   = set(SourceSpec, spec.id)
+
   override def meta: BaseUnitProcessingDataModel = BaseUnitProcessingDataModel
 
-  // Done this to provide API Contract Specs
-  protected[amf] def sourceSpecProvider: Option[Spec] = None
+  protected[amf] def sourceSpecProvider: Option[Spec] = sourceSpec.option().map(x => Spec(x))
 }
 
 object BaseUnitProcessingData {
