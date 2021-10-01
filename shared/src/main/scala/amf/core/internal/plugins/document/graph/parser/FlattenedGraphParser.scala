@@ -29,7 +29,7 @@ class FlattenedUnitGraphParser()(implicit val ctx: GraphParserContext) extends G
 
   def parse(document: YDocument, location: String): BaseUnit = {
 
-    val rootNode: Option[YNode] = FlattenedUnitGraphParser.findRootNode.runCached(document)
+    val rootNode: Option[YNode] = FlattenedUnitGraphParser.findRootNode(document)
 
     val unit = rootNode.flatMap(_.toOption[YMap]).flatMap(m => retrieveId(m, ctx)) match {
       case Some(rootId) =>
@@ -193,7 +193,8 @@ class FlattenedGraphParser(startingPoint: String)(implicit val ctx: GraphParserC
       typeIris.find(findType(_).isDefined) match {
         case Some(t) => findType(t)
         case None =>
-          ctx.eh.violation(UnableToParseNode, id, s"Error parsing JSON-LD node, unknown @types $typeIris", map.location)
+          ctx.eh
+            .violation(UnableToParseNode, id, s"Error parsing JSON-LD node, unknown @types $typeIris", map.location)
           None
       }
     }
@@ -563,7 +564,7 @@ object FlattenedUnitGraphParser extends GraphContextHelper with GraphParserHelpe
     * @param document document to perform the canParse test on
     * @return
     */
-  def canParse(document: SyamlParsedDocument): Boolean = findRootNode.runCached(document.document).isDefined
+  def canParse(document: SyamlParsedDocument): Boolean = findRootNode(document.document).isDefined
 
   private def isRootNode(node: YNode)(implicit ctx: GraphParserContext): Boolean = {
     node.value match {
@@ -592,10 +593,7 @@ object FlattenedUnitGraphParser extends GraphContextHelper with GraphParserHelpe
     }
   }
 
-  private[amf] val findRootNode: CachedFunction[YDocument, Option[YNode], Identity] =
-    CachedFunction.from(findRootNodeImpl)
-
-  private[amf] def findRootNodeImpl(document: YDocument): Option[YNode] = {
+  private[amf] def findRootNode(document: YDocument): Option[YNode] = {
     document.node.value match {
       case m: YMap =>
         processGraph(m, ctx)
