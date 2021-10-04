@@ -5,11 +5,13 @@ import amf.core.client.scala.parse.AMFParsePlugin
 import amf.core.client.common.validation.ProfileName
 import amf.core.client.scala.render.AMFElementRenderPlugin
 import amf.core.client.scala.transform.TransformationPipeline
+import amf.core.client.scala.validation.EffectiveValidationsCompute
 import amf.core.internal.metamodel.ModelDefaultBuilder
 import amf.core.internal.validation.core.ValidationProfile
 import amf.core.internal.plugins.AMFPlugin
 import amf.core.internal.plugins.parse.DomainParsingFallback
 import amf.core.internal.registries.domain.EntitiesRegistry
+import amf.core.internal.validation.EffectiveValidations
 
 /**
   * Registry to store plugins, entities, transformation pipelines and constraint rules
@@ -22,7 +24,8 @@ import amf.core.internal.registries.domain.EntitiesRegistry
 private[amf] case class AMFRegistry(plugins: PluginsRegistry,
                                     entitiesRegistry: EntitiesRegistry,
                                     transformationPipelines: Map[String, TransformationPipeline],
-                                    constraintsRules: Map[ProfileName, ValidationProfile]) {
+                                    constraintsRules: Map[ProfileName, ValidationProfile],
+                                    effectiveValidations: Map[ProfileName, EffectiveValidations]) {
 
   def withPlugin(amfPlugin: AMFPlugin[_]): AMFRegistry = copy(plugins = plugins.withPlugin(amfPlugin))
 
@@ -32,20 +35,29 @@ private[amf] case class AMFRegistry(plugins: PluginsRegistry,
 
   def withFallback(plugin: DomainParsingFallback): AMFRegistry = copy(plugins = plugins.withFallback(plugin))
 
-  def withConstraints(profile: ValidationProfile): AMFRegistry =
-    copy(constraintsRules = constraintsRules + (profile.name -> profile))
+  def withConstraints(profile: ValidationProfile): AMFRegistry = {
+    val nextRules         = constraintsRules + (profile.name -> profile)
+    val computedEffective = EffectiveValidationsCompute.buildAll(nextRules)
+    copy(constraintsRules = nextRules, effectiveValidations = computedEffective)
+  }
 
-  def removeConstraints(name: ProfileName): AMFRegistry =
-    copy(constraintsRules = constraintsRules - name)
+  def withConstraints(profile: ValidationProfile, effective: EffectiveValidations): AMFRegistry = {
+    val nextRules     = constraintsRules + (profile.name     -> profile)
+    val nextEffective = effectiveValidations + (profile.name -> effective)
+    copy(constraintsRules = nextRules, effectiveValidations = nextEffective)
+  }
+
+  def withConstraintsRules(rules: Map[ProfileName, ValidationProfile]): AMFRegistry = {
+    val nextRules         = constraintsRules ++ rules
+    val computedEffective = EffectiveValidationsCompute.buildAll(nextRules)
+    copy(constraintsRules = nextRules, effectiveValidations = computedEffective)
+  }
 
   def withTransformationPipeline(pipeline: TransformationPipeline): AMFRegistry =
     copy(transformationPipelines = transformationPipelines + (pipeline.name -> pipeline))
 
   def withTransformationPipelines(pipelines: List[TransformationPipeline]): AMFRegistry =
     copy(transformationPipelines = transformationPipelines ++ pipelines.map(p => p.name -> p))
-
-  def withConstraintsRules(rules: Map[ProfileName, ValidationProfile]): AMFRegistry =
-    copy(constraintsRules = constraintsRules ++ rules)
 
   def withEntities(entities: Map[String, ModelDefaultBuilder]): AMFRegistry =
     copy(entitiesRegistry = entitiesRegistry.withEntities(entities))
@@ -69,5 +81,5 @@ private[amf] case class AMFRegistry(plugins: PluginsRegistry,
 object AMFRegistry {
 
   /** Creates an empty AMF Registry */
-  val empty = new AMFRegistry(PluginsRegistry.empty, EntitiesRegistry.empty, Map.empty, Map.empty)
+  val empty = new AMFRegistry(PluginsRegistry.empty, EntitiesRegistry.empty, Map.empty, Map.empty, Map.empty)
 }
