@@ -19,4 +19,5 @@ case class ValidationConfiguration(amfConfig: AMFGraphConfiguration) {
   val maxYamlReferences: Option[Int]                   = amfConfig.options.parsingOptions.maxYamlReferences
   val constraints: Map[ProfileName, ValidationProfile] = amfConfig.registry.constraintsRules
   val listeners: Set[AMFEventListener]                 = amfConfig.listeners
+  val effectiveValidations: Map[ProfileName, EffectiveValidations] = amfConfig.registry.effectiveValidations
 }
