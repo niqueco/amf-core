@@ -14,10 +14,8 @@ trait AMFValidatePlugin extends AMFPlugin[ValidationInfo] with PlatformSecrets {
       implicit executionContext: ExecutionContext): Future[ValidationResult]
 }
 
-case class ValidationOptions(profile: ProfileName,
-                             effectiveValidations: EffectiveValidations,
-                             config: ValidationConfiguration)
+case class ValidationOptions(config: ValidationConfiguration)
 
-case class ValidationInfo(val baseUnit: BaseUnit, val profile: ProfileName)
+case class ValidationInfo(baseUnit: BaseUnit)
 
 case class ValidationResult(unit: BaseUnit, report: AMFValidationReport)

@@ -2,7 +2,7 @@ package amf.core.internal.validation
 
 import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.scala.validation.AMFValidationReport
-import amf.core.client.common.validation.ProfileName
+import amf.core.client.common.validation.{ProfileName, UnknownProfile}
 import amf.core.internal.plugins.validation.{AMFValidatePlugin, ValidationOptions, ValidationResult}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -18,7 +18,7 @@ trait RemodValidationRunner {
 case class FailFastValidationRunner(plugins: Seq[AMFValidatePlugin], options: ValidationOptions)
     extends RemodValidationRunner {
   override def run(unit: BaseUnit)(implicit executionContext: ExecutionContext): Future[AMFValidationReport] = {
-    val initialResult = Future.successful(ValidationResult(unit, emptyReport(unit, options.profile)))
+    val initialResult = Future.successful(ValidationResult(unit, emptyReport(unit, UnknownProfile)))
     plugins
       .foldLeft(initialResult) { (acc, curr) =>
         acc.flatMap { validateResult =>
