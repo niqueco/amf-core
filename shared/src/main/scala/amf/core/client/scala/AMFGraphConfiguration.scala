@@ -15,7 +15,7 @@ import amf.core.internal.entities.CoreEntities
 import amf.core.internal.metamodel.ModelDefaultBuilder
 import amf.core.internal.parser.CompilerConfiguration
 import amf.core.internal.plugins.AMFPlugin
-import amf.core.internal.plugins.document.graph.entities.AMFGraphEntities
+import amf.core.internal.plugins.document.graph.entities.DataNodeEntities
 import amf.core.internal.plugins.parse.{AMFGraphParsePlugin, DomainParsingFallback}
 import amf.core.internal.plugins.render.{AMFGraphRenderPlugin, DefaultRenderConfiguration}
 import amf.core.internal.plugins.syntax.{SyamlSyntaxParsePlugin, SyamlSyntaxRenderPlugin}
@@ -52,12 +52,11 @@ object AMFGraphConfiguration {
         AMFResolvers.predefined(),
         DefaultErrorHandlerProvider,
         AMFRegistry.empty
-          .withEntities(CoreEntities.entities ++ AMFGraphEntities.entities)
+          .withEntities(CoreEntities.entities ++ DataNodeEntities.entities)
           .withAnnotations(CoreSerializableAnnotations.annotations),
         Set.empty,
         AMFOptions.default()
     ).withPlugins(List(AMFGraphParsePlugin, AMFGraphRenderPlugin, SyamlSyntaxParsePlugin, SyamlSyntaxRenderPlugin))
-      // we might need to register editing pipeline as well because of legacy behaviour.
       .withTransformationPipeline(BasicTransformationPipeline())
   }
 
@@ -146,6 +145,7 @@ class AMFGraphConfiguration private[amf] (override private[amf] val resolvers: A
 
   }
 
+  private[amf] def emptyEntities(): AMFGraphConfiguration   = super._emptyEntities()
   private[amf] def getParsingOptions: ParsingOptions        = options.parsingOptions
   private[amf] def getRegistry: AMFRegistry                 = registry
   private[amf] def getResourceLoaders: List[ResourceLoader] = resolvers.resourceLoaders
@@ -191,6 +191,9 @@ sealed abstract class BaseAMFConfigurationSetter(private[amf] val resolvers: AMF
 
   protected def _withEntities[T](entities: Map[String, ModelDefaultBuilder]): T =
     copy(registry = registry.withEntities(entities)).asInstanceOf[T]
+
+  protected def _emptyEntities[T](): T =
+    copy(registry = registry.emptyEntities()).asInstanceOf[T]
 
   protected def _withAnnotations[T](ann: Map[String, AnnotationGraphLoader]): T =
     copy(registry = registry.withAnnotations(ann)).asInstanceOf[T]
