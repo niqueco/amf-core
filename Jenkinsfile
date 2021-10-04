@@ -23,6 +23,7 @@ pipeline {
     stage('Coverage') {
       when {
         branch 'master'
+        branch 'release/*'
       }
       steps {
         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {

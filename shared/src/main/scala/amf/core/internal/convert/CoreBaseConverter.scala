@@ -52,7 +52,7 @@ import amf.core.client.platform.validation.{
   ValidationCandidate => ClientValidationCandidate,
   ValidationShapeSet => ClientValidationShapeSet
 }
-import amf.core.client.platform.{config, transform, AMFResult => ClientAMFResult}
+import amf.core.client.platform.{config, model, transform, AMFResult => ClientAMFResult}
 import amf.core.client.scala.config._
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model._
@@ -734,13 +734,13 @@ trait AmfObjectResultConverter {
   }
 }
 
-trait BaseUnitProcessingDataConverter {
+trait BaseUnitProcessingDataConverter extends PlatformSecrets {
   implicit object BaseUnitProcessingDataMatcher
-      extends BidirectionalMatcher[BaseUnitProcessingData, platform.model.document.BaseUnitProcessingData] {
-    override def asInternal(from: platform.model.document.BaseUnitProcessingData): BaseUnitProcessingData =
+      extends BidirectionalMatcher[BaseUnitProcessingData, model.document.BaseUnitProcessingData] {
+    override def asInternal(from: model.document.BaseUnitProcessingData): BaseUnitProcessingData =
       from._internal
 
-    override def asClient(from: BaseUnitProcessingData): platform.model.document.BaseUnitProcessingData =
-      new platform.model.document.BaseUnitProcessingData(from)
+    override def asClient(from: BaseUnitProcessingData): model.document.BaseUnitProcessingData =
+      platform.wrap(from)
   }
 }

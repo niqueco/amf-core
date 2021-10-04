@@ -16,6 +16,8 @@ private[amf] case class EntitiesRegistry(domainEntities: Map[String, ModelDefaul
   def withExtensions(extensions: Seq[DomainElement]): EntitiesRegistry =
     copy(extensions = this.extensions ++ extensions)
 
+  private[amf] def removeAllEntities(): EntitiesRegistry = copy(domainEntities = Map.empty)
+
   private[amf] def findType(`type`: String): Option[ModelDefaultBuilder] = domainEntities.get(`type`)
 
   private[amf] def findAnnotation(annotationID: String): Option[AnnotationGraphLoader] =

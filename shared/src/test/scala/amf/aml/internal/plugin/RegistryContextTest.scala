@@ -4,7 +4,7 @@ import amf.core.internal.annotations.serializable.CoreSerializableAnnotations
 import amf.core.internal.entities.CoreEntities
 import amf.core.internal.metamodel.Obj
 import amf.core.internal.metamodel.document.SourceMapModel
-import amf.core.internal.plugins.document.graph.entities.AMFGraphEntities
+import amf.core.internal.plugins.document.graph.entities.DataNodeEntities
 import amf.core.internal.registries.{AMFRegistry, RegistryContext}
 import org.scalatest.{FunSuite, Matchers}
 
@@ -15,7 +15,7 @@ class RegistryContextTest extends FunSuite with Matchers {
   test("Test types without blocklist") {
     val ctx = RegistryContext(
         AMFRegistry.empty
-          .withEntities(CoreEntities.entities ++ AMFGraphEntities.entities)
+          .withEntities(CoreEntities.entities ++ DataNodeEntities.entities)
           .withAnnotations(CoreSerializableAnnotations.annotations))
 
     CoreEntities.entities.values.foreach { `type` =>
@@ -32,7 +32,7 @@ class RegistryContextTest extends FunSuite with Matchers {
   test("Test types without Core") {
     val ctx = RegistryContext(
         AMFRegistry.empty
-          .withEntities(AMFGraphEntities.entities)
+          .withEntities(DataNodeEntities.entities)
           .withAnnotations(CoreSerializableAnnotations.annotations))
 
     CoreEntities.entities.values.foreach { `type` =>
