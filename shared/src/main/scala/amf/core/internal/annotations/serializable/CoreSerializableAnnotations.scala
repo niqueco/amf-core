@@ -9,7 +9,6 @@ private[amf] object CoreSerializableAnnotations extends SerializableAnnotations 
       "lexical"              -> LexicalInformation,
       "host-lexical"         -> HostLexicalInformation,
       "base-path-lexical"    -> BasePathLexicalInformation,
-      "source-vendor"        -> SourceSpec, // TODO ARM: Change
       "single-value-array"   -> SingleValueArray,
       "aliases-array"        -> Aliases,
       "synthesized-field"    -> SynthesizedField,
