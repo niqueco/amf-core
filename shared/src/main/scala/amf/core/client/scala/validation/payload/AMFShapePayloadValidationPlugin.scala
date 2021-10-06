@@ -17,7 +17,6 @@ trait AMFShapePayloadValidationPlugin extends AMFPlugin[ValidatePayloadRequest] 
 
   override def applies(element: ValidatePayloadRequest): Boolean
 
-  // TODO ARM we can remove the validation mode and handle it on different plugins, o we can put the mode into the options
   def validator(shape: Shape,
                 mediaType: String,
                 config: ShapeValidationConfiguration,
