@@ -59,7 +59,6 @@ class FlattenedGraphParser(startingPoint: String)(implicit val ctx: GraphParserC
     parser.parse(document)
   }
 
-  // TODO ARM duplicated
   def annotations(nodes: Map[String, AmfElement], sources: SourceMap, key: String): Annotations =
     ctx.config.serializableAnnotationsFacade.retrieveAnnotation(nodes, sources, key)
 
