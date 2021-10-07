@@ -27,14 +27,17 @@ import scala.collection.mutable.ListBuffer
 /**
   * AMF Graph parser
   */
-class EmbeddedGraphParser()(implicit val ctx: GraphParserContext) extends GraphParser(ctx.config) {
+class EmbeddedGraphParser()(implicit val ctx: GraphParserContext) extends GraphParserHelpers {
 
-  override def canParse(document: SyamlParsedDocument): Boolean = EmbeddedGraphParser.canParse(document)
+  def canParse(document: SyamlParsedDocument): Boolean = EmbeddedGraphParser.canParse(document)
 
-  override def parse(document: YDocument, location: String): BaseUnit = {
+  def parse(document: YDocument, location: String): BaseUnit = {
     val parser = Parser(Map())
     parser.parse(document, location)
   }
+
+  def annotations(nodes: Map[String, AmfElement], sources: SourceMap, key: String): Annotations =
+    ctx.config.serializableAnnotationsFacade.retrieveAnnotation(nodes, sources, key)
 
   case class Parser(var nodes: Map[String, AmfElement]) {
     private val unresolvedReferences = mutable.Map[String, Seq[DomainElement]]()
@@ -68,7 +71,8 @@ class EmbeddedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
       stringTypes.find(findType(_).isDefined) match {
         case Some(t) => findType(t)
         case None =>
-          ctx.eh.violation(UnableToParseNode, id, s"Error parsing JSON-LD node, unknown @types $stringTypes", map.location)
+          ctx.eh
+            .violation(UnableToParseNode, id, s"Error parsing JSON-LD node, unknown @types $stringTypes", map.location)
           None
       }
     }

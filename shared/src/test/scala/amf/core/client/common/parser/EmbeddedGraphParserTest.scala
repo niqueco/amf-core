@@ -24,8 +24,7 @@ trait EmbeddedGraphParserTest
   override implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
   test("Test parse simple document") {
-    val golden = "shared/src/test/resources/parser/simple-document.expanded.jsonld"
-    // TODO ARM update for new interfaces
+    val golden               = "shared/src/test/resources/parser/simple-document.expanded.jsonld"
     val client               = AMFGraphConfiguration.predefined().baseUnitClient()
     val f: Future[AMFResult] = client.parse("file://" + golden).asFuture
 
