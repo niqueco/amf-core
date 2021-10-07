@@ -82,7 +82,7 @@ abstract class Shape extends DomainElement with Linkable with NamedDomainElement
 
   // @todo should be memoize this?
   def collectCustomShapePropertyDefinitions(onlyInherited: Boolean = false,
-                                            traversed: mutable.Set[String] = mutable.Set()): Seq[FacetsMap] = {
+                                            traversed: mutable.Set[Shape] = mutable.Set()): Seq[FacetsMap] = {
     // Facet properties for the current shape
     val accInit: FacetsMap = Map.empty
     val initialSequence = if (onlyInherited) {
@@ -103,8 +103,8 @@ abstract class Shape extends DomainElement with Linkable with NamedDomainElement
       // initial facets maps computed for this shape. This multiplies the number of
       // final facets maps
       effectiveInherits.foldLeft(initialSequence) { (acc: Seq[FacetsMap], baseShape: Shape) =>
-        if (!traversed.contains(baseShape.id)) {
-          baseShape.collectCustomShapePropertyDefinitions(onlyInherited = false, traversed += baseShape.id).flatMap {
+        if (!traversed.contains(baseShape)) {
+          baseShape.collectCustomShapePropertyDefinitions(onlyInherited = false, traversed += baseShape).flatMap {
             facetsMap: FacetsMap =>
               acc.map { accFacetsMap =>
                 accFacetsMap ++ facetsMap
