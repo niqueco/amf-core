@@ -2,6 +2,7 @@ package amf.core.internal.parser.domain
 
 import amf.core.client.scala.model._
 import amf.core.client.scala.model.domain._
+import amf.core.client.scala.vocabulary.ValueType
 import amf.core.internal.metamodel.Type._
 import amf.core.internal.metamodel.{Field, Obj, Type}
 import amf.core.internal.annotations.{Inferred, SynthesizedField}
@@ -74,6 +75,11 @@ class Fields {
 
   /** Return [[Value]] associated to given Field. */
   def getValue(field: Field): Value = fs.get(field).orNull
+
+  def getValueAsOption(iri: String): Option[Value] = {
+    val constructedField = Field(Type.Any, ValueType(iri)) // valueType iri is the only relevant value
+    getValueAsOption(constructedField)
+  }
 
   /** Return [[Value]] associated to given Field. */
   def getValueAsOption(field: Field): Option[Value] = fs.get(field)
@@ -262,10 +268,10 @@ class Value(var value: AmfElement, val annotations: Annotations) {
             value = resolved
           } else {
             value = resolved.resolveUnreferencedLink(
-              linkable.refName,
-              linkable.annotations,
-              linkable,
-              linkable.supportsRecursion.option().getOrElse(false)) // mutation of the field value
+                linkable.refName,
+                linkable.annotations,
+                linkable,
+                linkable.supportsRecursion.option().getOrElse(false)) // mutation of the field value
           }
           val syntax = value match {
             case s: Shape => Some(s.ramlSyntaxKey)
