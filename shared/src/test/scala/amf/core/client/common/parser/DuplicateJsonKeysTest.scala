@@ -12,7 +12,6 @@ trait DuplicateJsonKeysTest extends AsyncFunSuite with PlatformSecrets with Nati
 
   override implicit def executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
-  // TODO ARM: change this to call directly a plugin or syaml
   test("Parsed JSON with duplicate keys has several warnings") {
 
     val config = AMFGraphConfiguration.predefined().withFallback(ExternalFragmentDomainFallback(false))

@@ -21,7 +21,7 @@ trait AMFErrorHandler {
 
   /** Report an [[AMFValidationResult]] */
   def report(result: AMFValidationResult): Unit = synchronized {
-    if (!results.contains(result)) { // TODO ARM check this assertion
+    if (!results.contains(result)) {
       results += result
     }
   }

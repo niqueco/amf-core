@@ -219,3 +219,7 @@ case class FinishedRenderingSyntaxEvent(unit: BaseUnit) extends AMFEvent with Gr
   override val name: String     = FinishedSyntaxRender
   override val groupKey: String = unit.id
 }
+
+case class SkippedValidationPluginEvent(pluginName: String, reason: String) extends AMFEvent {
+  override val name: String = SkippedValidationPlugin
+}

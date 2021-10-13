@@ -18,4 +18,9 @@ case class Graph(private[amf] val _internal: InternalGraph) {
 
   def scalarByProperty(uri: String): ClientList[Any] = _internal.scalarByProperty(uri).asClient
 
+  def removeField(uri: String): this.type = {
+    _internal.removeField(uri)
+    this
+  }
+
 }
