@@ -21,7 +21,7 @@ import amf.core.internal.plugins.render.{AMFGraphRenderPlugin, DefaultRenderConf
 import amf.core.internal.plugins.syntax.{SyamlSyntaxParsePlugin, SyamlSyntaxRenderPlugin}
 import amf.core.internal.registries.AMFRegistry
 import amf.core.internal.resource.AMFResolvers
-import amf.core.internal.validation.ValidationConfiguration
+import amf.core.internal.validation.{EffectiveValidations, ValidationConfiguration}
 import amf.core.internal.validation.core.ValidationProfile
 
 import scala.concurrent.ExecutionContext
@@ -119,6 +119,11 @@ class AMFGraphConfiguration private[amf] (override private[amf] val resolvers: A
   private[amf] def withValidationProfile(profile: ValidationProfile): AMFGraphConfiguration =
     super._withValidationProfile(profile)
 
+  // Keep AMF internal, done to avoid recomputing validations every time a config is requested
+  private[amf] def withValidationProfile(profile: ValidationProfile,
+                                         effective: EffectiveValidations): AMFGraphConfiguration =
+    super._withValidationProfile(profile, effective)
+
   def withTransformationPipeline(pipeline: TransformationPipeline): AMFGraphConfiguration =
     super._withTransformationPipeline(pipeline)
 
@@ -203,6 +208,9 @@ sealed abstract class BaseAMFConfigurationSetter(private[amf] val resolvers: AMF
 
   protected def _withValidationProfile[T](profile: ValidationProfile): T =
     copy(registry = registry.withConstraints(profile)).asInstanceOf[T]
+
+  protected def _withValidationProfile[T](profile: ValidationProfile, effectiveValidations: EffectiveValidations): T =
+    copy(registry = registry.withConstraints(profile, effectiveValidations)).asInstanceOf[T]
 
   protected def _withTransformationPipeline[T](pipeline: TransformationPipeline): T =
     copy(registry = registry.withTransformationPipeline(pipeline)).asInstanceOf[T]
