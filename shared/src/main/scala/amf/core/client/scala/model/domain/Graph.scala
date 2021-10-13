@@ -7,11 +7,6 @@ import amf.core.internal.parser.domain.{Annotations, FieldEntry, Value}
 
 case class Graph(e: DomainElement) {
 
-  private[amf] def removeField(uri: String): this.type = {
-    e.fields.remove(uri)
-    this
-  }
-
   private[amf] def scalarByField(field: Field): Seq[Any] = scalarByProperty(field.value.iri())
 
   private[amf] def containsField(f: Field): Boolean = properties().contains(f.toString)
@@ -66,5 +61,10 @@ case class Graph(e: DomainElement) {
         }
       case None => List()
     }
+  }
+
+  def removeField(uri: String): this.type = {
+    e.fields.remove(uri)
+    this
   }
 }
