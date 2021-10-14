@@ -1,4 +1,5 @@
 package amf.core.client
+
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 /**
@@ -47,9 +48,9 @@ class ParsingOptions {
     this
   }
 
-  def isAmfJsonLdSerilization: Boolean = amfJsonLdSerialization
-  def definedBaseUrl: Option[String]   = baseUnitUrl
-  def getMaxYamlReferences: Option[Long]  = maxYamlReferences
+  def isAmfJsonLdSerilization: Boolean   = amfJsonLdSerialization
+  def definedBaseUrl: Option[String]     = baseUnitUrl
+  def getMaxYamlReferences: Option[Long] = maxYamlReferences
 }
 
 object ParsingOptions {

@@ -2,14 +2,12 @@ package amf.core
 
 import amf.core.parser.{Position, Range}
 import amf.core.unsafe.PlatformSecrets
-import org.mulesoft.common.time.{SimpleDateTime, TimeOfDay}
-import org.mulesoft.lexer.InputRange
-
-import scala.annotation.tailrec
 import org.mulesoft.common.core._
+import org.mulesoft.lexer.InputRange
 import org.yaml.model.YNode
 import org.yaml.model.YNode.Alias
 
+import scala.annotation.tailrec
 import scala.util.matching.Regex
 
 package object utils {
@@ -40,8 +38,9 @@ package object utils {
 
     /** Prepend correct protocol prefix, then encode */
     def normalizeUrl: String = {
+      val protocolList = Set("http:", "https:", "file:", "jar:")
       if (str == null || str.isEmpty) ""
-      else if (str.startsWith("http:") || str.startsWith("https:") || str.startsWith("file:")) str
+      else if (protocolList.exists(str.startsWith)) str
       else if (str.startsWith("/")) "file:/" + str
       else "file://" + str
     }
@@ -91,8 +90,7 @@ package object utils {
       val words = str.split("\\s+")
       if (words.size == 1) {
         words.head
-      }
-      else {
+      } else {
         (Seq(words.head) ++ words.tail.map(_.capitalize)).mkString
       }
     }
@@ -111,8 +109,7 @@ package object utils {
           case -1  => QName("", fqn)
           case dot => QName(fqn.substring(0, dot), fqn.substring(dot + 1))
         }
-      }
-      else Empty
+      } else Empty
     }
 
     val Empty = QName("", "")
