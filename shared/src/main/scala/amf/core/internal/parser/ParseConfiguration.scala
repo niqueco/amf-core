@@ -17,10 +17,10 @@ trait ParseConfiguration {
 }
 
 case class ParseConfig(config: AMFGraphConfiguration, eh: AMFErrorHandler) extends ParseConfiguration {
-  val sortedParsePlugins: Seq[AMFParsePlugin] = config.registry.plugins.parsePlugins.sorted
-  val parsingOptions: ParsingOptions                    = config.options.parsingOptions
-  lazy val registryContext: RegistryContext             = RegistryContext(config.getRegistry)
-  lazy val serializableAnnotationsFacade                = new SerializableAnnotationsFacade(this)
+  val sortedParsePlugins: Seq[AMFParsePlugin] = config.registry.getPluginsRegistry.parsePlugins.sorted
+  val parsingOptions: ParsingOptions          = config.options.parsingOptions
+  lazy val registryContext: RegistryContext   = RegistryContext(config.getRegistry)
+  lazy val serializableAnnotationsFacade      = new SerializableAnnotationsFacade(this)
 }
 
 object ParseConfig {

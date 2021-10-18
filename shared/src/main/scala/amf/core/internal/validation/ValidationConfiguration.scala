@@ -16,5 +16,5 @@ case class ValidationConfiguration(amfConfig: AMFGraphConfiguration) {
   val eh: AMFErrorHandler                              = amfConfig.errorHandlerProvider.errorHandler()
   val executionContext: ExecutionContext               = amfConfig.getExecutionContext
   val maxYamlReferences: Option[Int]                   = amfConfig.options.parsingOptions.maxYamlReferences
-  val constraints: Map[ProfileName, ValidationProfile] = amfConfig.registry.constraintsRules
+  val constraints: Map[ProfileName, ValidationProfile] = amfConfig.registry.getConstraintsRules
 }

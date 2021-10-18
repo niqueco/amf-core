@@ -1,15 +1,15 @@
 package amf.core.internal.registries
 
-import amf.core.client.scala.model.domain.{AnnotationGraphLoader, DomainElement}
-import amf.core.client.scala.parse.AMFParsePlugin
 import amf.core.client.common.validation.ProfileName
+import amf.core.client.scala.model.domain.AnnotationGraphLoader
+import amf.core.client.scala.parse.AMFParsePlugin
 import amf.core.client.scala.render.AMFElementRenderPlugin
 import amf.core.client.scala.transform.TransformationPipeline
 import amf.core.internal.metamodel.ModelDefaultBuilder
-import amf.core.internal.validation.core.ValidationProfile
 import amf.core.internal.plugins.AMFPlugin
 import amf.core.internal.plugins.parse.DomainParsingFallback
 import amf.core.internal.registries.domain.EntitiesRegistry
+import amf.core.internal.validation.core.ValidationProfile
 
 /**
   * Registry to store plugins, entities, transformation pipelines and constraint rules
@@ -19,10 +19,15 @@ import amf.core.internal.registries.domain.EntitiesRegistry
   * @param transformationPipelines a map of [[TransformationPipeline]]s
   * @param constraintsRules        a map of [[ProfileName]] -> [[amf.core.internal.validation.core.ValidationProfile]]
   */
-private[amf] case class AMFRegistry(plugins: PluginsRegistry,
-                                    entitiesRegistry: EntitiesRegistry,
-                                    transformationPipelines: Map[String, TransformationPipeline],
-                                    constraintsRules: Map[ProfileName, ValidationProfile]) {
+private[amf] class AMFRegistry(plugins: PluginsRegistry,
+                               entitiesRegistry: EntitiesRegistry,
+                               transformationPipelines: Map[String, TransformationPipeline],
+                               constraintsRules: Map[ProfileName, ValidationProfile]) {
+
+  def getPluginsRegistry: PluginsRegistry                             = plugins
+  def getEntitiesRegistry: EntitiesRegistry                           = entitiesRegistry
+  def getTransformationPipelines: Map[String, TransformationPipeline] = transformationPipelines
+  def getConstraintsRules: Map[ProfileName, ValidationProfile]        = constraintsRules
 
   def withPlugin(amfPlugin: AMFPlugin[_]): AMFRegistry = copy(plugins = plugins.withPlugin(amfPlugin))
 
@@ -53,8 +58,11 @@ private[amf] case class AMFRegistry(plugins: PluginsRegistry,
   def withAnnotations(annotations: Map[String, AnnotationGraphLoader]): AMFRegistry =
     copy(entitiesRegistry = entitiesRegistry.withAnnotations(annotations))
 
-  def withExtensions(extensions: Seq[DomainElement]): AMFRegistry =
-    copy(entitiesRegistry = entitiesRegistry.withExtensions(extensions))
+  private def copy(plugins: PluginsRegistry = plugins,
+                   entitiesRegistry: EntitiesRegistry = entitiesRegistry,
+                   transformationPipelines: Map[String, TransformationPipeline] = transformationPipelines,
+                   constraintsRules: Map[ProfileName, ValidationProfile] = constraintsRules): AMFRegistry =
+    new AMFRegistry(plugins, entitiesRegistry, transformationPipelines, constraintsRules)
 
   private[amf] def getAllPlugins(): List[AMFPlugin[_]] = plugins.allPlugins
 

@@ -5,10 +5,8 @@ import amf.core.client.scala.config._
 import amf.core.client.scala.errorhandling.{AMFErrorHandler, DefaultErrorHandlerProvider, ErrorHandlerProvider}
 import amf.core.client.scala.execution.ExecutionEnvironment
 import amf.core.client.scala.model.domain.AnnotationGraphLoader
-import amf.core.client.scala.parse.document.ParserContext
 import amf.core.client.scala.resource.ResourceLoader
 import amf.core.client.scala.transform.TransformationPipeline
-import amf.core.internal.transform.pipelines.BasicTransformationPipeline
 import amf.core.internal.annotations.serializable.CoreSerializableAnnotations
 import amf.core.internal.convert.CoreRegister
 import amf.core.internal.entities.CoreEntities
@@ -21,6 +19,7 @@ import amf.core.internal.plugins.render.{AMFGraphRenderPlugin, DefaultRenderConf
 import amf.core.internal.plugins.syntax.{SyamlSyntaxParsePlugin, SyamlSyntaxRenderPlugin}
 import amf.core.internal.registries.AMFRegistry
 import amf.core.internal.resource.AMFResolvers
+import amf.core.internal.transform.pipelines.BasicTransformationPipeline
 import amf.core.internal.validation.ValidationConfiguration
 import amf.core.internal.validation.core.ValidationProfile
 
