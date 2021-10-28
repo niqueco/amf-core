@@ -3,8 +3,10 @@ package amf.core.internal.entities
 import amf.core.internal.metamodel.{ModelDefaultBuilder, Obj}
 import amf.core.internal.metamodel.document.{
   BaseUnitProcessingDataModel,
+  BaseUnitSourceInformationModel,
   DocumentModel,
   ExternalFragmentModel,
+  LocationInformationModel,
   ModuleModel,
   SourceMapModel
 }
@@ -30,7 +32,9 @@ private[amf] object CoreEntities extends Entities {
       ExternalFragmentModel,
       ExternalDomainElementModel,
       DomainExtensionModel,
-      BaseUnitProcessingDataModel
+      BaseUnitProcessingDataModel,
+      BaseUnitSourceInformationModel,
+      LocationInformationModel
   )
 
 }

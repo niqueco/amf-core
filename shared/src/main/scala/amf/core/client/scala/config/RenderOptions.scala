@@ -11,6 +11,7 @@ case class RenderOptions(
     sources: Boolean = false,
     compactUris: Boolean = false,
     rawSourceMaps: Boolean = false,
+    sourceInformation: Boolean = false,
     validating: Boolean = false,
     private[amf] val filterFields: Field => Boolean = (_: Field) => false,
     amfJsonLdSerialization: Boolean = true,
@@ -35,6 +36,12 @@ case class RenderOptions(
 
   /** Exclude source maps when rendering to graph. */
   def withoutSourceMaps: RenderOptions = copy(sources = false)
+
+  /** Include source information node when rendering to graph. */
+  def withSourceInformation: RenderOptions = copy(sourceInformation = true)
+
+  /** Exclude source information node when rendering to graph. */
+  def withoutSourceInformation: RenderOptions = copy(sourceInformation = false)
 
   /** Emits JSON-LD with compact IRIs when rendering to graph. */
   def withCompactUris: RenderOptions = copy(compactUris = true)
@@ -100,6 +107,7 @@ case class RenderOptions(
 
   def isCompactUris: Boolean             = compactUris
   def isWithSourceMaps: Boolean          = sources
+  def isWithSourceInformation: Boolean   = sourceInformation
   def isWithRawSourceMaps: Boolean       = rawSourceMaps
   def isAmfJsonLdSerialization: Boolean  = amfJsonLdSerialization
   def isValidation: Boolean              = validating
