@@ -119,4 +119,6 @@ trait BaseUnit extends AmfObjectWrapper with PlatformSecrets {
     _internal.withProcessingData(data)
     this
   }
+
+  def sourceInformation: BaseUnitSourceInformation = _internal.sourceInformation
 }

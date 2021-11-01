@@ -1,9 +1,12 @@
 package amf.core.internal.plugins.document.graph.emitter
 
+import amf.core.client.scala.config.RenderOptions
+import amf.core.client.scala.model.document.BaseUnit
 import amf.core.internal.annotations.{Declares, References}
 import amf.core.internal.metamodel.domain.ExternalSourceElementModel
 import amf.core.internal.metamodel.{Field, Obj}
 import amf.core.client.scala.model.domain.{AmfArray, AmfElement, AmfObject, ExternalSourceElement}
+import amf.core.internal.metamodel.document.BaseUnitModel
 import amf.core.internal.parser.domain.FieldEntry
 import amf.core.internal.parser.domain.{Annotations, FieldEntry}
 import amf.core.internal.plugins.document.graph.{JsonLdKeywords, MetaModelHelper}
@@ -38,12 +41,16 @@ trait CommonEmitter {
     }
   }
 
-  def getMetaModelFields(element: AmfObject, obj: Obj, extensionIris: Set[String]): Seq[Field] = {
+  def getMetaModelFields(element: AmfObject,
+                         obj: Obj,
+                         extensionIris: Set[String],
+                         renderOptions: RenderOptions): Seq[Field] = {
     val fields = MetaModelHelper.fieldsFrom(obj)
 
     val filteredFields = element match {
-      case e: ExternalSourceElement if e.isLinkToSource => fields.filter(f => f != ExternalSourceElementModel.Raw)
-      case _                                            => fields
+      case e: ExternalSourceElement if e.isLinkToSource    => fields.filter(f => f != ExternalSourceElementModel.Raw)
+      case _: BaseUnit if !renderOptions.sourceInformation => fields.filter(f => f != BaseUnitModel.SourceInformation)
+      case _                                               => fields
     }
 
     filteredFields ++ getExtensionFields(element, obj, extensionIris)

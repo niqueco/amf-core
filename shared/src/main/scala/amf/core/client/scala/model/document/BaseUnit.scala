@@ -99,6 +99,8 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
 
   def withProcessingData(data: BaseUnitProcessingData): this.type = set(ProcessingData, data)
 
+  def sourceInformation: BaseUnitSourceInformation = fields.field(SourceInformation)
+
   @deprecated("Use processingData.withModelVersion for API Contract Base Units only", "AMF 5.0.0 & AML 6.0.0")
   private def withModelVersion(version: String): this.type = set(ModelVersion, version)
 
@@ -109,6 +111,9 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
   def withPkg(pkg: String): this.type = set(Package, pkg)
   def withPkg(pkg: String, annotations: Annotations): this.type =
     set(Package, AmfScalar(pkg, annotations), Annotations.inferred())
+
+  private[amf] def withSourceInformation(sourceInfo: BaseUnitSourceInformation): this.type =
+    set(SourceInformation, sourceInfo)
 
   /** Returns Unit iterator for specified strategy and scope. */
   def iterator(strategy: IteratorStrategy = DomainElementStrategy,

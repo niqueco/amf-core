@@ -56,7 +56,15 @@ import amf.core.client.platform.{config, model, transform, AMFResult => ClientAM
 import amf.core.client.scala.config._
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model._
-import amf.core.client.scala.model.document.{BaseUnit, BaseUnitProcessingData, Document, Module, PayloadFragment}
+import amf.core.client.scala.model.document.{
+  BaseUnit,
+  BaseUnitProcessingData,
+  BaseUnitSourceInformation,
+  LocationInformation,
+  Document,
+  Module,
+  PayloadFragment
+}
 import amf.core.client.scala.model.domain._
 import amf.core.client.scala.model.domain.extensions.{
   CustomDomainProperty,
@@ -124,7 +132,9 @@ trait CoreBaseConverter
     with ValidatePayloadRequestConverter
     with AmfObjectConverter
     with AmfObjectResultConverter
-    with BaseUnitProcessingDataConverter {
+    with BaseUnitProcessingDataConverter
+    with BaseUnitSourceInformationConverter
+    with LocationInformationConverter {
 
   implicit def asClient[Internal, Client](from: Internal)(
       implicit m: InternalClientMatcher[Internal, Client]): Client =
@@ -741,6 +751,28 @@ trait BaseUnitProcessingDataConverter extends PlatformSecrets {
       from._internal
 
     override def asClient(from: BaseUnitProcessingData): model.document.BaseUnitProcessingData =
+      platform.wrap(from)
+  }
+}
+
+trait BaseUnitSourceInformationConverter extends PlatformSecrets {
+  implicit object BaseUnitSourceInformationMatcher
+      extends BidirectionalMatcher[BaseUnitSourceInformation, model.document.BaseUnitSourceInformation] {
+    override def asInternal(from: model.document.BaseUnitSourceInformation): BaseUnitSourceInformation =
+      from._internal
+
+    override def asClient(from: BaseUnitSourceInformation): model.document.BaseUnitSourceInformation =
+      platform.wrap(from)
+  }
+}
+
+trait LocationInformationConverter extends PlatformSecrets {
+  implicit object LocationInformationMatcher
+      extends BidirectionalMatcher[LocationInformation, model.document.LocationInformation] {
+    override def asInternal(from: model.document.LocationInformation): LocationInformation =
+      from._internal
+
+    override def asClient(from: LocationInformation): model.document.LocationInformation =
       platform.wrap(from)
   }
 }

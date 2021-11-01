@@ -76,6 +76,15 @@ trait BaseUnitModel extends ModelDefaultBuilder {
                  "Field with utility data to be used in Base Unit processing")
     )
 
+  val SourceInformation: Field =
+    Field(
+        BaseUnitSourceInformationModel,
+        Document + "sourceInformation",
+        ModelDoc(ModelVocabularies.AmlDoc,
+                 "sourceInformation",
+                 "Contains information of the source from which the base unit was generated")
+    )
+
 }
 
 object BaseUnitModel extends BaseUnitModel {
@@ -83,7 +92,8 @@ object BaseUnitModel extends BaseUnitModel {
   override val `type`: List[ValueType] = List(Document + "Unit")
 
   @silent("deprecated")
-  override val fields: List[Field] = List(ModelVersion, References, Usage, DescribedBy, Root, Package, ProcessingData)
+  override val fields: List[Field] =
+    List(ModelVersion, References, Usage, DescribedBy, Root, Package, ProcessingData, SourceInformation)
 
   override def modelInstance = throw new Exception("BaseUnit is an abstract class")
 
