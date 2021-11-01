@@ -29,6 +29,11 @@ object BaseUnitSourceInformationModel extends ModelDefaultBuilder {
   override def modelInstance: BaseUnitSourceInformation = BaseUnitSourceInformation()
 
   override def fields: List[Field] = List(RootLocation, AdditionalLocations)
+
+  override val doc: ModelDoc = ModelDoc(
+      ModelVocabularies.AmlDoc,
+      "BaseUnitSourceInformation",
+      "Class that stores information of the source from which the base unit was parsed")
 }
 
 object LocationInformationModel extends ModelDefaultBuilder {
@@ -45,4 +50,9 @@ object LocationInformationModel extends ModelDefaultBuilder {
   override def modelInstance: LocationInformation = LocationInformation()
 
   override def fields: List[Field] = List(BaseUnitModel.Location, Elements) // reusing location field from BaseUnit.
+
+  override val doc: ModelDoc = ModelDoc(
+      ModelVocabularies.AmlDoc,
+      "LocationInformation",
+      "Class that store a specific location and the elements that where parsed from this source")
 }
