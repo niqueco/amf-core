@@ -22,7 +22,7 @@ pipeline {
     }
     stage('Coverage') {
       when {
-        branch 'master'
+        branch 'develop'
       }
       steps {
         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
@@ -36,7 +36,7 @@ pipeline {
       when {
         anyOf {
           branch 'master'
-          branch 'remod-breaking'
+          branch 'develop'
         }
       }
       steps {
