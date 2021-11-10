@@ -280,9 +280,10 @@ trait GraphParserHelpers extends GraphContextHelper {
       case YType.Map =>
         val m: YMap = node.as[YMap]
         t match {
-          case Iri                                       => m.key(JsonLdKeywords.Id).get.value
-          case Str | RegExp | Bool | Type.Int | Type.Any => m.key(JsonLdKeywords.Value).get.value
-          case _                                         => node
+          case Type.Any                       => m.key(JsonLdKeywords.Value).orElse(m.key(JsonLdKeywords.Id)).get.value
+          case Iri                            => m.key(JsonLdKeywords.Id).get.value
+          case Str | RegExp | Bool | Type.Int => m.key(JsonLdKeywords.Value).get.value
+          case _                              => node
         }
       case _ => node
     }
