@@ -319,11 +319,15 @@ class FlattenedJsonLdEmitter[T](val builder: DocBuilder[T],
           case AmfArray(values, _) =>
             values
               .sortBy(_.asInstanceOf[DomainExtension].id)
-              .foreach {
-                case extension: DomainExtension =>
-                  val uri = extension.definedBy.id
-                  customProperties += uri
-                  createCustomExtension(b, uri, extension, None)
+              .collect {
+                case extension: DomainExtension if !isSemanticExtension(extension) => Some(extension)
+                case _                                                             => None
+              }
+              .flatten
+              .foreach { extension =>
+                val uri = extension.definedBy.id
+                customProperties += uri
+                createCustomExtension(b, uri, extension, None)
               }
           case _ => // ignore
         }
@@ -385,6 +389,8 @@ class FlattenedJsonLdEmitter[T](val builder: DocBuilder[T],
         }
     )
   }
+
+  private def isSemanticExtension(extension: DomainExtension): Boolean = Option(extension.extension).isEmpty
 
   def createSortedArray(b: Part[T], seq: Seq[AmfElement], parent: String, element: Type): Unit = {
     b.obj { b =>
