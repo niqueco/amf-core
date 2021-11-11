@@ -236,7 +236,8 @@ trait GraphParserHelpers extends GraphContextHelper {
 
     map.key(JsonLdKeywords.Type) match {
       case Some(entry) =>
-        val allTypes         = entry.value.toOption[Seq[YNode]].getOrElse(Nil).flatMap(v => v.toOption[YScalar].map(_.text))
+        val nodes            = entry.value.toOption[Seq[YNode]].getOrElse(List(entry.value))
+        val allTypes         = nodes.flatMap(v => v.toOption[YScalar].map(_.text))
         val nonDocumentTypes = allTypes.filter(t => !documentTypesSet.contains(t))
         val documentTypes    = allTypes.filter(t => documentTypesSet.contains(t)).sorted // we just use the fact that lexical order is correct
         nonDocumentTypes ++ documentTypes
