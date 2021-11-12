@@ -1,9 +1,8 @@
 package amf.core.client.scala.model.domain
 
-import amf.core.internal.metamodel.Field
-import amf.core.internal.metamodel.domain.ExternalSourceElementModel._
 import amf.core.client.scala.model.StrField
 import amf.core.internal.adoption.AdoptionDependantCalls
+import amf.core.internal.metamodel.domain.ExternalSourceElementModel._
 
 trait ExternalSourceElement extends DomainElement with AdoptionDependantCalls {
 
