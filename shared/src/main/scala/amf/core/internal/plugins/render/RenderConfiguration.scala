@@ -14,7 +14,7 @@ trait RenderConfiguration {
   def errorHandler: AMFErrorHandler
   def listeners: Set[AMFEventListener]
   def syntaxPlugin: List[AMFSyntaxRenderPlugin]
-  def extensionModels: Map[String, Type]
+  def extensionModels: Map[String, Map[String, Type]]
 }
 
 private[amf] case class DefaultRenderConfiguration(renderPlugins: List[AMFRenderPlugin],
@@ -23,7 +23,7 @@ private[amf] case class DefaultRenderConfiguration(renderPlugins: List[AMFRender
                                                    renderOptions: RenderOptions,
                                                    errorHandler: AMFErrorHandler,
                                                    listeners: Set[AMFEventListener],
-                                                   extensionModels: Map[String, Type])
+                                                   extensionModels: Map[String, Map[String, Type]])
     extends RenderConfiguration {}
 
 object DefaultRenderConfiguration {

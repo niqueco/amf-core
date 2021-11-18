@@ -54,7 +54,10 @@ class FlattenedGraphParser(startingPoint: String)(implicit val ctx: GraphParserC
 
   private lazy val extensions = ctx.config.registryContext.getRegistry.getEntitiesRegistry.extensionTypes
   private lazy val extensionFields = extensions.map {
-    case (iri, fieldType) => Field(fieldType, ValueType(iri))
+    case (iriDomain, extensions) =>
+      iriDomain -> extensions.map {
+        case (iri, fieldType) => Field(fieldType, ValueType(iri))
+      }
   }
 
   def parse(document: YDocument): Option[AmfObject] = {
@@ -251,7 +254,11 @@ class FlattenedGraphParser(startingPoint: String)(implicit val ctx: GraphParserC
     }
 
     private def getMetaModelFields(model: ModelDefaultBuilder): Seq[Field] = {
-      fieldsFrom(model) ++ extensionFields
+      fieldsFrom(model) ++ extensionsFor(model)
+    }
+
+    private def extensionsFor(model: ModelDefaultBuilder): Seq[Field] = {
+      model.`type`.flatMap(valueType => extensionFields.get(valueType.iri())).flatten
     }
 
     private def parseNodeFields(node: YMap,
