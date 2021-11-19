@@ -17,6 +17,7 @@ object Spec {
       case Payload.id    => Some(Payload)
       case Aml.id        => Some(Aml)
       case JsonSchema.id => Some(JsonSchema)
+      case Grpc.id       => Some(Grpc)
       case _             => None
     }
   }
