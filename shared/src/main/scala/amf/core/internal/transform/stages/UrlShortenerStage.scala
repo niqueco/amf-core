@@ -1,7 +1,7 @@
 package amf.core.internal.transform.stages
 import amf.core.client.scala.AMFGraphConfiguration
 import amf.core.client.scala.errorhandling.AMFErrorHandler
-import amf.core.internal.metamodel.Type.Iri
+import amf.core.internal.metamodel.Type.{ArrayLike, Iri}
 import amf.core.internal.metamodel.domain.LinkableElementModel
 import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.scala.model.domain._
@@ -41,9 +41,13 @@ class UrlShortenerStage() extends TransformationStep {
               }
             case FieldEntry(f, value: Value) if f.`type` == Iri =>
               shorten(value.annotations)
-              val v = value.value.toString
-              if (ids.exists(i => v.startsWith(i)))
-                value.value = AmfScalar(shortener.shorten(v), value.value.annotations)
+              value.value = shortenIriValue(value.value, ids)
+            case FieldEntry(f, value: Value)
+                if f.`type`.isInstanceOf[ArrayLike] && f.`type`.asInstanceOf[ArrayLike].element == Iri =>
+              shorten(value.annotations)
+              val array     = value.value.asInstanceOf[AmfArray]
+              val newValues = array.values.map { shortenIriValue(_, ids) }
+              value.value = AmfArray(newValues, value.annotations)
             case FieldEntry(f, value: Value) =>
               shorten(value.value, ids)
               shorten(value.annotations)
@@ -56,6 +60,13 @@ class UrlShortenerStage() extends TransformationStep {
       case _ => // ignore
     }
     shorten(element.annotations)
+  }
+
+  private def shortenIriValue(element: AmfElement, ids: Set[String]): AmfElement = {
+    val stringValue = element.toString
+    if (ids.exists(i => stringValue.startsWith(i)))
+      AmfScalar(shortener.shorten(stringValue), element.annotations)
+    else element
   }
 
   private def isKnowNamespace(value: String): Boolean = {

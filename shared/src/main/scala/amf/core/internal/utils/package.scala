@@ -1,6 +1,5 @@
 package amf.core.internal
 
-import amf.core.client
 import amf.core.client.common.position
 import amf.core.client.common.position.{Position, Range}
 import amf.core.internal.remote.Mimes._
@@ -41,8 +40,9 @@ package object utils {
 
     /** Prepend correct protocol prefix, then encode */
     def normalizeUrl: String = {
+      val protocolList = Set("http:", "https:", "file:", "jar:")
       if (str == null || str.isEmpty) ""
-      else if (str.startsWith("http:") || str.startsWith("https:") || str.startsWith("file:")) str
+      else if (protocolList.exists(str.startsWith)) str
       else if (str.startsWith("/")) "file:/" + str
       else "file://" + str
     }

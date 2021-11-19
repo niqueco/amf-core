@@ -106,8 +106,6 @@ class EmbeddedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
             val instance: AmfObject = buildType(model, annotations(nodes, sources, transformedId))
             instance.withId(transformedId)
 
-            checkLinkables(instance)
-
             // workaround for lazy values in shape
             val modelFields = model match {
               case shapeModel: ShapeModel =>
@@ -127,21 +125,30 @@ class EmbeddedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
               }
             })
 
+            checkLinkables(instance)
+
             // parsing custom extensions
             instance match {
               case l: DomainElement with Linkable =>
                 parseLinkableProperties(map, l)
-              case ex: ExternalDomainElement if unresolvedExtReferencesMap.contains(ex.id) =>
-                unresolvedExtReferencesMap.get(ex.id).foreach { element =>
-                  ex.raw
-                    .option()
-                    .foreach(element.set(ExternalSourceElementModel.Raw, _))
-                }
               case obj: ObjectNode =>
                 parseObjectNodeProperties(obj, map, modelFields)
 
               case _ => // ignore
             }
+
+            instance match {
+              case ex: ExternalDomainElement
+                  if unresolvedExtReferencesMap
+                    .contains(ex.id) => // check if other node requested this external reference
+                unresolvedExtReferencesMap.get(ex.id).foreach { element =>
+                  ex.raw
+                    .option()
+                    .foreach(element.set(ExternalSourceElementModel.Raw, _))
+                }
+              case _ => // ignore
+            }
+
             instance match {
               case elm: DomainElement => parseCustomProperties(map, elm)
               case _                  => // ignore
@@ -166,6 +173,10 @@ class EmbeddedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
               ctx.eh.violation(NotLinkable, instance.id, "Only linkable elements can be linked", instance.annotations)
           }
           unresolvedReferences.update(link.id, Nil)
+        case _ => // ignore
+      }
+
+      instance match {
         case ref: ExternalSourceElement =>
           unresolvedExtReferencesMap += (ref.referenceId.value -> ref) // process when parse the references node
         case _ => // ignore

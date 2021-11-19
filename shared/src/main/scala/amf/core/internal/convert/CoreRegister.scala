@@ -3,7 +3,11 @@ package amf.core.internal.convert
 import amf.core.client.platform.model.document.{Document, ExternalFragment, Fragment, Module}
 import amf.core.client.platform.model.domain._
 import amf.core.internal.convert.CoreClientConverters._
-import amf.core.internal.metamodel.document.BaseUnitProcessingDataModel
+import amf.core.internal.metamodel.document.{
+  BaseUnitProcessingDataModel,
+  BaseUnitSourceInformationModel,
+  LocationInformationModel
+}
 import amf.core.internal.remote.Platform
 
 /** Shared Core registrations. */
@@ -65,6 +69,14 @@ object CoreRegister {
     platform.registerWrapper(BaseUnitProcessingDataModel) {
       case v: amf.core.client.scala.model.document.BaseUnitProcessingData =>
         new amf.core.client.platform.model.document.BaseUnitProcessingData(v)
+    }
+    platform.registerWrapper(BaseUnitSourceInformationModel) {
+      case v: amf.core.client.scala.model.document.BaseUnitSourceInformation =>
+        new amf.core.client.platform.model.document.BaseUnitSourceInformation(v)
+    }
+    platform.registerWrapper(LocationInformationModel) {
+      case v: amf.core.client.scala.model.document.LocationInformation =>
+        new amf.core.client.platform.model.document.LocationInformation(v)
     }
   }
 

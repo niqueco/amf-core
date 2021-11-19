@@ -1,27 +1,25 @@
 package amf.core.internal.plugins.document.graph.parser
 import amf.core.client.scala.errorhandling.IgnoringErrorHandler
+import amf.core.client.scala.model.document._
+import amf.core.client.scala.model.domain._
+import amf.core.client.scala.model.domain.extensions.{CustomDomainProperty, DomainExtension}
+import amf.core.client.scala.parse.document.SyamlParsedDocument
+import amf.core.client.scala.vocabulary.Namespace.XsdTypes.xsdBoolean
+import amf.core.client.scala.vocabulary.{Namespace, ValueType}
 import amf.core.internal.annotations.DomainExtensionAnnotation
 import amf.core.internal.metamodel.Type.{Array, Bool, Iri, LiteralUri, RegExp, SortedArray, Str}
 import amf.core.internal.metamodel.document.BaseUnitModel
 import amf.core.internal.metamodel.domain.extensions.DomainExtensionModel
 import amf.core.internal.metamodel.domain.{DomainElementModel, ExternalSourceElementModel, LinkableElementModel}
 import amf.core.internal.metamodel.{Field, ModelDefaultBuilder, Obj, Type}
-import amf.core.client.scala.model.document._
-import amf.core.client.scala.model.domain._
-import amf.core.client.scala.model.domain.extensions.{CustomDomainProperty, DomainExtension}
 import amf.core.internal.parser._
-import amf.core.client.scala.parse.document.SyamlParsedDocument
-import amf.core.client.scala.vocabulary.Namespace.XsdTypes.xsdBoolean
-import amf.core.client.scala.vocabulary.{Namespace, ValueType}
-import amf.core.internal.parser.CompilerConfiguration
 import amf.core.internal.parser.domain.{Annotations, FieldEntry}
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
 import amf.core.internal.plugins.document.graph.MetaModelHelper._
 import amf.core.internal.plugins.document.graph.context.ExpandedTermDefinition
 import amf.core.internal.validation.CoreValidations.{NotLinkable, UnableToParseDocument, UnableToParseNode}
-import org.mulesoft.common.core.CachedFunction
-import org.mulesoft.common.functional.MonadInstances._
 import org.yaml.model._
+
 import scala.collection.mutable
 import scala.language.implicitConversions
 
@@ -53,6 +51,11 @@ class FlattenedUnitGraphParser()(implicit val ctx: GraphParserContext) extends G
 }
 
 class FlattenedGraphParser(startingPoint: String)(implicit val ctx: GraphParserContext) extends GraphParserHelpers {
+
+  private lazy val extensions = ctx.config.registryContext.getRegistry.getEntitiesRegistry.extensionTypes
+  private lazy val extensionFields = extensions.map {
+    case (iri, fieldType) => Field(fieldType, ValueType(iri))
+  }
 
   def parse(document: YDocument): Option[AmfObject] = {
     val parser = Parser(Map())
@@ -243,8 +246,12 @@ class FlattenedGraphParser(startingPoint: String)(implicit val ctx: GraphParserC
 
       val builder = buildType(model, annotations(nodes, sources, transformedId))
       cache(id) = builder
-      val fields = fieldsFrom(model)
+      val fields = getMetaModelFields(model)
       parseNodeFields(map, fields, sources, transformedId, builder)
+    }
+
+    private def getMetaModelFields(model: ModelDefaultBuilder): Seq[Field] = {
+      fieldsFrom(model) ++ extensionFields
     }
 
     private def parseNodeFields(node: YMap,
@@ -253,28 +260,32 @@ class FlattenedGraphParser(startingPoint: String)(implicit val ctx: GraphParserC
                                 transformedId: String,
                                 instance: AmfObject) = {
       instance.withId(transformedId)
-      checkLinkables(instance)
-
       traverseFields(node, fields, instance, sources)
+      checkLinkables(instance)
 
       // parsing custom extensions
       instance match {
         case l: DomainElement with Linkable =>
           parseLinkableProperties(node, l)
-        case ex: ExternalDomainElement if unresolvedExtReferencesMap.contains(ex.id) =>
+        case obj: ObjectNode =>
+          parseObjectNodeProperties(obj, node, fields)
+        case _ => // ignore
+      }
+
+      instance match {
+        case elm: DomainElement => parseCustomProperties(node, elm)
+        case _                  => // ignore
+      }
+
+      instance match {
+        case ex: ExternalDomainElement
+            if unresolvedExtReferencesMap.contains(ex.id) => // check if other node requested this external reference
           unresolvedExtReferencesMap.get(ex.id).foreach { element =>
             ex.raw
               .option()
               .foreach(element.set(ExternalSourceElementModel.Raw, _))
           }
-        case obj: ObjectNode =>
-          parseObjectNodeProperties(obj, node, fields)
-
         case _ => // ignore
-      }
-      instance match {
-        case elm: DomainElement => parseCustomProperties(node, elm)
-        case _                  => // ignore
       }
 
       nodes = nodes + (transformedId -> instance)
@@ -330,6 +341,10 @@ class FlattenedGraphParser(startingPoint: String)(implicit val ctx: GraphParserC
               ctx.eh.violation(NotLinkable, instance.id, "Only linkable elements can be linked", instance.annotations)
           }
           unresolvedReferences.update(link.id, Nil)
+        case _ => // ignore
+      }
+
+      instance match {
         case ref: ExternalSourceElement =>
           unresolvedExtReferencesMap += (ref.referenceId.value -> ref) // process when parse the references node
         case _ => // ignore

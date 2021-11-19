@@ -5,7 +5,7 @@ import amf.core.client.scala.config.RenderOptions
 import amf.core.internal.annotations._
 import amf.core.internal.metamodel.Type.{Any, Array, ArrayLike, Bool, EncodedIri, Iri, LiteralUri, SortedArray, Str}
 import amf.core.internal.metamodel._
-import amf.core.internal.metamodel.document.{FragmentModel, ModuleModel, SourceMapModel}
+import amf.core.internal.metamodel.document.{BaseUnitModel, FragmentModel, ModuleModel, SourceMapModel}
 import amf.core.internal.metamodel.domain.extensions.DomainExtensionModel
 import amf.core.internal.metamodel.domain.{DomainElementModel, LinkableElementModel, ShapeModel}
 import amf.core.client.scala.model.DataType
@@ -30,21 +30,24 @@ object FlattenedJsonLdEmitter {
   def emit[T](unit: BaseUnit,
               builder: DocBuilder[T],
               renderOptions: RenderOptions = config.RenderOptions(),
-              namespaceAliases: NamespaceAliases = Namespace.defaultAliases): Boolean = {
+              namespaceAliases: NamespaceAliases = Namespace.defaultAliases,
+              extensionModels: Map[String, Type]): Boolean = {
     implicit val ctx: GraphEmitterContext =
       FlattenedGraphEmitterContext(unit, renderOptions, namespaceAliases = namespaceAliases)
-    new FlattenedJsonLdEmitter[T](builder, renderOptions).root(unit)
+    new FlattenedJsonLdEmitter[T](builder, renderOptions, extensionModels).root(unit)
     true
   }
 }
 
-class FlattenedJsonLdEmitter[T](val builder: DocBuilder[T], val options: RenderOptions)(
-    implicit ctx: GraphEmitterContext)
+class FlattenedJsonLdEmitter[T](val builder: DocBuilder[T],
+                                val options: RenderOptions,
+                                val extensionModels: Map[String, Type])(implicit ctx: GraphEmitterContext)
     extends CommonEmitter
     with MetaModelTypeMapping {
 
-  val pending: EmissionQueue[T] = EmissionQueue()
-  var root: Part[T]             = _
+  val pending: EmissionQueue[T]  = EmissionQueue()
+  var root: Part[T]              = _
+  private lazy val extensionIris = extensionModels.keySet
 
   def root(unit: BaseUnit): Unit = {
     builder.obj { ob =>
@@ -157,8 +160,9 @@ class FlattenedJsonLdEmitter[T](val builder: DocBuilder[T], val options: RenderO
   }
 
   def queueObjectFieldValues(amfObject: AmfObject, filter: (Field, Value) => Boolean = (_, _) => true): Unit = {
+//  should filter fields with getMetaModelFields(amfObject, amfObject.meta, extensionIris, options)
     amfObject.fields.foreach {
-      case (field, value) if filter(field, value) =>
+      case (field, value) if filter(field, value) && filterSourceInformationNode(field, options) =>
         field.`type` match {
           case _: Obj =>
             val valueObj = value.value.asInstanceOf[AmfObject]
@@ -173,6 +177,10 @@ class FlattenedJsonLdEmitter[T](val builder: DocBuilder[T], val options: RenderO
         }
       case _ => // Ignore
     }
+  }
+
+  def filterSourceInformationNode(f: Field, options: RenderOptions): Boolean = {
+    !(f == BaseUnitModel.SourceInformation && !options.sourceInformation)
   }
 
   def emitSelfEncodedBaseUnitNode(unit: BaseUnit): Unit = {
@@ -194,10 +202,10 @@ class FlattenedJsonLdEmitter[T](val builder: DocBuilder[T], val options: RenderO
           val sources = SourceMap(id, unit)
 
           // Emit both unit and unit.encodes fields to the same node
-          emitFields(id, u.encodes, sources, b, getMetaModelFields(u.encodes, encodedObj))
+          emitFields(id, u.encodes, sources, b, getMetaModelFields(u.encodes, encodedObj, extensionIris, options))
 
           pending.skip(id) // Skip emitting encodes node (since it is the same as this node)
-          emitFields(id, u, sources, b, getMetaModelFields(u, unitObj))
+          emitFields(id, u, sources, b, getMetaModelFields(u, unitObj, extensionIris, options))
 
           createCustomExtensions(u, b)
 
@@ -262,7 +270,7 @@ class FlattenedJsonLdEmitter[T](val builder: DocBuilder[T], val options: RenderO
   }
 
   def traverseMetaModel(id: String, element: AmfObject, sources: SourceMap, obj: Obj, b: Entry[T]): Unit = {
-    val modelFields: Seq[Field] = getMetaModelFields(element, obj)
+    val modelFields: Seq[Field] = getMetaModelFields(element, obj, extensionIris, options)
 
     // no longer necessary?
     element match {
@@ -311,11 +319,15 @@ class FlattenedJsonLdEmitter[T](val builder: DocBuilder[T], val options: RenderO
           case AmfArray(values, _) =>
             values
               .sortBy(_.asInstanceOf[DomainExtension].id)
-              .foreach {
-                case extension: DomainExtension =>
-                  val uri = extension.definedBy.id
-                  customProperties += uri
-                  createCustomExtension(b, uri, extension, None)
+              .collect {
+                case extension: DomainExtension if !isSemanticExtension(extension) => Some(extension)
+                case _                                                             => None
+              }
+              .flatten
+              .foreach { extension =>
+                val uri = extension.definedBy.id
+                customProperties += uri
+                createCustomExtension(b, uri, extension, None)
               }
           case _ => // ignore
         }
@@ -377,6 +389,8 @@ class FlattenedJsonLdEmitter[T](val builder: DocBuilder[T], val options: RenderO
         }
     )
   }
+
+  private def isSemanticExtension(extension: DomainExtension): Boolean = Option(extension.extension).isEmpty
 
   def createSortedArray(b: Part[T], seq: Seq[AmfElement], parent: String, element: Type): Unit = {
     b.obj { b =>
