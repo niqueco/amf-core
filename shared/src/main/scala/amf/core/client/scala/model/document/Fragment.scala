@@ -1,8 +1,7 @@
 package amf.core.client.scala.model.document
 
-import amf.core.internal.metamodel.Obj
-import amf.core.internal.metamodel.document.{DocumentModel, FragmentModel}
 import amf.core.client.scala.model.domain.{AmfObject, DomainElement}
+import amf.core.internal.metamodel.document.{DocumentModel, FragmentModel}
 
 /**
   * Fragments: Units encoding domain fragments

@@ -21,8 +21,14 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
   /** Include source maps when rendering to graph. */
   def withSourceMaps(): RenderOptions = _internal.withSourceMaps
 
-  /** Include source maps when rendering to graph. */
+  /** Exclude  source maps when rendering to graph. */
   def withoutSourceMaps(): RenderOptions = _internal.withoutSourceMaps
+
+  /** Include source information node when rendering to graph. */
+  def withSourceInformation(): RenderOptions = _internal.withSourceInformation
+
+  /** Exclude source information node when rendering to graph. */
+  def withoutSourceInformation(): RenderOptions = _internal.withSourceInformation
 
   /** Emits JSON-LD with compact IRIs when rendering to graph. */
   def withCompactUris(): RenderOptions = _internal.withCompactUris
@@ -60,6 +66,7 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
 
   def isWithCompactUris: Boolean        = _internal.compactUris
   def isWithSourceMaps: Boolean         = _internal.sources
+  def isWithSourceInformation: Boolean  = _internal.sourceInformation
   def isAmfJsonLdSerialization: Boolean = _internal.amfJsonLdSerialization
   def isPrettyPrint: Boolean            = _internal.prettyPrint
   def isEmitNodeIds: Boolean            = _internal.emitNodeIds

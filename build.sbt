@@ -5,18 +5,9 @@ import sbtsonar.SonarPlugin.autoImport.sonarProperties
 
 val ivyLocal = Resolver.file("ivy", file(Path.userHome.absolutePath + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 
-ThisBuild / scalaVersion := "2.12.11"
 name := "amf-core"
-//ThisBuild / version := {
-//  val major = 4
-//  val minor = 2
-//
-//  lazy val build  = sys.env.getOrElse("BUILD_NUMBER", "0")
-//  lazy val branch = sys.env.get("BRANCH_NAME")
-//
-//  if (branch.contains("master")) s"$major.$minor.$build" else s"$major.${minor + 1}.0-SNAPSHOT"
-//}
-ThisBuild / version := "5.0.0"
+ThisBuild / scalaVersion := "2.12.11"
+ThisBuild / version := "5.0.1"
 
 publish := {}
 
@@ -40,7 +31,6 @@ sonarProperties ++= Map(
 val settings = Common.settings ++ Common.publish ++ Seq(
     organization := "com.github.amlorg",
     resolvers ++= List(ivyLocal, Common.releases, Common.snapshots, Resolver.mavenLocal, Resolver.mavenCentral),
-    resolvers += "jitpack" at "https://jitpack.io",
     credentials ++= Common.credentials(),
     libraryDependencies ++= Seq(
         "org.scalatest"   %%% "scalatest"         % "3.0.5" % Test,

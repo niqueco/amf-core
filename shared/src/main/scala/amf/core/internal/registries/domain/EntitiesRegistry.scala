@@ -1,11 +1,11 @@
 package amf.core.internal.registries.domain
 
-import amf.core.client.scala.model.domain.{AnnotationGraphLoader, DomainElement}
-import amf.core.internal.metamodel.ModelDefaultBuilder
+import amf.core.client.scala.model.domain.AnnotationGraphLoader
+import amf.core.internal.metamodel.{ModelDefaultBuilder, Obj, Type}
 
 private[amf] case class EntitiesRegistry(domainEntities: Map[String, ModelDefaultBuilder],
                                          serializableAnnotations: Map[String, AnnotationGraphLoader],
-                                         extensions: Seq[DomainElement]) {
+                                         extensionTypes: Map[String, Type]) {
 
   def withEntities(entities: Map[String, ModelDefaultBuilder]): EntitiesRegistry =
     copy(domainEntities = domainEntities ++ entities)
@@ -13,18 +13,18 @@ private[amf] case class EntitiesRegistry(domainEntities: Map[String, ModelDefaul
   def withAnnotations(annotations: Map[String, AnnotationGraphLoader]): EntitiesRegistry =
     copy(serializableAnnotations = serializableAnnotations ++ annotations)
 
-  def withExtensions(extensions: Seq[DomainElement]): EntitiesRegistry =
-    copy(extensions = this.extensions ++ extensions)
-
-  private[amf] def removeAllEntities(): EntitiesRegistry = copy(domainEntities = Map.empty)
+  def withExtensions(extensions: Map[String, Type]): EntitiesRegistry =
+    copy(extensionTypes = this.extensionTypes ++ extensions)
 
   private[amf] def findType(`type`: String): Option[ModelDefaultBuilder] = domainEntities.get(`type`)
 
   private[amf] def findAnnotation(annotationID: String): Option[AnnotationGraphLoader] =
     serializableAnnotations.get(annotationID)
 
+  private[amf] def removeAllEntities(): EntitiesRegistry = copy(Map.empty, serializableAnnotations)
+
 }
 
 private[amf] object EntitiesRegistry {
-  val empty: EntitiesRegistry = EntitiesRegistry(Map.empty, Map.empty, Seq.empty)
+  val empty: EntitiesRegistry = EntitiesRegistry(Map.empty, Map.empty, Map.empty)
 }
