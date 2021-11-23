@@ -4,26 +4,26 @@ import amf.core.client.scala.AMFGraphConfiguration
 import amf.core.client.scala.config.{AMFEventListener, RenderOptions}
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.render.AMFSyntaxRenderPlugin
-import amf.core.internal.metamodel.{Obj, Type}
-import amf.core.internal.plugins.namespace.NamespaceAliasesPlugin
+import amf.core.client.scala.vocabulary.NamespaceAliases
+import amf.core.internal.metamodel.Type
 
 trait RenderConfiguration {
   def renderPlugins: List[AMFRenderPlugin]
-  def namespacePlugins: List[NamespaceAliasesPlugin]
   def renderOptions: RenderOptions
   def errorHandler: AMFErrorHandler
   def listeners: Set[AMFEventListener]
   def syntaxPlugin: List[AMFSyntaxRenderPlugin]
   def extensionModels: Map[String, Map[String, Type]]
+  def namespaceAliases: NamespaceAliases
 }
 
 private[amf] case class DefaultRenderConfiguration(renderPlugins: List[AMFRenderPlugin],
                                                    syntaxPlugin: List[AMFSyntaxRenderPlugin],
-                                                   namespacePlugins: List[NamespaceAliasesPlugin],
                                                    renderOptions: RenderOptions,
                                                    errorHandler: AMFErrorHandler,
                                                    listeners: Set[AMFEventListener],
-                                                   extensionModels: Map[String, Map[String, Type]])
+                                                   extensionModels: Map[String, Map[String, Type]],
+                                                   namespaceAliases: NamespaceAliases)
     extends RenderConfiguration {}
 
 object DefaultRenderConfiguration {
@@ -31,11 +31,11 @@ object DefaultRenderConfiguration {
     DefaultRenderConfiguration(
         config.registry.getPluginsRegistry.renderPlugins,
         config.registry.getPluginsRegistry.syntaxRenderPlugins,
-        config.registry.getPluginsRegistry.namespacePlugins,
         config.options.renderOptions,
         config.errorHandlerProvider.errorHandler(),
         config.listeners,
-        config.registry.getEntitiesRegistry.extensionTypes
+        config.registry.getEntitiesRegistry.extensionTypes,
+        config.registry.getNamespaceAliases
     )
   }
 }
