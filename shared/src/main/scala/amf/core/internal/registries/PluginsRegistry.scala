@@ -4,7 +4,6 @@ import amf.core.client.scala.parse.{AMFParsePlugin, AMFSyntaxParsePlugin}
 import amf.core.client.scala.render.{AMFElementRenderPlugin, AMFSyntaxRenderPlugin}
 import amf.core.client.scala.validation.payload.AMFShapePayloadValidationPlugin
 import amf.core.internal.plugins.AMFPlugin
-import amf.core.internal.plugins.namespace.NamespaceAliasesPlugin
 import amf.core.internal.plugins.parse.{DomainParsingFallback, ExternalFragmentDomainFallback}
 import amf.core.internal.plugins.render.AMFRenderPlugin
 import amf.core.internal.plugins.validation.AMFValidatePlugin
@@ -21,14 +20,13 @@ case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin] = Ni
                                          validatePlugins: List[AMFValidatePlugin] = Nil,
                                          renderPlugins: List[AMFRenderPlugin] = Nil,
                                          payloadPlugins: List[AMFShapePayloadValidationPlugin] = Nil,
-                                         namespacePlugins: List[NamespaceAliasesPlugin] = Nil,
                                          syntaxParsePlugins: List[AMFSyntaxParsePlugin] = Nil,
                                          syntaxRenderPlugins: List[AMFSyntaxRenderPlugin] = Nil,
                                          elementRenderPlugins: List[AMFElementRenderPlugin] = Nil,
                                          domainParsingFallback: DomainParsingFallback) {
 
   lazy val allPlugins: List[AMFPlugin[_]] = parsePlugins ++ validatePlugins ++ renderPlugins ++ payloadPlugins ++
-    namespacePlugins ++ syntaxParsePlugins ++ syntaxRenderPlugins ++ elementRenderPlugins
+    syntaxParsePlugins ++ syntaxRenderPlugins ++ elementRenderPlugins
 
   def withPlugin(plugin: AMFPlugin[_]): PluginsRegistry = {
     plugin match {
@@ -38,8 +36,6 @@ case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin] = Ni
         copy(validatePlugins = validatePlugins.filter(_.id != v.id) :+ v)
       case r: AMFRenderPlugin =>
         copy(renderPlugins = renderPlugins.filter(_.id != r.id) :+ r)
-      case r: NamespaceAliasesPlugin =>
-        copy(namespacePlugins = namespacePlugins.filter(_.id != r.id) :+ r)
       case r: AMFSyntaxParsePlugin =>
         copy(syntaxParsePlugins = syntaxParsePlugins.filter(_.id != r.id) :+ r)
       case r: AMFSyntaxRenderPlugin =>
@@ -64,8 +60,7 @@ case class PluginsRegistry private[amf] (parsePlugins: List[AMFParsePlugin] = Ni
     copy(
         parsePlugins = parsePlugins.filterNot(_.id == id),
         validatePlugins = validatePlugins.filterNot(_.id == id),
-        renderPlugins = renderPlugins.filterNot(_.id == id),
-        namespacePlugins = namespacePlugins.filterNot(_.id == id)
+        renderPlugins = renderPlugins.filterNot(_.id == id)
     )
 
 }
