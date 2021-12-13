@@ -77,6 +77,8 @@ object Namespace {
 
 case class NamespaceAliases private (ns: Map[Aliases.Alias, Namespace]) {
 
+  def merge(aliases: NamespaceAliases): NamespaceAliases = NamespaceAliases(ns ++ aliases.ns)
+
   def uri(s: String): ValueType = {
     if (s.indexOf(":") > -1) {
       expand(s)

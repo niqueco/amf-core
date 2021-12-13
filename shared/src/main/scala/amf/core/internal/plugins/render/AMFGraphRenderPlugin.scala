@@ -26,19 +26,13 @@ object AMFGraphRenderPlugin extends AMFRenderPlugin {
 
   def emitToYDocBuilder[T](unit: BaseUnit, builder: DocBuilder[T], renderConfig: RenderConfiguration): Boolean = {
     val options          = renderConfig.renderOptions
-    val namespaceAliases = generateNamespaceAliasesFromPlugins(unit, renderConfig)
+    val namespaceAliases = renderConfig.namespaceAliases
     options.toGraphSerialization match {
       case JsonLdSerialization(EmbeddedForm) => EmbeddedJsonLdEmitter.emit(unit, builder, options, namespaceAliases)
       // defaults to flatten
       case _ => FlattenedJsonLdEmitter.emit(unit, builder, options, namespaceAliases, renderConfig.extensionModels)
     }
   }
-
-  private def generateNamespaceAliasesFromPlugins(unit: BaseUnit, config: RenderConfiguration): NamespaceAliases =
-    config.namespacePlugins.sorted
-      .find(_.applies(unit))
-      .map(_.aliases(unit))
-      .getOrElse(Namespace.defaultAliases)
 
   override def mediaTypes: Seq[String] = Seq(
       `application/ld+json`,

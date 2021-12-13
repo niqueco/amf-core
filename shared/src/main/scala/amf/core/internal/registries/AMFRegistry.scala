@@ -6,6 +6,7 @@ import amf.core.client.scala.parse.AMFParsePlugin
 import amf.core.client.scala.render.AMFElementRenderPlugin
 import amf.core.client.scala.transform.TransformationPipeline
 import amf.core.client.scala.validation.EffectiveValidationsCompute
+import amf.core.client.scala.vocabulary.NamespaceAliases
 import amf.core.internal.metamodel.ModelDefaultBuilder
 import amf.core.internal.plugins.AMFPlugin
 import amf.core.internal.plugins.parse.DomainParsingFallback
@@ -25,13 +26,15 @@ private[amf] class AMFRegistry(plugins: PluginsRegistry,
                                entitiesRegistry: EntitiesRegistry,
                                transformationPipelines: Map[String, TransformationPipeline],
                                constraintsRules: Map[ProfileName, ValidationProfile],
-                               effectiveValidations: Map[ProfileName, EffectiveValidations]) {
+                               effectiveValidations: Map[ProfileName, EffectiveValidations],
+                               namespaceAliases: NamespaceAliases) {
 
   def getPluginsRegistry: PluginsRegistry                             = plugins
   def getEntitiesRegistry: EntitiesRegistry                           = entitiesRegistry
   def getTransformationPipelines: Map[String, TransformationPipeline] = transformationPipelines
   def getConstraintsRules: Map[ProfileName, ValidationProfile]        = constraintsRules
   def getEffectiveValidations: Map[ProfileName, EffectiveValidations] = effectiveValidations
+  def getNamespaceAliases: NamespaceAliases                           = namespaceAliases
 
   def withPlugin(amfPlugin: AMFPlugin[_]): AMFRegistry = copy(plugins = plugins.withPlugin(amfPlugin))
 
@@ -73,12 +76,21 @@ private[amf] class AMFRegistry(plugins: PluginsRegistry,
   def withAnnotations(annotations: Map[String, AnnotationGraphLoader]): AMFRegistry =
     copy(entitiesRegistry = entitiesRegistry.withAnnotations(annotations))
 
+  def withAliases(aliases: NamespaceAliases): AMFRegistry =
+    copy(namespaceAliases = namespaceAliases.merge(aliases))
+
   private def copy(plugins: PluginsRegistry = plugins,
                    entitiesRegistry: EntitiesRegistry = entitiesRegistry,
                    transformationPipelines: Map[String, TransformationPipeline] = transformationPipelines,
                    constraintsRules: Map[ProfileName, ValidationProfile] = constraintsRules,
-                   effectiveValidations: Map[ProfileName, EffectiveValidations] = effectiveValidations): AMFRegistry =
-    new AMFRegistry(plugins, entitiesRegistry, transformationPipelines, constraintsRules, effectiveValidations)
+                   effectiveValidations: Map[ProfileName, EffectiveValidations] = effectiveValidations,
+                   namespaceAliases: NamespaceAliases = namespaceAliases): AMFRegistry =
+    new AMFRegistry(plugins,
+                    entitiesRegistry,
+                    transformationPipelines,
+                    constraintsRules,
+                    effectiveValidations,
+                    namespaceAliases)
 
   private[amf] def getAllPlugins(): List[AMFPlugin[_]] = plugins.allPlugins
 
@@ -91,5 +103,6 @@ private[amf] class AMFRegistry(plugins: PluginsRegistry,
 object AMFRegistry {
 
   /** Creates an empty AMF Registry */
-  val empty = new AMFRegistry(PluginsRegistry.empty, EntitiesRegistry.empty, Map.empty, Map.empty, Map.empty)
+  val empty =
+    new AMFRegistry(PluginsRegistry.empty, EntitiesRegistry.empty, Map.empty, Map.empty, Map.empty, NamespaceAliases())
 }
