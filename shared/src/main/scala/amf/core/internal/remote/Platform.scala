@@ -15,7 +15,8 @@ import scala.concurrent.{ExecutionContext, Future}
 trait FileMediaType {
   def mimeFromExtension(extension: String): Option[String] =
     extension match {
-      case "proto"                         => Some(Mimes.`application/x-protobuf`)
+      case "graphql" | "gql"               => Some(Mimes.`application/graphql`)
+      case "proto" | "pb"                  => Some(Mimes.`application/x-protobuf`)
       case "json"                          => Some(Mimes.`application/json`)
       case "yaml" | "yam" | "yml" | "raml" => Some(Mimes.`application/yaml`)
       case "jsonld" | "amf"                => Some(Mimes.`application/ld+json`)
