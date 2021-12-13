@@ -1,12 +1,14 @@
 package amf.core.internal.remote
 
 import amf.core.client.scala.parse.document.{ReferenceKind, UnspecifiedReference}
-import amf.core.internal.remote.Syntax.{Json, JsonLd, Protobuf, Syntax, Yaml}
+import amf.core.internal.remote.Syntax.{Json, JsonLd, Protobuf, Syntax, Yaml, GraphQL => GraphQLSyntax}
 
 case class Hint(spec: Spec, syntax: Syntax, kind: ReferenceKind = UnspecifiedReference) {
   def +(k: ReferenceKind): Hint = copy(kind = k)
 
 }
+
+object GraphQLHint extends Hint(GraphQL, GraphQLSyntax)
 
 object GrpcProtoHint extends Hint(Grpc, Protobuf)
 
