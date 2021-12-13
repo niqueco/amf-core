@@ -43,7 +43,7 @@ trait CommonEmitter {
 
   def getMetaModelFields(element: AmfObject,
                          obj: Obj,
-                         extensionIris: Set[String],
+                         domainExtensions: Map[String, Set[String]],
                          renderOptions: RenderOptions): Seq[Field] = {
     val fields = MetaModelHelper.fieldsFrom(obj)
 
@@ -52,8 +52,15 @@ trait CommonEmitter {
       case _: BaseUnit if !renderOptions.sourceInformation => fields.filter(f => f != BaseUnitModel.SourceInformation)
       case _                                               => fields
     }
+    filteredFields ++ getExtensionFields(element, obj, extensionsFor(obj, domainExtensions))
+  }
 
-    filteredFields ++ getExtensionFields(element, obj, extensionIris)
+  private def extensionsFor(obj: Obj, domainExtensions: Map[String, Set[String]]) = {
+    obj.`type`
+      .flatMap(valueType => domainExtensions.get(valueType.iri()))
+      .foldLeft(Set[String]()) { (acc, curr) =>
+        acc ++ curr
+      }
   }
 
   private def getExtensionFields(element: AmfObject, obj: Obj, extensionIris: Set[String]): Seq[Field] = {
