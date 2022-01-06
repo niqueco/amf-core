@@ -9,6 +9,8 @@ import amf.core.client.scala.model.domain.extensions.DomainExtension
   */
 trait DomainElement extends AmfObject with CustomizableElement {
 
+  override def typeIris: Seq[String] = meta.typeIris
+
   def customDomainProperties: Seq[DomainExtension] = fields.field(CustomDomainProperties)
   def extend: Seq[DomainElement]                   = fields.field(Extends)
 
@@ -18,9 +20,9 @@ trait DomainElement extends AmfObject with CustomizableElement {
   def withCustomDomainProperty(extensions: DomainExtension): this.type =
     add(CustomDomainProperties, extensions)
 
-  def isExternalLink: BoolField = fields.field(IsExternalLink)
+  def isExternalLink: BoolField                                         = fields.field(IsExternalLink)
   def withIsExternalLink(isReference: Boolean): DomainElement.this.type = set(IsExternalLink, isReference)
 
   def withExtends(extend: Seq[DomainElement]): this.type = setArray(Extends, extend)
-  lazy val graph: Graph = Graph(this)
+  lazy val graph: Graph                                  = Graph(this)
 }

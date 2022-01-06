@@ -14,7 +14,7 @@ trait SYAMLBasedRenderPlugin extends AMFRenderPlugin {
   override def emit[T](unit: BaseUnit, builder: ASTBuilder[T], renderConfiguration: RenderConfiguration): Boolean = {
     builder match {
       case sb: YDocumentBuilder =>
-        unparseAsYDocument(unit, renderConfiguration.renderOptions, renderConfiguration.errorHandler) exists { doc =>
+        unparseAsYDocument(unit, renderConfiguration, renderConfiguration.errorHandler) exists { doc =>
           sb.document = doc
           true
         }
@@ -23,7 +23,7 @@ trait SYAMLBasedRenderPlugin extends AMFRenderPlugin {
   }
 
   protected def unparseAsYDocument(unit: BaseUnit,
-                                   renderOptions: RenderOptions,
+                                   renderConfig: RenderConfiguration,
                                    errorHandler: AMFErrorHandler): Option[YDocument]
 
   override def mediaTypes: Seq[String] = Seq(`application/json`, `application/yaml`)
