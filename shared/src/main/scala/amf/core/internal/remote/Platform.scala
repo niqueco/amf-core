@@ -114,16 +114,6 @@ trait Platform extends FileMediaType {
   /** Platform out of the box [ResourceLoader]s */
   def loaders()(implicit executionContext: ExecutionContext): Seq[ResourceLoader]
 
-  def ensureFileAuthority(str: String): String =
-    if (str.startsWith("file:")) {
-      str
-    } else {
-      s"file://$str"
-    }
-
-  /** Test path resolution. */
-  def resolvePath(path: String): String
-
   /** encodes a complete uri. Not encodes chars like / */
   def encodeURI(url: String): String
 
@@ -143,12 +133,6 @@ trait Platform extends FileMediaType {
     } catch {
       case _: Throwable => Left(url)
     }
-
-  /** validates and normalize complete url */
-  def normalizeURL(url: String): String
-
-  /** normalize path method for file fetching in amf compiler */
-  def normalizePath(url: String): String
 
   /** Location where the helper functions for custom validations must be retrieved */
   protected def customValidationLibraryHelperLocation: String = "http://a.ml/amf/validation.js"
@@ -171,15 +155,6 @@ trait Platform extends FileMediaType {
   protected def writeFile(path: String, content: String)(implicit executionContext: ExecutionContext): Future[Unit] =
     fs.asyncFile(path).write(content)
 
-  protected def fixFilePrefix(res: String): String = {
-    if (res.startsWith("file://") || res.startsWith("file:///")) {
-      res
-    } else if (res.startsWith("file:/")) {
-      res.replace("file:/", "file:///")
-    } else {
-      res
-    }
-  }
 }
 
 object Platform {

@@ -52,15 +52,6 @@ class PlatformTest extends AsyncFunSuite with Matchers with ListAssertions with 
       })
   }
 
-  test("Path resolution") {
-    Future.successful({
-      val url = "file://shared/src/test/resources/input.yaml"
-
-      platform.resolvePath(url) should be(url)
-      platform.resolvePath("file://shared/src/test/resources/ignored/../input.yaml") should be(url)
-    })
-  }
-
   ignore("Write") {
     val path = "file:///tmp/" + new Date().getTime
     platform.write(path, "{\n\"name\" : \"Jason Bourne\"\n}").map[Assertion](unit => path should not be null)

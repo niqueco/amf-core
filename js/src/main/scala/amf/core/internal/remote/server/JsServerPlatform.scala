@@ -32,17 +32,6 @@ class JsServerPlatform extends JsPlatform {
   /** Return temporary directory. */
   override def tmpdir(): String = OS.tmpdir() + "/"
 
-  override def resolvePath(uri: String): String = {
-    uri match {
-      case File(path) if fs.separatorChar == '/' => FILE_PROTOCOL + normalizeURL(path)
-      case File(path)                            => FILE_PROTOCOL + normalizeURL(path).replace(fs.separatorChar.toString, "/")
-      case HttpParts(protocol, host, path)       => protocol + host + normalizePath(withTrailingSlash(path))
-      case _                                     => uri
-    }
-  }
-
-  private def withTrailingSlash(path: String) = (if (!path.startsWith("/")) "/" else "") + path
-
   /** Return the OS (win, mac, nux). */
   override def operativeSystem(): String = {
     OS.platform() match {

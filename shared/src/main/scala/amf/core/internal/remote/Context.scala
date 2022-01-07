@@ -5,8 +5,7 @@ import amf.core.internal.utils.{Absolute, RelativeToIncludedFile, RelativeToRoot
 /**
   * Context class for URL resolution.
   */
-class Context protected(val platform: Platform,
-                        val history: List[String]) {
+class Context protected (val platform: Platform, val history: List[String]) {
 
   def hasCycles: Boolean = history.count(_.equals(current)) == 2
 
@@ -28,15 +27,13 @@ class Context protected(val platform: Platform,
       case RelativeToRoot(_)         => Some(root)
       case RelativeToIncludedFile(_) => Some(current)
     }
-    UriUtils.resolve(base, url)
+    UriUtils.resolveWithBase(base, url)
   }
 
 }
 
 object Context {
-  private def apply(platform: Platform,
-                    history: List[String],
-                    currentResolved: String): Context =
+  private def apply(platform: Platform, history: List[String], currentResolved: String): Context =
     new Context(platform, history :+ currentResolved)
 
   def apply(platform: Platform): Context = new Context(platform, Nil)

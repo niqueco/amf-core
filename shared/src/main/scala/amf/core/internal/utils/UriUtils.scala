@@ -1,6 +1,7 @@
 package amf.core.internal.utils
 
 import amf.core.internal.unsafe.PlatformSecrets
+import java.net.URI
 
 object UriUtils extends PlatformSecrets {
 
@@ -10,10 +11,10 @@ object UriUtils extends PlatformSecrets {
       case RelativeToIncludedFile(_) => Some(current)
     }
     val encodedUrl = platform.encodeURI(rawUrl)
-    resolve(base, encodedUrl)
+    resolveWithBase(base, encodedUrl)
   }
 
-  def resolve(base: Option[String], url: String): String = {
+  def resolveWithBase(base: Option[String], url: String): String = {
     val result = base
       .map { baseUri =>
         if (url.startsWith("#")) baseUri + url
@@ -23,7 +24,7 @@ object UriUtils extends PlatformSecrets {
         }
       }
       .getOrElse(url)
-    platform.resolvePath(result)
+    resolvePath(result)
   }
 
   private def safeConcat(base: String, url: String) = {
@@ -51,6 +52,25 @@ object UriUtils extends PlatformSecrets {
       withoutFrag + sep
     } else {
       withoutFrag
+    }
+  }
+
+  /** normalize path method for file fetching in amf compiler */
+  def normalizePath(url: String): String = fixFilePrefix(new URI(platform.encodeURI(url)).normalize.toString)
+
+  /** Test path resolution. */
+  def resolvePath(path: String): String = {
+    val res = new URI(path).normalize.toString
+    fixFilePrefix(res)
+  }
+
+  private def fixFilePrefix(res: String): String = {
+    if (res.startsWith("file://") || res.startsWith("file:///")) {
+      res
+    } else if (res.startsWith("file:/")) {
+      res.replace("file:/", "file:///")
+    } else {
+      res
     }
   }
 }
