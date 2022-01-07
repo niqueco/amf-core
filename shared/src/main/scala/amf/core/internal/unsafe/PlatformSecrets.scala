@@ -20,9 +20,6 @@ case class TrunkPlatform(content: String,
   /** Underlying file system for platform. */
   override val fs: FileSystem = UnsupportedFileSystem
 
-  /** Test path resolution. */
-  override def resolvePath(path: String): String = path
-
   override def tmpdir(): String = throw new Exception("Unsupported tmpdir operation")
 
   override def fetchContent(url: String, configuration: AMFGraphConfiguration)(
@@ -47,10 +44,6 @@ case class TrunkPlatform(content: String,
 
   /** decodes a uri component */
   override def decodeURIComponent(url: String): String = url
-
-  override def normalizeURL(url: String): String = url
-
-  override def normalizePath(url: String): String = url
 
   /** Return the OS (win, mac, nux). */
   override def operativeSystem(): String = "trunk"
