@@ -12,7 +12,6 @@ import amf.core.internal.annotations.{
   InheritanceProvenance,
   InlineElement,
   LexicalInformation,
-  LocalElement,
   ResolvedLinkAnnotation,
   ResolvedLinkTargetAnnotation,
   SourceAST,
@@ -102,8 +101,6 @@ class Annotations() {
   def fragmentName(): Option[String] = find(classOf[ExternalFragmentRef]).map(_.fragment)
 
   def location(): Option[String] = find(classOf[AmfSourceLocation]).map(_.location)
-
-  def isLocal: Boolean = find(classOf[LocalElement]).isDefined
 
   def isTrackedBy(trackId: String): Boolean =
     collect { case t: TrackedElement if t.parents.contains(trackId) => t }.nonEmpty

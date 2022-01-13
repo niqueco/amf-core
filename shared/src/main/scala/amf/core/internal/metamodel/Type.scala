@@ -4,11 +4,14 @@ import amf.core.internal.metamodel.domain.{ModelDoc, ModelVocabularies}
 import amf.core.client.scala.vocabulary.Namespace.Xsd
 import amf.core.client.scala.vocabulary.ValueType
 
+import scala.collection.immutable
+
 /**
   *
   */
 trait Type {
   val `type`: List[ValueType]
+  def typeIris: List[String] = `type`.map(_.iri())
 }
 
 trait Obj extends Type {

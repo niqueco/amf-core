@@ -1,6 +1,6 @@
 package amf.core.client.scala.model.domain
 
-import amf.core.internal.annotations.{LexicalInformation, LocalElement, SourceLocation, TrackedElement}
+import amf.core.internal.annotations.{LexicalInformation, SourceLocation, TrackedElement}
 import amf.core.internal.parser.domain.Annotations
 
 import scala.collection.mutable
@@ -30,9 +30,6 @@ trait AmfElement {
 
   /** search for location in annotations */
   def location(): Option[String] = annotations.find(classOf[SourceLocation]).map(_.location)
-
-  /** true if the element have the local annotation, that means that has been aggregated in resolution. e.g: local examples to declared type */
-  def fromLocal(): Boolean = annotations.find(classOf[LocalElement]).isDefined
 
   def isTrackedBy(trackId: String): Boolean =
     annotations.collect { case t: TrackedElement if t.parents.contains(trackId) => t }.nonEmpty
