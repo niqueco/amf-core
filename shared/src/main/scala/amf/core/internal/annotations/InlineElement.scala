@@ -13,16 +13,3 @@ object InlineElement extends AnnotationGraphLoader {
     Some(InlineElement())
   }
 }
-
-case class LocalElement() extends SerializableAnnotation {
-
-  /** Extension name. */
-  override val name: String = "local-element"
-
-  /** Value as string. */
-  override val value: String = ""
-}
-
-object LocalElement extends AnnotationGraphLoader {
-  override def unparse(value: String, objects: Map[String, AmfElement]): Option[Annotation] = Some(LocalElement())
-}

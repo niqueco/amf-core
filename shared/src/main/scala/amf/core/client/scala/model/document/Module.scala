@@ -16,6 +16,8 @@ case class Module(fields: Fields, annotations: Annotations)
     with DeclaresModel
     with CustomizableElement {
 
+  override def typeIris: Seq[String] = meta.typeIris
+
   /** Returns the list document URIs referenced from the document that has been parsed to generate this model */
   override def references: Seq[BaseUnit] = fields(References)
 
