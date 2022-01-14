@@ -2,9 +2,10 @@ package amf.core.path
 
 import amf.core.internal.remote.Context
 import amf.core.internal.unsafe.PlatformSecrets
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-class ContextPathResolutionTest extends FunSuite with PlatformSecrets with Matchers {
+class ContextPathResolutionTest extends AnyFunSuite with PlatformSecrets with Matchers {
 
   test("file:// and /exchange_modules concat result in file://exchange_modules") {
     val context = Context(platform)

@@ -6,7 +6,8 @@ import amf.core.client.scala.parse.document.SyamlParsedDocument
 import amf.core.client.scala.resource.ResourceLoader
 import amf.core.internal.parser.{AMFCompiler, CompilerContextBuilder}
 import amf.core.internal.unsafe.PlatformSecrets
-import org.scalatest.{AsyncFunSuite, Matchers}
+import org.scalatest.funsuite.AsyncFunSuite
+import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.{ExecutionContext, Future}
 

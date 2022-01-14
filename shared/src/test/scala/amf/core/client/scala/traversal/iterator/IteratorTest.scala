@@ -1,14 +1,13 @@
 package amf.core.client.scala.traversal.iterator
-import amf.core.internal.metamodel.document.FragmentModel
-import amf.core.client.scala.model.DataType
 import amf.core.client.scala.model.document.Document
 import amf.core.client.scala.model.document.FieldsFilter.Local
-import amf.core.client.scala.model.domain.{AmfObject, DomainElement, ObjectNode, ScalarNode}
+import amf.core.client.scala.model.domain.{AmfObject, DomainElement}
+import amf.core.internal.metamodel.document.FragmentModel
 import com.mule.data.DataNodes
-import com.mule.data.DataNodes.{name, tags}
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-trait IteratorTest extends FunSuite with Matchers {
+trait IteratorTest extends AnyFunSuite with Matchers {
 
   test("Complete iterator (simple document)") {
     val it = AmfElementStrategy.iterator(List(DataNodes.document), IdCollector())

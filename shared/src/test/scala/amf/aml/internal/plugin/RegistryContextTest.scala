@@ -6,9 +6,10 @@ import amf.core.internal.metamodel.Obj
 import amf.core.internal.metamodel.document.SourceMapModel
 import amf.core.internal.plugins.document.graph.entities.DataNodeEntities
 import amf.core.internal.registries.{AMFRegistry, RegistryContext}
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-class RegistryContextTest extends FunSuite with Matchers {
+class RegistryContextTest extends AnyFunSuite with Matchers {
 
   def defaultIri(metadata: Obj): String = metadata.`type`.head.iri()
 

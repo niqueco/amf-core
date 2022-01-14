@@ -1,8 +1,9 @@
 package amf.core.internal.remote
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class MediaTypeParserTest extends FunSpec with Matchers {
+class MediaTypeParserTest extends AnyFunSpec with Matchers {
 
   case class Fixture(source: String, spec: String, syntax: Option[String])
   val fixture = Seq(

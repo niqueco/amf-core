@@ -1,14 +1,15 @@
 package amf.core.client.common.parser
 
-import amf.core.internal.metamodel.Field
-import amf.core.internal.metamodel.Type.{Any, Array, Bool, Double, Int, SortedArray, Str}
 import amf.core.client.scala.model._
 import amf.core.client.scala.model.domain.{AmfArray, AmfScalar}
 import amf.core.client.scala.vocabulary.Namespace.{ApiContract, Meta, Shacl}
+import amf.core.internal.metamodel.Field
+import amf.core.internal.metamodel.Type.{Any, Array, Bool, Double, Int, SortedArray, Str}
 import amf.core.internal.parser.domain.Fields
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-class FieldsTest extends FunSuite with Matchers {
+class FieldsTest extends AnyFunSuite with Matchers {
 
   test("Test field method for undefined values") {
     val fields = Fields()

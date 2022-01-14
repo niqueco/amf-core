@@ -1,14 +1,15 @@
 package amf.core.client.common.parser
 
-import amf.core.internal.convert.{BaseUnitConverter, NativeOps}
-import amf.core.client.platform.{AMFGraphConfiguration, AMFResult}
 import amf.core.client.platform.model.document.Document
 import amf.core.client.platform.model.domain.{ScalarNode => Scalar}
-import amf.core.io.FileAssertionTest
+import amf.core.client.platform.{AMFGraphConfiguration, AMFResult}
 import amf.core.client.scala.parse.document.SyamlParsedDocument
-import amf.core.render.ElementsFixture
+import amf.core.internal.convert.{BaseUnitConverter, NativeOps}
 import amf.core.internal.plugins.document.graph.parser.EmbeddedGraphParser
-import org.scalatest.{AsyncFunSuite, Matchers}
+import amf.core.io.FileAssertionTest
+import amf.core.render.ElementsFixture
+import org.scalatest.funsuite.AsyncFunSuite
+import org.scalatest.matchers.should.Matchers
 import org.yaml.model.YDocument
 
 import scala.concurrent.{ExecutionContext, Future}
