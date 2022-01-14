@@ -2,12 +2,13 @@ package amf.core.resource.scala
 
 import amf.core.client.scala.AMFGraphConfiguration
 import amf.core.client.scala.execution.ExecutionEnvironment
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
 import java.util.concurrent.Executors
 import scala.concurrent.ExecutionContext
 
-class ResourceLoaderExecutionContextTest extends FunSuite with Matchers {
+class ResourceLoaderExecutionContextTest extends AnyFunSuite with Matchers {
 
   test("When new execution environment is set custom loader with context is adjusted") {
     val defaultConf = AMFGraphConfiguration

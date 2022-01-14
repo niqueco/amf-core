@@ -5,13 +5,14 @@ import amf.core.client.platform.execution.ExecutionEnvironment
 import amf.core.client.platform.resource.{FileResourceLoader, HttpResourceLoader, ResourceLoader}
 import amf.core.client.scala.resource.{ResourceLoader => InternalResourceLoader}
 import amf.core.internal.convert.CoreClientConverters._
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
 import java.util.concurrent.Executors
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ResourceLoaderExecutionContextTest extends FunSuite with Matchers {
+class ResourceLoaderExecutionContextTest extends AnyFunSuite with Matchers {
 
   test("When new execution environment is set default loaders are adjusted") {
     val config                                    = AMFGraphConfiguration.predefined()

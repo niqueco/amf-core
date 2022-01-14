@@ -1,10 +1,11 @@
 package amf.core.client.common.parser
 
-import amf.core.internal.convert.NativeOps
 import amf.core.client.scala.AMFGraphConfiguration
+import amf.core.internal.convert.NativeOps
 import amf.core.internal.plugins.parse.ExternalFragmentDomainFallback
 import amf.core.internal.unsafe.PlatformSecrets
-import org.scalatest.{AsyncFunSuite, Matchers}
+import org.scalatest.funsuite.AsyncFunSuite
+import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.ExecutionContext
 
