@@ -1,9 +1,9 @@
 package amf.core.internal.utils
 
-import org.scalatest.FunSuite
-import org.scalatest.Matchers._
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-class UtilsTest extends FunSuite {
+class UtilsTest extends AnyFunSuite with Matchers {
 
   case class ResolveUrl(base: String, url: String)
 

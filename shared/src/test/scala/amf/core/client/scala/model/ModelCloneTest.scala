@@ -1,20 +1,20 @@
 package amf.core.client.scala.model
+import amf.core.client.scala.model.document.Document
+import amf.core.client.scala.model.domain._
+import amf.core.client.scala.vocabulary.Namespace.{Data, XsdTypes}
+import amf.core.client.scala.vocabulary.ValueType
 import amf.core.internal.annotations.{DefinedBySpec, ErrorDeclaration}
 import amf.core.internal.metamodel.domain.DomainElementModel
 import amf.core.internal.metamodel.{Field, ModelDefaultBuilder, Obj}
-import amf.core.client.scala.model.document.Document
-import amf.core.client.scala.model.domain._
-import amf.core.internal.parser.domain.Fields
+import amf.core.internal.parser.domain.{Annotations, Fields}
 import amf.core.internal.remote.Raml10
 import amf.core.render.ElementsFixture
-import amf.core.client.scala.vocabulary.Namespace.{Data, XsdTypes}
-import amf.core.client.scala.vocabulary.ValueType
-import amf.core.internal.parser.domain.{Annotations, Fields}
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
 import scala.collection.mutable
 
-class ModelCloneTest extends FunSuite with ElementsFixture with Matchers {
+class ModelCloneTest extends AnyFunSuite with ElementsFixture with Matchers {
 
   test("Test clone encoded at Document") {
     val cloned: Document = document.cloneUnit().asInstanceOf[Document]

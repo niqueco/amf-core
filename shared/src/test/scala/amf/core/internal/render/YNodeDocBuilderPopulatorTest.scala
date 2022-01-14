@@ -1,16 +1,19 @@
 package amf.core.internal.render
-import org.scalatest.{Assertion, FunSuite, Matchers}
+import org.scalatest.Assertion
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 import org.yaml.builder.{BaseOutputBuilder, JsonOutputBuilder, YamlOutputBuilder}
 import org.yaml.model.YNode
 import org.yaml.parser.{JsonParser, YParser, YamlParser}
 
-class YNodeDocBuilderPopulatorTest extends FunSuite with Matchers {
+class YNodeDocBuilderPopulatorTest extends AnyFunSuite with Matchers {
 
   case class CycleTest(name: String, source: String)
 
   val jsonCycles = Seq(
-    CycleTest("root object with seq and scalar types",
-      """
+      CycleTest(
+          "root object with seq and scalar types",
+          """
         |  {
         |    "key": [
         |      1,
@@ -19,13 +22,14 @@ class YNodeDocBuilderPopulatorTest extends FunSuite with Matchers {
         |      "string value"
         |    ]
         |  }
-        |""".stripMargin),
-    CycleTest("simple scalar type",
-      """
+        |""".stripMargin
+      ),
+      CycleTest("simple scalar type",
+                """
         |  5
         |""".stripMargin),
-    CycleTest("sequence at root",
-      """
+      CycleTest("sequence at root",
+                """
         |  [
         |    4,
         |    "string"
@@ -34,29 +38,32 @@ class YNodeDocBuilderPopulatorTest extends FunSuite with Matchers {
   )
 
   val yamlCycles = Seq(
-    CycleTest("root object with seq and scalar types",
-      """
+      CycleTest(
+          "root object with seq and scalar types",
+          """
         |  int: 5
         |  string: some string
         |  float: 4.334
         |  boolean: false
         |  array:
-        |    - other value""".stripMargin),
-    CycleTest("simple scalar type",
-      "5"),
-    CycleTest("sequence at root",
-      """
+        |    - other value""".stripMargin
+      ),
+      CycleTest("simple scalar type", "5"),
+      CycleTest("sequence at root",
+                """
         |  - string value
         |  -
         |    other: obj""".stripMargin)
   )
 
-  jsonCycles.foreach{ case CycleTest(name, source) =>
-    test(s"json cycle - $name") { cycle(source, JsonParser(source), JsonOutputBuilder(true)) }
+  jsonCycles.foreach {
+    case CycleTest(name, source) =>
+      test(s"json cycle - $name") { cycle(source, JsonParser(source), JsonOutputBuilder(true)) }
   }
 
-  yamlCycles.foreach{ case CycleTest(name, source) =>
-    test(s"yaml cycle - $name") { cycle(source, YamlParser(source), YamlOutputBuilder()) }
+  yamlCycles.foreach {
+    case CycleTest(name, source) =>
+      test(s"yaml cycle - $name") { cycle(source, YamlParser(source), YamlOutputBuilder()) }
   }
 
   def cycle[T](source: String, parser: YParser, builder: BaseOutputBuilder[T]): Assertion = {
@@ -65,7 +72,5 @@ class YNodeDocBuilderPopulatorTest extends FunSuite with Matchers {
     val result = builder.result.toString
     result shouldBe source
   }
-
-
 
 }

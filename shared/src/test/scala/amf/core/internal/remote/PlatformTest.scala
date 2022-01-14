@@ -1,17 +1,18 @@
 package amf.core.internal.remote
 
-import java.util.Date
 import amf.core.client.common.remote.Content
 import amf.core.internal.remote.Mimes.`application/yaml`
 import amf.core.internal.resource.AMFResolvers
 import amf.core.internal.unsafe.PlatformSecrets
 import org.mulesoft.common.test.ListAssertions
-import org.scalatest.{Assertion, AsyncFunSuite}
-import org.scalatest.Matchers._
+import org.scalatest.Assertion
+import org.scalatest.funsuite.AsyncFunSuite
+import org.scalatest.matchers.should.Matchers
 
+import java.util.Date
 import scala.concurrent.{ExecutionContext, Future}
 
-class PlatformTest extends AsyncFunSuite with ListAssertions with PlatformSecrets {
+class PlatformTest extends AsyncFunSuite with Matchers with ListAssertions with PlatformSecrets {
 
   override implicit def executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 

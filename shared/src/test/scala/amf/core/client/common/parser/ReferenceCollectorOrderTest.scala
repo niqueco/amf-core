@@ -1,11 +1,10 @@
 package amf.core.client.common.parser
 
 import amf.core.client.scala.parse.document.DefaultReferenceCollector
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-import java.util.UUID
-import org.scalatest.{FunSuite, Matchers}
-
-class ReferenceCollectorOrderTest extends FunSuite with Matchers {
+class ReferenceCollectorOrderTest extends AnyFunSuite with Matchers {
 
   test("Reference collector keeps reference order") {
     val testData  = randomUuids.zipWithIndex

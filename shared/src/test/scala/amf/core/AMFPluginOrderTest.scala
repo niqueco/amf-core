@@ -1,9 +1,10 @@
 package amf.core
 
 import amf.core.client.common.{HighPriority, LowPriority, NormalPriority}
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-class AMFPluginOrderTest extends FunSuite with Matchers {
+class AMFPluginOrderTest extends AnyFunSuite with Matchers {
 
   test("Plugin list should be ordered by priority") {
     val a            = DummyParsePlugin("1", "A", LowPriority)
