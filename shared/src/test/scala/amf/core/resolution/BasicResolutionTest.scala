@@ -6,7 +6,8 @@ import amf.core.client.scala.model.domain.extensions.CustomDomainProperty
 import amf.core.internal.convert.{BaseUnitConverter, NativeOps}
 import amf.core.io.FileAssertionTest
 import amf.core.render.ElementsFixture
-import org.scalatest.{AsyncFunSuite, Matchers}
+import org.scalatest.funsuite.AsyncFunSuite
+import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 

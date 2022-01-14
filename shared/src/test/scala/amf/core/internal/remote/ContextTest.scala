@@ -1,13 +1,13 @@
 package amf.core.internal.remote
 
 import amf.core.internal.unsafe.PlatformSecrets
-import org.scalatest.FunSuite
-import org.scalatest.Matchers._
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
 /**
   *
   */
-class ContextTest extends FunSuite with PlatformSecrets {
+class ContextTest extends AnyFunSuite with Matchers with PlatformSecrets {
 
   test("Test context URL resolutions") {
     val c1 = Context(platform, "http://localhost:3000/input.yaml")
@@ -71,9 +71,9 @@ class ContextTest extends FunSuite with PlatformSecrets {
     val c3ToParent = c2.update("relative-to-parent.raml")
 
     c3ToParent.history should contain theSameElementsInOrderAs List(
-      "http://localhost:3000/some/input.yaml",
-      "http://localhost:3000/some/intermediate/inter.raml",
-      "http://localhost:3000/some/intermediate/relative-to-parent.raml"
+        "http://localhost:3000/some/input.yaml",
+        "http://localhost:3000/some/intermediate/inter.raml",
+        "http://localhost:3000/some/intermediate/relative-to-parent.raml"
     )
     c3ToRoot.history should contain theSameElementsInOrderAs List("http://localhost:3000/some/input.yaml",
                                                                   "http://localhost:3000/some/intermediate/inter.raml",

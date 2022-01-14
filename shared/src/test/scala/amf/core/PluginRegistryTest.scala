@@ -1,6 +1,6 @@
 package amf.core
 
-import amf.core.client.common.{HighPriority, NormalPriority, PluginPriority}
+import amf.core.client.common.{NormalPriority, PluginPriority}
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model.document.{BaseUnit, Document}
 import amf.core.client.scala.parse.AMFParsePlugin
@@ -8,9 +8,10 @@ import amf.core.client.scala.parse.document.{ParserContext, ReferenceHandler, Si
 import amf.core.internal.parser.Root
 import amf.core.internal.registries.PluginsRegistry
 import amf.core.internal.remote.Spec
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-class PluginRegistryTest extends FunSuite with Matchers {
+class PluginRegistryTest extends AnyFunSuite with Matchers {
 
   // TODO: Add tests for rest of plugin types ??
   test("Registering two parse plugins with same id overrides the first") {

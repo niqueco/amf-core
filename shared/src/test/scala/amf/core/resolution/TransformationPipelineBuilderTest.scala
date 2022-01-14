@@ -1,8 +1,8 @@
 package amf.core.resolution
 
-import amf.core.client.common.transform.{PipelineId, PipelineName}
-import amf.core.client.scala.errorhandling.{AMFErrorHandler, DefaultErrorHandler, UnhandledErrorHandler}
+import amf.core.client.common.transform.PipelineId
 import amf.core.client.scala.AMFGraphConfiguration
+import amf.core.client.scala.errorhandling.{AMFErrorHandler, DefaultErrorHandler, UnhandledErrorHandler}
 import amf.core.client.scala.model.document.{BaseUnit, Document}
 import amf.core.client.scala.transform.{
   TransformationPipeline,
@@ -10,11 +10,11 @@ import amf.core.client.scala.transform.{
   TransformationPipelineRunner,
   TransformationStep
 }
-import amf.core.internal.remote.Amf
 import amf.core.internal.validation.CoreValidations
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-class TransformationPipelineBuilderTest extends FunSuite with Matchers {
+class TransformationPipelineBuilderTest extends AnyFunSuite with Matchers {
 
   private case class AddToIdCustomStage(content: String) extends TransformationStep {
     override def transform(baseUnit: BaseUnit,
