@@ -51,8 +51,8 @@ abstract class Shape extends DomainElement with Linkable with NamedDomainElement
     setArray(CustomShapeProperties, properties)
   def withCustomShapePropertyDefinitions(propertyDefinitions: Seq[PropertyShape]): this.type =
     setArray(CustomShapePropertyDefinitions, propertyDefinitions)
-  def withCustomShapePropertyDefinition(name: String): PropertyShape = {
-    val result = PropertyShape().withName(name, Annotations())
+  def withCustomShapePropertyDefinition(name: String, nameAnnotations: Annotations = Annotations()): PropertyShape = {
+    val result = PropertyShape().withName(name, nameAnnotations)
     add(CustomShapePropertyDefinitions, result)
     result
   }
