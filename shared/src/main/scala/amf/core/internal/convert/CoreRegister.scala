@@ -11,12 +11,13 @@ import amf.core.internal.metamodel.document.{
 import amf.core.internal.remote.Platform
 
 /** Shared Core registrations. */
-object CoreRegister {
+object CoreRegister extends UniqueInitializer {
 
   // TODO ARM remove when APIMF-3000 is done
   def register(): Unit = register(platform)
 
-  def register(platform: Platform): Unit = {
+  def register(platform: Platform): Unit = if (shouldInitialize) {
+
     platform.registerWrapper(amf.core.internal.metamodel.document.ModuleModel) {
       case m: amf.core.client.scala.model.document.Module => Module(m)
     }
