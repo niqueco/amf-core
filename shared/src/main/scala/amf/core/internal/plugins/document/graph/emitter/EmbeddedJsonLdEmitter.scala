@@ -33,14 +33,16 @@ private[amf] object EmbeddedJsonLdEmitter {
               namespaceAliases: NamespaceAliases = Namespace.defaultAliases): Boolean = {
     implicit val ctx: GraphEmitterContext =
       GraphEmitterContext(unit, renderOptions, namespaceAliases = namespaceAliases)
-    new EmbeddedJsonLdEmitter[T](builder, renderOptions).root(unit)
+    new EmbeddedJsonLdEmitter[T](builder, renderOptions, InstanceMetaApplicableFieldRenderProvider).root(unit)
     true
   }
 }
 
 // TODO: Should be erased. Left for backwards compatibility in AMF Tests
-private[amf] class EmbeddedJsonLdEmitter[T] private (val builder: DocBuilder[T], val options: RenderOptions)(
-    implicit ctx: GraphEmitterContext)
+private[amf] class EmbeddedJsonLdEmitter[T] private (
+    val builder: DocBuilder[T],
+    val options: RenderOptions,
+    val fieldProvision: ApplicableMetaFieldRenderProvider)(implicit ctx: GraphEmitterContext)
     extends CommonEmitter
     with MetaModelTypeMapping {
 
@@ -116,7 +118,7 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (val builder: DocBuilder[T],
   def traverseMetaModel(id: String, element: AmfObject, sources: SourceMap, obj: Obj, b: Entry[T]): Unit = {
     createTypeNode(b, obj)
 
-    val modelFields = getMetaModelFields(element, obj, Map.empty, options)
+    val modelFields = fieldProvision.fieldsFor(element, options)
 
     // no longer necessary?
     element match {

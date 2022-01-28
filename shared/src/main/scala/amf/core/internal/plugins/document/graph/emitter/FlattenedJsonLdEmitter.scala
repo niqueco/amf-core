@@ -31,25 +31,23 @@ object FlattenedJsonLdEmitter {
               builder: DocBuilder[T],
               renderOptions: RenderOptions = config.RenderOptions(),
               namespaceAliases: NamespaceAliases = Namespace.defaultAliases,
-              extensionModels: Map[String, Map[String, Type]]): Boolean = {
+              fieldProvision: ApplicableMetaFieldRenderProvider): Boolean = {
     implicit val ctx: GraphEmitterContext =
       FlattenedGraphEmitterContext(unit, renderOptions, namespaceAliases = namespaceAliases)
-    new FlattenedJsonLdEmitter[T](builder, renderOptions, extensionModels).root(unit)
+    new FlattenedJsonLdEmitter[T](builder, renderOptions, fieldProvision).root(unit)
     true
   }
 }
 
-class FlattenedJsonLdEmitter[T](val builder: DocBuilder[T],
-                                val options: RenderOptions,
-                                val extensionModels: Map[String, Map[String, Type]])(implicit ctx: GraphEmitterContext)
+class FlattenedJsonLdEmitter[T](
+    val builder: DocBuilder[T],
+    val options: RenderOptions,
+    val fieldProvision: ApplicableMetaFieldRenderProvider)(implicit ctx: GraphEmitterContext)
     extends CommonEmitter
     with MetaModelTypeMapping {
 
   val pending: EmissionQueue[T] = EmissionQueue()
   var root: Part[T]             = _
-  private lazy val domainToExtensionMap: Map[String, Set[String]] = extensionModels.map {
-    case (domain: String, extensionToType: Map[String, Type]) => domain -> extensionToType.keySet
-  }
 
   def root(unit: BaseUnit): Unit = {
     builder.obj { ob =>
@@ -204,14 +202,10 @@ class FlattenedJsonLdEmitter[T](val builder: DocBuilder[T],
           val sources = SourceMap(id, unit)
 
           // Emit both unit and unit.encodes fields to the same node
-          emitFields(id,
-                     u.encodes,
-                     sources,
-                     b,
-                     getMetaModelFields(u.encodes, encodedObj, domainToExtensionMap, options))
+          emitFields(id, u.encodes, sources, b, fieldProvision.fieldsFor(u.encodes, options))
 
           pending.skip(id) // Skip emitting encodes node (since it is the same as this node)
-          emitFields(id, u, sources, b, getMetaModelFields(u, unitObj, domainToExtensionMap, options))
+          emitFields(id, u, sources, b, fieldProvision.fieldsFor(u, options))
 
           createCustomExtensions(u, b)
 
@@ -276,7 +270,7 @@ class FlattenedJsonLdEmitter[T](val builder: DocBuilder[T],
   }
 
   def traverseMetaModel(id: String, element: AmfObject, sources: SourceMap, obj: Obj, b: Entry[T]): Unit = {
-    val modelFields: Seq[Field] = getMetaModelFields(element, obj, domainToExtensionMap, options)
+    val modelFields: Seq[Field] = fieldProvision.fieldsFor(element, options)
 
     // no longer necessary?
     element match {
