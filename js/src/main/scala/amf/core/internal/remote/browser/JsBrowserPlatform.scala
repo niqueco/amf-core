@@ -29,8 +29,6 @@ class JsBrowserPlatform extends JsPlatform {
 
   override def operativeSystem(): String = "web"
 
-  override def resolvePath(path: String): String = path
-
 }
 
 @JSExportAll

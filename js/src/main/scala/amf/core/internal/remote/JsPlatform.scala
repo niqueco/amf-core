@@ -25,7 +25,4 @@ trait JsPlatform extends Platform {
   /** decodes a uri component */
   override def decodeURIComponent(url: String): String = URIUtils.decodeURIComponent(url)
 
-  override def normalizeURL(url: String): String = Path.normalize(url)
-
-  override def normalizePath(url: String): String = fixFilePrefix(new URI(encodeURI(url)).normalize.toString)
 }
