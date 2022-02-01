@@ -50,7 +50,7 @@ package object utils {
     def noSpaces: String = str.replace(" ", "")
 
     /** normalize and check that the string its a valid URI */
-    def normalizePath: String = platform.normalizePath(str)
+    def normalizePath: String = UriUtils.normalizePath(str)
 
     /** Url encoded string. */
     def urlComponentEncoded: String = platform.encodeURIComponent(str)

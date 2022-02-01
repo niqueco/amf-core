@@ -4,7 +4,7 @@ import amf.core.client.common.remote.Content
 import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.scala.parse.document.ParserContext
 import amf.core.internal.remote.{Cache, Context, Platform, Spec}
-import amf.core.internal.utils.AmfStrings
+import amf.core.internal.utils.{AmfStrings, UriUtils}
 import amf.core.internal.validation.core.ValidationSpecification
 import org.mulesoft.lexer.SourceLocation
 
@@ -31,7 +31,7 @@ class CompilerContext(val url: String,
 
   lazy val platform: Platform = fileContext.platform
 
-  def resolvePath(url: String): String = fileContext.resolve(fileContext.platform.normalizePath(url))
+  def resolvePath(url: String): String = fileContext.resolve(UriUtils.normalizePath(url))
 
   def fetchContent(): Future[Content] = compilerConfig.resolveContent(location)
 
