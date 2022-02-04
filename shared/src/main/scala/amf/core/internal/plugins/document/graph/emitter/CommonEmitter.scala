@@ -19,9 +19,10 @@ trait ApplicableMetaFieldRenderProvider {
 
   private def filterUnwantedElements(element: AmfObject, fields: Seq[Field], options: RenderOptions) = {
     element match {
-      case e: ExternalSourceElement if e.isLinkToSource => fields.filter(f => f != ExternalSourceElementModel.Raw)
-      case _: BaseUnit if !options.sourceInformation    => fields.filter(f => f != BaseUnitModel.SourceInformation)
-      case _                                            => fields
+      case e: ExternalSourceElement if e.isLinkToSource && !options.rawFieldEmission =>
+        fields.filter(f => f != ExternalSourceElementModel.Raw)
+      case _: BaseUnit if !options.sourceInformation => fields.filter(f => f != BaseUnitModel.SourceInformation)
+      case _                                         => fields
     }
   }
 
