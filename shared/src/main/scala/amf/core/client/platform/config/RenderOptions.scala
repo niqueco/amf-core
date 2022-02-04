@@ -60,6 +60,9 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
   /** Render shapes with specific json schema version (supported for json schema rendering) */
   def withSchemaVersion(version: JSONSchemaVersion): RenderOptions = _internal.withSchemaVersion(version)
 
+  /** Emit raw field with original external content at graph */
+  def withRawFieldEmission: RenderOptions = _internal.withRawFieldEmission
+
   def isWithDocumentation: Boolean     = _internal.isWithDocumentation
   def isWithCompactedEmission: Boolean = _internal.isWithCompactedEmission
   def schemaVersion: JSONSchemaVersion = _internal.schemaVersion
@@ -70,4 +73,6 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
   def isAmfJsonLdSerialization: Boolean = _internal.amfJsonLdSerialization
   def isPrettyPrint: Boolean            = _internal.prettyPrint
   def isEmitNodeIds: Boolean            = _internal.emitNodeIds
+  def isRawFieldEmission: Boolean       = _internal.rawFieldEmission
+
 }
