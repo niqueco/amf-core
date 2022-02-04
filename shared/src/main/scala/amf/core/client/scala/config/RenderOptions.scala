@@ -23,6 +23,7 @@ case class RenderOptions(
     compactedEmission: Boolean = true,
     emitWarningForUnsupportedValidationFacets: Boolean = false,
     schema: JSONSchemaVersion = JSONSchemaVersions.Unspecified,
+    rawFieldEmission: Boolean = false
 ) {
 
   /** Include PrettyPrint when rendering to graph. */
@@ -100,20 +101,24 @@ case class RenderOptions(
   /** Render shapes with specific json schema version (supported for json schema rendering) */
   def withSchemaVersion(version: JSONSchemaVersion): RenderOptions = copy(schema = version)
 
+  /** Emit raw field with original external content at graph */
+  def withRawFieldEmission: RenderOptions = copy(rawFieldEmission = true)
+
   def isWithDocumentation: Boolean                             = documentation
   def isWithCompactedEmission: Boolean                         = compactedEmission
   def shouldEmitWarningForUnsupportedValidationFacets: Boolean = emitWarningForUnsupportedValidationFacets
   def schemaVersion: JSONSchemaVersion                         = schema
 
-  def isCompactUris: Boolean             = compactUris
-  def isWithSourceMaps: Boolean          = sources
-  def isWithSourceInformation: Boolean   = sourceInformation
-  def isWithRawSourceMaps: Boolean       = rawSourceMaps
-  def isAmfJsonLdSerialization: Boolean  = amfJsonLdSerialization
-  def isValidation: Boolean              = validating
+  def isCompactUris: Boolean                          = compactUris
+  def isWithSourceMaps: Boolean                       = sources
+  def isWithSourceInformation: Boolean                = sourceInformation
+  def isWithRawSourceMaps: Boolean                    = rawSourceMaps
+  def isAmfJsonLdSerialization: Boolean               = amfJsonLdSerialization
+  def isValidation: Boolean                           = validating
   private[amf] def renderField(field: Field): Boolean = !filterFields(field)
-  def isPrettyPrint: Boolean             = prettyPrint
-  def isEmitNodeIds: Boolean             = emitNodeIds
+  def isPrettyPrint: Boolean                          = prettyPrint
+  def isEmitNodeIds: Boolean                          = emitNodeIds
+  def isRawFieldEmission: Boolean                     = rawFieldEmission
 
   // TODO: remove when embeddedform is deleted
   private[amf] def toGraphSerialization: GraphSerialization = {
