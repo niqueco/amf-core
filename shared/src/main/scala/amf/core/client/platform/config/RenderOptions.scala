@@ -61,7 +61,7 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
   def withSchemaVersion(version: JSONSchemaVersion): RenderOptions = _internal.withSchemaVersion(version)
 
   /** Emit raw field with original external content at graph */
-  def withRawFieldEmission: RenderOptions = _internal.withRawFieldEmission
+  def withRawFieldEmission(): RenderOptions = _internal.withRawFieldEmission
 
   def isWithDocumentation: Boolean     = _internal.isWithDocumentation
   def isWithCompactedEmission: Boolean = _internal.isWithCompactedEmission
