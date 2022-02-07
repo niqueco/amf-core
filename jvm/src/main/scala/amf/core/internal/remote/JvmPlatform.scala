@@ -30,11 +30,6 @@ class JvmPlatform extends Platform {
   /** Location where the helper functions for custom validations must be retrieved */
   override def customValidationLibraryHelperLocation: String = "classpath:validations/amf_validation.js"
 
-  override def resolvePath(path: String): String = {
-    val res = new URI(path).normalize.toString
-    fixFilePrefix(res)
-  }
-
   override def findCharInCharSequence(stream: CharSequence)(p: Char => Boolean): Option[Char] = {
     stream.chars().filter(c => p(c.toChar)).findFirst() match {
       case optInt if optInt.isPresent => Some(optInt.getAsInt.toChar)
@@ -54,11 +49,7 @@ class JvmPlatform extends Platform {
   /** decodes a URI component */
   override def decodeURIComponent(url: String): String = EcmaEncoder.decode(url, fullUri = false)
 
-  override def normalizeURL(url: String): String = encodeURI(url)
-
   private def replaceWhiteSpaces(url: String) = url.replaceAll(" ", "%20")
-
-  override def normalizePath(url: String): String = fixFilePrefix(new URI(encodeURI(url)).normalize.toString)
 
   /** Return the OS (win, mac, nux). */
   override def operativeSystem(): String = {

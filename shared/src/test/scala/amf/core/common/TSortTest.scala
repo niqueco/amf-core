@@ -2,13 +2,13 @@ package amf.core.common
 
 import amf.core.internal.utils.TSort
 import amf.core.internal.utils.TSort.tsort
-import org.scalatest.FunSuite
-import org.scalatest.Matchers._
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
 /**
   * [[TSort]] test
   */
-class TSortTest extends FunSuite {
+class TSortTest extends AnyFunSuite with Matchers {
 
   test("Topological sort with edges") {
     val edges = List(

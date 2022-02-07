@@ -3,9 +3,16 @@ package amf.core.client.scala.parse
 import amf.core.client.scala.resource.ResourceLoader
 import amf.core.client.scala.{AMFGraphConfiguration, AMFObjectResult, AMFParseResult, AMFResult}
 import amf.core.internal.convert.CoreClientConverters.platform
-import amf.core.internal.parser.{AMFCompiler, AMFGraphPartialCompiler, AmfObjectUnitContainer, CompilerConfiguration, CompilerContextBuilder}
+import amf.core.internal.parser.{
+  AMFCompiler,
+  AMFGraphPartialCompiler,
+  AmfObjectUnitContainer,
+  CompilerConfiguration,
+  CompilerContextBuilder
+}
 import amf.core.internal.remote.{Cache, Context}
 import amf.core.internal.resource.StringResourceLoader
+import amf.core.internal.utils.UriUtils
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -85,7 +92,7 @@ object AMFParser {
   }
 
   private def fromStream(url: String, stream: String, mediaType: Option[String]): ResourceLoader =
-    StringResourceLoader(platform.resolvePath(url), stream, mediaType)
+    StringResourceLoader(UriUtils.resolvePath(url), stream, mediaType)
 
   private[amf] val DEFAULT_DOCUMENT_URL = "http://a.ml/amf/default_document"
 }

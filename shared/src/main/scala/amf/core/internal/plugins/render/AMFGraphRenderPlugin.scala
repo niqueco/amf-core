@@ -3,7 +3,12 @@ package amf.core.internal.plugins.render
 import amf.core.client.common.{LowPriority, PluginPriority}
 import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.scala.vocabulary.{Namespace, NamespaceAliases}
-import amf.core.internal.plugins.document.graph.emitter.{EmbeddedJsonLdEmitter, FlattenedJsonLdEmitter}
+import amf.core.internal.plugins.document.graph.emitter.{
+  EmbeddedJsonLdEmitter,
+  FlattenedJsonLdEmitter,
+  SemanticExtensionAwareFieldRenderProvision,
+  SemanticExtensionAwareMetaFieldRenderProvider
+}
 import amf.core.internal.plugins.document.graph.{EmbeddedForm, JsonLdSerialization}
 import amf.core.internal.plugins.syntax.ASTBuilder
 import amf.core.internal.remote.Amf
@@ -30,7 +35,13 @@ object AMFGraphRenderPlugin extends AMFRenderPlugin {
     options.toGraphSerialization match {
       case JsonLdSerialization(EmbeddedForm) => EmbeddedJsonLdEmitter.emit(unit, builder, options, namespaceAliases)
       // defaults to flatten
-      case _ => FlattenedJsonLdEmitter.emit(unit, builder, options, namespaceAliases, renderConfig.extensionModels)
+      case _ =>
+        FlattenedJsonLdEmitter.emit(
+            unit,
+            builder,
+            options,
+            namespaceAliases,
+            SemanticExtensionAwareMetaFieldRenderProvider(renderConfig.extensionModels, options))
     }
   }
 

@@ -1,7 +1,7 @@
 package amf.core.internal.validation.model
 
 import amf.core.internal.unsafe.PlatformSecrets
-import org.scalatest.AsyncFunSuite
+import org.scalatest.funsuite.AsyncFunSuite
 
 import scala.concurrent.ExecutionContext
 

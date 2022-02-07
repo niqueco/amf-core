@@ -5,14 +5,14 @@ import amf.core.client.scala.parse.document.{ParserContext, SyamlParsedDocument}
 import amf.core.internal.parser.LimitedParseConfig
 import amf.core.internal.plugins.syntax.SyamlSyntaxParsePlugin
 import amf.core.internal.remote.Mimes._
-import org.scalatest.FunSuite
-import org.scalatest.Matchers._
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 import org.yaml.model._
 import org.yaml.parser.YamlParser
 
 import scala.language.postfixOps
 
-class ParserTest extends FunSuite {
+class ParserTest extends AnyFunSuite with Matchers {
 
   private val `RAML/yaml`: String =
     """#%RAML 1.0

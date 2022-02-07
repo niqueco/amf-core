@@ -5,7 +5,7 @@ import amf.core.client.scala.AMFResult
 import amf.core.client.scala.model.document.Document
 import amf.core.client.scala.validation.AMFValidationResult
 import amf.core.io.FileAssertionTest
-import org.scalatest.AsyncFunSuite
+import org.scalatest.funsuite.AsyncFunSuite
 
 import scala.concurrent.ExecutionContext
 

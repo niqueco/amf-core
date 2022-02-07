@@ -9,8 +9,9 @@ import amf.core.client.scala.parse.document.{ParserContext, ReferenceHandler, Si
 import amf.core.client.scala.resource.ClasspathResourceLoader
 import amf.core.internal.parser.Root
 import amf.core.internal.remote.Mimes.`application/yaml`
-import amf.core.internal.remote.{Mimes, Spec}
-import org.scalatest.{AsyncFunSuite, Matchers}
+import amf.core.internal.remote.Spec
+import org.scalatest.funsuite.AsyncFunSuite
+import org.scalatest.matchers.should.Matchers
 
 class ClasspathResourceLoaderTest extends AsyncFunSuite with Matchers {
 

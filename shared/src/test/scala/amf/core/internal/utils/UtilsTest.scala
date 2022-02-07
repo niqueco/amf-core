@@ -1,9 +1,9 @@
 package amf.core.internal.utils
 
-import org.scalatest.FunSuite
-import org.scalatest.Matchers._
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-class UtilsTest extends FunSuite {
+class UtilsTest extends AnyFunSuite with Matchers {
 
   case class ResolveUrl(base: String, url: String)
 
@@ -15,7 +15,8 @@ class UtilsTest extends FunSuite {
     ResolveUrl("file://some/dir/api.raml", "http://some.example/")    -> "http://some.example/",
     ResolveUrl("file://some/dir/api.raml", "#/some/fragment")         -> "file://some/dir/api.raml#/some/fragment",
     ResolveUrl("file://dir/other/directory/", "../file.json")         -> "file://dir/other/file.json",
-    ResolveUrl("file://dir/other/directory/file.json", "")            -> "file://dir/other/directory/"
+    ResolveUrl("file://dir/other/directory/file.json", "")            -> "file://dir/other/directory/",
+    ResolveUrl("file:///", "../file.json")                             -> "file:///../file.json",
   )
 
   resolveTests.foreach {
@@ -24,6 +25,20 @@ class UtilsTest extends FunSuite {
       val result                = UriUtils.resolveRelativeTo(base, url)
       test(s"Resolved uri $expected") {
         result should be(expected)
+      }
+  }
+
+  val urlResolveTests: List[(String, String)] = List(
+    "file://resources/input.yaml"            -> "file://resources/input.yaml",
+    "file://resources/ignored/../input.yaml" -> "file://resources/input.yaml",
+    "file://../dataType.yaml"                -> "file://../dataType.yaml",
+    "file:///../dataType.yaml"                -> "file:///../dataType.yaml",
+  )
+
+  urlResolveTests.foreach {
+    case (input, output) =>
+      test(s" the url $input should be resolved to $output") {
+        UriUtils.resolvePath(input) should be(output)
       }
   }
 
