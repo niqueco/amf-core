@@ -56,7 +56,7 @@ object AMFGraphConfiguration {
           .withAnnotations(CoreSerializableAnnotations.annotations),
         Set.empty,
         AMFOptions.default()
-    ).withPlugins(List(AMFGraphParsePlugin, AMFGraphRenderPlugin, SyamlSyntaxParsePlugin, SyamlSyntaxRenderPlugin))
+    ).withPlugins(List(AMFGraphParsePlugin(), AMFGraphRenderPlugin, SyamlSyntaxParsePlugin, SyamlSyntaxRenderPlugin))
       .withTransformationPipeline(BasicTransformationPipeline())
   }
 
