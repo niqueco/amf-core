@@ -18,4 +18,12 @@ class GraphParserContext(rootContextDocument: String = "",
                          futureDeclarations: FutureDeclarations = EmptyFutureDeclarations(),
                          config: ParseConfiguration,
                          val graphContext: GraphContext = GraphContext())
-    extends SyamlBasedParserErrorHandler(rootContextDocument, refs, futureDeclarations, config) {}
+    extends SyamlBasedParserErrorHandler(rootContextDocument, refs, futureDeclarations, config) {
+
+  def addTerms(aliases: Map[String, String]): this.type = {
+    aliases.foreach {
+      case (term, id) => graphContext.withTerm(term, id)
+    }
+    this
+  }
+}

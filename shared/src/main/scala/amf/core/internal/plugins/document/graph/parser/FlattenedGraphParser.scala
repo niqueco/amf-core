@@ -1,4 +1,5 @@
 package amf.core.internal.plugins.document.graph.parser
+import amf.core.client.scala.config.ParsingOptions
 import amf.core.client.scala.errorhandling.IgnoringErrorHandler
 import amf.core.client.scala.model.document._
 import amf.core.client.scala.model.domain._
@@ -23,7 +24,8 @@ import org.yaml.model._
 import scala.collection.mutable
 import scala.language.implicitConversions
 
-class FlattenedUnitGraphParser()(implicit val ctx: GraphParserContext) extends GraphParserHelpers {
+class FlattenedUnitGraphParser(overrideAliases: Map[String, String] = Map.empty)(implicit val ctx: GraphParserContext)
+    extends GraphParserHelpers {
 
   def parse(document: YDocument, location: String): BaseUnit = {
 
@@ -31,7 +33,7 @@ class FlattenedUnitGraphParser()(implicit val ctx: GraphParserContext) extends G
 
     val unit = rootNode.flatMap(_.toOption[YMap]).flatMap(m => retrieveId(m, ctx)) match {
       case Some(rootId) =>
-        new FlattenedGraphParser(rootId)(ctx).parse(document) match {
+        new FlattenedGraphParser(rootId, overrideAliases)(ctx).parse(document) match {
           case Some(b: BaseUnit) => b
           case Some(_) =>
             ctx.eh.violation(UnableToParseDocument, "", "Root node is not a Base Unit")
@@ -50,7 +52,9 @@ class FlattenedUnitGraphParser()(implicit val ctx: GraphParserContext) extends G
   }
 }
 
-class FlattenedGraphParser(startingPoint: String)(implicit val ctx: GraphParserContext) extends GraphParserHelpers {
+class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, String] = Map.empty)(
+    implicit val ctx: GraphParserContext)
+    extends GraphParserHelpers {
 
   private lazy val extensions = ctx.config.registryContext.getRegistry.getEntitiesRegistry.extensionTypes
   private lazy val extensionFields = extensions.map {
@@ -92,10 +96,17 @@ class FlattenedGraphParser(startingPoint: String)(implicit val ctx: GraphParserC
           documentMap
             .key(JsonLdKeywords.Context)
             .foreach(e => JsonLdGraphContextParser(e.value, ctx).parse())
+          stepOrAddAliasesFromOptions()
           documentMap.key(JsonLdKeywords.Graph).flatMap { e =>
             parseGraph(e.value)
           }
         case _ => None
+      }
+    }
+
+    private def stepOrAddAliasesFromOptions(): Unit = {
+      overrideAliases.foreach {
+        case (alias, uri) => ctx.graphContext.withTerm(alias, uri)
       }
     }
 
@@ -571,8 +582,8 @@ class FlattenedGraphParser(startingPoint: String)(implicit val ctx: GraphParserC
 
 object FlattenedUnitGraphParser extends GraphContextHelper with GraphParserHelpers {
 
-  def apply(config: ParseConfiguration): FlattenedUnitGraphParser = {
-    new FlattenedUnitGraphParser()(new GraphParserContext(config = config))
+  def apply(config: ParseConfiguration, aliases: Map[String, String] = Map.empty): FlattenedUnitGraphParser = {
+    new FlattenedUnitGraphParser(aliases)(new GraphParserContext(config = config))
   }
   implicit val ctx: GraphParserContext = new GraphParserContext(
       config = LimitedParseConfig(IgnoringErrorHandler)
@@ -585,7 +596,8 @@ object FlattenedUnitGraphParser extends GraphContextHelper with GraphParserHelpe
     * @param document document to perform the canParse test on
     * @return
     */
-  def canParse(document: SyamlParsedDocument): Boolean = findRootNode(document.document).isDefined
+  def canParse(document: SyamlParsedDocument, aliases: Map[String, String] = Map.empty): Boolean =
+    findRootNode(document.document, aliases).isDefined
 
   private def isRootNode(node: YNode)(implicit ctx: GraphParserContext): Boolean = {
     node.value match {
@@ -614,16 +626,17 @@ object FlattenedUnitGraphParser extends GraphContextHelper with GraphParserHelpe
     }
   }
 
-  private[amf] def findRootNode(document: YDocument): Option[YNode] = {
+  private[amf] def findRootNode(document: YDocument, aliases: Map[String, String] = Map.empty): Option[YNode] = {
     document.node.value match {
       case m: YMap =>
-        processGraph(m, ctx)
+        processGraph(m, ctx, aliases)
       case _ => None
     }
   }
 
-  private[amf] def processGraph(m: YMap, ctx: GraphParserContext) = {
+  private[amf] def processGraph(m: YMap, ctx: GraphParserContext, aliases: Map[String, String]) = {
     m.key(JsonLdKeywords.Context).foreach(entry => JsonLdGraphContextParser(entry.value, ctx).parse())
+    ctx.addTerms(aliases)
     m.key(JsonLdKeywords.Graph).flatMap { graphEntry =>
       val graphYSeq = graphEntry.value.as[YSequence]
       graphYSeq.nodes.find { node =>
