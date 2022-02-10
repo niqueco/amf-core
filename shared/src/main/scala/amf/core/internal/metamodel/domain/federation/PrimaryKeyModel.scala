@@ -9,11 +9,9 @@ import amf.core.internal.metamodel.domain.{DomainElementModel, ModelDoc, ModelVo
 object PrimaryKeyModel extends DomainElementModel {
 
   val Fields = Field(
-      Array(Str),
-      Namespace.ApiFederation + "entityReferenceFieldName",
-      ModelDoc(ModelVocabularies.ApiFederation,
-               "entityReferenceFieldName",
-               "List of field names that compose this key")
+      Array(FieldReference),
+      Namespace.ApiFederation + "entityReferenceField",
+      ModelDoc(ModelVocabularies.ApiFederation, "entityReferenceField", "List of field names that compose this key")
   )
 
   override def modelInstance: AmfObject = Key()
