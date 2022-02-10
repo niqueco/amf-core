@@ -36,6 +36,7 @@ object Namespace {
   val AmfResolution: Namespace    = Namespace("http://a.ml/vocabularies/amf/resolution#")
   val AmfValidation: Namespace    = Namespace("http://a.ml/vocabularies/amf/validation#")
   val AmfRender: Namespace        = Namespace("http://a.ml/vocabularies/amf/render#")
+  val ApiFederation: Namespace    = Namespace("http://a.ml/vocabularies/apiFederation#")
 
   def find(uri: String): Option[Namespace] = uri match {
     case "http://a.ml/vocabularies/document"             => Some(Document)

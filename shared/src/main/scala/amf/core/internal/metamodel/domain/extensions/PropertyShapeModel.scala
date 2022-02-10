@@ -1,18 +1,19 @@
 package amf.core.internal.metamodel.domain.extensions
 
 import amf.core.internal.metamodel.Field
-import amf.core.internal.metamodel.Type.{Bool, Int, Iri, Str}
+import amf.core.internal.metamodel.Type.{Array, Bool, Int, Iri, Str}
 import amf.core.internal.metamodel.domain._
 import amf.core.client.scala.model.domain.extensions.PropertyShape
-import amf.core.client.scala.vocabulary.Namespace.{Shacl, Shapes}
+import amf.core.client.scala.vocabulary.Namespace.{ApiFederation, Shacl, Shapes}
 import amf.core.client.scala.vocabulary.ValueType
+import amf.core.internal.metamodel.domain.federation.FederatedAttribute
 
 /**
   * Property shape metamodel
   *
   * Model for SHACL PropertyShapes
   */
-object PropertyShapeModel extends ShapeModel {
+object PropertyShapeModel extends ShapeModel with FederatedAttribute {
 
   val Path =
     Field(Iri, Shacl + "path", ModelDoc(ExternalModelVocabularies.Shacl, "path", "Path to the constrained property"))
@@ -21,7 +22,13 @@ object PropertyShapeModel extends ShapeModel {
     Field(ShapeModel, Shapes + "range", ModelDoc(ModelVocabularies.Shapes, "range", "Range property constraint"))
 
   val SerializationOrder =
-    Field(Int, Shapes + "serializationOrder", ModelDoc(ModelVocabularies.Shapes, "serializationOrder", "position in the set of properties for a shape used to serialize this property on the wire"))
+    Field(
+        Int,
+        Shapes + "serializationOrder",
+        ModelDoc(ModelVocabularies.Shapes,
+                 "serializationOrder",
+                 "position in the set of properties for a shape used to serialize this property on the wire")
+    )
 
   val MinCount = Field(Int,
                        Shacl + "minCount",
@@ -38,7 +45,7 @@ object PropertyShapeModel extends ShapeModel {
   override val `type`: List[ValueType] = List(Shacl + "PropertyShape") ++ ShapeModel.`type`
 
   override def fields: List[Field] =
-    List(Path, Range, MinCount, MaxCount, PatternName, SerializationOrder) ++ ShapeModel.fields ++ DomainElementModel.fields
+    List(Path, Range, MinCount, MaxCount, PatternName, SerializationOrder) ++ FederatedAttribute ++ ShapeModel.fields ++ DomainElementModel.fields
 
   override def modelInstance = PropertyShape()
 
