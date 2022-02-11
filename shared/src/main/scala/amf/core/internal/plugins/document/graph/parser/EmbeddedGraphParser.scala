@@ -27,7 +27,8 @@ import scala.collection.mutable.ListBuffer
 /**
   * AMF Graph parser
   */
-class EmbeddedGraphParser()(implicit val ctx: GraphParserContext) extends GraphParserHelpers {
+class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val ctx: GraphParserContext)
+    extends GraphParserHelpers {
 
   def canParse(document: SyamlParsedDocument): Boolean = EmbeddedGraphParser.canParse(document)
 
@@ -52,6 +53,9 @@ class EmbeddedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
         head <- seq.headOption
         parsed <- {
           head.key(JsonLdKeywords.Context, e => JsonLdGraphContextParser(e.value, ctx).parse())
+          aliases.foreach {
+            case (term, iri) => ctx.graphContext.withTerm(term, iri)
+          }
           parse(head)
         }
       } yield {
@@ -351,8 +355,8 @@ class EmbeddedGraphParser()(implicit val ctx: GraphParserContext) extends GraphP
 
 object EmbeddedGraphParser {
 
-  def apply(config: ParseConfiguration): EmbeddedGraphParser =
-    new EmbeddedGraphParser()(new GraphParserContext(config = config))
+  def apply(config: ParseConfiguration, aliases: Map[String, String]): EmbeddedGraphParser =
+    new EmbeddedGraphParser(aliases)(new GraphParserContext(config = config))
 
   def canParse(document: SyamlParsedDocument): Boolean = {
     val maybeMaps = document.document.node.toOption[Seq[YMap]]
