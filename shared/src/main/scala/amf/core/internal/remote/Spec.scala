@@ -39,6 +39,7 @@ object Spec {
   @JSExport val AML: Spec               = Aml
   @JSExport val JSONSCHEMA: Spec        = JsonSchema
   @JSExport val GRPC: Spec              = Grpc
+  @JSExport val GRAPHQL: Spec           = GraphQL
   @JSExport val JSONSCHEMADIALECT: Spec = JsonSchemaDialect
 }
 
