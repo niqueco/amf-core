@@ -1,0 +1,71 @@
+[
+  {
+    "@context": {
+      "data": "http://a.ml/vocabularies/not-data#",
+      "doc": "http://a.ml/vocabularies/not-document#"
+    },
+    "@id": "amf://id1",
+    "@type": [
+      "doc:Document",
+      "doc:Fragment",
+      "doc:Module",
+      "doc:Unit"
+    ],
+    "doc:encodes": [
+      {
+        "@id": "amf://id2",
+        "@type": [
+          "data:Scalar",
+          "data:Node",
+          "doc:DomainElement"
+        ],
+        "data:value": [
+          {
+            "@value": "myValue"
+          }
+        ],
+        "http://www.w3.org/ns/shacl#datatype": [
+          {
+            "@id": "http://www.w3.org/2001/XMLSchema#String"
+          }
+        ]
+      }
+    ],
+    "doc:version": [
+      {
+        "@value": "2.0.0"
+      }
+    ],
+    "doc:declares": [
+      {
+        "@id": "amf://id3",
+        "@type": [
+          "data:Array",
+          "http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq",
+          "data:Node",
+          "doc:DomainElement"
+        ],
+        "http://www.w3.org/2000/01/rdf-schema#member": [
+          {
+            "@id": "amf://id4",
+            "@type": [
+              "data:Scalar",
+              "data:Node",
+              "doc:DomainElement"
+            ],
+            "http://a.ml/vocabularies/data#value": [
+              {
+                "@value": "myValue2"
+              }
+            ],
+            "http://www.w3.org/ns/shacl#datatype": [
+              {
+                "@id": "http://www.w3.org/2001/XMLSchema#String"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

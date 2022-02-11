@@ -33,7 +33,8 @@ case class AMFGraphParsePlugin(private val aliases: Map[String, String] = Map.em
       FlattenedUnitGraphParser(ctx.config, aliases)
         .parse(parsed.document, effectiveUnitUrl(document.location, ctx.parsingOptions))
     case parsed: SyamlParsedDocument if EmbeddedGraphParser.canParse(parsed) =>
-      EmbeddedGraphParser(ctx.config).parse(parsed.document, effectiveUnitUrl(document.location, ctx.parsingOptions))
+      EmbeddedGraphParser(ctx.config, aliases)
+        .parse(parsed.document, effectiveUnitUrl(document.location, ctx.parsingOptions))
     case _ => throw UnsupportedParsedDocumentException
   }
 
