@@ -11,12 +11,24 @@ class JsonLdContextOverrideTest extends AsyncFunSuite with Matchers {
 
   override implicit def executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
-  test("JSON-LD @context can be overriden by stepping on or adding new aliases") {
-    val aliases     = Map("doc" -> "http://a.ml/vocabularies/document#", "data" -> "http://a.ml/vocabularies/data#")
-    val plugin      = AMFGraphParsePlugin(aliases)
-    val errorClient = AMFGraphConfiguration.predefined().baseUnitClient()
-    val validClient = AMFGraphConfiguration.predefined().withPlugin(plugin).baseUnitClient()
-    val jsonld      = "file://shared/src/test/resources/parser/unexpected-context.flattened.jsonld"
+  private val aliases     = Map("doc" -> "http://a.ml/vocabularies/document#", "data" -> "http://a.ml/vocabularies/data#")
+  private val plugin      = AMFGraphParsePlugin(aliases)
+  private val errorClient = AMFGraphConfiguration.predefined().baseUnitClient()
+  private val validClient = AMFGraphConfiguration.predefined().withPlugin(plugin).baseUnitClient()
+
+  test("Flattened - JSON-LD @context can be overriden by stepping on or adding new aliases") {
+    val jsonld = "file://shared/src/test/resources/parser/unexpected-context.flattened.jsonld"
+    for {
+      errorResult <- errorClient.parse(jsonld)
+      _           <- errorResult.conforms shouldBe false
+      validResult <- validClient.parse(jsonld)
+    } yield {
+      validResult.conforms shouldBe true
+    }
+  }
+
+  test("Expanded - JSON-LD @context can be overriden by stepping on or adding new aliases") {
+    val jsonld = "file://shared/src/test/resources/parser/unexpected-context.expanded.jsonld"
     for {
       errorResult <- errorClient.parse(jsonld)
       _           <- errorResult.conforms shouldBe false
