@@ -32,16 +32,13 @@ case class ModelTraversalRegistry() {
 
   def shouldFailIfRecursive(root: Shape, shape: Shape): Boolean = root.annotations.find(classOf[TypeAlias]) match {
     case Some(alias) =>
-      val a = (alias.aliasId.equals(shape.id) && currentPath.nonEmpty || isInCurrentPath(shape.id))
+      val a = alias.aliasId.equals(shape.id) && currentPath.nonEmpty || isInCurrentPath(shape.id)
       val b = !isAllowedToCycle(shape)
       a && b
     case None =>isInCurrentPath(shape.id) && !isAllowedToCycle(shape)
   }
 
-  def avoidError(id: String): Boolean = allowList.contains(id)
-
-  def avoidError(r: RecursiveShape, checkId: Option[String] = None): Boolean =
-    avoidError(r.id) || avoidError(r.fixpoint.option().getOrElse("")) || (checkId.isDefined && avoidError(checkId.get))
+  def isAllowListed(id: String): Boolean = allowList.contains(id)
 
   def isInCurrentPath(id: String): Boolean = currentPath.contains(id)
 
