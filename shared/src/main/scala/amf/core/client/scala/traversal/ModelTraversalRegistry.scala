@@ -14,7 +14,7 @@ case class ModelTraversalRegistry() {
   private var currentPath: Set[String] = Set.empty
 
   // IDs of elements that do not throw recursion errors
-  private var whiteList: Set[String] = Set()
+  private var allowList: Set[String] = Set()
 
 
   private var allowedCycleClasses : Seq[Class[_]] = Seq()
@@ -51,7 +51,7 @@ case class ModelTraversalRegistry() {
     case None =>isInCurrentPath(shape.id) && !isAllowedToCycle(shape)
   }
 
-  def avoidError(id: String): Boolean = whiteList.contains(id)
+  def avoidError(id: String): Boolean = allowList.contains(id)
 
   def avoidError(r: RecursiveShape, checkId: Option[String] = None): Boolean =
     avoidError(r.id) || avoidError(r.fixpoint.option().getOrElse("")) || (checkId.isDefined && avoidError(checkId.get))
@@ -65,10 +65,10 @@ case class ModelTraversalRegistry() {
   def runWithIgnoredId(fnc: () => Shape, shapeId: String): Shape = runWithIgnoredIds(fnc, Set(shapeId))
 
   def runWithIgnoredIds(fnc: () => Shape, shapeIds: Set[String]): Shape = {
-    val previousWhiteList = whiteList
-    whiteList = whiteList ++ shapeIds
+    val previousAllowList = allowList
+    allowList = allowList ++ shapeIds
     val expanded = runNested(_ => fnc())
-    whiteList = previousWhiteList
+    allowList = previousAllowList
     expanded
   }
 
