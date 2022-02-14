@@ -5,7 +5,7 @@ import amf.core.internal.metamodel.Field
 import amf.core.internal.metamodel.domain.ShapeModel._
 import amf.core.client.scala.model.domain.extensions.{PropertyShape, ShapeExtension}
 import amf.core.client.scala.model.{BoolField, StrField}
-import amf.core.client.scala.traversal.ModelTraversalRegistry
+import amf.core.client.scala.traversal.ShapeTraversalRegistry
 import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.plugins.domain.shapes.models.ShapeHelper
 
@@ -122,34 +122,34 @@ abstract class Shape extends DomainElement with Linkable with NamedDomainElement
 
   def cloneShape(recursionErrorHandler: Option[AMFErrorHandler],
                  recursionBase: Option[String] = None,
-                 traversed: ModelTraversalRegistry = ModelTraversalRegistry(),
+                 traversed: ShapeTraversalRegistry = ShapeTraversalRegistry(),
                  cloneExample: Boolean = false): Shape
 
   // Copy fields into a cloned shape
   protected def copyFields(recursionErrorHandler: Option[AMFErrorHandler],
                            cloned: Shape,
                            recursionBase: Option[String],
-                           traversal: ModelTraversalRegistry): Unit = {
+                           traversal: ShapeTraversalRegistry): Unit = {
     this.fields.foreach {
       case (f, v) =>
         val clonedValue = v.value match {
           case s: Shape if s.id != this.id =>
-            traversal.runNested((t: ModelTraversalRegistry) => {
+            traversal.runNested((t: ShapeTraversalRegistry) => {
               s.cloneShape(recursionErrorHandler, recursionBase, t)
             })
           case s: Shape if s.id == this.id => s
           case a: AmfArray =>
             AmfArray(
-                a.values.map {
-                  case e: Shape if e.id != this.id =>
-                    traversal.runNested((t: ModelTraversalRegistry) => {
-                      e.cloneShape(recursionErrorHandler, recursionBase, t)
-                    })
+              a.values.map {
+                case e: Shape if e.id != this.id =>
+                  traversal.runNested((t: ShapeTraversalRegistry) => {
+                    e.cloneShape(recursionErrorHandler, recursionBase, t)
+                  })
 //                e.cloneShape(recursionErrorHandler, recursionBase, traversed.push(prevBaseId),Some(prevBaseId))
-                  case e: Shape if e.id == this.id => e
-                  case o                           => o
-                },
-                a.annotations
+                case e: Shape if e.id == this.id => e
+                case o                           => o
+              },
+              a.annotations
             )
           case o => o
         }

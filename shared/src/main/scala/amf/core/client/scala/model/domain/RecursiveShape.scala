@@ -2,7 +2,7 @@ package amf.core.client.scala.model.domain
 
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model.StrField
-import amf.core.client.scala.traversal.ModelTraversalRegistry
+import amf.core.client.scala.traversal.ShapeTraversalRegistry
 import amf.core.internal.metamodel.domain.RecursiveShapeModel
 import amf.core.internal.metamodel.domain.RecursiveShapeModel._
 import amf.core.internal.parser.domain.{Annotations, Fields}
@@ -25,7 +25,7 @@ class RecursiveShape(override val fields: Fields, override val annotations: Anno
   override def cloneShape(
       recursionErrorHandler: Option[AMFErrorHandler],
       recursionBase: Option[String],
-      traversal: ModelTraversalRegistry = ModelTraversalRegistry(),
+      traversal: ShapeTraversalRegistry = ShapeTraversalRegistry(),
       cloneExamples: Boolean = false
   ): Shape = {
     val cloned = RecursiveShape()
