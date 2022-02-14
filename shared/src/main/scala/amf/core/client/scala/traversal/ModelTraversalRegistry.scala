@@ -19,21 +19,8 @@ case class ModelTraversalRegistry() {
 
   private var allowedCycleClasses : Seq[Class[_]] = Seq()
 
-  // Function that skips elements
-  private var skipFn: String => Boolean = (_: String) => false
-
-  def withSkipFn(fn: String => Boolean): this.type = {
-    skipFn = fn
-    this
-  }
-
   def withAllowedCyclesInstances(classes: Seq[Class[_]]): this.type = {
     allowedCycleClasses = classes
-    this
-  }
-
-  def resetSkipFn(): this.type = {
-    skipFn = (_: String) => false
     this
   }
 
@@ -59,8 +46,6 @@ case class ModelTraversalRegistry() {
   def isInCurrentPath(id: String): Boolean = currentPath.contains(id)
 
   def isAllowedToCycle(shape: Shape): Boolean = allowedCycleClasses.contains(shape.getClass)
-
-  def canTraverse(id: String): Boolean = !skipFn(id)
 
   def runWithIgnoredId(fnc: () => Shape, shapeId: String): Shape = runWithIgnoredIds(fnc, Set(shapeId))
 
