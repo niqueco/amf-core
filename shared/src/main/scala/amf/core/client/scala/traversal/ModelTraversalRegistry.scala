@@ -5,10 +5,10 @@ import scala.collection.mutable
 class ModelTraversalRegistry() {
 
   // All IDs visited in the traversal
-  protected var visitedIds: mutable.Set[String] = mutable.Set()
+  private[amf] var visitedIds: mutable.Set[String] = mutable.Set()
 
   // IDs visited in the current path
-  protected var currentPath: Set[String] = Set.empty
+  private[amf] var currentPath: Set[String] = Set.empty
 
   def +(id: String): this.type = {
     visitedIds += id

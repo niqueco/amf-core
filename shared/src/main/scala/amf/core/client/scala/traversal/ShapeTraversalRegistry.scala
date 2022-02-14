@@ -3,11 +3,9 @@ package amf.core.client.scala.traversal
 import amf.core.client.scala.model.domain.Shape
 import amf.core.internal.annotations.TypeAlias
 
-import scala.collection.mutable
-
 case class ShapeTraversalRegistry() extends ModelTraversalRegistry() {
   // IDs of elements that do not throw recursion errors
-  protected var allowList: Set[String] = Set()
+  private[amf] var allowList: Set[String] = Set()
 
   def isAllowListed(id: String): Boolean = allowList.contains(id)
 
@@ -20,19 +18,12 @@ case class ShapeTraversalRegistry() extends ModelTraversalRegistry() {
 
   def isAllowedToCycle(shape: Shape): Boolean = allowedCycleClasses.contains(shape.getClass)
 
-  def runWithIgnoredId(fnc: () => Shape, shapeId: String): Shape = runWithIgnoredIds(fnc, Set(shapeId))
-
-  def runWithIgnoredIds(fnc: () => Shape, shapeIds: Set[String]): Shape = {
+  def allow(shapeIds: Set[String])(fnc: () => Shape): Shape = {
     val previousAllowList = allowList
     allowList = allowList ++ shapeIds
     val expanded = runNested(_ => fnc())
     allowList = previousAllowList
     expanded
-  }
-
-  def recursionAllowed(fnc: () => Shape, shapeId: String): Shape = {
-    val actual = currentPath + shapeId
-    runWithIgnoredIds(fnc, actual)
   }
 
   def shouldFailIfRecursive(root: Shape, shape: Shape): Boolean = root.annotations.find(classOf[TypeAlias]) match {
