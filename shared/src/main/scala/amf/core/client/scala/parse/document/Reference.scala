@@ -1,5 +1,6 @@
 package amf.core.client.scala.parse.document
 
+import amf.core.client.scala.config.UnitCacheHitEvent
 import amf.core.client.scala.exception.CyclicReferenceException
 import amf.core.client.scala.model.document.RecursiveUnit
 import amf.core.client.scala.parse.document
@@ -25,7 +26,9 @@ case class Reference(url: String, refs: Seq[RefContainer]) extends PlatformSecre
       compilerContext.compilerConfig.getUnitsCache match {
         case Some(resolver) =>
           // cached references do not take into account allowedVendorsToReference defined in plugin
-          resolver.fetch(compilerContext.resolvePath(url)) flatMap { cachedReference =>
+          val processedPath = compilerContext.resolvePath(url)
+          resolver.fetch(processedPath) flatMap { cachedReference =>
+            compilerContext.compilerConfig.notifyEvent(UnitCacheHitEvent(url, processedPath))
             Future(ReferenceResolutionResult(None, Some(cachedReference.content)))
           } recoverWith {
             case _ => resolveReference(compilerContext, allowedSpecs, allowRecursiveRefs)
