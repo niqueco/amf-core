@@ -1,10 +1,11 @@
 package amf.core.internal.unsafe
 
-import amf.core.internal.remote.{JsPlatform, Platform}
+import amf.core.internal.remote.JsPlatform
 import amf.core.internal.remote.browser.JsBrowserPlatform
 import amf.core.internal.remote.server.JsServerPlatform
 
-import scala.scalajs.js.{Dynamic, isUndefined}
+import scala.scalajs.js
+import scala.scalajs.js.isUndefined
 
 object PlatformBuilder {
 
@@ -13,5 +14,5 @@ object PlatformBuilder {
   def apply(): JsPlatform = platform
 
   /** Return true if js is running on browser. */
-  private def isBrowser: Boolean = !isUndefined(Dynamic.global.document)
+  private def isBrowser: Boolean = js.typeOf(js.Dynamic.global.window) != "undefined"
 }
