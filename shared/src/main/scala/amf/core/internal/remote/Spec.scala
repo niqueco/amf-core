@@ -18,6 +18,7 @@ object Spec {
       case Aml.id               => Some(Aml)
       case JsonSchema.id        => Some(JsonSchema)
       case Grpc.id              => Some(Grpc)
+      case GraphQL.id           => Some(GraphQL)
       case JsonSchemaDialect.id => Some(JsonSchemaDialect)
       case _                    => None
     }
