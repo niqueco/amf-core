@@ -46,6 +46,7 @@ object AMFEventNames {
   val SelectedParsePlugin        = "SelectedParsePlugin"
   val DetectedSyntaxMediaType    = "DetectedSyntaxMediaType"
   val SkippedValidationPlugin    = "SkippedValidationPlugin"
+  val UnitCacheHit               = "UnitCacheHit"
 }
 
 object AMFEventConverter {
@@ -70,6 +71,7 @@ object AMFEventConverter {
     case e: config.StartedTransformationStepEvent  => StartedTransformationStepEvent(e)
     case e: config.StartingRenderToWriterEvent     => StartingRenderToWriterEvent(e)
     case e: config.SkippedValidationPluginEvent    => SkippedValidationPluginEvent(e)
+    case e: config.UnitCacheHitEvent               => UnitCacheHitEvent(e)
   }
 }
 
@@ -247,3 +249,6 @@ case class StartedTransformationStepEvent(private val _internal: config.StartedT
 @JSExportAll
 case class SkippedValidationPluginEvent(private val _internal: config.SkippedValidationPluginEvent)
     extends ClientEvent(_internal) {}
+
+@JSExportAll
+case class UnitCacheHitEvent(private val _internal: config.UnitCacheHitEvent) extends ClientEvent(_internal) {}

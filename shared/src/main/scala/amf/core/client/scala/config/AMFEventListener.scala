@@ -1,6 +1,7 @@
 package amf.core.client.scala.config
 
 import amf.core.client.common.remote.Content
+import amf.core.client.platform.config.AMFEventNames
 import amf.core.client.platform.config.AMFEventNames._
 import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.scala.parse.AMFParsePlugin
@@ -222,4 +223,8 @@ case class FinishedRenderingSyntaxEvent(unit: BaseUnit) extends AMFEvent with Gr
 
 case class SkippedValidationPluginEvent(pluginName: String, reason: String) extends AMFEvent {
   override val name: String = SkippedValidationPlugin
+}
+
+case class UnitCacheHitEvent(rawUrl: String, cacheKey: String) extends AMFEvent {
+  override val name: String = UnitCacheHit
 }

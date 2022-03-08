@@ -16,13 +16,13 @@ import amf.core.internal.plugins.document.graph.parser.{
 import amf.core.internal.remote.Spec.AMF
 import amf.core.internal.remote.{Mimes, Spec}
 
-object AMFGraphParsePlugin extends AMFParsePlugin {
+case class AMFGraphParsePlugin(private val aliases: Map[String, String] = Map.empty) extends AMFParsePlugin {
 
   override def spec: Spec = AMF
 
   override def applies(element: Root): Boolean = element.parsed match {
     case parsed: SyamlParsedDocument =>
-      FlattenedUnitGraphParser.canParse(parsed) || EmbeddedGraphParser.canParse(parsed)
+      FlattenedUnitGraphParser.canParse(parsed, aliases) || EmbeddedGraphParser.canParse(parsed)
     case _ => false
   }
 
@@ -30,10 +30,11 @@ object AMFGraphParsePlugin extends AMFParsePlugin {
 
   override def parse(document: Root, ctx: ParserContext): BaseUnit = document.parsed match {
     case parsed: SyamlParsedDocument if FlattenedUnitGraphParser.canParse(parsed) =>
-      FlattenedUnitGraphParser(ctx.config)
+      FlattenedUnitGraphParser(ctx.config, aliases)
         .parse(parsed.document, effectiveUnitUrl(document.location, ctx.parsingOptions))
     case parsed: SyamlParsedDocument if EmbeddedGraphParser.canParse(parsed) =>
-      EmbeddedGraphParser(ctx.config).parse(parsed.document, effectiveUnitUrl(document.location, ctx.parsingOptions))
+      EmbeddedGraphParser(ctx.config, aliases)
+        .parse(parsed.document, effectiveUnitUrl(document.location, ctx.parsingOptions))
     case _ => throw UnsupportedParsedDocumentException
   }
 

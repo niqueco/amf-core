@@ -25,5 +25,4 @@ case class ParsingOptions(amfJsonLdSerialization: Boolean = true,
   def isAmfJsonLdSerialization: Boolean = amfJsonLdSerialization
   def definedBaseUrl: Option[String]    = baseUnitUrl
   def getMaxYamlReferences: Option[Int] = maxYamlReferences
-
 }
