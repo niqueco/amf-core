@@ -12,18 +12,14 @@ import scala.collection.mutable
 class SerializableAnnotationsFacade private[amf] (parserConfig: ParseConfiguration) {
 
   def retrieveAnnotation(nodes: Map[String, AmfElement], sources: SourceMap, key: String): Annotations = {
-    val result = Annotations()
-    if (sources.nonEmpty) {
-      sources.annotations.foreach {
-        case (annotation, values: mutable.Map[String, String]) =>
-          values.get(key) match {
-            case Some(value) =>
-              findAnnotation(annotation).flatMap(_.unparse(value, nodes)).foreach(result += _)
-            case _ => // Nothing to do
-          }
-      }
+    val annotations = sources.annotations.flatMap {
+      case (annotation, values: mutable.Map[String, String]) =>
+        values.get(key) match {
+          case Some(value) => findAnnotation(annotation).flatMap(_.unparse(value, nodes))
+          case _           => None
+        }
     }
-    result
+    Annotations(annotations.toList)
   }
 
   private val findAnnotation = CachedFunction.fromMonadic(parserConfig.registryContext.findAnnotation)

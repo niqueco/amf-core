@@ -14,7 +14,7 @@ trait Validations {
         message = message,
         ramlMessage = ramlMessage,
         oasMessage = oasMessage,
-        targetInstance = Seq(specification)
+        targetInstance = Set(specification)
     )
 
   protected def all(lvl: String): Map[ProfileName, String] =

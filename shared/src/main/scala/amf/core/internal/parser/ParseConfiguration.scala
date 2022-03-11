@@ -43,3 +43,24 @@ case class LimitedParseConfig(eh: AMFErrorHandler, registry: AMFRegistry = AMFRe
   override def registryContext: RegistryContext                             = RegistryContext(registry)
   override def serializableAnnotationsFacade: SerializableAnnotationsFacade = new SerializableAnnotationsFacade(this)
 }
+
+object ParseConfigOverride {
+  def apply(errorHandler: AMFErrorHandler, parseConfig: ParseConfiguration): ParseConfigOverride = {
+    new ParseConfigOverride(
+        errorHandler,
+        parseConfig.sortedRootParsePlugins,
+        parseConfig.sortedReferenceParsePlugins,
+        parseConfig.parsingOptions,
+        parseConfig.registryContext,
+        parseConfig.serializableAnnotationsFacade
+    )
+  }
+}
+
+case class ParseConfigOverride(eh: AMFErrorHandler,
+                               sortedRootParsePlugins: Seq[AMFParsePlugin],
+                               sortedReferenceParsePlugins: Seq[AMFParsePlugin],
+                               parsingOptions: ParsingOptions,
+                               registryContext: RegistryContext,
+                               serializableAnnotationsFacade: SerializableAnnotationsFacade)
+    extends ParseConfiguration
