@@ -48,6 +48,8 @@ class SourceMap(val annotations: mutable.ListMap[String, mutable.ListMap[String,
 
   def nonEmpty: Boolean = annotations.nonEmpty
 
+  def isEmpty: Boolean = annotations.isEmpty
+
   def serializablesNonEmpty: Boolean = annotations.nonEmpty
 }
 

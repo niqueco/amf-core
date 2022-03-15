@@ -148,7 +148,8 @@ object Annotations {
   // We should discuss if always use the range of the YNode, or always use the range of the Ynode member.
   def valueNode(node: YNode): Annotations = apply(node.value) += SourceNode(node)
 
-  def apply(annotation: Annotation): Annotations = new Annotations() += annotation
+  def apply(annotation: Annotation): Annotations       = new Annotations() += annotation
+  def apply(annotations: Seq[Annotation]): Annotations = new Annotations() ++= annotations
 
   val empty: Annotations = new Annotations() {
     override def +=(annotation: Annotation): this.type              = this
