@@ -123,6 +123,22 @@ object AMFValidationResult {
             source: Any): AMFValidationResult =
     new AMFValidationResult(message, level, Left(targetNode), targetProperty, validationId, position, location, source)
 
+  private[amf] def fromSHACLValidation(model: String,
+                                       validation: ValidationResult,
+                                       location: Option[String],
+                                       lexical: LexicalInformation): AMFValidationResult = {
+    AMFValidationResult(
+        message = validation.message.getOrElse(""),
+        level = validation.severity,
+        targetNode = model,
+        targetProperty = Option(validation.path),
+        validation.sourceShape,
+        position = Some(lexical),
+        location = location,
+        source = validation
+    )
+  }
+
   def fromSHACLValidation(model: BaseUnit,
                           message: String,
                           level: String,
