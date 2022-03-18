@@ -432,10 +432,10 @@ class FlattenedJsonLdEmitter[T](
                                 typedScalar(b, str, DataType.String, inArray = true)
                               case i: Int =>
                                 typedScalar(b, i.toString, DataType.Integer, inArray = true)
-                              case f: Float =>
-                                typedScalar(b, f.toString, DataType.Float, inArray = true)
                               case d: Double =>
                                 typedScalar(b, d.toString, DataType.Double, inArray = true)
+                              case f: Float =>
+                                typedScalar(b, f.toString, DataType.Float, inArray = true)
                               case other => scalar(b, other.toString)
                             }
                         }

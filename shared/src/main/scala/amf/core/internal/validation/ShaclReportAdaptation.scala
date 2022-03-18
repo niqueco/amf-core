@@ -5,6 +5,7 @@ import amf.core.client.scala.validation
 import amf.core.client.scala.validation.{AMFValidationReport, AMFValidationResult}
 import amf.core.client.common.validation._
 import amf.core.client.scala.vocabulary.Namespace
+import amf.core.internal.annotations.LexicalInformation
 import amf.core.internal.validation.core.ValidationProfile.SeverityLevel
 import amf.core.internal.validation.core.{ValidationReport, ValidationResult, ValidationSpecification}
 
@@ -20,6 +21,17 @@ trait ShaclReportAdaptation {
       adaptToAmfResult(model, r, profile.messageStyle, validations)
     }
     validation.AMFValidationReport(model.id, profile, amfResults)
+  }
+
+  protected def adaptToAmfReport(model: BaseUnit,
+                                 profile: ProfileName,
+                                 report: ValidationReport,
+                                 location: Option[String],
+                                 lexical: LexicalInformation): AMFValidationReport = {
+    val amfResults = report.results.map { result =>
+      AMFValidationResult.fromSHACLValidation(model.id, result, location, lexical)
+    }
+    AMFValidationReport(model.id, profile, amfResults)
   }
 
   protected def adaptToAmfResult(model: BaseUnit,
@@ -56,33 +68,37 @@ trait ShaclReportAdaptation {
             }
         }
     }
-
-    maybeTargetSpecification match {
-      case Some(targetSpec) =>
-        var message = messageStyle match {
-          case RAMLStyle => targetSpec.ramlMessage.getOrElse(targetSpec.message)
-          case OASStyle  => targetSpec.oasMessage.getOrElse(targetSpec.message)
-          case _         => Option(targetSpec.message).getOrElse(result.message.getOrElse(""))
-        }
-
-        if (Option(message).isEmpty || message == "") {
-          message = result.message.getOrElse("Constraint violation")
-        }
-
-        if (targetSpec.isParserSide && result.message.nonEmpty) {
-          message = result.message.get
-        }
-
-        val finalId = if (idMapping(result.sourceShape).startsWith("http")) {
-          idMapping(result.sourceShape)
-        } else {
-          Namespace.Data.base + idMapping(result.sourceShape)
-        }
-        Some(
-            AMFValidationResult
-              .withShapeId(finalId, AMFValidationResult.fromSHACLValidation(model, message, result.severity, result)))
-      case _ => None
+    maybeTargetSpecification.map { spec =>
+      val message: String        = computeMessage(spec, result, messageStyle)
+      val finalId: SeverityLevel = computeValidationId(result, idMapping)
+      AMFValidationResult.withShapeId(finalId,
+                                      AMFValidationResult.fromSHACLValidation(model, message, result.severity, result))
     }
+  }
+
+  private def computeMessage(spec: ValidationSpecification, result: ValidationResult, style: MessageStyle) = {
+    var message = style match {
+      case RAMLStyle => spec.ramlMessage.getOrElse(spec.message)
+      case OASStyle  => spec.oasMessage.getOrElse(spec.message)
+      case _         => Option(spec.message).getOrElse(result.message.getOrElse(""))
+    }
+
+    if (Option(message).isEmpty || message == "") {
+      message = result.message.getOrElse("Constraint violation")
+    }
+    if (spec.isParserSide && result.message.nonEmpty) {
+      message = result.message.get
+    }
+    message
+  }
+
+  private def computeValidationId(result: ValidationResult, idMapping: mutable.HashMap[String, String]) = {
+    val finalId = if (idMapping(result.sourceShape).startsWith("http")) {
+      idMapping(result.sourceShape)
+    } else {
+      Namespace.Data.base + idMapping(result.sourceShape)
+    }
+    finalId
   }
 
   protected def findLevel(id: String,
