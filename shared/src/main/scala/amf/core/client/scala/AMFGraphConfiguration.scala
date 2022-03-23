@@ -144,6 +144,8 @@ class AMFGraphConfiguration private[amf] (override private[amf] val resolvers: A
   def withExecutionEnvironment(executionEnv: ExecutionEnvironment): AMFGraphConfiguration =
     super._withExecutionEnvironment(executionEnv)
 
+  protected[amf] def emptyPlugins(): AMFGraphConfiguration = copy(registry = registry.emptyPlugins())
+
   protected def copy(resolvers: AMFResolvers = resolvers,
                      errorHandlerProvider: ErrorHandlerProvider = errorHandlerProvider,
                      registry: AMFRegistry = registry,

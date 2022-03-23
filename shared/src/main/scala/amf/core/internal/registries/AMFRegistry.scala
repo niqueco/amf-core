@@ -74,6 +74,8 @@ private[amf] class AMFRegistry(plugins: PluginsRegistry,
 
   def emptyEntities(): AMFRegistry = copy(entitiesRegistry = entitiesRegistry.removeAllEntities())
 
+  def emptyPlugins(): AMFRegistry  = copy(plugins = plugins.removeAllPlugins())
+
   def withAnnotations(annotations: Map[String, AnnotationGraphLoader]): AMFRegistry =
     copy(entitiesRegistry = entitiesRegistry.withAnnotations(annotations))
 

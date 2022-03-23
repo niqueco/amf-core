@@ -60,6 +60,7 @@ case class PluginsRegistry private[amf] (rootParsePlugins: List[AMFParsePlugin] 
     copy(domainParsingFallback = plugin)
   }
 
+  def removeAllPlugins(): PluginsRegistry = copy(Nil, Nil, Nil, Nil, Nil, Nil, Nil, Nil, domainParsingFallback)
 }
 
 object PluginsRegistry {
