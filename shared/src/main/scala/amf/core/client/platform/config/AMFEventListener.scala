@@ -230,7 +230,10 @@ case class SelectedParsePluginEvent(private val _internal: config.SelectedParseP
   * Notifies when references are found in parsing
   */
 @JSExportAll
-case class FoundReferencesEvent(private val _internal: config.FoundReferencesEvent) extends ClientEvent(_internal) {}
+case class FoundReferencesEvent(private val _internal: config.FoundReferencesEvent) extends ClientEvent(_internal) {
+  def root: String = _internal.rootLocation
+  def amount: Int  = _internal.amount
+}
 
 /**
   * Notifies when a mediatype has been auto detected
