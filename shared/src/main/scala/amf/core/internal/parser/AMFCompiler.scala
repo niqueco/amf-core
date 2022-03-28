@@ -148,7 +148,7 @@ class AMFCompiler(compilerContext: CompilerContext, val referenceKind: Reference
     val handler      = domainPlugin.referenceHandler(compilerContext.compilerConfig.eh)
     val allowedSpecs = domainPlugin.validSpecsToReference
     val refs         = handler.collect(root.parsed, compilerContext.parserContext).toReferences
-    notifyEvent(FoundReferencesEvent(root.location, refs.size, refs))
+    notifyEvent(FoundReferencesEvent(root.location, refs, compilerContext.compilerConfig.eh))
     val parsed: Seq[Future[Option[ParsedReference]]] = refs
       .filter(_.isRemote)
       .map { link =>
