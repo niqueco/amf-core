@@ -5,6 +5,7 @@ import amf.core.client.platform.model.document.BaseUnit
 import amf.core.client.platform.transform.{TransformationPipeline, TransformationStep}
 import amf.core.client.platform.validation.AMFValidationReport
 import amf.core.client.scala.config
+import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.internal.convert.CoreClientConverters._
 import amf.core.internal.convert.TransformationPipelineConverter._
 
@@ -232,7 +233,7 @@ case class SelectedParsePluginEvent(private val _internal: config.SelectedParseP
 @JSExportAll
 case class FoundReferencesEvent(private val _internal: config.FoundReferencesEvent) extends ClientEvent(_internal) {
   def root: String = _internal.rootLocation
-  def amount: Int  = _internal.amount
+  def amount: Int  = _internal.references.length
 }
 
 /**
