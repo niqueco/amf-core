@@ -66,7 +66,7 @@ case class PropertyConstraint(ramlPropertyId: String,
                                 * Objects of this property must have this class
                                 */
                               `class`: Seq[String] = Seq(),
-                              in: Seq[String] = Seq.empty,
+                              in: Set[Any] = Set.empty,
                               custom: Option[(EntryBuilder, String) => Unit] = None,
                               /**
                                * for qualified constraints
@@ -97,20 +97,20 @@ case class ValidationSpecification(name: String,
                                      * URIs of the nodes in the graph that will be
                                      * targeted by this shape
                                      */
-                                   targetInstance: Seq[String] = Seq.empty,
+                                   targetInstance: Set[String] = Set.empty,
                                    /**
                                      * shacl:targetClass
                                      * Nodes with these classes will be targeted
                                      * by this shape
                                      */
-                                   targetClass: Seq[String] = Seq.empty,
+                                   targetClass: Set[String] = Set.empty,
                                    /**
                                      * shacl:targetObjectsOf
                                      *
                                      * Nodes that are object of the properties in
                                      * this array will be targeted by this shape
                                      */
-                                   targetObject: Seq[String] = Seq.empty,
+                                   targetObject: Set[String] = Set.empty,
                                    /**
                                      * Union of constraints passed as URIs
                                      * to the constraints in the union
@@ -159,14 +159,14 @@ case class ValidationSpecification(name: String,
 
   def withTargets(other: ValidationSpecification): ValidationSpecification =
     copy(
-      targetInstance = (this.targetInstance ++ other.targetInstance).distinct,
-      targetClass = (this.targetClass ++ other.targetClass).distinct,
-      targetObject = (this.targetObject ++ other.targetObject).distinct
+      targetInstance = (this.targetInstance ++ other.targetInstance),
+      targetClass = (this.targetClass ++ other.targetClass),
+      targetObject = (this.targetObject ++ other.targetObject)
     )
 
   /** Add a Target instance */
   def withTarget(targetId: String): ValidationSpecification =
-    if (targetInstance contains targetId) this else copy(targetInstance = targetInstance :+ targetId)
+    if (targetInstance contains targetId) this else copy(targetInstance = targetInstance + targetId)
 }
 
 object ValidationSpecification {

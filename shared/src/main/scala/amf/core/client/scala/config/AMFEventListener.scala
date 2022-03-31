@@ -3,9 +3,10 @@ package amf.core.client.scala.config
 import amf.core.client.common.remote.Content
 import amf.core.client.platform.config.AMFEventNames
 import amf.core.client.platform.config.AMFEventNames._
+import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.scala.parse.AMFParsePlugin
-import amf.core.client.scala.parse.document.ParsedDocument
+import amf.core.client.scala.parse.document.{ParsedDocument, Reference}
 import amf.core.client.scala.transform.{TransformationPipeline, TransformationStep}
 import amf.core.client.scala.validation.AMFValidationReport
 import amf.core.internal.plugins.render.AMFRenderPlugin
@@ -87,7 +88,9 @@ case class SelectedParsePluginEvent(rootLocation: String, plugin: AMFParsePlugin
   * @param rootLocation location of the document being parsed
   * @param amount amount of references found
   */
-case class FoundReferencesEvent(rootLocation: String, amount: Int) extends AMFEvent with GroupedEvent {
+case class FoundReferencesEvent(rootLocation: String, references: Seq[Reference], eh: AMFErrorHandler)
+    extends AMFEvent
+    with GroupedEvent {
   override val name: String     = FoundReferences
   override val groupKey: String = rootLocation
 }

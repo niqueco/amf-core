@@ -147,9 +147,9 @@ class AMFCompiler(compilerContext: CompilerContext, val referenceKind: Reference
       implicit executionContext: ExecutionContext): Future[Root] = {
     val handler      = domainPlugin.referenceHandler(compilerContext.compilerConfig.eh)
     val allowedSpecs = domainPlugin.validSpecsToReference
-    val refs         = handler.collect(root.parsed, compilerContext.parserContext)
-    notifyEvent(FoundReferencesEvent(root.location, refs.toReferences.size))
-    val parsed: Seq[Future[Option[ParsedReference]]] = refs.toReferences
+    val refs         = handler.collect(root.parsed, compilerContext.parserContext).toReferences
+    notifyEvent(FoundReferencesEvent(root.location, refs, compilerContext.compilerConfig.eh))
+    val parsed: Seq[Future[Option[ParsedReference]]] = refs
       .filter(_.isRemote)
       .map { link =>
         link.resolve(compilerContext, allowedSpecs, domainPlugin.allowRecursiveReferences) flatMap {

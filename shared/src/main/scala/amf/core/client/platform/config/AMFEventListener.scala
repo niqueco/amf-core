@@ -5,6 +5,7 @@ import amf.core.client.platform.model.document.BaseUnit
 import amf.core.client.platform.transform.{TransformationPipeline, TransformationStep}
 import amf.core.client.platform.validation.AMFValidationReport
 import amf.core.client.scala.config
+import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.internal.convert.CoreClientConverters._
 import amf.core.internal.convert.TransformationPipelineConverter._
 
@@ -230,7 +231,10 @@ case class SelectedParsePluginEvent(private val _internal: config.SelectedParseP
   * Notifies when references are found in parsing
   */
 @JSExportAll
-case class FoundReferencesEvent(private val _internal: config.FoundReferencesEvent) extends ClientEvent(_internal) {}
+case class FoundReferencesEvent(private val _internal: config.FoundReferencesEvent) extends ClientEvent(_internal) {
+  def root: String = _internal.rootLocation
+  def amount: Int  = _internal.references.length
+}
 
 /**
   * Notifies when a mediatype has been auto detected
