@@ -80,7 +80,7 @@ trait ShaclReportAdaptation {
     var message = style match {
       case RAMLStyle => spec.ramlMessage.getOrElse(spec.message)
       case OASStyle  => spec.oasMessage.getOrElse(spec.message)
-      case _         => Option(spec.message).getOrElse(result.message.getOrElse(""))
+      case _         => result.message.getOrElse(Option(spec.message).getOrElse(""))
     }
 
     if (Option(message).isEmpty || message == "") {
