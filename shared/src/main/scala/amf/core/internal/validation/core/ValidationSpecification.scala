@@ -69,8 +69,8 @@ case class PropertyConstraint(ramlPropertyId: String,
                               in: Set[Any] = Set.empty,
                               custom: Option[(EntryBuilder, String) => Unit] = None,
                               /**
-                               * for qualified constraints
-                               */
+                                * for qualified constraints
+                                */
                               atLeast: Option[(Int, String)] = None,
                               atMost: Option[(Int, String)] = None,
                               value: Option[String] = None,
@@ -79,12 +79,12 @@ case class PropertyConstraint(ramlPropertyId: String,
                               disjointWithProperty: Option[String] = None,
                               lessThanProperty: Option[String] = None,
                               lessThanOrEqualsToProperty: Option[String] = None,
-                             )
+                              mandatory: Option[String] = None)
 
 case class QueryConstraint(
-                            prefixes: Map[String,String],
-                            query: String
-                          )
+    prefixes: Map[String, String],
+    query: String
+)
 
 case class ValidationSpecification(name: String,
                                    // shacl:message
@@ -140,8 +140,7 @@ case class ValidationSpecification(name: String,
                                    /*
                                     * Query validation
                                     */
-                                   query: Option[QueryConstraint] = None
-                                  ) {
+                                   query: Option[QueryConstraint] = None) {
 
   val id: String = {
     if (name.startsWith("http://") || name.startsWith("https://") || name.startsWith("file:")) {
@@ -159,9 +158,9 @@ case class ValidationSpecification(name: String,
 
   def withTargets(other: ValidationSpecification): ValidationSpecification =
     copy(
-      targetInstance = (this.targetInstance ++ other.targetInstance),
-      targetClass = (this.targetClass ++ other.targetClass),
-      targetObject = (this.targetObject ++ other.targetObject)
+        targetInstance = (this.targetInstance ++ other.targetInstance),
+        targetClass = (this.targetClass ++ other.targetClass),
+        targetObject = (this.targetObject ++ other.targetObject)
     )
 
   /** Add a Target instance */
@@ -181,21 +180,21 @@ object ValidationSpecification {
 object ShaclSeverityUris {
 
   private val SHACL_VIOLATION: String = Namespace.defaultAliases.expand("sh:Violation").iri()
-  private val SHACL_WARNING: String = Namespace.defaultAliases.expand("sh:Warning").iri()
-  private val SHACL_INFO: String = Namespace.defaultAliases.expand("sh:Info").iri()
+  private val SHACL_WARNING: String   = Namespace.defaultAliases.expand("sh:Warning").iri()
+  private val SHACL_INFO: String      = Namespace.defaultAliases.expand("sh:Info").iri()
 
   private lazy val shaclSeverities = Map(
-    VIOLATION -> SHACL_VIOLATION,
-    SeverityLevels.WARNING -> SHACL_WARNING,
-    SeverityLevels.INFO -> SHACL_INFO
+      VIOLATION              -> SHACL_VIOLATION,
+      SeverityLevels.WARNING -> SHACL_WARNING,
+      SeverityLevels.INFO    -> SHACL_INFO
   )
 
   private lazy val shaclToAmf = Map(
-    SHACL_VIOLATION -> VIOLATION,
-    SHACL_WARNING -> SeverityLevels.WARNING,
-    SHACL_INFO -> SeverityLevels.INFO
+      SHACL_VIOLATION -> VIOLATION,
+      SHACL_WARNING   -> SeverityLevels.WARNING,
+      SHACL_INFO      -> SeverityLevels.INFO
   )
 
   def amfToShaclSeverity(severity: String): String = shaclSeverities.getOrElse(severity, SHACL_VIOLATION)
-  def amfSeverity(shaclSeverity: String): String = shaclToAmf.getOrElse(shaclSeverity, VIOLATION)
+  def amfSeverity(shaclSeverity: String): String   = shaclToAmf.getOrElse(shaclSeverity, VIOLATION)
 }
