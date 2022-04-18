@@ -17,9 +17,10 @@ object ProfileNames {
   val AML: ProfileName     = AmlProfile
   val PAYLOAD: ProfileName = PayloadProfile
   val GRPC: ProfileName    = GrpcProfile
+  val GRAPHQL: ProfileName = GraphQLProfile
 
   lazy val specProfiles: Seq[ProfileName] =
-    Seq(AmfProfile, Oas20Profile, Oas30Profile, Raml08Profile, Raml10Profile, AsyncProfile, Async20Profile)
+    Seq(AmfProfile, Oas20Profile, Oas30Profile, Raml08Profile, Raml10Profile, AsyncProfile, Async20Profile, GraphQLProfile, GrpcProfile)
 }
 
 @JSExportAll
@@ -61,6 +62,11 @@ object GrpcProfile extends ProfileName(Grpc.id, AMFStyle) {
   override def isRaml(): Boolean = false
 }
 
+object GraphQLProfile extends ProfileName(GraphQL.id, AMFStyle) {
+  override def isOas(): Boolean  = false
+  override def isRaml(): Boolean = false
+}
+
 object ProfileName {
   def unapply(name: String): Option[ProfileName] =
     name match {
@@ -70,6 +76,7 @@ object ProfileName {
       case AsyncProfile.p   => Some(AsyncProfile)
       case Async20Profile.p => Some(Async20Profile)
       case GrpcProfile.p    => Some(GrpcProfile)
+      case GraphQLProfile.p => Some(GraphQLProfile)
       case _                => None
     }
 
@@ -82,6 +89,7 @@ object ProfileName {
     case AsyncApi.id        => AsyncProfile
     case AsyncApi20.id      => Async20Profile
     case Grpc.id            => GrpcProfile
+    case GraphQL.id         => GraphQLProfile
     case custom             => new ProfileName(custom)
   }
 }
