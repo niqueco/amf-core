@@ -9,14 +9,16 @@ import amf.core.internal.metamodel.domain.{DomainElementModel, ModelDoc, ModelVo
 object KeyMappingModel extends DomainElementModel {
 
   val PrimaryKey = Field(
-      Str,
+      FieldReferenceModel,
       Namespace.ApiFederation + "primaryKey",
-      ModelDoc(ModelVocabularies.ApiFederation, "primaryKey", "Primary key of the related declared entity"))
+      ModelDoc(ModelVocabularies.ApiFederation, "primaryKey", "Primary key of the related declared entity")
+  )
 
   val FieldReference = Field(
-      Str,
+      FieldReferenceModel,
       Namespace.ApiFederation + "fieldReference",
-      ModelDoc(ModelVocabularies.ApiFederation, "fieldReference", "Provided field of the local entity"))
+      ModelDoc(ModelVocabularies.ApiFederation, "fieldReference", "Provided field of the local entity")
+  )
 
   override def modelInstance: AmfObject = ???
 

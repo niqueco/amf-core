@@ -140,16 +140,16 @@ abstract class Shape extends DomainElement with Linkable with NamedDomainElement
           case s: Shape if s.id == this.id => s
           case a: AmfArray =>
             AmfArray(
-              a.values.map {
-                case e: Shape if e.id != this.id =>
-                  traversal.runNested((t: ShapeTraversalRegistry) => {
-                    e.cloneShape(recursionErrorHandler, recursionBase, t)
-                  })
+                a.values.map {
+                  case e: Shape if e.id != this.id =>
+                    traversal.runNested((t: ShapeTraversalRegistry) => {
+                      e.cloneShape(recursionErrorHandler, recursionBase, t)
+                    })
 //                e.cloneShape(recursionErrorHandler, recursionBase, traversed.push(prevBaseId),Some(prevBaseId))
-                case e: Shape if e.id == this.id => e
-                case o                           => o
-              },
-              a.annotations
+                  case e: Shape if e.id == this.id => e
+                  case o                           => o
+                },
+                a.annotations
             )
           case o => o
         }

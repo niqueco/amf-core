@@ -7,18 +7,18 @@ import amf.core.internal.metamodel.Field
 import amf.core.internal.metamodel.Type.{Array, Str}
 import amf.core.internal.metamodel.domain.{DomainElementModel, ModelDoc, ModelVocabularies}
 
-object EntityProviderModel extends DomainElementModel {
+object EntityReferenceModel extends DomainElementModel {
 
   val ReferenceFields = Field(
-      Array(FieldReference),
+      Array(FieldReferenceModel),
       Namespace.ApiFederation + "entityReferenceField",
       ModelDoc(ModelVocabularies.ApiFederation, "entityReferenceField", "List of field names that compose this key")
   )
 
   val KeyMapping = Field(
-      Array(KeyMappingModel),
-      Namespace.ApiFederation + "keyMapping",
-      ModelDoc(ModelVocabularies.ApiFederation, "keyMapping", "List of field names that compose this key")
+    Array(KeyMappingModel),
+    Namespace.ApiFederation + "keyMapping",
+    ModelDoc(ModelVocabularies.ApiFederation, "keyMapping", "List of field names that compose this key")
   )
 
   override def modelInstance: AmfObject = ???
@@ -26,7 +26,7 @@ object EntityProviderModel extends DomainElementModel {
   override def fields: List[Field] = List(ReferenceFields) ++ DomainElementModel.fields
 }
 
-object FieldReference extends DomainElementModel {
+object FieldReferenceModel extends DomainElementModel {
 
   val Expression = Field(
       Str,

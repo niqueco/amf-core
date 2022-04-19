@@ -12,11 +12,11 @@ trait FederatedAttribute extends DomainElementModel {
   val External =
     Field(Bool, ApiFederation + "external", ModelDoc(ModelVocabularies.ApiFederation, "external", "External property"))
 
-  val Provides = Field(EntityProviderModel,
+  val Provides = Field(EntityReferenceModel,
                        ApiFederation + "provides",
                        ModelDoc(ModelVocabularies.ApiFederation, "provides", "External property"))
 
-  val Requires = Field(Array(KeyMappingModel),
+  val Requires = Field(EntityReferenceModel,
                        ApiFederation + "requires",
                        ModelDoc(ModelVocabularies.ApiFederation, "requires", "required field"))
 

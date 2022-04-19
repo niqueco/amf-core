@@ -9,7 +9,7 @@ import amf.core.internal.metamodel.domain.{DomainElementModel, ModelDoc, ModelVo
 object EntityKeysModel extends DomainElementModel {
 
   val PrimaryKeys = Field(
-      Array(PrimaryKeyModel),
+      Array(EntityReferenceModel),
       Namespace.ApiFederation + "EntityPrimaryKeys",
       ModelDoc(ModelVocabularies.AmlDoc, "EntityPrimaryKey", "List of keys for this entity")
   )

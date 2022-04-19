@@ -6,7 +6,7 @@ import amf.core.internal.metamodel.domain._
 import amf.core.client.scala.model.domain.extensions.PropertyShape
 import amf.core.client.scala.vocabulary.Namespace.{ApiFederation, Shacl, Shapes}
 import amf.core.client.scala.vocabulary.ValueType
-import amf.core.internal.metamodel.domain.federation.FederatedAttribute
+import amf.core.internal.metamodel.domain.federation.{EntityReferenceModel, FederatedAttribute}
 
 /**
   * Property shape metamodel
