@@ -1,6 +1,7 @@
 package amf.core.internal.metamodel.domain.federation
 
 import amf.core.client.scala.model.domain.AmfObject
+import amf.core.client.scala.model.domain.federation.EntityKeys
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
 import amf.core.internal.metamodel.Field
 import amf.core.internal.metamodel.Type.Array

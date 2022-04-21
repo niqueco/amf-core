@@ -44,8 +44,8 @@ object PropertyShapeModel extends ShapeModel with FederatedAttribute {
 
   override val `type`: List[ValueType] = List(Shacl + "PropertyShape") ++ ShapeModel.`type`
 
-  override def fields: List[Field] =
-    List(Path, Range, MinCount, MaxCount, PatternName, SerializationOrder) ++ FederatedAttribute ++ ShapeModel.fields ++ DomainElementModel.fields
+  override val fields: List[Field] =
+    List(Path, Range, MinCount, MaxCount, PatternName, SerializationOrder) ++ FederatedAttribute.fields ++ ShapeModel.fields ++ DomainElementModel.fields
 
   override def modelInstance = PropertyShape()
 

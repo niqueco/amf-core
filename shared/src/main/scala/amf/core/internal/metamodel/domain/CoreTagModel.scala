@@ -1,6 +1,6 @@
 package amf.core.internal.metamodel.domain
 
-import amf.core.client.scala.model.domain.AmfObject
+import amf.core.client.scala.model.domain.{AmfObject, CoreTag}
 import amf.core.client.scala.vocabulary.Namespace.Core
 import amf.core.client.scala.vocabulary.ValueType
 import amf.core.internal.metamodel.Field

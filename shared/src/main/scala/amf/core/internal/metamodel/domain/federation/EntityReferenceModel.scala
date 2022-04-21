@@ -1,7 +1,7 @@
 package amf.core.internal.metamodel.domain.federation
 
 import amf.core.client.scala.model.domain.AmfObject
-import amf.core.client.scala.vocabulary.Namespace.Document
+import amf.core.client.scala.vocabulary.Namespace.{ApiFederation, Document}
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
 import amf.core.internal.metamodel.Field
 import amf.core.internal.metamodel.Type.{Array, Str}
@@ -16,14 +16,17 @@ object EntityReferenceModel extends DomainElementModel {
   )
 
   val KeyMapping = Field(
-    Array(KeyMappingModel),
-    Namespace.ApiFederation + "keyMapping",
-    ModelDoc(ModelVocabularies.ApiFederation, "keyMapping", "List of field names that compose this key")
+      Array(KeyMappingModel),
+      Namespace.ApiFederation + "keyMapping",
+      ModelDoc(ModelVocabularies.ApiFederation, "keyMapping", "List of field names that compose this key")
   )
 
   override def modelInstance: AmfObject = ???
 
-  override def fields: List[Field] = List(ReferenceFields) ++ DomainElementModel.fields
+  override val fields: List[Field] = List(ReferenceFields) ++ DomainElementModel.fields
+
+  override val `type`: List[ValueType] = List(ApiFederation + "EntityReference", Document + "DomainElement")
+
 }
 
 object FieldReferenceModel extends DomainElementModel {

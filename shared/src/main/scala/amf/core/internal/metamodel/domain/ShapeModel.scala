@@ -5,7 +5,7 @@ import amf.core.internal.metamodel.Type.{Array, Bool, Iri, SortedArray, Str}
 import amf.core.internal.metamodel.domain.common.DescriptionField
 import amf.core.internal.metamodel.domain.extensions.{PropertyShapeModel, ShapeExtensionModel}
 import amf.core.internal.metamodel.domain.templates.KeyField
-import amf.core.client.scala.vocabulary.Namespace.{Core, Shacl, Shapes}
+import amf.core.client.scala.vocabulary.Namespace.{ApiFederation, Core, Shacl, Shapes}
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
 
 /**
@@ -103,12 +103,11 @@ trait ShapeModel extends DomainElementModel with LinkableElementModel with KeyFi
       ModelDoc(ModelVocabularies.Shapes, "deprecated", "Deprecated annotation for a property constraint"))
 
   val SerializationSchema = Field(
-    ShapeModel,
-    Shapes + "serializationSchema",
-    ModelDoc(ModelVocabularies.Shapes, "serializationSchema", "Serialization schema for a shape"))
+      ShapeModel,
+      Shapes + "serializationSchema",
+      ModelDoc(ModelVocabularies.Shapes, "serializationSchema", "Serialization schema for a shape"))
 
   override val key: Field = Name
-
 
   // RAML user-defined facets: definitions and values
   lazy val CustomShapePropertyDefinitions = Field(
@@ -124,30 +123,35 @@ trait ShapeModel extends DomainElementModel with LinkableElementModel with KeyFi
       ModelDoc(ModelVocabularies.Shapes, "customShapeProperties", "Custom constraint values for a data shape")
   )
   //
+  val Tag =
+    Field(CoreTagModel, ApiFederation + "tag", ModelDoc(ModelVocabularies.ApiFederation, "tag", "Tag for this schema"))
 
 }
 
 object ShapeModel extends ShapeModel {
 
-  override val fields: List[Field] = LinkableElementModel.fields ++ List(Name,
-                                                                         DisplayName,
-                                                                         Description,
-                                                                         Default,
-                                                                         Values,
-                                                                         Inherits,
-                                                                         DefaultValueString,
-                                                                         Not,
-                                                                         And,
-                                                                         Or,
-                                                                         Xone,
-                                                                         Closure,
-                                                                         If,
-                                                                         Then,
-                                                                         Else,
-                                                                         ReadOnly,
-                                                                         WriteOnly,
-                                                                         SerializationSchema,
-                                                                         Deprecated)
+  override val fields: List[Field] = LinkableElementModel.fields ++ List(
+      Name,
+      DisplayName,
+      Description,
+      Default,
+      Values,
+      Inherits,
+      DefaultValueString,
+      Not,
+      And,
+      Or,
+      Xone,
+      Closure,
+      If,
+      Then,
+      Else,
+      ReadOnly,
+      WriteOnly,
+      SerializationSchema,
+      Deprecated,
+      Tag
+  )
 
   override val `type`: List[ValueType] = List(Shacl + "Shape", Shapes + "Shape") ++ DomainElementModel.`type`
 

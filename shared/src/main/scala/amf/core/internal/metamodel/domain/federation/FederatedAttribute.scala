@@ -1,7 +1,8 @@
 package amf.core.internal.metamodel.domain.federation
 
 import amf.core.client.scala.model.domain.AmfObject
-import amf.core.client.scala.vocabulary.Namespace.ApiFederation
+import amf.core.client.scala.vocabulary.Namespace.{ApiFederation, Document}
+import amf.core.client.scala.vocabulary.ValueType
 import amf.core.internal.metamodel.Field
 import amf.core.internal.metamodel.Type.{Array, Bool}
 import amf.core.internal.metamodel.domain.DomainElementModel.Extends
@@ -21,6 +22,8 @@ trait FederatedAttribute extends DomainElementModel {
                        ModelDoc(ModelVocabularies.ApiFederation, "requires", "required field"))
 
   override val fields: List[Field] = List(External, Provides, Requires) ++ DomainElementModel.fields
+
+  override val `type`: List[ValueType] = List(ApiFederation + "FederatedAttribute", Document + "DomainElement")
 
 }
 
