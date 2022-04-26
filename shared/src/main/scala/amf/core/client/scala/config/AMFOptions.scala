@@ -2,15 +2,17 @@ package amf.core.client.scala.config
 
 import amf.core.client.scala.config
 
-/**
-  * A set of options to customize parsing and rendering
+/** A set of options to customize parsing and rendering
   *
-  * @param parsingOptions [[ParsingOptions]]
-  * @param renderOptions [[RenderOptions]]
+  * @param parsingOptions
+  *   [[ParsingOptions]]
+  * @param renderOptions
+  *   [[RenderOptions]]
   */
 private[amf] case class AMFOptions(
     parsingOptions: ParsingOptions,
-    renderOptions: RenderOptions /*, private[amf] var configuration:AMFConfiguration*/ ) {
+    renderOptions: RenderOptions /*, private[amf] var configuration:AMFConfiguration*/
+) {
   //  def withPrettyPrint(): AmfEnvironment = {
   //    val copied = copy(renderingOptions = renderingOptions.withPrettyPrint)
   //    val newEnv = env.copy(options = copied)

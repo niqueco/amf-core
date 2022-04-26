@@ -14,9 +14,11 @@ import scala.collection.mutable
 
 class UrlShortenerStage() extends TransformationStep {
 
-  override def transform(model: BaseUnit,
-                         errorHandler: AMFErrorHandler,
-                         configuration: AMFGraphConfiguration): BaseUnit = {
+  override def transform(
+      model: BaseUnit,
+      errorHandler: AMFErrorHandler,
+      configuration: AMFGraphConfiguration
+  ): BaseUnit = {
     val ids: Set[String] = Set(model.id) ++ obtainNestedReferenceIds(model)
     shorten(model, ids)
     model.withId(base)
@@ -90,10 +92,12 @@ class UrlShortenerStage() extends TransformationStep {
 
     def shorten(uri: String): String =
       if (uri.nonEmpty && !uri.startsWith(s"$base#")) {
-        dictionary.getOrElseUpdate(uri, {
-          c = c + 1
-          s"$base#" + c
-        })
+        dictionary.getOrElseUpdate(
+            uri, {
+              c = c + 1
+              s"$base#" + c
+            }
+        )
       } else uri
   }
 

@@ -18,10 +18,12 @@ trait JsAMFPayloadValidationPlugin extends JsAMFPlugin {
 
   def applies(element: ValidatePayloadRequest): Boolean = js.native
 
-  def validator(shape: Shape,
-                mediaType: String,
-                config: ShapeValidationConfiguration,
-                validationMode: ValidationMode = StrictValidationMode): JsPayloadValidator
+  def validator(
+      shape: Shape,
+      mediaType: String,
+      config: ShapeValidationConfiguration,
+      validationMode: ValidationMode = StrictValidationMode
+  ): JsPayloadValidator
 }
 
 @js.native
@@ -41,10 +43,12 @@ object AMFPayloadValidationPluginConverter {
     new AMFShapePayloadValidationPlugin {
       override def applies(element: ValidatePayloadRequest): Boolean = plugin.applies(element)
 
-      override def validator(shape: Shape,
-                             mediaType: String,
-                             config: ShapeValidationConfiguration,
-                             validationMode: ValidationMode): AMFShapePayloadValidator = {
+      override def validator(
+          shape: Shape,
+          mediaType: String,
+          config: ShapeValidationConfiguration,
+          validationMode: ValidationMode
+      ): AMFShapePayloadValidator = {
         toAMF(plugin.validator(shape, mediaType, config, validationMode))
       }
 

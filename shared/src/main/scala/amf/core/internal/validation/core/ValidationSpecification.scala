@@ -9,12 +9,14 @@ import org.yaml.model.YDocument.EntryBuilder
 
 case class FunctionConstraintParameter(path: String, datatype: String)
 
-case class FunctionConstraint(message: Option[String],
-                              code: Option[String] = None,
-                              libraries: Seq[String] = Seq(),
-                              functionName: Option[String] = None,
-                              parameters: Seq[FunctionConstraintParameter] = Seq(),
-                              internalFunction: Option[String] = None) {
+case class FunctionConstraint(
+    message: Option[String],
+    code: Option[String] = None,
+    libraries: Seq[String] = Seq(),
+    functionName: Option[String] = None,
+    parameters: Seq[FunctionConstraintParameter] = Seq(),
+    internalFunction: Option[String] = None
+) {
 
   def constraintId(validationId: String)  = s"${validationId}Constraint"
   def validatorId(validationId: String)   = s"${validationId}Validator"
@@ -36,111 +38,97 @@ case class FunctionConstraint(message: Option[String],
 
 case class NodeConstraint(constraint: String, value: String)
 
-case class PropertyConstraint(ramlPropertyId: String,
-                              name: String,
-                              // storing the constraint over a property path
-                              path: Option[PropertyPath] = None,
-                              // shacl:message
-                              message: Option[String] = None,
-                              pattern: Option[String] = None,
-                              patternedProperty: Option[String] = None,
-                              maxCount: Option[String] = None,
-                              minCount: Option[String] = None,
-                              minLength: Option[String] = None,
-                              maxLength: Option[String] = None,
-                              minExclusive: Option[String] = None,
-                              maxExclusive: Option[String] = None,
-                              minInclusive: Option[String] = None,
-                              maxInclusive: Option[String] = None,
-                              multipleOf: Option[String] = None,
-                              /**
-                                * shacl:node
-                                * Objects of this property must conform to the
-                                * provided node shape
-                                */
-                              node: Option[String] = None,
-                              datatype: Option[String] = None,
-                              // format: Option[String] = None,
-                              /**
-                                * shacl:class
-                                * Objects of this property must have this class
-                                */
-                              `class`: Seq[String] = Seq(),
-                              in: Set[Any] = Set.empty,
-                              custom: Option[(EntryBuilder, String) => Unit] = None,
-                              /**
-                                * for qualified constraints
-                                */
-                              atLeast: Option[(Int, String)] = None,
-                              atMost: Option[(Int, String)] = None,
-                              value: Option[String] = None,
-                              // Property comparisons
-                              equalToProperty: Option[String] = None,
-                              disjointWithProperty: Option[String] = None,
-                              lessThanProperty: Option[String] = None,
-                              lessThanOrEqualsToProperty: Option[String] = None,
-                              mandatory: Option[String] = None)
+case class PropertyConstraint(
+    ramlPropertyId: String,
+    name: String,
+    // storing the constraint over a property path
+    path: Option[PropertyPath] = None,
+    // shacl:message
+    message: Option[String] = None,
+    pattern: Option[String] = None,
+    patternedProperty: Option[String] = None,
+    maxCount: Option[String] = None,
+    minCount: Option[String] = None,
+    minLength: Option[String] = None,
+    maxLength: Option[String] = None,
+    minExclusive: Option[String] = None,
+    maxExclusive: Option[String] = None,
+    minInclusive: Option[String] = None,
+    maxInclusive: Option[String] = None,
+    multipleOf: Option[String] = None,
+    /** shacl:node Objects of this property must conform to the provided node shape
+      */
+    node: Option[String] = None,
+    datatype: Option[String] = None,
+    // format: Option[String] = None,
+    /** shacl:class Objects of this property must have this class
+      */
+    `class`: Seq[String] = Seq(),
+    in: Set[Any] = Set.empty,
+    custom: Option[(EntryBuilder, String) => Unit] = None,
+    /** for qualified constraints
+      */
+    atLeast: Option[(Int, String)] = None,
+    atMost: Option[(Int, String)] = None,
+    value: Option[String] = None,
+    // Property comparisons
+    equalToProperty: Option[String] = None,
+    disjointWithProperty: Option[String] = None,
+    lessThanProperty: Option[String] = None,
+    lessThanOrEqualsToProperty: Option[String] = None,
+    mandatory: Option[String] = None
+)
 
 case class QueryConstraint(
     prefixes: Map[String, String],
     query: String
 )
 
-case class ValidationSpecification(name: String,
-                                   // shacl:message
-                                   message: String,
-                                   severity: String = ShaclSeverityUris.amfToShaclSeverity(VIOLATION),
-                                   ramlMessage: Option[String] = None,
-                                   oasMessage: Option[String] = None,
-                                   /**
-                                     * shacl:targetNode
-                                     * URIs of the nodes in the graph that will be
-                                     * targeted by this shape
-                                     */
-                                   targetInstance: Set[String] = Set.empty,
-                                   /**
-                                     * shacl:targetClass
-                                     * Nodes with these classes will be targeted
-                                     * by this shape
-                                     */
-                                   targetClass: Set[String] = Set.empty,
-                                   /**
-                                     * shacl:targetObjectsOf
-                                     *
-                                     * Nodes that are object of the properties in
-                                     * this array will be targeted by this shape
-                                     */
-                                   targetObject: Set[String] = Set.empty,
-                                   /**
-                                     * Union of constraints passed as URIs
-                                     * to the constraints in the union
-                                     */
-                                   unionConstraints: Seq[String] = Seq.empty,
-                                   // Logical constraints here, or constraints are collected in the union above
-                                   andConstraints: Seq[String] = Seq.empty,
-                                   xoneConstraints: Seq[String] = Seq.empty,
-                                   notConstraint: Option[String] = None,
-                                   /**
-                                     * shacl:property
-                                     * Property constraints for the node
-                                     */
-                                   propertyConstraints: Seq[PropertyConstraint] = Seq.empty,
-                                   nodeConstraints: Seq[NodeConstraint] = Seq.empty,
-                                   closed: Option[Boolean] = None,
-                                   functionConstraint: Option[FunctionConstraint] = None,
-                                   custom: Option[(EntryBuilder, String) => Unit] = None,
-                                   /*
-                                    * Nested validations
-                                    */
-                                   nested: Option[String] = None,
-                                   /*
-                                    * transition from JS functions to complex ones
-                                    */
-                                   replacesFunctionConstraint: Option[String] = None,
-                                   /*
-                                    * Query validation
-                                    */
-                                   query: Option[QueryConstraint] = None) {
+case class ValidationSpecification(
+    name: String,
+    // shacl:message
+    message: String,
+    severity: String = ShaclSeverityUris.amfToShaclSeverity(VIOLATION),
+    ramlMessage: Option[String] = None,
+    oasMessage: Option[String] = None,
+    /** shacl:targetNode URIs of the nodes in the graph that will be targeted by this shape
+      */
+    targetInstance: Set[String] = Set.empty,
+    /** shacl:targetClass Nodes with these classes will be targeted by this shape
+      */
+    targetClass: Set[String] = Set.empty,
+    /** shacl:targetObjectsOf
+      *
+      * Nodes that are object of the properties in this array will be targeted by this shape
+      */
+    targetObject: Set[String] = Set.empty,
+    /** Union of constraints passed as URIs to the constraints in the union
+      */
+    unionConstraints: Seq[String] = Seq.empty,
+    // Logical constraints here, or constraints are collected in the union above
+    andConstraints: Seq[String] = Seq.empty,
+    xoneConstraints: Seq[String] = Seq.empty,
+    notConstraint: Option[String] = None,
+    /** shacl:property Property constraints for the node
+      */
+    propertyConstraints: Seq[PropertyConstraint] = Seq.empty,
+    nodeConstraints: Seq[NodeConstraint] = Seq.empty,
+    closed: Option[Boolean] = None,
+    functionConstraint: Option[FunctionConstraint] = None,
+    custom: Option[(EntryBuilder, String) => Unit] = None,
+    /*
+     * Nested validations
+     */
+    nested: Option[String] = None,
+    /*
+     * transition from JS functions to complex ones
+     */
+    replacesFunctionConstraint: Option[String] = None,
+    /*
+     * Query validation
+     */
+    query: Option[QueryConstraint] = None
+) {
 
   val id: String = {
     if (name.startsWith("http://") || name.startsWith("https://") || name.startsWith("file:")) {
@@ -148,7 +136,7 @@ case class ValidationSpecification(name: String,
     } else {
       Namespace.defaultAliases.expand(name).iri() match {
         case s if s.startsWith("http://") || s.startsWith("https://") || s.startsWith("file:") => s
-        case s                                                                                 => (Namespace.Data + s).iri()
+        case s => (Namespace.Data + s).iri()
       }
     }
   }

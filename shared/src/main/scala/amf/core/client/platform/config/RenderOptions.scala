@@ -45,10 +45,14 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
   /** Include Node IDs in rendering */
   def withNodeIds(): RenderOptions = _internal.withNodeIds
 
-  /** Include documentation info in rendering such as examples, descriptions, display names, etc. (only supported for json schema rendering) */
+  /** Include documentation info in rendering such as examples, descriptions, display names, etc. (only supported for
+    * json schema rendering)
+    */
   def withDocumentation(): RenderOptions = _internal.withDocumentation
 
-  /** Remove documentation info as examples, descriptions, display names, etc. (only supported for json schema rendering) */
+  /** Remove documentation info as examples, descriptions, display names, etc. (only supported for json schema
+    * rendering)
+    */
   def withoutDocumentation(): RenderOptions = _internal.withoutDocumentation
 
   /** Render shapes extracting common types to definitions (feature is enable by default for OAS and json schema) */

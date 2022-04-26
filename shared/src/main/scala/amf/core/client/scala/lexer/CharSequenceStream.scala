@@ -2,8 +2,7 @@ package amf.core.client.scala.lexer
 
 import amf.core.client.common.position.Position
 
-/**
-  * A CharStream backed by a CharSequence
+/** A CharStream backed by a CharSequence
   */
 class CharSequenceStream(val data: CharSequence, val startOffset: Int, val endOffset: Int, val sourceName: String = "")
     extends CharStream {
@@ -17,15 +16,15 @@ class CharSequenceStream(val data: CharSequence, val startOffset: Int, val endOf
   /** Create an instance based on the empty String. */
   def this() = this(data = "")
 
-  /** The index of the character relative to the beginning of the line 0.  */
+  /** The index of the character relative to the beginning of the line 0. */
   override def column: Int = column_
 
   private var column_ : Int = 0
 
-  /** Line number [1..n] within the input.  */
+  /** Line number [1..n] within the input. */
   private var line = 1
 
-  /** The absolute index [0..n] of the current character.  */
+  /** The absolute index [0..n] of the current character. */
   private var pointer: Int = startOffset
 
   override def length: Int = endOffset - startOffset
@@ -38,7 +37,7 @@ class CharSequenceStream(val data: CharSequence, val startOffset: Int, val endOf
 
   override def charAt(index: Int): Char = data.charAt(index)
 
-  /** Consume and advance to the next character.  */
+  /** Consume and advance to the next character. */
   override def consume(): Unit = {
     if (pointer < endOffset) {
       column_ += 1
@@ -51,16 +50,17 @@ class CharSequenceStream(val data: CharSequence, val startOffset: Int, val endOf
     }
   }
 
-  /** The current character in the input stream.  */
+  /** The current character in the input stream. */
   override def currentChar(): Int = lookAhead(0)
 
-  /** The absolute index [0..n] of the current character.  */
+  /** The absolute index [0..n] of the current character. */
   override def index(): Int = pointer
 
-  /** Position of the current character.  */
+  /** Position of the current character. */
   override def position(): Position = Position(line, column_)
 
-  /** Return the character `i` characters ahead of the current position, or CharStream.EOF_CHAR if the EOF is reached. */
+  /** Return the character `i` characters ahead of the current position, or CharStream.EOF_CHAR if the EOF is reached.
+    */
   override def lookAhead(i: Int): Int =
     if (i >= 0 && pointer + i < endOffset) data.charAt(pointer + i) else CharStream.EOF_CHAR
 

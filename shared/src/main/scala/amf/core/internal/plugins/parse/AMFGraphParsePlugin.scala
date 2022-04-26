@@ -51,8 +51,7 @@ case class AMFGraphParsePlugin(private val aliases: Map[String, String] = Map.em
     }
   }
 
-  /**
-    * media types which specifies vendors that may be referenced.
+  /** media types which specifies vendors that may be referenced.
     */
   override def validSpecsToReference: Seq[Spec] = Seq(AMF)
 

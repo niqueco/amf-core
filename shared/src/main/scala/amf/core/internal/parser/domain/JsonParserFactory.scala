@@ -11,6 +11,7 @@ object JsonParserFactory {
     JsonParser(s)(errorhandling.SYAMLJsonErrorHandler(errorhandler))
 
   def fromCharsWithSource(s: CharSequence, sourceName: String, positionOffset: SyamlPosition = SyamlPosition.Zero)(
-      implicit errorHandler: AMFErrorHandler): JsonParser =
+      implicit errorHandler: AMFErrorHandler
+  ): JsonParser =
     JsonParser.withSource(s, sourceName, positionOffset)(errorhandling.SYAMLJsonErrorHandler(errorHandler))
 }

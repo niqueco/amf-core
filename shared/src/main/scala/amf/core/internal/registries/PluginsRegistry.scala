@@ -8,23 +8,28 @@ import amf.core.internal.plugins.parse.{DomainParsingFallback, ExternalFragmentD
 import amf.core.internal.plugins.render.AMFRenderPlugin
 import amf.core.internal.plugins.validation.AMFValidatePlugin
 
-/**
-  * A registry of plugins
+/** A registry of plugins
   *
-  * @param parsePlugins          a list of [[AMFParsePlugin]]
-  * @param validatePlugins       a list of [[AMFValidatePlugin]]
-  * @param renderPlugins         a list of [[AMFRenderPlugin]]
-  * @param domainParsingFallback [[DomainParsingFallback]]
+  * @param parsePlugins
+  *   a list of [[AMFParsePlugin]]
+  * @param validatePlugins
+  *   a list of [[AMFValidatePlugin]]
+  * @param renderPlugins
+  *   a list of [[AMFRenderPlugin]]
+  * @param domainParsingFallback
+  *   [[DomainParsingFallback]]
   */
-case class PluginsRegistry private[amf] (rootParsePlugins: List[AMFParsePlugin] = Nil,
-                                         referenceParsePlugins: List[AMFParsePlugin] = Nil,
-                                         validatePlugins: List[AMFValidatePlugin] = Nil,
-                                         renderPlugins: List[AMFRenderPlugin] = Nil,
-                                         payloadPlugins: List[AMFShapePayloadValidationPlugin] = Nil,
-                                         syntaxParsePlugins: List[AMFSyntaxParsePlugin] = Nil,
-                                         syntaxRenderPlugins: List[AMFSyntaxRenderPlugin] = Nil,
-                                         elementRenderPlugins: List[AMFElementRenderPlugin] = Nil,
-                                         domainParsingFallback: DomainParsingFallback) {
+case class PluginsRegistry private[amf] (
+    rootParsePlugins: List[AMFParsePlugin] = Nil,
+    referenceParsePlugins: List[AMFParsePlugin] = Nil,
+    validatePlugins: List[AMFValidatePlugin] = Nil,
+    renderPlugins: List[AMFRenderPlugin] = Nil,
+    payloadPlugins: List[AMFShapePayloadValidationPlugin] = Nil,
+    syntaxParsePlugins: List[AMFSyntaxParsePlugin] = Nil,
+    syntaxRenderPlugins: List[AMFSyntaxRenderPlugin] = Nil,
+    elementRenderPlugins: List[AMFElementRenderPlugin] = Nil,
+    domainParsingFallback: DomainParsingFallback
+) {
 
   def withPlugin(plugin: AMFPlugin[_]): PluginsRegistry = {
     plugin match {

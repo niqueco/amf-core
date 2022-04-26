@@ -24,19 +24,19 @@ case class FileResourceLoader(executionContext: ExecutionContext)
   override def withExecutionContext(newEc: ExecutionContext): ResourceLoader = FileResourceLoader(newEc)
 
   def baseFetchFile(base: String) = {
-    val resource = base.replace("file://","/")
+    val resource = base.replace("file://", "/")
     try {
-      Content(new FileStream(resource),
-        ensureFileAuthority(resource),
-        extension(resource).flatMap(mimeFromExtension))
+      Content(new FileStream(resource), ensureFileAuthority(resource), extension(resource).flatMap(mimeFromExtension))
     } catch {
       case e: FileNotFoundException =>
         // exception for local file system where we accept spaces [] and other chars in files names
         val decoded = resource.urlDecoded
         try {
-          Content(new FileStream(decoded),
-            ensureFileAuthority(resource),
-            extension(resource).flatMap(mimeFromExtension))
+          Content(
+              new FileStream(decoded),
+              ensureFileAuthority(resource),
+              extension(resource).flatMap(mimeFromExtension)
+          )
         } catch {
           case e: FileNotFoundException => throw FileNotFound(e)
         }

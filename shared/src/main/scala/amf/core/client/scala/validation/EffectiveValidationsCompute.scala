@@ -18,7 +18,8 @@ object EffectiveValidationsCompute {
 
   private def computeApplicableConstraints(
       profileName: ProfileName,
-      constraints: Map[ProfileName, ValidationProfile]): Option[EffectiveValidations] = {
+      constraints: Map[ProfileName, ValidationProfile]
+  ): Option[EffectiveValidations] = {
     val profiles = findProfileHierarchy(profileName, constraints)
     if (profiles.isEmpty) return None
 
@@ -29,13 +30,15 @@ object EffectiveValidationsCompute {
     Some(applicable)
   }
 
-  private def findProfileHierarchy(profileName: ProfileName,
-                                   constraints: Map[ProfileName, ValidationProfile],
-                                   seen: Set[ProfileName] = Set.empty): Seq[ValidationProfile] = {
+  private def findProfileHierarchy(
+      profileName: ProfileName,
+      constraints: Map[ProfileName, ValidationProfile],
+      seen: Set[ProfileName] = Set.empty
+  ): Seq[ValidationProfile] = {
     if (seen.contains(profileName)) return Seq.empty
     constraints
-      .map {
-        case (key, value) => key.p -> value
+      .map { case (key, value) =>
+        key.p -> value
       }
       .get(profileName.p)
       .map { profile =>

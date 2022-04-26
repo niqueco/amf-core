@@ -22,6 +22,6 @@ object ErrorHandlerProvider {
   /** Default error handler */
   def default(): ErrorHandlerProvider = () => convertToClient(DefaultErrorHandlerProvider.errorHandler())
 
-  /** Error handler that ignores error reports  */
+  /** Error handler that ignores error reports */
   def ignoring(): ErrorHandlerProvider = () => convertToClient(IgnoringErrorHandler)
 }

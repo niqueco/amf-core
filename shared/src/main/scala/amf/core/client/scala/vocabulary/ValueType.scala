@@ -8,13 +8,11 @@ object ValueType {
       val name = pair.last
       val ns   = pair.head + "#"
       new ValueType(Namespace(ns), name)
-    }
-    else if (iri.replace("://", "_").contains("/")) {
+    } else if (iri.replace("://", "_").contains("/")) {
       val name = iri.split("/").last
       val ns   = iri.replace(name, "")
       new ValueType(Namespace(ns), name)
-    }
-    else {
+    } else {
       new ValueType(Namespace(iri), "")
     }
 }

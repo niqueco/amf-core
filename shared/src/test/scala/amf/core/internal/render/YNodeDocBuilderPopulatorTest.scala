@@ -24,17 +24,21 @@ class YNodeDocBuilderPopulatorTest extends AnyFunSuite with Matchers {
         |  }
         |""".stripMargin
       ),
-      CycleTest("simple scalar type",
-                """
+      CycleTest(
+          "simple scalar type",
+          """
         |  5
-        |""".stripMargin),
-      CycleTest("sequence at root",
-                """
+        |""".stripMargin
+      ),
+      CycleTest(
+          "sequence at root",
+          """
         |  [
         |    4,
         |    "string"
         |  ]
-        |""".stripMargin)
+        |""".stripMargin
+      )
   )
 
   val yamlCycles = Seq(
@@ -49,21 +53,21 @@ class YNodeDocBuilderPopulatorTest extends AnyFunSuite with Matchers {
         |    - other value""".stripMargin
       ),
       CycleTest("simple scalar type", "5"),
-      CycleTest("sequence at root",
-                """
+      CycleTest(
+          "sequence at root",
+          """
         |  - string value
         |  -
-        |    other: obj""".stripMargin)
+        |    other: obj""".stripMargin
+      )
   )
 
-  jsonCycles.foreach {
-    case CycleTest(name, source) =>
-      test(s"json cycle - $name") { cycle(source, JsonParser(source), JsonOutputBuilder(true)) }
+  jsonCycles.foreach { case CycleTest(name, source) =>
+    test(s"json cycle - $name") { cycle(source, JsonParser(source), JsonOutputBuilder(true)) }
   }
 
-  yamlCycles.foreach {
-    case CycleTest(name, source) =>
-      test(s"yaml cycle - $name") { cycle(source, YamlParser(source), YamlOutputBuilder()) }
+  yamlCycles.foreach { case CycleTest(name, source) =>
+    test(s"yaml cycle - $name") { cycle(source, YamlParser(source), YamlOutputBuilder()) }
   }
 
   def cycle[T](source: String, parser: YParser, builder: BaseOutputBuilder[T]): Assertion = {

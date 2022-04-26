@@ -5,11 +5,12 @@ import amf.core.internal.parser.domain.Value
 
 import scala.collection.mutable
 
-/**
-  * Source maps for graph: Map(annotation -> Map(element -> value))
+/** Source maps for graph: Map(annotation -> Map(element -> value))
   */
-class SourceMap(val annotations: mutable.ListMap[String, mutable.ListMap[String, String]],
-                val eternals: mutable.ListMap[String, mutable.ListMap[String, String]]) {
+class SourceMap(
+    val annotations: mutable.ListMap[String, mutable.ListMap[String, String]],
+    val eternals: mutable.ListMap[String, mutable.ListMap[String, String]]
+) {
 
   def annotation(annotation: String): (String, String) => Unit = {
     val map = annotations.get(annotation).orElse(eternals.get(annotation)) match {

@@ -6,7 +6,7 @@ import amf.core.internal.metamodel.domain.ExternalSourceElementModel._
 
 trait ExternalSourceElement extends DomainElement with AdoptionDependantCalls {
 
-  def raw: StrField         = fields.field(Raw)         //we should set this while parsing
+  def raw: StrField         = fields.field(Raw)         // we should set this while parsing
   def referenceId: StrField = fields.field(ReferenceId) /// only for graph parser logic
 
   override def location(): Option[String] = {

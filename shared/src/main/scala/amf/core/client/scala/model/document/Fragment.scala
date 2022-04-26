@@ -3,8 +3,7 @@ package amf.core.client.scala.model.document
 import amf.core.client.scala.model.domain.{AmfObject, DomainElement}
 import amf.core.internal.metamodel.document.{DocumentModel, FragmentModel}
 
-/**
-  * Fragments: Units encoding domain fragments
+/** Fragments: Units encoding domain fragments
   */
 trait Fragment extends BaseUnit with EncodesModel {
 

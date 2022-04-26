@@ -23,7 +23,7 @@ trait GraphContextOperations {
         val aliased = context.define(alias) match {
           case Some(SimpleTermDefinition(iri))                                         => iri
           case Some(expandedTerm: ExpandedTermDefinition) if expandedTerm.id.isDefined => expandedTerm.id.get
-          case _                                                                       => iri // legacy fallback, maybe report error
+          case _ => iri // legacy fallback, maybe report error
         }
         aliased match {
           case CompactUri(_, _) => expand(aliased)(context) // we can have aliases for compact uris
@@ -34,7 +34,7 @@ trait GraphContextOperations {
 
   def aliasFor(iri: String)(context: GraphContext): Option[String] = {
     implicit val ordering: Ordering[TermDefinition] = ExpandedTermDefinitionsFirst
-    val definitions                                 = context.definitions().toStream.sortBy { case (_, definition) => definition }
+    val definitions = context.definitions().toStream.sortBy { case (_, definition) => definition }
 
     definitions.collectFirst {
       case (alias, term: ExpandedTermDefinition) if term.id.exists(id => equal(iri, id)(context))               => alias
@@ -52,8 +52,8 @@ trait GraphContextOperations {
   def compact(iri: String)(context: GraphContext): String = {
     aliasFor(iri)(context)
       .orElse {
-        namespaceFor(iri)(context).map {
-          case (term, namespaceIri) => s"$term:${iri.stripPrefix(namespaceIri)}"
+        namespaceFor(iri)(context).map { case (term, namespaceIri) =>
+          s"$term:${iri.stripPrefix(namespaceIri)}"
         }
       }
       .getOrElse {

@@ -12,14 +12,17 @@ trait AbstractDeclarationModel extends DomainElementModel with KeyField with Nam
   val DataNode = Field(
       DataNodeModel,
       Document + "dataNode",
-      ModelDoc(ModelVocabularies.AmlDoc, "dataNode", "Associated dynamic structure for the declaration"))
+      ModelDoc(ModelVocabularies.AmlDoc, "dataNode", "Associated dynamic structure for the declaration")
+  )
 
   val Variables = Field(
       Array(Str),
       Document + "variable",
-      ModelDoc(ModelVocabularies.AmlDoc,
-               "variable",
-               "Variables to be replaced in the graph template introduced by an AbstractDeclaration")
+      ModelDoc(
+          ModelVocabularies.AmlDoc,
+          "variable",
+          "Variables to be replaced in the graph template introduced by an AbstractDeclaration"
+      )
   )
 
   override val key: Field = Name

@@ -2,8 +2,7 @@ package amf.core.internal.remote
 
 import amf.core.internal.utils.{Absolute, RelativeToIncludedFile, RelativeToRoot, UriUtils}
 
-/**
-  * Context class for URL resolution.
+/** Context class for URL resolution.
   */
 class Context protected (val platform: Platform, val history: List[String]) {
 

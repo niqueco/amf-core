@@ -11,9 +11,8 @@ import amf.core.internal.convert.PayloadValidatorConverter.PayloadValidatorMatch
 import scala.concurrent.ExecutionContext
 import scala.scalajs.js.annotation.JSExportAll
 
-/**
-  * Contains common AMF graph operations not associated to documents.
-  * Base client for <code>AMLElementClient</code> and <code>AMLElementClient</code>.
+/** Contains common AMF graph operations not associated to documents. Base client for <code>AMLElementClient</code> and
+  * <code>AMLElementClient</code>.
   */
 @JSExportAll
 class AMFGraphElementClient private[amf] (private val _internal: InternalAMFElementClient) {

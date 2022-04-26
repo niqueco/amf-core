@@ -19,15 +19,15 @@ case class AMFResult(override private[amf] val _internal: InternalAMFResult) ext
 
   def conforms: Boolean = _internal.conforms
 
-  /**
-    * @return list of the resultant [[AMFValidationResult]] of the BaseUnit
+  /** @return
+    *   list of the resultant [[AMFValidationResult]] of the BaseUnit
     */
   override def results: ClientList[AMFValidationResult] = _internal.results.asClient
 
-  /**
-    * @return [[BaseUnit]] returned from AMF parse or transform. It can be:
-    *  - A [[BaseUnit]] when parsing/transformation is successful
-    *  - The most complete unit that could be built, and an [[AMFValidationReport]] report with errors/warnings found
+  /** @return
+    *   [[BaseUnit]] returned from AMF parse or transform. It can be:
+    *   - A [[BaseUnit]] when parsing/transformation is successful
+    *   - The most complete unit that could be built, and an [[AMFValidationReport]] report with errors/warnings found
     */
   def baseUnit: BaseUnit = _internal.baseUnit
 

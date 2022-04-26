@@ -13,28 +13,26 @@ class SourceCodeBlock(val indentation: Integer, val lines: mutable.Buffer[(Strin
   def sortedBuilder: StringBuilder = {
     val b            = new StringBuilder()
     var previousLine = minPos.line
-    lines.sortBy(_._2).foreach {
-      case (l, p) =>
-        while (previousLine + 1 < p.line) {
-          b.append("\n")
-          previousLine += 1
-        }
-        b.append(s"${l}\n")
-        val newLines = l.count(c => c == '\n')
-        previousLine += (newLines + 1)
+    lines.sortBy(_._2).foreach { case (l, p) =>
+      while (previousLine + 1 < p.line) {
+        b.append("\n")
+        previousLine += 1
+      }
+      b.append(s"${l}\n")
+      val newLines = l.count(c => c == '\n')
+      previousLine += (newLines + 1)
     }
     b
   }
 
   def sortedBuilderWithDelimiter(delimiter: String): StringBuilder = {
     val b = new StringBuilder()
-    lines.sortBy(_._2).map(_._1).zipWithIndex.foreach {
-      case (l, idx) =>
-        if (idx < lines.length - 1) {
-          b.append(s"$l$delimiter")
-        } else {
-          b.append(l)
-        }
+    lines.sortBy(_._2).map(_._1).zipWithIndex.foreach { case (l, idx) =>
+      if (idx < lines.length - 1) {
+        b.append(s"$l$delimiter")
+      } else {
+        b.append(l)
+      }
     }
     b
   }
@@ -43,17 +41,15 @@ class SourceCodeBlock(val indentation: Integer, val lines: mutable.Buffer[(Strin
 
   def builder: StringBuilder = {
     val b = new StringBuilder()
-    lines.foreach {
-      case (l, _) =>
-        b.append(s"$l\n")
+    lines.foreach { case (l, _) =>
+      b.append(s"$l\n")
     }
     b
   }
 
   def minPos: Position = {
-    val positions = lines.filter {
-      case (_, p) =>
-        p != ZERO && p != FIRST
+    val positions = lines.filter { case (_, p) =>
+      p != ZERO && p != FIRST
     }
     positions.map(_._2).sorted.headOption.getOrElse(ZERO)
   }

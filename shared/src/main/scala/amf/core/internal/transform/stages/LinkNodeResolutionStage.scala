@@ -15,9 +15,11 @@ class LinkNodeResolutionStage(keepEditingInfo: Boolean, val visited: mutable.Set
 
   var modelResolver: Option[ModelReferenceResolver] = None
 
-  override def transform(model: BaseUnit,
-                         errorHandler: AMFErrorHandler,
-                         configuration: AMFGraphConfiguration): BaseUnit = {
+  override def transform(
+      model: BaseUnit,
+      errorHandler: AMFErrorHandler,
+      configuration: AMFGraphConfiguration
+  ): BaseUnit = {
     this.modelResolver = Some(new ModelReferenceResolver(model))
     val knownIdSelector = new KnownElementIdSelector(visited)
     model.transform(knownIdSelector || LinkSelector || LinkNodeSelector, transformation)(errorHandler)

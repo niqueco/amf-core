@@ -5,8 +5,7 @@ import amf.core.internal.parser.domain.{Annotations, Fields}
 
 import scala.collection.mutable
 
-/**
-  * Created by pedro.colunga on 8/15/17.
+/** Created by pedro.colunga on 8/15/17.
   */
 trait AmfObject extends AmfElement {
 

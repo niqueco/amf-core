@@ -61,7 +61,7 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
   /** Returns the usage. */
   def usage: StrField = fields.field(Usage)
 
-  /** Returns true if the base unit is the root of the document model obtained from parsing **/
+  /** Returns true if the base unit is the root of the document model obtained from parsing * */
   def root: BoolField = fields.field(Root)
 
   /** Returns the version. */
@@ -74,24 +74,27 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
     this
   }
 
-  /**
-    * Set references
-    * @param references references to set
-    * @return Previous [[BaseUnit]] with references set
+  /** Set references
+    * @param references
+    *   references to set
+    * @return
+    *   Previous [[BaseUnit]] with references set
     */
   def withReferences(references: Seq[BaseUnit]): this.type = setArrayWithoutId(References, references)
 
-  /**
-    * Set location
-    * @param location location to set
-    * @return Previous [[BaseUnit]] with location set
+  /** Set location
+    * @param location
+    *   location to set
+    * @return
+    *   Previous [[BaseUnit]] with location set
     */
   def withLocation(location: String): this.type = set(Location, location)
 
-  /**
-    * Set usage
-    * @param usage usage to set
-    * @return Previous [[BaseUnit]] with usage set
+  /** Set usage
+    * @param usage
+    *   usage to set
+    * @return
+    *   Previous [[BaseUnit]] with usage set
     */
   def withUsage(usage: String): this.type = set(Usage, usage)
 
@@ -116,14 +119,15 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
     set(SourceInformation, sourceInfo)
 
   /** Returns Unit iterator for specified strategy and scope. */
-  def iterator(strategy: IteratorStrategy = DomainElementStrategy,
-               fieldsFilter: FieldsFilter = Local,
-               visited: VisitedCollector = IdCollector()): AmfIterator = {
+  def iterator(
+      strategy: IteratorStrategy = DomainElementStrategy,
+      fieldsFilter: FieldsFilter = Local,
+      visited: VisitedCollector = IdCollector()
+  ): AmfIterator = {
     strategy.iterator(fieldsFilter.filter(fields), visited)
   }
 
-  /**
-    * Finds first domain element with the requested id
+  /** Finds first domain element with the requested id
     */
   def findById(id: String): Option[DomainElement] =
     iterator(fieldsFilter = FieldsFilter.All).collectFirst {
@@ -139,7 +143,8 @@ trait BaseUnit extends AmfObject with MetaModelTypeMapping with PlatformSecrets 
   }
 
   def transform(selector: DomainElement => Boolean, transformation: (DomainElement, Boolean) => Option[DomainElement])(
-      implicit errorHandler: AMFErrorHandler): BaseUnit = {
+      implicit errorHandler: AMFErrorHandler
+  ): BaseUnit = {
     val domainElementAdapter  = new DomainElementSelectorAdapter(selector)
     val transformationAdapter = new DomainElementTransformationAdapter(transformation)
     new TransformationTraversal(TransformationData(domainElementAdapter, transformationAdapter)).traverse(this)

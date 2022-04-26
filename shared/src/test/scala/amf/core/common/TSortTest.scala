@@ -5,8 +5,7 @@ import amf.core.internal.utils.TSort.tsort
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 
-/**
-  * [[TSort]] test
+/** [[TSort]] test
   */
 class TSortTest extends AnyFunSuite with Matchers {
 

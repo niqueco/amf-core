@@ -12,11 +12,12 @@ import amf.core.internal.validation.core.ValidationSpecification
 
 import scala.collection.mutable
 
-class SyamlBasedParserErrorHandler(override val rootContextDocument: String = "",
-                                   override val refs: Seq[ParsedReference] = Seq.empty,
-                                   override val futureDeclarations: FutureDeclarations = EmptyFutureDeclarations(),
-                                   override val config: ParseConfiguration)
-    extends ParserContext(rootContextDocument, refs, futureDeclarations, config)
+class SyamlBasedParserErrorHandler(
+    override val rootContextDocument: String = "",
+    override val refs: Seq[ParsedReference] = Seq.empty,
+    override val futureDeclarations: FutureDeclarations = EmptyFutureDeclarations(),
+    override val config: ParseConfiguration
+) extends ParserContext(rootContextDocument, refs, futureDeclarations, config)
     with SYamlBasedErrorHandler
 
 abstract class ErrorHandlingContext(implicit val eh: AMFErrorHandler) {
@@ -34,11 +35,12 @@ object EmptyFutureDeclarations {
   def apply(): FutureDeclarations = new FutureDeclarations {}
 }
 
-case class ParserContext(rootContextDocument: String = "",
-                         refs: Seq[ParsedReference] = Seq.empty,
-                         futureDeclarations: FutureDeclarations = EmptyFutureDeclarations(),
-                         config: ParseConfiguration)
-    extends ErrorHandlingContext()(config.eh)
+case class ParserContext(
+    rootContextDocument: String = "",
+    refs: Seq[ParsedReference] = Seq.empty,
+    futureDeclarations: FutureDeclarations = EmptyFutureDeclarations(),
+    config: ParseConfiguration
+) extends ErrorHandlingContext()(config.eh)
     with UnresolvedComponents {
 
   var globalSpace: mutable.Map[String, Any] = mutable.Map()

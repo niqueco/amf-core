@@ -1,7 +1,6 @@
 package amf.core.client.scala.parse.document
 
-/**
-  * Reference kinds to be collected by the Reference Collector
+/** Reference kinds to be collected by the Reference Collector
   */
 sealed trait ReferenceKind
 

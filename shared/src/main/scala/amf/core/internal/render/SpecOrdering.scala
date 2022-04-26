@@ -4,8 +4,7 @@ import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.remote._
 import amf.core.internal.render.emitters.Emitter
 
-/**
-  * Created by pedro.colunga on 8/22/17.
+/** Created by pedro.colunga on 8/22/17.
   */
 object SpecOrdering {
 

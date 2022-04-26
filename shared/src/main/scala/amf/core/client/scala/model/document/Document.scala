@@ -7,9 +7,8 @@ import amf.core.internal.adoption.AdoptionDependantCalls
 import amf.core.internal.parser.domain.Fields
 import amf.core.internal.parser.domain.{Annotations, Fields}
 
-/**
-  * A [[Document]] is a parsing Unit that encodes a DomainElement.
-  * The encoded DomainElement can reference other DomainElements.
+/** A [[Document]] is a parsing Unit that encodes a DomainElement. The encoded DomainElement can reference other
+  * DomainElements.
   */
 case class Document(fields: Fields, annotations: Annotations) extends BaseUnit with EncodesModel with DeclaresModel {
 

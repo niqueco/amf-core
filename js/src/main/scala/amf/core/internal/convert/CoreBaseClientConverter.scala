@@ -24,55 +24,63 @@ trait CoreBaseClientConverter extends CoreBaseConverter {
 
   override protected def asClientOption[Internal, Client](
       from: Option[Internal],
-      matcher: InternalClientMatcher[Internal, Client]): UndefOr[Client] =
+      matcher: InternalClientMatcher[Internal, Client]
+  ): UndefOr[Client] =
     from.map(matcher.asClient).orUndefined
 
   override protected def asClientOptionWithEC[Internal, Client](
       from: Option[Internal],
-      matcher: InternalClientMatcherWithEC[Internal, Client])(
-      implicit executionContext: ExecutionContext): ClientOption[Client] =
+      matcher: InternalClientMatcherWithEC[Internal, Client]
+  )(implicit executionContext: ExecutionContext): ClientOption[Client] =
     from.map(matcher.asClient).orUndefined
 
   override protected def asClientList[A, B](from: Seq[A], matcher: InternalClientMatcher[A, B]): js.Array[B] =
     from.map(matcher.asClient).toJSArray
 
-  override protected def asClientListWithEC[Internal, Client](from: Seq[Internal],
-                                                              matcher: InternalClientMatcherWithEC[Internal, Client])(
-      implicit executionContext: ExecutionContext): ClientList[Client] =
+  override protected def asClientListWithEC[Internal, Client](
+      from: Seq[Internal],
+      matcher: InternalClientMatcherWithEC[Internal, Client]
+  )(implicit executionContext: ExecutionContext): ClientList[Client] =
     from.map(matcher.asClient).toJSArray
 
   override protected def asClientMap[Internal, Client](
       from: mutable.Map[String, Internal],
-      matcher: InternalClientMatcher[Internal, Client]): Dictionary[Client] = {
+      matcher: InternalClientMatcher[Internal, Client]
+  ): Dictionary[Client] = {
     from.map { case (k, v) => k -> matcher.asClient(v) }.toJSDictionary
   }
 
   override protected def asClientImmutableMap[Internal, Client](
       from: Map[String, Internal],
-      matcher: InternalClientMatcher[Internal, Client]): Dictionary[Client] = {
+      matcher: InternalClientMatcher[Internal, Client]
+  ): Dictionary[Client] = {
     from.map { case (k, v) => k -> matcher.asClient(v) }.toJSDictionary
   }
 
   override protected def asClientLinkedMap[Internal, Client](
       from: mutable.LinkedHashMap[String, Internal],
-      matcher: InternalClientMatcher[Internal, Client]): Dictionary[Client] = {
+      matcher: InternalClientMatcher[Internal, Client]
+  ): Dictionary[Client] = {
     from.map { case (k, v) => k -> matcher.asClient(v) }.toJSDictionary
   }
 
   override protected def asInternalSeq[Client, Internal](
       from: js.Array[Client],
-      matcher: ClientInternalMatcher[Client, Internal]): Seq[Internal] = from.toSeq.map(matcher.asInternal)
+      matcher: ClientInternalMatcher[Client, Internal]
+  ): Seq[Internal] = from.toSeq.map(matcher.asInternal)
 
-  override protected def asInternalSeqWithEC[Client, Internal](from: js.Array[Client],
-                                                               matcher: ClientInternalMatcherWithEC[Client, Internal])(
-      implicit executionContext: ExecutionContext): Seq[Internal] = from.toSeq.map(matcher.asInternal)
+  override protected def asInternalSeqWithEC[Client, Internal](
+      from: js.Array[Client],
+      matcher: ClientInternalMatcherWithEC[Client, Internal]
+  )(implicit executionContext: ExecutionContext): Seq[Internal] = from.toSeq.map(matcher.asInternal)
 
   override protected def asClientFuture[T](from: Future[T])(implicit executionContext: ExecutionContext): Promise[T] =
     from.toJSPromise
 
-  override protected def asInternalFuture[Client, Internal](from: js.Promise[Client],
-                                                            matcher: ClientInternalMatcher[Client, Internal])(
-      implicit executionContext: ExecutionContext): Future[Internal] =
+  override protected def asInternalFuture[Client, Internal](
+      from: js.Promise[Client],
+      matcher: ClientInternalMatcher[Client, Internal]
+  )(implicit executionContext: ExecutionContext): Future[Internal] =
     from.toFuture.map(matcher.asInternal)
 
   override protected def toScalaOption[E](from: UndefOr[E]): Option[E] = from.toOption
@@ -87,11 +95,11 @@ trait CoreBaseClientConverter extends CoreBaseConverter {
 
   override protected def asInternalMap[Client, Internal](
       from: ClientMap[Client],
-      m: ClientInternalMatcher[Client, Internal]): Map[String, Internal] = {
+      m: ClientInternalMatcher[Client, Internal]
+  ): Map[String, Internal] = {
 
-    from.toMap.foldLeft(Map[String, Internal]()) {
-      case (acc, (e, i)) =>
-        acc + (e -> m.asInternal(i))
+    from.toMap.foldLeft(Map[String, Internal]()) { case (acc, (e, i)) =>
+      acc + (e -> m.asInternal(i))
     }
 
   }

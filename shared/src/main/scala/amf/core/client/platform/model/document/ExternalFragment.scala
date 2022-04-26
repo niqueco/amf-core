@@ -5,8 +5,7 @@ import amf.core.client.scala.model.document.{ExternalFragment => InternalExterna
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 @JSExportAll
-case class ExternalFragment(override private[amf] val _internal: InternalExternalFragment)
-    extends Fragment(_internal) {
+case class ExternalFragment(override private[amf] val _internal: InternalExternalFragment) extends Fragment(_internal) {
 
   @JSExportTopLevel("ExternalFragment")
   def this() = this(InternalExternalFragment())

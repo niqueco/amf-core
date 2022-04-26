@@ -19,9 +19,11 @@ object BaseUnitSourceInformationModel extends ModelDefaultBuilder {
     Field(
         Array(LocationInformationModel),
         Document + "additionalLocations",
-        ModelDoc(ModelVocabularies.AmlDoc,
-                 "additionalLocations",
-                 "Additional source locations from which certain elements where parsed")
+        ModelDoc(
+            ModelVocabularies.AmlDoc,
+            "additionalLocations",
+            "Additional source locations from which certain elements where parsed"
+        )
     )
 
   override val `type`: List[ValueType] = List(Document + "BaseUnitSourceInformation")
@@ -33,7 +35,8 @@ object BaseUnitSourceInformationModel extends ModelDefaultBuilder {
   override val doc: ModelDoc = ModelDoc(
       ModelVocabularies.AmlDoc,
       "BaseUnitSourceInformation",
-      "Class that stores information of the source from which the base unit was parsed")
+      "Class that stores information of the source from which the base unit was parsed"
+  )
 }
 
 object LocationInformationModel extends ModelDefaultBuilder {
@@ -54,5 +57,6 @@ object LocationInformationModel extends ModelDefaultBuilder {
   override val doc: ModelDoc = ModelDoc(
       ModelVocabularies.AmlDoc,
       "LocationInformation",
-      "Class that store a specific location and the elements that where parsed from this source")
+      "Class that store a specific location and the elements that where parsed from this source"
+  )
 }

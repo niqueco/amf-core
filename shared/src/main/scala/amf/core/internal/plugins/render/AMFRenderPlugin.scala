@@ -14,10 +14,12 @@ trait AMFRenderPlugin extends AMFPlugin[RenderInfo] {
     builder.parsedDocument
   }
 
-  def emit[T](unit: BaseUnit,
-              builder: ASTBuilder[T],
-              renderConfiguration: RenderConfiguration,
-              mediaType: String): Boolean
+  def emit[T](
+      unit: BaseUnit,
+      builder: ASTBuilder[T],
+      renderConfiguration: RenderConfiguration,
+      mediaType: String
+  ): Boolean
 
   def mediaTypes: Seq[String]
 

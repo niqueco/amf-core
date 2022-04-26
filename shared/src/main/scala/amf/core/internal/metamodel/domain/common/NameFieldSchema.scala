@@ -5,8 +5,7 @@ import amf.core.internal.metamodel.Type.Str
 import amf.core.internal.metamodel.domain.{ExternalModelVocabularies, ModelDoc, ModelVocabularies}
 import amf.core.client.scala.vocabulary.Namespace.{Core, Shacl}
 
-/**
-  * Name field.
+/** Name field.
   */
 trait NameFieldSchema {
   val Name = Field(Str, Core + "name", ModelDoc(ModelVocabularies.Core, "name", "Name of the shape"))

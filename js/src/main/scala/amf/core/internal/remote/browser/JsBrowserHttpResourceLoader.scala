@@ -22,9 +22,10 @@ case class JsBrowserHttpResourceLoader() extends BaseHttpResourceLoader {
         xhr.status match {
           case 200 => Future.successful(new Content(xhr.responseText, resource))
           case s   => Future.failed(UnexpectedStatusCode(resource, s))
-      })
-      .recover {
-        case e: Throwable => throw NetworkError(e)
+        }
+      )
+      .recover { case e: Throwable =>
+        throw NetworkError(e)
       }
       .toJSPromise
   }

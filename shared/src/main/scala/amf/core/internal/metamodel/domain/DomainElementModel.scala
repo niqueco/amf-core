@@ -7,16 +7,17 @@ import amf.core.internal.metamodel.{Field, ModelDefaultBuilder, Obj}
 import amf.core.client.scala.vocabulary.Namespace.{Document, SourceMaps}
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
 
-/**
-  * Stores meta-data about the semantics of the domain element
+/** Stores meta-data about the semantics of the domain element
   * @param displayName
   * @param description
   * @param superClasses
   */
-case class ModelDoc(vocabulary: ModelVocabulary = ModelVocabularies.Parser,
-                    displayName: String = "",
-                    description: String = "",
-                    superClasses: Seq[String] = Nil)
+case class ModelDoc(
+    vocabulary: ModelVocabulary = ModelVocabularies.Parser,
+    displayName: String = "",
+    description: String = "",
+    superClasses: Seq[String] = Nil
+)
 
 case class ModelVocabulary(alias: String, base: String, usage: String, filename: String)
 
@@ -34,10 +35,12 @@ object ModelVocabularies {
     ModelVocabulary("apiBinding", Namespace.ApiBinding.base, "API binding vocabulary", "api_binding.yaml")
   val Core =
     ModelVocabulary("core", Namespace.Core.base, "Core vocabulary with common classes and properties", "core.yaml")
-  val Shapes = ModelVocabulary("shapes",
-                               Namespace.Shapes.base,
-                               "Vocabulary defining data shapes, used as an extension to SHACL",
-                               "data_shapes.yaml")
+  val Shapes = ModelVocabulary(
+      "shapes",
+      Namespace.Shapes.base,
+      "Vocabulary defining data shapes, used as an extension to SHACL",
+      "data_shapes.yaml"
+  )
   val Data = ModelVocabulary(
       "data",
       Namespace.Data.base,
@@ -60,16 +63,15 @@ object ExternalModelVocabularies {
   val all: Seq[ModelVocabulary] = Seq(Shacl, Rdfs, Rdf, Owl)
 }
 
-/**
-  * Domain element meta-model
+/** Domain element meta-model
   *
   * Base class for any element describing a domain model. Domain Elements are encoded into fragments
   */
 trait DomainElementModel extends ModelDefaultBuilder {
 
-  /**
-    * Entity that is going to be extended overlaying or adding additional information
-    * The type of the relationship provide the semantics about thow the referenced and referencer elements must be combined when generating the domain model from the document model.
+  /** Entity that is going to be extended overlaying or adding additional information The type of the relationship
+    * provide the semantics about thow the referenced and referencer elements must be combined when generating the
+    * domain model from the document model.
     */
   lazy val Extends = Field(
       Array(DomainElementModel),
@@ -81,30 +83,34 @@ trait DomainElementModel extends ModelDefaultBuilder {
       )
   )
 
-  /**
-    * Indicates that this parsing Unit has SourceMaps
+  /** Indicates that this parsing Unit has SourceMaps
     */
-  val Sources = Field(SourceMapModel,
-                      SourceMaps + "sources",
-                      ModelDoc(ModelVocabularies.AmlDoc, "source", "Indicates that this parsing Unit has SourceMaps"))
+  val Sources = Field(
+      SourceMapModel,
+      SourceMaps + "sources",
+      ModelDoc(ModelVocabularies.AmlDoc, "source", "Indicates that this parsing Unit has SourceMaps")
+  )
 
   lazy val CustomDomainProperties = Field(
       Array(DomainExtensionModel),
       Document + "customDomainProperties",
-      ModelDoc(ModelVocabularies.AmlDoc,
-               "customDomainProperties",
-               "Extensions provided for a particular domain element.")
+      ModelDoc(
+          ModelVocabularies.AmlDoc,
+          "customDomainProperties",
+          "Extensions provided for a particular domain element."
+      )
   )
 
-  /**
-    * Marks this domain element as a reference to the element identified by the provide ID
+  /** Marks this domain element as a reference to the element identified by the provide ID
     */
   val IsExternalLink = Field(
       Bool,
       Document + "isExternalLink",
-      ModelDoc(ModelVocabularies.AmlDoc,
-               "isExternalLink",
-               "Marks this domain element as a reference to the actual element identified by the same URI")
+      ModelDoc(
+          ModelVocabularies.AmlDoc,
+          "isExternalLink",
+          "Marks this domain element as a reference to the actual element identified by the same URI"
+      )
   )
 
 }
@@ -125,6 +131,6 @@ object DomainElementModel extends DomainElementModel {
       vocabulary = ModelVocabularies.AmlDoc,
       displayName = "DomainElement",
       description =
-        "Base class for any element describing a domain model. Domain Elements are encoded or declared into base units",
+        "Base class for any element describing a domain model. Domain Elements are encoded or declared into base units"
   )
 }

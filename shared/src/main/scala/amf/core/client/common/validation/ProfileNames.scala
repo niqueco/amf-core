@@ -20,7 +20,17 @@ object ProfileNames {
   val GRAPHQL: ProfileName = GraphQLProfile
 
   lazy val specProfiles: Seq[ProfileName] =
-    Seq(AmfProfile, Oas20Profile, Oas30Profile, Raml08Profile, Raml10Profile, AsyncProfile, Async20Profile, GraphQLProfile, GrpcProfile)
+    Seq(
+        AmfProfile,
+        Oas20Profile,
+        Oas30Profile,
+        Raml08Profile,
+        Raml10Profile,
+        AsyncProfile,
+        Async20Profile,
+        GraphQLProfile,
+        GrpcProfile
+    )
 }
 
 @JSExportAll
@@ -82,7 +92,7 @@ object ProfileName {
 
   def apply(profile: String): ProfileName = profile match {
     case Amf.id             => AmfProfile
-    case "OAS" | Oas20.id   => Oas20Profile // for compatibility
+    case "OAS" | Oas20.id   => Oas20Profile  // for compatibility
     case Oas30.id           => Oas30Profile
     case Raml08.id          => Raml08Profile
     case "RAML" | Raml10.id => Raml10Profile // for compatibility

@@ -5,10 +5,12 @@ import amf.core.internal.validation.core.ValidationSpecification
 import amf.core.client.scala.vocabulary.Namespace
 
 trait Validations {
-  protected def validation(id: String,
-                           message: String,
-                           ramlMessage: Option[String] = None,
-                           oasMessage: Option[String] = None): ValidationSpecification =
+  protected def validation(
+      id: String,
+      message: String,
+      ramlMessage: Option[String] = None,
+      oasMessage: Option[String] = None
+  ): ValidationSpecification =
     ValidationSpecification(
         name = (namespace + id).iri(),
         message = message,

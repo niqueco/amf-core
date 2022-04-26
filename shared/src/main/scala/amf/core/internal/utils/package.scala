@@ -31,8 +31,7 @@ package object utils {
     def isJson: Boolean = content.trim.startsWith("{") || content.startsWith("[")
   }
 
-  /**
-    * Common utility methods to deal with Strings.
+  /** Common utility methods to deal with Strings.
     */
   implicit class AmfStrings(val str: String) extends PlatformSecrets {
 
@@ -139,8 +138,7 @@ package object utils {
       varPattern.findAllIn(path).toSeq.map(v => v.replace("{", "").replace("}", ""))
   }
 
-  /**
-    * We need to generate unique IDs for all data nodes if the name is not set
+  /** We need to generate unique IDs for all data nodes if the name is not set
     */
   class IdCounter {
     private var c = 0
@@ -158,16 +156,14 @@ package object utils {
     def toRange: Range     = position.Range(range)
   }
 
-  /**
-    * Common utility to convert regex into common java grounds.
+  /** Common utility to convert regex into common java grounds.
     */
   implicit class RegexConverter(val str: String) {
 
-    /**
-      * Hack: Manipulate regex so that it works the same as in js. Cases:
+    /** Hack: Manipulate regex so that it works the same as in js. Cases:
       *
-      * 1) When using "[^]" this means match any character in js, but it is an error in jvm because an empty
-      *    negated (^) set is not allowed. We replace it with [\S\s] which is the same, it means any character.
+      * 1) When using "[^]" this means match any character in js, but it is an error in jvm because an empty negated (^)
+      * set is not allowed. We replace it with [\S\s] which is the same, it means any character.
       *
       * TODO when to hack opening curly braces? .replaceAll("\\{", "\\\\{")
       */

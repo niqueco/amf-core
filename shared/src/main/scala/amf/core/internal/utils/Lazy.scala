@@ -1,7 +1,6 @@
 package amf.core.internal.utils
 
-/**
-  * Lazy instance
+/** Lazy instance
   */
 class Lazy[T](private val producer: () => T) {
 

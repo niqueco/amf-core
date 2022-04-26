@@ -60,14 +60,15 @@ object GraphDependenciesReferenceHandler extends ReferenceHandler {
     }
   }
 
-  protected def processDependencyEntry(entry: YMapEntry)(
-      implicit errorHandler: IllegalTypeHandler): CompilerReferenceCollector = {
+  protected def processDependencyEntry(
+      entry: YMapEntry
+  )(implicit errorHandler: IllegalTypeHandler): CompilerReferenceCollector = {
     entry.value.tagType match {
       case YType.Seq =>
         val links: IndexedSeq[(String, YNode)] = collectLinks(entry)
         val collector                          = CompilerReferenceCollector()
-        links.foreach {
-          case (link, linkEntry) => collector += (link, UnspecifiedReference, linkEntry.location)
+        links.foreach { case (link, linkEntry) =>
+          collector += (link, UnspecifiedReference, linkEntry.location)
         }
         collector
     }
