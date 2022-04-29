@@ -34,20 +34,23 @@ object InstanceMetaApplicableFieldRenderProvider extends ApplicableMetaFieldRend
 }
 
 object SemanticExtensionAwareMetaFieldRenderProvider {
-  def apply(extensions: Map[String, Map[String, Type]],
-            options: RenderOptions): SemanticExtensionAwareFieldRenderProvision = {
+  def apply(
+      extensions: Map[String, Map[String, Type]],
+      options: RenderOptions
+  ): SemanticExtensionAwareFieldRenderProvision = {
     new SemanticExtensionAwareFieldRenderProvision(createDomainToExtensionMap(extensions), options)
   }
 
   private def createDomainToExtensionMap(extensionModels: Map[String, Map[String, Type]]): Map[String, Set[String]] =
-    extensionModels.map {
-      case (domain: String, extensionToType: Map[String, Type]) => domain -> extensionToType.keySet
+    extensionModels.map { case (domain: String, extensionToType: Map[String, Type]) =>
+      domain -> extensionToType.keySet
     }
 }
 
-class SemanticExtensionAwareFieldRenderProvision(domainExtensions: Map[String, Set[String]],
-                                                 renderOptions: RenderOptions)
-    extends ApplicableMetaFieldRenderProvider {
+class SemanticExtensionAwareFieldRenderProvision(
+    domainExtensions: Map[String, Set[String]],
+    renderOptions: RenderOptions
+) extends ApplicableMetaFieldRenderProvider {
   override def fieldsFor(element: AmfObject, renderOptions: RenderOptions): Seq[Field] = {
     val fields = super.fieldsFor(element, renderOptions)
     val obj    = element.meta
@@ -82,7 +85,8 @@ trait CommonEmitter {
   def extractDeclarationsAndReferencesToContext(
       declaresEntry: Option[FieldEntry],
       referencesEntry: Option[FieldEntry],
-      annotations: Annotations)(implicit ctx: GraphEmitterContext): ctx.type = {
+      annotations: Annotations
+  )(implicit ctx: GraphEmitterContext): ctx.type = {
     val declaredElements: Iterable[AmfElement] =
       declaresEntry.map(_.value.value.asInstanceOf[AmfArray].values).getOrElse(Nil)
     val referencedElements: Iterable[AmfElement] =

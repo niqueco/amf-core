@@ -9,8 +9,8 @@ case class DataNodePropertiesAnnotations(properties: Map[String, LexicalInformat
 
   /** Value as string. */
   override val value: String = properties
-    .map {
-      case (key, l) => s"$key->${l.range}"
+    .map { case (key, l) =>
+      s"$key->${l.range}"
     }
     .mkString("#")
 }

@@ -12,10 +12,12 @@ import amf.core.internal.validation.core.{
 
 import scala.collection.mutable
 
-class EffectiveValidations(val effective: mutable.HashMap[String, ValidationSpecification] = mutable.HashMap(),
-                           val all: mutable.HashMap[String, ValidationSpecification] = mutable.HashMap()) {
+class EffectiveValidations(
+    val effective: mutable.HashMap[String, ValidationSpecification] = mutable.HashMap(),
+    val all: mutable.HashMap[String, ValidationSpecification] = mutable.HashMap()
+) {
 
-  private val SEVERITY_LEVELS                                                   = Seq(SeverityLevels.INFO, SeverityLevels.WARNING, SeverityLevels.VIOLATION)
+  private val SEVERITY_LEVELS = Seq(SeverityLevels.INFO, SeverityLevels.WARNING, SeverityLevels.VIOLATION)
   private val severityLevelIndex: mutable.HashMap[ValidationIri, SeverityLevel] = mutable.HashMap.empty
 
   def findSecurityLevelFor(id: ValidationIri): Option[SeverityLevel] = severityLevelIndex.get(id)

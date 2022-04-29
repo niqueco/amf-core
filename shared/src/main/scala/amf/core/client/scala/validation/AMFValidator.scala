@@ -13,12 +13,12 @@ import scala.concurrent.Future
 object VendorToProfile {
 
   private lazy val vendorProfileMapping = Map(
-    Spec.ASYNC20 -> Async20Profile,
-    Spec.RAML10  -> Raml10Profile,
-    Spec.RAML08  -> Raml08Profile,
-    Spec.OAS20   -> Oas20Profile,
-    Spec.OAS30   -> Oas30Profile,
-    Spec.AMF     -> AmfProfile,
+      Spec.ASYNC20 -> Async20Profile,
+      Spec.RAML10  -> Raml10Profile,
+      Spec.RAML08  -> Raml08Profile,
+      Spec.OAS20   -> Oas20Profile,
+      Spec.OAS30   -> Oas30Profile,
+      Spec.AMF     -> AmfProfile
   )
 
   def mapOrDefault(spec: Spec): ProfileName =
@@ -36,7 +36,7 @@ object AMFValidator {
   def validate(baseUnit: BaseUnit, conf: AMFGraphConfiguration): Future[AMFValidationReport] = {
     val plugins = computeApplicablePlugins(baseUnit, conf)
     val options = ValidationOptions(ValidationConfiguration(conf))
-    val runner = FailFastValidationRunner(plugins, options)
+    val runner  = FailFastValidationRunner(plugins, options)
     runner.run(baseUnit)(conf.getExecutionContext)
   }
 

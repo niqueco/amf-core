@@ -2,8 +2,7 @@ package amf.core.client.platform.model.domain
 
 import amf.core.client.platform.model.StrField
 
-/**
-  * All DomainElements supporting name
+/** All DomainElements supporting name
   */
 trait NamedDomainElement {
 

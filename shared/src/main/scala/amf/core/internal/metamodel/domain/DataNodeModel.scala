@@ -7,13 +7,10 @@ import amf.core.client.scala.model.domain._
 import amf.core.client.scala.vocabulary.Namespace.Data
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
 
-/**
-  * Data Model to parse any generic data structure defined
-  * by recursive records with arrays and scalar values (think of JSON or RAML)
-  * into a RDF graph.
+/** Data Model to parse any generic data structure defined by recursive records with arrays and scalar values (think of
+  * JSON or RAML) into a RDF graph.
   *
-  * This can be used to parse value of annotations, payloads or
-  * examples
+  * This can be used to parse value of annotations, payloads or examples
   */
 object DataNodeModel extends DomainElementModel with NameFieldSchema {
 
@@ -52,9 +49,11 @@ object ScalarNodeModel extends DomainElementModel {
     Field(Str, Namespace.Data + "value", ModelDoc(ModelVocabularies.Data, "value", "value for an scalar dynamic node"))
 
   val DataType =
-    Field(Iri,
-          Namespace.Shacl + "datatype",
-          ModelDoc(ModelVocabularies.Data, "dataType", "Data type of value for an scalar dynamic node"))
+    Field(
+        Iri,
+        Namespace.Shacl + "datatype",
+        ModelDoc(ModelVocabularies.Data, "dataType", "Data type of value for an scalar dynamic node")
+    )
 
   override def fields: List[Field]      = Value :: DataType :: DataNodeModel.fields
   override val `type`: List[ValueType]  = Data + "Scalar" :: DataNodeModel.`type`

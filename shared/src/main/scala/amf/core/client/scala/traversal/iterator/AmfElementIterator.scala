@@ -3,7 +3,6 @@ import amf.core.client.scala.model.domain.{AmfArray, AmfElement, AmfObject}
 
 import scala.collection.mutable
 
-
 case class AmfElementIterator private (var buffer: List[AmfElement], visited: VisitedCollector) extends AmfIterator {
 
   override def hasNext: Boolean = buffer.nonEmpty
@@ -21,8 +20,7 @@ case class AmfElementIterator private (var buffer: List[AmfElement], visited: Vi
       buffer = buffer.tail
       if (visited.visited(current)) {
         advance()
-      }
-      else {
+      } else {
         current match {
           case obj: AmfObject =>
             val elements = obj.fields.fields().map(_.element)
@@ -46,8 +44,3 @@ object AmfElementIterator {
     iterator
   }
 }
-
-
-
-
-

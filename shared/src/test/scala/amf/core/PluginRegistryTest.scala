@@ -37,8 +37,7 @@ case class DummyParsePlugin(override val id: String, specName: String, priority:
 
   override def parse(document: Root, ctx: ParserContext): BaseUnit = Document().withId("something")
 
-  /**
-    * media types which specifies vendors that are parsed by this plugin.
+  /** media types which specifies vendors that are parsed by this plugin.
     */
   override def mediaTypes: Seq[String] = Seq.empty
 

@@ -18,7 +18,7 @@ class ResourceLoaderExecutionContextTest extends AnyFunSuite with Matchers {
     val defaultLoader = defaultConf.resolvers.resourceLoaders.head.asInstanceOf[CustomECResourceLoader]
     defaultLoader.ec should be(concurrent.ExecutionContext.Implicits.global)
 
-    val customEnv           = new ExecutionEnvironment(ExecutionContext.fromExecutorService(Executors.newScheduledThreadPool(5)))
+    val customEnv = new ExecutionEnvironment(ExecutionContext.fromExecutorService(Executors.newScheduledThreadPool(5)))
     val configWithCustomEnv = defaultConf.withExecutionEnvironment(customEnv)
     val modifiedLoader      = configWithCustomEnv.resolvers.resourceLoaders.head.asInstanceOf[CustomECResourceLoader]
     modifiedLoader.ec should be(customEnv.context)

@@ -10,9 +10,11 @@ import amf.core.client.scala.model.domain.{DomainElement, LinkNode}
 
 object LinkNodeResolver {
 
-  def resolveDynamicLink(l: LinkNode,
-                         modelResolver: Option[ModelReferenceResolver],
-                         keepEditingInfo: Boolean): Option[DomainElement] = {
+  def resolveDynamicLink(
+      l: LinkNode,
+      modelResolver: Option[ModelReferenceResolver],
+      keepEditingInfo: Boolean
+  ): Option[DomainElement] = {
     l match {
       case r: ResolvedLinkNode => Some(r)
       case _ =>

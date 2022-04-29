@@ -8,8 +8,7 @@ import amf.core.client.scala.parse.{AMFParsePlugin, AMFSyntaxParsePlugin}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-/**
-  * configuration used by AMFCompiler.
+/** configuration used by AMFCompiler.
   */
 case class CompilerConfiguration(private val config: AMFGraphConfiguration) {
 

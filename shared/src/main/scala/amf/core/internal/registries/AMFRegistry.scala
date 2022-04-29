@@ -14,20 +14,25 @@ import amf.core.internal.registries.domain.EntitiesRegistry
 import amf.core.internal.validation.core.ValidationProfile
 import amf.core.internal.validation.EffectiveValidations
 
-/**
-  * Registry to store plugins, entities, transformation pipelines and constraint rules
+/** Registry to store plugins, entities, transformation pipelines and constraint rules
   *
-  * @param plugins                 [[PluginsRegistry]]
-  * @param entitiesRegistry        [[EntitiesRegistry]]
-  * @param transformationPipelines a map of [[TransformationPipeline]]s
-  * @param constraintsRules        a map of [[ProfileName]] -> [[amf.core.internal.validation.core.ValidationProfile]]
+  * @param plugins
+  *   [[PluginsRegistry]]
+  * @param entitiesRegistry
+  *   [[EntitiesRegistry]]
+  * @param transformationPipelines
+  *   a map of [[TransformationPipeline]]s
+  * @param constraintsRules
+  *   a map of [[ProfileName]] -> [[amf.core.internal.validation.core.ValidationProfile]]
   */
-private[amf] class AMFRegistry(plugins: PluginsRegistry,
-                               entitiesRegistry: EntitiesRegistry,
-                               transformationPipelines: Map[String, TransformationPipeline],
-                               constraintsRules: Map[ProfileName, ValidationProfile],
-                               effectiveValidations: Map[ProfileName, EffectiveValidations],
-                               namespaceAliases: NamespaceAliases) {
+private[amf] class AMFRegistry(
+    plugins: PluginsRegistry,
+    entitiesRegistry: EntitiesRegistry,
+    transformationPipelines: Map[String, TransformationPipeline],
+    constraintsRules: Map[ProfileName, ValidationProfile],
+    effectiveValidations: Map[ProfileName, EffectiveValidations],
+    namespaceAliases: NamespaceAliases
+) {
 
   def getPluginsRegistry: PluginsRegistry                             = plugins
   def getEntitiesRegistry: EntitiesRegistry                           = entitiesRegistry
@@ -74,7 +79,7 @@ private[amf] class AMFRegistry(plugins: PluginsRegistry,
 
   def emptyEntities(): AMFRegistry = copy(entitiesRegistry = entitiesRegistry.removeAllEntities())
 
-  def emptyPlugins(): AMFRegistry  = copy(plugins = plugins.removeAllPlugins())
+  def emptyPlugins(): AMFRegistry = copy(plugins = plugins.removeAllPlugins())
 
   def withAnnotations(annotations: Map[String, AnnotationGraphLoader]): AMFRegistry =
     copy(entitiesRegistry = entitiesRegistry.withAnnotations(annotations))
@@ -82,18 +87,22 @@ private[amf] class AMFRegistry(plugins: PluginsRegistry,
   def withAliases(aliases: NamespaceAliases): AMFRegistry =
     copy(namespaceAliases = namespaceAliases.merge(aliases))
 
-  private def copy(plugins: PluginsRegistry = plugins,
-                   entitiesRegistry: EntitiesRegistry = entitiesRegistry,
-                   transformationPipelines: Map[String, TransformationPipeline] = transformationPipelines,
-                   constraintsRules: Map[ProfileName, ValidationProfile] = constraintsRules,
-                   effectiveValidations: Map[ProfileName, EffectiveValidations] = effectiveValidations,
-                   namespaceAliases: NamespaceAliases = namespaceAliases): AMFRegistry =
-    new AMFRegistry(plugins,
-                    entitiesRegistry,
-                    transformationPipelines,
-                    constraintsRules,
-                    effectiveValidations,
-                    namespaceAliases)
+  private def copy(
+      plugins: PluginsRegistry = plugins,
+      entitiesRegistry: EntitiesRegistry = entitiesRegistry,
+      transformationPipelines: Map[String, TransformationPipeline] = transformationPipelines,
+      constraintsRules: Map[ProfileName, ValidationProfile] = constraintsRules,
+      effectiveValidations: Map[ProfileName, EffectiveValidations] = effectiveValidations,
+      namespaceAliases: NamespaceAliases = namespaceAliases
+  ): AMFRegistry =
+    new AMFRegistry(
+        plugins,
+        entitiesRegistry,
+        transformationPipelines,
+        constraintsRules,
+        effectiveValidations,
+        namespaceAliases
+    )
 
   private[amf] lazy val sortedElementRenderPlugins: List[AMFElementRenderPlugin] = plugins.elementRenderPlugins.sorted
 

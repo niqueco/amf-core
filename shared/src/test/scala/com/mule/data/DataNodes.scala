@@ -56,5 +56,6 @@ object DataNodes {
     .withEncodes(
         ObjectNode()
           .withId("amf://duplicate")
-          .addProperty("name", ScalarNode("name", Some(DataType.String)).withId("amf://duplicate")))
+          .addProperty("name", ScalarNode("name", Some(DataType.String)).withId("amf://duplicate"))
+    )
 }

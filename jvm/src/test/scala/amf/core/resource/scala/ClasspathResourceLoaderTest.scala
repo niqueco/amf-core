@@ -38,8 +38,7 @@ object DummyParsePlugin extends AMFParsePlugin {
       .withRaw(document.raw)
       .withId("something")
 
-  /**
-    * media types which specifies vendors that are parsed by this plugin.
+  /** media types which specifies vendors that are parsed by this plugin.
     */
   override def mediaTypes: Seq[String] = Seq(`application/yaml`)
 

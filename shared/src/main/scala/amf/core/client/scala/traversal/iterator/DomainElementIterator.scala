@@ -15,13 +15,12 @@ case class DomainElementIterator private (var buffer: List[AmfElement], visited:
   }
 
   private def advance(): Unit = {
-    if(buffer.nonEmpty) {
+    if (buffer.nonEmpty) {
       val current = buffer.head
       buffer = buffer.tail
       if (visited.visited(current)) {
         advance()
-      }
-      else {
+      } else {
         current match {
           case obj: AmfObject =>
             val elements = obj.fields.fields().map(_.element).toList

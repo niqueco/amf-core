@@ -2,9 +2,7 @@ package amf.core.client.scala.lexer
 
 import java.io._
 
-/**
-  *
-  */
+/** */
 final class CharArraySequence(val data: Array[Char], val offset: Int, val length: Int) extends CharSequence {
 
   def this(data: Array[Char]) = this(data, 0, data.length)

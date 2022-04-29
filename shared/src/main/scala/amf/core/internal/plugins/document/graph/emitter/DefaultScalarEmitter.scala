@@ -4,8 +4,7 @@ import amf.core.internal.plugins.document.graph.JsonLdKeywords
 import org.yaml.model.YDocument.PartBuilder
 import org.yaml.model._
 
-/**
-  * AMF Graph emitter
+/** AMF Graph emitter
   */
 object DefaultScalarEmitter {
 

@@ -1,7 +1,7 @@
 package amf.core.internal.convert
 
 import scala.language.implicitConversions
-import amf.core.internal.convert.{NativeOps=>NatOps}
+import amf.core.internal.convert.{NativeOps => NatOps}
 import amf.core.internal.convert.CoreClientConverters.{ClientFuture, ClientList, ClientOption}
 
 import scala.concurrent.Future

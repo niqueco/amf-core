@@ -4,9 +4,7 @@ import amf.core.client.common.position.Range
 import org.yaml.model.YNode.MutRef
 import org.yaml.model.{YNode, YPart, YScalar}
 
-class SYamlRefContainer(override val linkType: ReferenceKind,
-                        val node: YPart,
-                        override val uriFragment: Option[String])
+class SYamlRefContainer(override val linkType: ReferenceKind, val node: YPart, override val uriFragment: Option[String])
     extends ASTRefContainer(linkType, node.location, uriFragment) {
 
   override def reduceToLocation(): Range = node match {
@@ -19,7 +17,9 @@ class SYamlRefContainer(override val linkType: ReferenceKind,
 
   private def reduceStringLength(s: YScalar, fragmentLenght: Int, markSize: Int = 0): Range = {
     val inputRange =
-      if (node.location.inputRange.columnTo < fragmentLenght && node.location.inputRange.lineFrom < node.location.inputRange.lineTo) {
+      if (
+          node.location.inputRange.columnTo < fragmentLenght && node.location.inputRange.lineFrom < node.location.inputRange.lineTo
+      ) {
         val lines = s.text.split('\n')
         lines.find(_.contains('#')) match {
           case Some(line) =>

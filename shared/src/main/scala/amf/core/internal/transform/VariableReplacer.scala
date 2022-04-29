@@ -26,10 +26,14 @@ object VariableReplacer {
           case Some(Variable(_, scalar: ScalarNode))
               if scalar.dataType.option().isEmpty || scalar.dataType.value().contains("#string") =>
             s.withValue(
-              VariableRegex.replaceAllIn(s.value.value(),
-                                         replaceMatch(values.map(v => v.name -> v.value).toMap,
-                                                      strict = false,
-                                                      isKey = false)(_, errorFunction)))
+                VariableRegex.replaceAllIn(
+                    s.value.value(),
+                    replaceMatch(values.map(v => v.name -> v.value).toMap, strict = false, isKey = false)(
+                        _,
+                        errorFunction
+                    )
+                )
+            )
             s
           case Some(_) if transformations.nonEmpty =>
             errorFunction(s"Cannot apply transformations '$transformations' to variable '$name'.")
@@ -47,9 +51,14 @@ object VariableReplacer {
       case text =>
         s.value.option().foreach { v =>
           s.withValue(
-            VariableRegex.replaceAllIn(
-              v,
-              replaceMatch(values.map(v => v.name -> v.value).toMap, strict = false, isKey = false)(_, errorFunction)))
+              VariableRegex.replaceAllIn(
+                  v,
+                  replaceMatch(values.map(v => v.name -> v.value).toMap, strict = false, isKey = false)(
+                      _,
+                      errorFunction
+                  )
+              )
+          )
         }
         s
     }
@@ -57,17 +66,20 @@ object VariableReplacer {
 
   def replaceVariables(s: String, values: Set[Variable], errorFunction: String => Unit): String =
     VariableRegex.replaceAllIn(
-      s,
-      replaceMatch(values.map(v => v.name -> v.value).toMap, strict = false, isKey = false)(_, errorFunction))
+        s,
+        replaceMatch(values.map(v => v.name -> v.value).toMap, strict = false, isKey = false)(_, errorFunction)
+    )
 
   def replaceVariablesInKey(key: String, values: Set[Variable], errorFunction: String => Unit): String =
     VariableRegex.replaceAllIn(
-      key,
-      replaceMatch(values.map(v => v.name -> v.value).toMap, strict = true, isKey = true)(_, errorFunction))
+        key,
+        replaceMatch(values.map(v => v.name -> v.value).toMap, strict = true, isKey = true)(_, errorFunction)
+    )
 
   private def replaceMatch(values: Map[String, DataNode], strict: Boolean, isKey: Boolean)(
       m: Match,
-      errorFunction: String => Unit): String = {
+      errorFunction: String => Unit
+  ): String = {
     val nameWithChevrons = m.group(0)
     val name             = m.group(1)
     var emptyVariable    = false
@@ -112,12 +124,12 @@ object VariableReplacer {
           .orElse(Some(text))
       }
       .getOrElse(
-        if (strict && !emptyVariable) {
-          errorFunction(s"Cannot find variable '$name'.")
-          nameWithChevrons
-        } else {
-          nameWithChevrons
-        }
+          if (strict && !emptyVariable) {
+            errorFunction(s"Cannot find variable '$name'.")
+            nameWithChevrons
+          } else {
+            nameWithChevrons
+          }
       )
       .replace("$", "\\$")
 
@@ -126,7 +138,8 @@ object VariableReplacer {
   }
 
   protected[amf] def variableTransformation(
-      errorFunction: String => Unit)(value: String, transformation: String): String = transformation match {
+      errorFunction: String => Unit
+  )(value: String, transformation: String): String = transformation match {
     case "singularize"         => value.singularize
     case "pluralize"           => value.pluralize
     case "uppercase"           => value.toUpperCase

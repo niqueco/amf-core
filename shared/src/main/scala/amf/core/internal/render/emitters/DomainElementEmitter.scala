@@ -8,9 +8,10 @@ import org.yaml.model.{YDocument, YNode}
 
 trait DomainElementEmitter[T] {
 
-  /**
-    * @param emissionStructure: gives insight on the context of emission.
-    * @param references: optional parameter which will improve emission of references defined in element.
+  /** @param emissionStructure:
+    *   gives insight on the context of emission.
+    * @param references:
+    *   optional parameter which will improve emission of references defined in element.
     */
   def emit(element: DomainElement, emissionStructure: T, eh: AMFErrorHandler, references: Seq[BaseUnit] = Nil): YNode
 

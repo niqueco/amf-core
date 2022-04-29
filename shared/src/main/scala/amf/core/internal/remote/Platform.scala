@@ -31,9 +31,7 @@ trait FileMediaType {
 
 object FileMediaType extends FileMediaType
 
-/**
-  *
-  */
+/** */
 trait Platform extends FileMediaType {
 
   def name: String = "gen"
@@ -60,7 +58,8 @@ trait Platform extends FileMediaType {
     wrappersRegistry.put(model.`type`.head.iri(), builder)
 
   def registerWrapperPredicate(p: (Obj) => Boolean)(
-      builder: (AmfObject) => AmfObjectWrapper): Option[AmfObject => AmfObjectWrapper] =
+      builder: (AmfObject) => AmfObjectWrapper
+  ): Option[AmfObject => AmfObjectWrapper] =
     wrappersRegistryFn.put(p, builder)
 
   def wrap[T <: AmfObjectWrapper](entity: AmfObject): T = entity match {
@@ -97,19 +96,21 @@ trait Platform extends FileMediaType {
     case _ => throw new Exception(s"Cannot build object of type $entity")
   }
 
-  private def loaderConcat(url: String, loaders: Seq[ResourceLoader])(
-      implicit executionContext: ExecutionContext): Future[Content] = loaders.toList match {
+  private def loaderConcat(url: String, loaders: Seq[ResourceLoader])(implicit
+      executionContext: ExecutionContext
+  ): Future[Content] = loaders.toList match {
     case Nil         => throw new UnsupportedUrlScheme(url)
     case head :: Nil => head.fetch(url)
     case head :: tail =>
-      head.fetch(url).recoverWith {
-        case _ => loaderConcat(url, tail)
+      head.fetch(url).recoverWith { case _ =>
+        loaderConcat(url, tail)
       }
   }
 
   /** Resolve remote url. */
-  def fetchContent(url: String, configuration: AMFGraphConfiguration)(
-      implicit executionContext: ExecutionContext): Future[Content] =
+  def fetchContent(url: String, configuration: AMFGraphConfiguration)(implicit
+      executionContext: ExecutionContext
+  ): Future[Content] =
     loaderConcat(url, configuration.getResourceLoaders.filter(_.accepts(url)))
 
   /** Platform out of the box [ResourceLoader]s */

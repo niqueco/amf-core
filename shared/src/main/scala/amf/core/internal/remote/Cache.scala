@@ -22,8 +22,7 @@ class Cache {
   protected def findCycles(node: String, acc: Set[String] = Set()): Boolean = {
     if (acc.contains(node)) {
       true
-    }
-    else {
+    } else {
       val sources = dependencyGraph.getOrElse(node, Set())
       sources.exists { source =>
         findCycles(source, acc + node)
@@ -35,38 +34,36 @@ class Cache {
     val lastTwo = elms.takeRight(2)
     if (lastTwo.size == 2) {
       lastTwo.headOption
-    }
-    else {
+    } else {
       None
     }
   }
 
-  def getOrUpdate(url: String, context: Context)(supplier: () => Future[BaseUnit])(
-      implicit executionContext: ExecutionContext): Future[BaseUnit] = synchronized {
+  def getOrUpdate(url: String, context: Context)(
+      supplier: () => Future[BaseUnit]
+  )(implicit executionContext: ExecutionContext): Future[BaseUnit] = synchronized {
     beforeLast(context.history) foreach { from =>
       addFromToEdge(from, url)
     }
     if (findCycles(url)) {
       if (cache(url).isCompleted) {
         cache(url)
-      }
-      else {
+      } else {
         cache.remove(url)
         supplier() map { res =>
           update(url, Future(res))
           res
         }
       }
-    }
-    else {
-        cache.get(url) match {
-          case Some(value) =>
-            value
-          case None =>
-            val futureUnit = supplier()
-            update(url, futureUnit)
-            futureUnit
-        }
+    } else {
+      cache.get(url) match {
+        case Some(value) =>
+          value
+        case None =>
+          val futureUnit = supplier()
+          update(url, futureUnit)
+          futureUnit
+      }
     }
   }
 

@@ -1,11 +1,9 @@
 package amf.core.internal.remote
 
-/**
-  *   ECMA 3, 15.1.3 URI Handling Function Properties
+/** ECMA 3, 15.1.3 URI Handling Function Properties
   *
-  *   The following are implementations of the algorithms
-  *   given in the ECMA specification for the hidden functions
-  *   'Encode' and 'Decode'.
+  * The following are implementations of the algorithms given in the ECMA specification for the hidden functions
+  * 'Encode' and 'Decode'.
   */
 object EcmaEncoder {
   def encode(str: String, fullUri: Boolean = true): String =
@@ -30,10 +28,10 @@ object EcmaEncoder {
             utf8buf = Array.ofDim[Byte](6)
           }
 
-          if (0xDC00 <= C && C <= 0xDFFF) throw uriError
+          if (0xdc00 <= C && C <= 0xdfff) throw uriError
           var V: Int = 0
 
-          if (C < 0xD800 || 0xDBFF < C) {
+          if (C < 0xd800 || 0xdbff < C) {
             V = C
           } else {
             k = k + 1
@@ -42,10 +40,10 @@ object EcmaEncoder {
             }
             val C2: Char = str(k)
 
-            if (!(0xDC00 <= C2 && C2 <= 0xDFFF)) {
+            if (!(0xdc00 <= C2 && C2 <= 0xdfff)) {
               throw uriError
             }
-            V = ((C - 0xD800) << 10) + (C2 - 0xDC00) + 0x10000
+            V = ((C - 0xd800) << 10) + (C2 - 0xdc00) + 0x10000
           }
           val L: Int = oneUcs4ToUtf8Char(utf8buf, V)
           var j: Int = 0
@@ -75,7 +73,7 @@ object EcmaEncoder {
     var utf8Length = 1
 
     var ucs4Char = ucs
-    if ((ucs4Char & ~0x7F) == 0) utf8Buffer(0) = ucs4Char.toByte
+    if ((ucs4Char & ~0x7f) == 0) utf8Buffer(0) = ucs4Char.toByte
     else {
       var i = 0
       var a = ucs4Char >>> 11
@@ -92,7 +90,7 @@ object EcmaEncoder {
           i -= 1; i
         } > 0
       }) {
-        utf8Buffer(i) = ((ucs4Char & 0x3F) | 0x80).toByte
+        utf8Buffer(i) = ((ucs4Char & 0x3f) | 0x80).toByte
         ucs4Char >>>= 6
       }
       utf8Buffer(0) = (0x100 - (1 << (8 - utf8Length)) + ucs4Char).toByte
@@ -150,15 +148,15 @@ object EcmaEncoder {
           var utf8Tail    = 0
           var ucs4Char    = 0
           var minUcs4Char = 0
-          if ((B & 0xC0) == 0x80) { // First  UTF-8 should be outside 0x80..0xBF
+          if ((B & 0xc0) == 0x80) { // First  UTF-8 should be outside 0x80..0xBF
             throw uriError
           } else if ((B & 0x20) == 0) {
             utf8Tail = 1
-            ucs4Char = B & 0x1F
+            ucs4Char = B & 0x1f
             minUcs4Char = 0x80
           } else if ((B & 0x10) == 0) {
             utf8Tail = 2
-            ucs4Char = B & 0x0F
+            ucs4Char = B & 0x0f
             minUcs4Char = 0x800
           } else if ((B & 0x08) == 0) {
             utf8Tail = 3
@@ -182,8 +180,8 @@ object EcmaEncoder {
           }) {
             if (str.charAt(k) != '%') throw uriError
             B = unHex(str.charAt(k + 1), str.charAt(k + 2))
-            if (B < 0 || (B & 0xC0) != 0x80) throw uriError
-            ucs4Char = (ucs4Char << 6) | (B & 0x3F)
+            if (B < 0 || (B & 0xc0) != 0x80) throw uriError
+            ucs4Char = (ucs4Char << 6) | (B & 0x3f)
             k += 3
 
             {
@@ -191,13 +189,13 @@ object EcmaEncoder {
             }
           }
           // Check for overlongs and other should-not-present codes
-          if (ucs4Char < minUcs4Char || (ucs4Char >= 0xD800 && ucs4Char <= 0xDFFF)) ucs4Char = InvalidUtf8
-          else if (ucs4Char == 0xFFFE || ucs4Char == 0xFFFF) ucs4Char = 0xFFFD
+          if (ucs4Char < minUcs4Char || (ucs4Char >= 0xd800 && ucs4Char <= 0xdfff)) ucs4Char = InvalidUtf8
+          else if (ucs4Char == 0xfffe || ucs4Char == 0xffff) ucs4Char = 0xfffd
           if (ucs4Char >= 0x10000) {
             ucs4Char -= 0x10000
-            if (ucs4Char > 0xFFFFF) throw uriError
-            val H = ((ucs4Char >>> 10) + 0xD800).toChar
-            C = ((ucs4Char & 0x3FF) + 0xDC00).toChar
+            if (ucs4Char > 0xfffff) throw uriError
+            val H = ((ucs4Char >>> 10) + 0xd800).toChar
+            C = ((ucs4Char & 0x3ff) + 0xdc00).toChar
             buf({
               bufTop += 1; bufTop - 1
             }) = H

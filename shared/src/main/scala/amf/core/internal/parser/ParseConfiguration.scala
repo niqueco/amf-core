@@ -57,10 +57,11 @@ object ParseConfigOverride {
   }
 }
 
-case class ParseConfigOverride(eh: AMFErrorHandler,
-                               sortedRootParsePlugins: Seq[AMFParsePlugin],
-                               sortedReferenceParsePlugins: Seq[AMFParsePlugin],
-                               parsingOptions: ParsingOptions,
-                               registryContext: RegistryContext,
-                               serializableAnnotationsFacade: SerializableAnnotationsFacade)
-    extends ParseConfiguration
+case class ParseConfigOverride(
+    eh: AMFErrorHandler,
+    sortedRootParsePlugins: Seq[AMFParsePlugin],
+    sortedReferenceParsePlugins: Seq[AMFParsePlugin],
+    parsingOptions: ParsingOptions,
+    registryContext: RegistryContext,
+    serializableAnnotationsFacade: SerializableAnnotationsFacade
+) extends ParseConfiguration

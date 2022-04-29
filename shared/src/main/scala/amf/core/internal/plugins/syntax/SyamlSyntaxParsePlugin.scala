@@ -64,9 +64,12 @@ object SyamlSyntaxParsePlugin extends AMFSyntaxParsePlugin with PlatformSecrets 
       val document1 = parser.document()
       val (document, comment) = document1 match {
         case d if d.isNull =>
-          (YDocument(Array(YNode(YMap.empty)), ctx.rootContextDocument), d.children collectFirst {
-            case c: YComment => c.metaText
-          })
+          (
+              YDocument(Array(YNode(YMap.empty)), ctx.rootContextDocument),
+              d.children collectFirst { case c: YComment =>
+                c.metaText
+              }
+          )
         case d =>
           (d, d.children collectFirst { case c: YComment => c.metaText })
       }
@@ -74,17 +77,18 @@ object SyamlSyntaxParsePlugin extends AMFSyntaxParsePlugin with PlatformSecrets 
     }
   }
 
-  /**
-    * media types which specifies vendors that are parsed by this plugin.
+  /** media types which specifies vendors that are parsed by this plugin.
     */
   override def mediaTypes: Seq[String] =
-    Seq(`application/yaml`,
+    Seq(
+        `application/yaml`,
         `application/x-yaml`,
         `text/yaml`,
         `text/x-yaml`,
         `application/json`,
         `text/json`,
-        `text/vnd.yaml`)
+        `text/vnd.yaml`
+    )
 
   override def mainMediaType: String = `application/yaml`
 

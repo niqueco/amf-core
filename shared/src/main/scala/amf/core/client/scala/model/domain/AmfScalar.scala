@@ -4,8 +4,7 @@ import amf.core.internal.parser.domain.Annotations
 
 import scala.collection.mutable
 
-/**
-  * Amf Scalar
+/** Amf Scalar
   */
 case class AmfScalar(value: Any, annotations: Annotations = new Annotations()) extends AmfElement {
 

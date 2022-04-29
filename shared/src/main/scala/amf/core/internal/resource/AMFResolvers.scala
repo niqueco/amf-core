@@ -10,48 +10,56 @@ import amf.core.internal.unsafe.PlatformSecrets
 
 import scala.concurrent.{ExecutionContext, Future}
 
-/**
-  * Configuration object for resolvers
+/** Configuration object for resolvers
   *
-  * @param resourceLoaders  a list of [[ResourceLoader]] to use
-  * @param unitCache        a [[UnitCache]] that stores [[amf.core.client.scala.model.document.BaseUnit]] resolved
-  * @param executionEnv the [[amf.core.client.platform.execution.BaseExecutionEnvironment]] to use
+  * @param resourceLoaders
+  *   a list of [[ResourceLoader]] to use
+  * @param unitCache
+  *   a [[UnitCache]] that stores [[amf.core.client.scala.model.document.BaseUnit]] resolved
+  * @param executionEnv
+  *   the [[amf.core.client.platform.execution.BaseExecutionEnvironment]] to use
   */
-private[amf] case class AMFResolvers(resourceLoaders: List[ResourceLoader],
-                                     unitCache: Option[UnitCache],
-                                     executionEnv: ExecutionEnvironment) {
+private[amf] case class AMFResolvers(
+    resourceLoaders: List[ResourceLoader],
+    unitCache: Option[UnitCache],
+    executionEnv: ExecutionEnvironment
+) {
 
-  /**
-    * Add a resource loader to the [[AMFResolvers]]
-    * @param resourceLoader [[ResourceLoader]] to add
-    * @return an [[AMFResolvers]] with the [[ResourceLoader]] added
+  /** Add a resource loader to the [[AMFResolvers]]
+    * @param resourceLoader
+    *   [[ResourceLoader]] to add
+    * @return
+    *   an [[AMFResolvers]] with the [[ResourceLoader]] added
     */
   def withResourceLoader(resourceLoader: ResourceLoader): AMFResolvers = {
     copy(resourceLoaders = resourceLoader +: resourceLoaders)
   }
 
-  /**
-    * Add a list of [[ResourceLoader]]s
-    * @param newLoaders a list of [[ResourceLoader]]s to add
-    * @return an [[AMFResolvers]] with the [[ResourceLoader]]s added
+  /** Add a list of [[ResourceLoader]]s
+    * @param newLoaders
+    *   a list of [[ResourceLoader]]s to add
+    * @return
+    *   an [[AMFResolvers]] with the [[ResourceLoader]]s added
     */
   def withResourceLoaders(newLoaders: List[ResourceLoader]): AMFResolvers = {
     copy(resourceLoaders = newLoaders)
   }
 
-  /**
-    * Add a [[UnitCache]] to the [[AMFResolvers]]
-    * @param cache [[UnitCache]] to add
-    * @return an [[AMFResolvers]] with the [[UnitCache]] added
+  /** Add a [[UnitCache]] to the [[AMFResolvers]]
+    * @param cache
+    *   [[UnitCache]] to add
+    * @return
+    *   an [[AMFResolvers]] with the [[UnitCache]] added
     */
   def withCache(cache: UnitCache): AMFResolvers = {
     copy(unitCache = Some(cache))
   }
 
-  /**
-    * Add an [[ExecutionEnvironment]] to the [[AMFResolvers]]
-    * @param ee the [[ExecutionEnvironment]] to add
-    * @return an [[AMFResolvers]] with the [[ExecutionEnvironment]] added
+  /** Add an [[ExecutionEnvironment]] to the [[AMFResolvers]]
+    * @param ee
+    *   the [[ExecutionEnvironment]] to add
+    * @return
+    *   an [[AMFResolvers]] with the [[ExecutionEnvironment]] added
     */
   def withExecutionEnvironment(ee: ExecutionEnvironment): AMFResolvers = {
     val newLoaders = adaptLoadersToNewContext(ee)
@@ -68,9 +76,7 @@ private[amf] case class AMFResolvers(resourceLoaders: List[ResourceLoader],
     }
   }
 
-  /**
-    *
-    * @param url
+  /** @param url
     * @param executionContext
     * @return
     */
@@ -78,13 +84,14 @@ private[amf] case class AMFResolvers(resourceLoaders: List[ResourceLoader],
     loaderConcat(url, resourceLoaders.filter(_.accepts(url)))(executionEnv.context)
   }
 
-  private def loaderConcat(url: String, loaders: Seq[ResourceLoader])(
-      implicit executionContext: ExecutionContext): Future[Content] = loaders.toList match {
+  private def loaderConcat(url: String, loaders: Seq[ResourceLoader])(implicit
+      executionContext: ExecutionContext
+  ): Future[Content] = loaders.toList match {
     case Nil         => throw new UnsupportedUrlScheme(url)
     case head :: Nil => head.fetch(url)
     case head :: tail =>
-      head.fetch(url).recoverWith {
-        case _ => loaderConcat(url, tail)
+      head.fetch(url).recoverWith { case _ =>
+        loaderConcat(url, tail)
       }
   }
 
@@ -92,10 +99,9 @@ private[amf] case class AMFResolvers(resourceLoaders: List[ResourceLoader],
 
 object AMFResolvers extends PlatformSecrets {
 
-  /**
-    * Predefined amf resolvers with:
-    *  - Default resource loaders by platform
-    *  - Without units cache
+  /** Predefined amf resolvers with:
+    *   - Default resource loaders by platform
+    *   - Without units cache
     * @return
     */
   def predefined() = {

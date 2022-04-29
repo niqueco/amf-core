@@ -1,12 +1,9 @@
 package amf.core.internal.validation.core
 
-/**
-  * Created by antoniogarrote on 18/07/2017.
+/** Created by antoniogarrote on 18/07/2017.
   */
 
-
-/**
-  * Individual constraint validation failure result
+/** Individual constraint validation failure result
   */
 trait ValidationResult {
   def message: Option[String]
@@ -17,16 +14,14 @@ trait ValidationResult {
   def sourceShape: String
 }
 
-/**
-  * A report created after the application of a graph of shapes to a graph of ata
+/** A report created after the application of a graph of shapes to a graph of ata
   */
 trait ValidationReport {
   def conforms: Boolean
   def results: List[ValidationResult]
 }
 
-/**
-  * Utility class for ValidationReports
+/** Utility class for ValidationReports
   */
 object ValidationReport {
 

@@ -5,8 +5,7 @@ import amf.core.internal.annotations.Aliases
 import scala.collection.immutable.ListMap
 import scala.collection.mutable
 
-/**
-  * Namespaces
+/** Namespaces
   */
 case class Namespace(base: String) {
   def +(id: String): ValueType = ValueType(this, id)
@@ -106,9 +105,8 @@ case class NamespaceAliases private (ns: Map[Aliases.Alias, Namespace]) {
   }
 
   def compact(uri: String): String = {
-    ns.find {
-      case (_, namespace) =>
-        uri.indexOf(namespace.base) == 0
+    ns.find { case (_, namespace) =>
+      uri.indexOf(namespace.base) == 0
     } match {
       case Some((prefix, namespace)) =>
         prefix ++ uri.replace(namespace.base, ":")
@@ -117,9 +115,8 @@ case class NamespaceAliases private (ns: Map[Aliases.Alias, Namespace]) {
   }
 
   def compactAndCollect(uri: String, prefixes: mutable.Map[String, String]): String = {
-    ns.find {
-      case (_, namespace) =>
-        uri.indexOf(namespace.base) == 0
+    ns.find { case (_, namespace) =>
+      uri.indexOf(namespace.base) == 0
     } match {
       case Some((prefix, namespace)) =>
         prefixes.put(prefix, namespace.base)

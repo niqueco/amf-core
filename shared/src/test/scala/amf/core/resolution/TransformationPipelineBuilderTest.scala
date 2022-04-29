@@ -17,9 +17,11 @@ import org.scalatest.matchers.should.Matchers
 class TransformationPipelineBuilderTest extends AnyFunSuite with Matchers {
 
   private case class AddToIdCustomStage(content: String) extends TransformationStep {
-    override def transform(baseUnit: BaseUnit,
-                           errorHandler: AMFErrorHandler,
-                           configuration: AMFGraphConfiguration): BaseUnit = {
+    override def transform(
+        baseUnit: BaseUnit,
+        errorHandler: AMFErrorHandler,
+        configuration: AMFGraphConfiguration
+    ): BaseUnit = {
       baseUnit.withId(baseUnit.id + content)
     }
   }
@@ -71,9 +73,8 @@ class TransformationPipelineBuilderTest extends AnyFunSuite with Matchers {
     val builder = TransformationPipelineBuilder.empty("defaultName")
     val pipeline = builder
       .append(new TransformationStep {
-        override def transform(baseUnit: BaseUnit,
-                               errorHandler: AMFErrorHandler,
-                               configuration: AMFGraphConfiguration): BaseUnit = {
+        override def transform(baseUnit: BaseUnit, errorHandler: AMFErrorHandler, configuration: AMFGraphConfiguration)
+            : BaseUnit = {
           errorHandler.violation(CoreValidations.TransformationValidation, "node", "some error")
           baseUnit
         }

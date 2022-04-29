@@ -9,16 +9,20 @@ import amf.core.client.scala.vocabulary.ValueType
 
 trait ParametrizedDeclarationModel extends DomainElementModel with KeyField with NameFieldSchema {
 
-  val Target = Field(AbstractDeclarationModel,
-                     Document + "target",
-                     ModelDoc(ModelVocabularies.AmlDoc, "target", "Target node for the parameter"))
+  val Target = Field(
+      AbstractDeclarationModel,
+      Document + "target",
+      ModelDoc(ModelVocabularies.AmlDoc, "target", "Target node for the parameter")
+  )
 
   val Variables = Field(
       Array(VariableValueModel),
       Document + "variable",
-      ModelDoc(ModelVocabularies.AmlDoc,
-               "variable",
-               "Variables to be replaced in the graph template introduced by an AbstractDeclaration")
+      ModelDoc(
+          ModelVocabularies.AmlDoc,
+          "variable",
+          "Variables to be replaced in the graph template introduced by an AbstractDeclaration"
+      )
   )
 
   override val key: Field = Name

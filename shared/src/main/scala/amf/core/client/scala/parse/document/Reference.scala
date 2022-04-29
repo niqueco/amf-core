@@ -19,8 +19,9 @@ case class Reference(url: String, refs: Seq[RefContainer]) extends PlatformSecre
     copy(refs = refs :+ refContainer)
   }
 
-  def resolve(compilerContext: CompilerContext, allowedSpecs: Seq[Spec], allowRecursiveRefs: Boolean)(
-      implicit executionContext: ExecutionContext): Future[ReferenceResolutionResult] = {
+  def resolve(compilerContext: CompilerContext, allowedSpecs: Seq[Spec], allowRecursiveRefs: Boolean)(implicit
+      executionContext: ExecutionContext
+  ): Future[ReferenceResolutionResult] = {
     // If there is any ReferenceResolver attached to the environment, then first try to get the cached reference if it exists. If not, load and parse as usual.
     try {
       compilerContext.compilerConfig.getUnitsCache match {
@@ -30,8 +31,8 @@ case class Reference(url: String, refs: Seq[RefContainer]) extends PlatformSecre
           resolver.fetch(processedPath) flatMap { cachedReference =>
             compilerContext.compilerConfig.notifyEvent(UnitCacheHitEvent(url, processedPath))
             Future(ReferenceResolutionResult(None, Some(cachedReference.content)))
-          } recoverWith {
-            case _ => resolveReference(compilerContext, allowedSpecs, allowRecursiveRefs)
+          } recoverWith { case _ =>
+            resolveReference(compilerContext, allowedSpecs, allowRecursiveRefs)
           }
         case None => resolveReference(compilerContext, allowedSpecs, allowRecursiveRefs)
       }
@@ -41,7 +42,8 @@ case class Reference(url: String, refs: Seq[RefContainer]) extends PlatformSecre
   }
 
   private def resolveReference(compilerContext: CompilerContext, allowedSpecs: Seq[Spec], allowRecursiveRefs: Boolean)(
-      implicit executionContext: ExecutionContext): Future[ReferenceResolutionResult] = {
+      implicit executionContext: ExecutionContext
+  ): Future[ReferenceResolutionResult] = {
     val kinds = refs.map(_.linkType).distinct
     val kind  = if (kinds.size > 1) UnspecifiedReference else kinds.head
     try {
@@ -62,8 +64,9 @@ case class Reference(url: String, refs: Seq[RefContainer]) extends PlatformSecre
     }
   }
 
-  protected def resolveRecursiveUnit(fullUrl: String, compilerContext: CompilerContext)(
-      implicit executionContext: ExecutionContext): Future[RecursiveUnit] = {
+  protected def resolveRecursiveUnit(fullUrl: String, compilerContext: CompilerContext)(implicit
+      executionContext: ExecutionContext
+  ): Future[RecursiveUnit] = {
     compilerContext.compilerConfig.resolveContent(fullUrl) map { content =>
       val recUnit = RecursiveUnit().adopted(fullUrl).withLocation(fullUrl)
       recUnit.withRaw(content.stream.toString)

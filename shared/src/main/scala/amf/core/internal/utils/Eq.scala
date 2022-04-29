@@ -11,12 +11,12 @@ trait Eq[T] {
 object EqInstances {
   implicit val stringEq: Eq[String] = (a: String, b: String) => a == b
   implicit def optionEq[T](implicit eq: Eq[T]): Eq[Option[T]] = (a: Option[T], b: Option[T]) => {
-  (a, b) match {
-    case (Some(x), Some(y)) => eq.eqv(x, y)
-    case (None, None) => true
-    case _ => false
+    (a, b) match {
+      case (Some(x), Some(y)) => eq.eqv(x, y)
+      case (None, None)       => true
+      case _                  => false
+    }
   }
-}
   implicit def strFieldEq(implicit eq: Eq[Option[String]]): Eq[StrField] = (a: StrField, b: StrField) => {
     eq.eqv(a.option(), b.option())
   }

@@ -39,15 +39,16 @@ trait RenderConfiguration {
   def withRenderOptions(options: RenderOptions): RenderConfiguration
 }
 
-private[amf] case class DefaultRenderConfiguration(renderPlugins: List[AMFRenderPlugin],
-                                                   syntaxPlugin: List[AMFSyntaxRenderPlugin],
-                                                   renderOptions: RenderOptions,
-                                                   errorHandler: AMFErrorHandler,
-                                                   listeners: Set[AMFEventListener],
-                                                   extensionModels: Map[String, Map[String, Type]],
-                                                   namespaceAliases: NamespaceAliases,
-                                                   registry: AMFRegistry)
-    extends RenderConfiguration {
+private[amf] case class DefaultRenderConfiguration(
+    renderPlugins: List[AMFRenderPlugin],
+    syntaxPlugin: List[AMFSyntaxRenderPlugin],
+    renderOptions: RenderOptions,
+    errorHandler: AMFErrorHandler,
+    listeners: Set[AMFEventListener],
+    extensionModels: Map[String, Map[String, Type]],
+    namespaceAliases: NamespaceAliases,
+    registry: AMFRegistry
+) extends RenderConfiguration {
   def withRenderOptions(options: RenderOptions): RenderConfiguration = copy(renderOptions = options)
 }
 

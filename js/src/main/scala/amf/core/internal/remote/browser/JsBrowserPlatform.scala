@@ -9,9 +9,7 @@ import org.mulesoft.common.io.FileSystem
 import scala.concurrent.ExecutionContext
 import scala.scalajs.js.annotation.JSExportAll
 
-/**
-  *
-  */
+/** */
 class JsBrowserPlatform extends JsPlatform {
 
   /** Underlying file system for platform. */
