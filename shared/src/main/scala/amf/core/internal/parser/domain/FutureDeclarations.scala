@@ -4,9 +4,11 @@ import amf.core.client.scala.model.domain.Linkable
 
 import scala.collection.mutable
 
-case class DeclarationPromise(private val success: (Linkable) => Any,
-                              private val failure: () => Any,
-                              var resolved: Boolean = false) {
+case class DeclarationPromise(
+    private val success: (Linkable) => Any,
+    private val failure: () => Any,
+    var resolved: Boolean = false
+) {
 
   def resolve(element: Linkable): Unit = {
     resolved = true

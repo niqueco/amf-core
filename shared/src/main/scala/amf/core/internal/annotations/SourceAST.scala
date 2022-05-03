@@ -14,7 +14,7 @@ object SourceLocation {
   def apply(ast: YPart): SourceLocation = {
     val location = ast match {
       case m: MutRef =>
-         m.target.map(_.sourceName).getOrElse(m.sourceName)
+        m.target.map(_.sourceName).getOrElse(m.sourceName)
       case _ => ast.sourceName
     }
     new SourceLocation(location)

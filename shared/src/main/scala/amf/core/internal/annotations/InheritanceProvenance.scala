@@ -2,9 +2,9 @@ package amf.core.internal.annotations
 
 import amf.core.client.scala.model.domain._
 
-/**
-  * Tracks the id of the AmfObject from which a field (e.g. a property shape) was inherited from.
-  * @param baseId id of the parent AmfObject
+/** Tracks the id of the AmfObject from which a field (e.g. a property shape) was inherited from.
+  * @param baseId
+  *   id of the parent AmfObject
   */
 case class InheritanceProvenance(baseId: String)
     extends SerializableAnnotation

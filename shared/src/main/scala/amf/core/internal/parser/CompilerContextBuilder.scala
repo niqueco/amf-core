@@ -34,9 +34,8 @@ class CompilerContextBuilder(url: String, platform: Platform, compilerConfig: Co
     this
   }
 
-  /**
-    * normalized url
-    * */
+  /** normalized url
+    */
   private def path: String = {
     try {
       url.normalizePath

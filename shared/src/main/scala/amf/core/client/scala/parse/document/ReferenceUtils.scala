@@ -15,10 +15,11 @@ trait RefContainer {
   def reduceToLocation(): Range
 }
 
-class ASTRefContainer(override val linkType: ReferenceKind,
-                      val pos: SourceLocation,
-                      override val uriFragment: Option[String])
-    extends RefContainer {
+class ASTRefContainer(
+    override val linkType: ReferenceKind,
+    val pos: SourceLocation,
+    override val uriFragment: Option[String]
+) extends RefContainer {
   override def reduceToLocation(): Range = Range((pos.lineFrom, pos.columnFrom), (pos.lineTo, pos.columnTo))
 }
 
@@ -53,9 +54,8 @@ object EmptyReferenceCollector extends CompilerReferenceCollector {
   override def toReferences: Seq[Reference]                                    = Seq.empty
 }
 
-/**
-  * Splits references between their base url and local path
-  * E.g. https://some.path.json#/local/path -> ("https://some.path.json", "local/path")
+/** Splits references between their base url and local path E.g. https://some.path.json#/local/path ->
+  * ("https://some.path.json", "local/path")
   */
 object ReferenceFragmentPartition {
   // Is it always a URL? If we can have local references then it is not a URL
@@ -73,9 +73,9 @@ object ReferenceFragmentPartition {
     } else (url, None)
   }
 
-  /**
-    * Checks if reference corresponds to a remote resource
-    * @param referenceLocator like an URL but not uniform since we can have local references
+  /** Checks if reference corresponds to a remote resource
+    * @param referenceLocator
+    *   like an URL but not uniform since we can have local references
     * @return
     */
   private def isExternalReference(referenceLocator: String) = {

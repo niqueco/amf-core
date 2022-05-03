@@ -6,19 +6,22 @@ import amf.core.client.scala.vocabulary.Namespace.{Document, Shacl}
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
 
 trait ExternalSourceElementModel extends Obj {
-  val Raw = Field(Str,
-                  Document + "raw",
-                  ModelDoc(ModelVocabularies.AmlDoc,
-                           "raw",
-                           "Raw textual information that cannot be processed for the current model semantics."))
+  val Raw = Field(
+      Str,
+      Document + "raw",
+      ModelDoc(
+          ModelVocabularies.AmlDoc,
+          "raw",
+          "Raw textual information that cannot be processed for the current model semantics."
+      )
+  )
   val ReferenceId = Field(
       Iri,
       Namespace.Document + "reference-id",
-      ModelDoc(ModelVocabularies.AmlDoc, "referenceId", "Internal identifier for an inlined fragment"))
+      ModelDoc(ModelVocabularies.AmlDoc, "referenceId", "Internal identifier for an inlined fragment")
+  )
   val Location =
-    Field(Str,
-          Document + "location",
-          ModelDoc(ModelVocabularies.AmlDoc, "location", "Location of an inlined fragment"))
+    Field(Str, Document + "location", ModelDoc(ModelVocabularies.AmlDoc, "location", "Location of an inlined fragment"))
 
 }
 

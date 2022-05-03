@@ -4,8 +4,7 @@ import amf.core.internal.metamodel.domain.DomainElementModel._
 import amf.core.client.scala.model.BoolField
 import amf.core.client.scala.model.domain.extensions.DomainExtension
 
-/**
-  * Internal model for any domain element
+/** Internal model for any domain element
   */
 trait DomainElement extends AmfObject with CustomizableElement {
 

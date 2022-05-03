@@ -12,18 +12,20 @@ trait PlatformSecrets {
   val platform: Platform = PlatformBuilder()
 }
 
-case class TrunkPlatform(content: String,
-                         wrappedPlatform: Option[Platform] = None,
-                         forcedMediaType: Option[String] = None)
-    extends Platform {
+case class TrunkPlatform(
+    content: String,
+    wrappedPlatform: Option[Platform] = None,
+    forcedMediaType: Option[String] = None
+) extends Platform {
 
   /** Underlying file system for platform. */
   override val fs: FileSystem = UnsupportedFileSystem
 
   override def tmpdir(): String = throw new Exception("Unsupported tmpdir operation")
 
-  override def fetchContent(url: String, configuration: AMFGraphConfiguration)(
-      implicit executionContext: ExecutionContext): Future[Content] =
+  override def fetchContent(url: String, configuration: AMFGraphConfiguration)(implicit
+      executionContext: ExecutionContext
+  ): Future[Content] =
     Future.successful(new Content(content, url, forcedMediaType))
 
   /** Platform out of the box [ResourceLoader]s */

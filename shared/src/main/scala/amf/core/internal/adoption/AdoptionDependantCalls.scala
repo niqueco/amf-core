@@ -1,7 +1,6 @@
 package amf.core.internal.adoption
 
-/**
-  * implemented by all elements which execute setter methods that require element to be adopted.
+/** implemented by all elements which execute setter methods that require element to be adopted.
   */
 trait AdoptionDependantCalls {
   private var afterAdoption: Option[() => Unit] = None

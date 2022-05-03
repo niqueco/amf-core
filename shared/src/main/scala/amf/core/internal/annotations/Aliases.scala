@@ -31,9 +31,8 @@ case class Aliases(aliases: Set[(Aliases.Alias, ReferencedInfo)]) extends Serial
   override def uris: Seq[String] = aliases.map(_._2.id).toSeq
 
   override def shorten(fn: String => String): Annotation = {
-    Aliases(aliases.map {
-      case (alias, refInfo) =>
-        alias -> ReferencedInfo(fn(refInfo.id), refInfo.fullUrl, refInfo.relativeUrl)
+    Aliases(aliases.map { case (alias, refInfo) =>
+      alias -> ReferencedInfo(fn(refInfo.id), refInfo.fullUrl, refInfo.relativeUrl)
     })
   }
 }
@@ -58,5 +57,7 @@ object Aliases extends AnnotationGraphLoader {
                       alias -> ReferencedInfo(id, fullUrl, relativeUrl)
                   }
               })
-              .toSet))
+              .toSet
+        )
+    )
 }

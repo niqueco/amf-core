@@ -29,7 +29,8 @@ class PlatformTest extends AsyncFunSuite with Matchers with ListAssertions with 
                      |d: !include includes/include2.yaml""".stripMargin
 
         content.sourceName.replace(platform.fs.separatorChar.toString, "/") should be(
-            "shared/src/test/resources/input.yaml")
+            "shared/src/test/resources/input.yaml"
+        )
     }
   }
 
@@ -48,7 +49,8 @@ class PlatformTest extends AsyncFunSuite with Matchers with ListAssertions with 
                  |b: !include http://amf.us-2.evennode.com/include1.yaml/4000
                  |c:
                  |  - 2
-                 |d: !include http://amf.us-2.evennode.com/include2.yaml/4000""".stripMargin)
+                 |d: !include http://amf.us-2.evennode.com/include2.yaml/4000""".stripMargin
+        )
       })
   }
 

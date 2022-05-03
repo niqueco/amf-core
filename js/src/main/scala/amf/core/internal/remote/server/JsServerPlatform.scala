@@ -12,9 +12,7 @@ import scala.concurrent.ExecutionContext
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExportAll, JSImport}
 
-/**
-  *
-  */
+/** */
 class JsServerPlatform extends JsPlatform {
 
   /** Underlying file system for platform. */

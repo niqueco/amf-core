@@ -4,8 +4,7 @@ import amf.core.client.common.render.{JSONSchemaVersion, JSONSchemaVersions}
 import amf.core.internal.metamodel.Field
 import amf.core.internal.plugins.document.graph._
 
-/**
-  * Immutable implementation of render options
+/** Immutable implementation of render options
   */
 case class RenderOptions(
     sources: Boolean = false,
@@ -86,7 +85,9 @@ case class RenderOptions(
 
   def withDocumentation: RenderOptions = copy(documentation = true)
 
-  /** Remove documentation info as examples, descriptions, display names, etc. (only supported for json schema rendering) */
+  /** Remove documentation info as examples, descriptions, display names, etc. (only supported for json schema
+    * rendering)
+    */
   def withoutDocumentation: RenderOptions = copy(documentation = false)
 
   /** Render shapes extracting common types to definitions (feature is enable by default for OAS and json schema) */

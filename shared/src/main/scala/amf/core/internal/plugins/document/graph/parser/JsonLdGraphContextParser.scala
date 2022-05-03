@@ -35,7 +35,9 @@ case class JsonLdGraphContextParser(node: YNode, parserContext: GraphParserConte
     context
   }
 
-  private def parseExpandedTermEntry(entry: YMapEntry, term: String)(implicit errorHandler: IllegalTypeHandler): Unit = {
+  private def parseExpandedTermEntry(entry: YMapEntry, term: String)(implicit
+      errorHandler: IllegalTypeHandler
+  ): Unit = {
     val termMap = entry.value.value.asInstanceOf[YMap]
 
     val id     = termMap.key(JsonLdKeywords.Id).map(_.value.as[String])

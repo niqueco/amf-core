@@ -63,7 +63,8 @@ class TransformationTraversal private[amf] (val transformation: TransformationDa
 
   private def lexicalAnnotationsOf(value: Value) =
     value.annotations.copyFiltering(a =>
-      a.isInstanceOf[LexicalInformation] || a.isInstanceOf[SourceAST] || a.isInstanceOf[SourceNode])
+      a.isInstanceOf[LexicalInformation] || a.isInstanceOf[SourceAST] || a.isInstanceOf[SourceNode]
+    )
 
   protected def traverseArrayEntry(element: AmfObject, traversalPath: TraversalPath, fieldEntry: FieldEntry) = {
     val FieldEntry(field, value) = fieldEntry
@@ -81,13 +82,16 @@ class TransformationTraversal private[amf] (val transformation: TransformationDa
   }
 }
 
-/**
-  * Holder for transformation data in transform by condition
-  * @param predicate selector
-  * @param transformation transformation function
+/** Holder for transformation data in transform by condition
+  * @param predicate
+  *   selector
+  * @param transformation
+  *   transformation function
   */
-sealed case class TransformationData(predicate: AmfObject => Boolean,
-                                     transformation: (AmfObject, Boolean) => Option[AmfObject])
+sealed case class TransformationData(
+    predicate: AmfObject => Boolean,
+    transformation: (AmfObject, Boolean) => Option[AmfObject]
+)
 
 class DeclaresModelFieldOrdering extends Ordering[FieldEntry] {
   override def compare(x: FieldEntry, y: FieldEntry): Int = (x.field, y.field) match {

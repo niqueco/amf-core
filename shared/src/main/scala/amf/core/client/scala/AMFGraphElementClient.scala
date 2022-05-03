@@ -6,9 +6,8 @@ import amf.core.client.scala.model.domain.Shape
 import amf.core.client.scala.validation.payload.AMFShapePayloadValidator
 import amf.core.internal.plugins.payload.DefaultShapePayloadValidatorFactory
 
-/**
-  * Contains common AMF graph operations not associated to documents.
-  * Base client for <code>AMLElementClient</code> and <code>AMLElementClient</code>.
+/** Contains common AMF graph operations not associated to documents. Base client for <code>AMLElementClient</code> and
+  * <code>AMLElementClient</code>.
   */
 class AMFGraphElementClient private[amf] (protected val configuration: AMFGraphConfiguration) {
 

@@ -8,8 +8,7 @@ import amf.core.internal.unsafe.PlatformSecrets
 
 import scala.scalajs.js.annotation.JSExportAll
 
-/**
-  * Domain element.
+/** Domain element.
   */
 @JSExportAll
 trait DomainElement extends AmfObjectWrapper with PlatformSecrets with CustomizableElement {

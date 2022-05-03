@@ -10,9 +10,11 @@ import amf.core.client.scala.transform.TransformationStep
 
 class DeclarationsRemovalStage() extends TransformationStep {
 
-  override def transform(model: BaseUnit,
-                         errorHandler: AMFErrorHandler,
-                         configuration: AMFGraphConfiguration): BaseUnit = {
+  override def transform(
+      model: BaseUnit,
+      errorHandler: AMFErrorHandler,
+      configuration: AMFGraphConfiguration
+  ): BaseUnit = {
     model match {
       case doc: DeclaresModel with EncodesModel => removeAllDeclarationsButSecuritySchemes(doc)
       case _                                    => // ignore

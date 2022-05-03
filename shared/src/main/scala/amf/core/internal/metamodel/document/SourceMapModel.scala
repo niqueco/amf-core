@@ -6,18 +6,18 @@ import amf.core.internal.metamodel.{Field, Obj}
 import amf.core.client.scala.vocabulary.Namespace.SourceMaps
 import amf.core.client.scala.vocabulary.ValueType
 
-/**
-  * Source Map Metadata
+/** Source Map Metadata
   *
-  * SourceMaps include tags with syntax specific information obtained when parsing a particular specification syntax like RAML or OpenAPI.
-  * It can be used to re-generate the document from the RDF model with a similar syntax
+  * SourceMaps include tags with syntax specific information obtained when parsing a particular specification syntax
+  * like RAML or OpenAPI. It can be used to re-generate the document from the RDF model with a similar syntax
   */
 object SourceMapModel extends Obj {
 
   val Element: Field = Field(
       Str,
       SourceMaps + "element",
-      ModelDoc(ModelVocabularies.AmlDoc, "element", "Label indicating the type of source map information"))
+      ModelDoc(ModelVocabularies.AmlDoc, "element", "Label indicating the type of source map information")
+  )
 
   val Value: Field =
     Field(Str, SourceMaps + "value", ModelDoc(ModelVocabularies.AmlDoc, "value", "Value for the source map."))

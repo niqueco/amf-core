@@ -63,7 +63,8 @@ class AMFCompiler(compilerContext: CompilerContext, val referenceKind: Reference
         }
         .orElse {
           autodetectSyntax(compilerContext.path, input.stream).flatMap(inferred =>
-            parseSyntaxForMediaType(input, inferred))
+            parseSyntaxForMediaType(input, inferred)
+          )
         }
 
     parsed match {
@@ -98,8 +99,9 @@ class AMFCompiler(compilerContext: CompilerContext, val referenceKind: Reference
       .withLocation(content.url)
   }
 
-  private def parseDomain(parsed: Either[Content, Root])(
-      implicit executionContext: ExecutionContext): Future[BaseUnit] = {
+  private def parseDomain(
+      parsed: Either[Content, Root]
+  )(implicit executionContext: ExecutionContext): Future[BaseUnit] = {
     parsed match {
       case Left(content) if isRoot => throw UnsupportedSyntaxForDocumentException(content.url)
       case Left(content)           => parseExternalFragment(content)
@@ -136,15 +138,15 @@ class AMFCompiler(compilerContext: CompilerContext, val referenceKind: Reference
     allowed.find(_.applies(document))
   }
 
-  /**
-    * filters plugins that are allowed given the current compiler context.
+  /** filters plugins that are allowed given the current compiler context.
     */
   private def filterByAllowed(plugins: Seq[AMFParsePlugin], allowed: Seq[Spec]): Seq[AMFParsePlugin] =
     if (allowed.nonEmpty) plugins.filter(p => allowed.contains(p.spec))
     else plugins
 
-  private[amf] def parseReferences(root: Root, domainPlugin: AMFParsePlugin)(
-      implicit executionContext: ExecutionContext): Future[Root] = {
+  private[amf] def parseReferences(root: Root, domainPlugin: AMFParsePlugin)(implicit
+      executionContext: ExecutionContext
+  ): Future[Root] = {
     val handler      = domainPlugin.referenceHandler(compilerContext.compilerConfig.eh)
     val allowedSpecs = domainPlugin.validSpecsToReference
     val refs         = handler.collect(root.parsed, compilerContext.parserContext).toReferences
@@ -167,9 +169,8 @@ class AMFCompiler(compilerContext: CompilerContext, val referenceKind: Reference
                 Future(None)
               case _ =>
                 if (!link.isInferred) {
-                  link.refs.foreach {
-                    case ref: ASTRefContainer =>
-                      compilerContext.violation(UnresolvedReference, link.url, e.getMessage, ref.pos)
+                  link.refs.foreach { case ref: ASTRefContainer =>
+                    compilerContext.violation(UnresolvedReference, link.url, e.getMessage, ref.pos)
                   }
                 }
                 Future(None)
@@ -204,11 +205,13 @@ class AMFCompiler(compilerContext: CompilerContext, val referenceKind: Reference
 object AMFCompiler {
 
   // interface used by amf-service
-  def apply(url: String,
-            base: Context,
-            cache: Cache,
-            parserConfig: CompilerConfiguration,
-            referenceKind: ReferenceKind = UnspecifiedReference): AMFCompiler = {
+  def apply(
+      url: String,
+      base: Context,
+      cache: Cache,
+      parserConfig: CompilerConfiguration,
+      referenceKind: ReferenceKind = UnspecifiedReference
+  ): AMFCompiler = {
     val context = new CompilerContextBuilder(url, base.platform, parserConfig)
       .withCache(cache)
       .withFileContext(base)

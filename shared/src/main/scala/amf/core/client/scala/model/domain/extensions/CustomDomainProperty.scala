@@ -14,13 +14,13 @@ case class CustomDomainProperty(fields: Fields, annotations: Annotations)
     with Linkable
     with NamedDomainElement {
 
-  def displayName: StrField = fields.field(DisplayName)
-  def description: StrField = fields.field(Description)
-  def domain: Seq[StrField] = fields.field(Domain)
-  def schema: Shape         = fields.field(Schema)
+  def displayName: StrField        = fields.field(DisplayName)
+  def description: StrField        = fields.field(Description)
+  def domain: Seq[StrField]        = fields.field(Domain)
+  def schema: Shape                = fields.field(Schema)
   def serializationOrder: IntField = fields.field(SerializationOrder)
 
-  def withSerializationOrder(order: Int): this.type = set(SerializationOrder, order)
+  def withSerializationOrder(order: Int): this.type   = set(SerializationOrder, order)
   def withDisplayName(displayName: String): this.type = set(DisplayName, displayName)
   def withDescription(description: String): this.type = set(Description, description)
   def withDomain(domain: Seq[String]): this.type      = set(Domain, domain)

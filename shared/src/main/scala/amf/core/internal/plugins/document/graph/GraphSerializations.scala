@@ -2,8 +2,7 @@ package amf.core.internal.plugins.document.graph
 
 trait GraphSerialization
 
-/**
-  * JSON-LD serializations
+/** JSON-LD serializations
   */
 trait JsonLdDocumentForm {
   def name: String
@@ -30,7 +29,6 @@ object EmbeddedForm extends JsonLdDocumentForm {
 
 case class JsonLdSerialization(form: JsonLdDocumentForm) extends GraphSerialization
 
-/**
-  * RDF serializations
+/** RDF serializations
   */
 case class RdfSerialization() extends GraphSerialization

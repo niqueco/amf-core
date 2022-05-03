@@ -52,16 +52,15 @@ class FlattenedUnitGraphParser(overrideAliases: Map[String, String] = Map.empty)
   }
 }
 
-class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, String] = Map.empty)(
-    implicit val ctx: GraphParserContext)
-    extends GraphParserHelpers {
+class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, String] = Map.empty)(implicit
+    val ctx: GraphParserContext
+) extends GraphParserHelpers {
 
   private lazy val extensions = ctx.config.registryContext.getRegistry.getEntitiesRegistry.extensionTypes
-  private lazy val extensionFields = extensions.map {
-    case (iriDomain, extensions) =>
-      iriDomain -> extensions.map {
-        case (iri, fieldType) => Field(fieldType, ValueType(iri))
-      }
+  private lazy val extensionFields = extensions.map { case (iriDomain, extensions) =>
+    iriDomain -> extensions.map { case (iri, fieldType) =>
+      Field(fieldType, ValueType(iri))
+    }
   }
 
   def parse(document: YDocument): Option[AmfObject] = {
@@ -105,8 +104,8 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
     }
 
     private def stepOrAddAliasesFromOptions(): Unit = {
-      overrideAliases.foreach {
-        case (alias, uri) => ctx.graphContext.withTerm(alias, uri)
+      overrideAliases.foreach { case (alias, uri) =>
+        ctx.graphContext.withTerm(alias, uri)
       }
     }
 
@@ -174,8 +173,8 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
           case _        => None
         }
       }
-      graphNodes.nodes.flatMap { toMapEntry }.foreach {
-        case (id, map) => graphMap(id) = map
+      graphNodes.nodes.flatMap { toMapEntry }.foreach { case (id, map) =>
+        graphMap(id) = map
       }
     }
 
@@ -191,19 +190,22 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
       this.retrieveTypeCondition(id, map, t => !ignoredIris.exists(iri => equal(t, iri)(ctx.graphContext)))
     }
 
-    /**
-      * Returns the first type defined in the @type entry from a YMap that matches the given predicate
-      * @param id id for error reporting
-      * @param map input ymap
-      * @param pred predicate
-      * @return Option for the first matching type as an Obj
+    /** Returns the first type defined in the @type entry from a YMap that matches the given predicate
+      * @param id
+      *   id for error reporting
+      * @param map
+      *   input ymap
+      * @param pred
+      *   predicate
+      * @return
+      *   Option for the first matching type as an Obj
       */
     private def retrieveTypeCondition(id: String, map: YMap, pred: String => Boolean): Option[ModelDefaultBuilder] = {
       // this returns a certain order, we will return the first one that matches, but many could match
       // first non-documents (including AML documents, dialect instances, dialects, vocabs, etc) are returned
       // then the base document models are returned in sorted order: Document, Fragment, Module
       val typeIris = ts(map, id)
-        .filter(pred) // we are filtering the list with the provided condition
+        .filter(pred)              // we are filtering the list with the provided condition
         .map(expandUriFromContext) // expand iris
 
       typeIris.find(findType(_).isDefined) match {
@@ -232,7 +234,8 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
               case _: Obj   => parse(entry.value.as[YMap])
               case Type.Any => Some(typedValue(entry.value, ctx.graphContext))
               case _ =>
-                try { Some(str(value(listElement, entry.value))) } catch {
+                try { Some(str(value(listElement, entry.value))) }
+                catch {
                   case _: Exception => None
                 }
             }
@@ -273,11 +276,13 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
       model.`type`.flatMap(valueType => extensionFields.get(valueType.iri())).flatten
     }
 
-    private def parseNodeFields(node: YMap,
-                                fields: Seq[Field],
-                                sources: SourceMap,
-                                transformedId: String,
-                                instance: AmfObject) = {
+    private def parseNodeFields(
+        node: YMap,
+        fields: Seq[Field],
+        sources: SourceMap,
+        transformedId: String,
+        instance: AmfObject
+    ) = {
       instance.withId(transformedId)
       traverseFields(node, fields, instance, sources)
       checkLinkables(instance)
@@ -389,9 +394,11 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
             case YType.Map => retrieveId(entry.value.as[YMap], ctx)
             case YType.Seq => retrieveId(entry.value.as[Seq[YMap]].head, ctx)
             case _ =>
-              ctx.eh.violation(UnableToParseDocument,
-                               entry.value,
-                               s"$targetIdFieldIri field must have a map or array value")
+              ctx.eh.violation(
+                  UnableToParseDocument,
+                  entry.value,
+                  s"$targetIdFieldIri field must have a map or array value"
+              )
               None
           }
         })
@@ -421,7 +428,9 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
       val extensions = properties
         .flatMap { uri =>
           map
-            .key(transformIdFromContext(uri)) // See ADR adrs/0006-custom-domain-properties-json-ld-rendering.md last consequence item
+            .key(
+                transformIdFromContext(uri)
+            ) // See ADR adrs/0006-custom-domain-properties-json-ld-rendering.md last consequence item
             .map(entry => {
               val extension  = DomainExtension()
               val entryValue = entry.value
@@ -463,9 +472,8 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
           .fieldsMeta()
           .find(f => e.element.is(f.value.iri()))
           .foreach(f => {
-            instance.fields.entry(f).foreach {
-              case FieldEntry(_, value) =>
-                value.value.annotations += DomainExtensionAnnotation(e)
+            instance.fields.entry(f).foreach { case FieldEntry(_, value) =>
+              value.value.annotations += DomainExtensionAnnotation(e)
             }
           })
       }
@@ -486,10 +494,12 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
         val fieldUri        = expandUriFromContext(entry.key.as[String])
         val fieldValue      = entry.value
         val isAlreadyParsed = fields.exists(_.value.iri() == fieldUri)
-        if (!ignoredFields
-              .contains(fieldUri) && !isAlreadyParsed) { // we do this to prevent parsing name of annotations
-          parse(fieldValue.as[YMap]).collect {
-            case d: amf.core.client.scala.model.domain.DataNode => obj.addProperty(fieldUri, d)
+        if (
+            !ignoredFields
+              .contains(fieldUri) && !isAlreadyParsed
+        ) { // we do this to prevent parsing name of annotations
+          parse(fieldValue.as[YMap]).collect { case d: amf.core.client.scala.model.domain.DataNode =>
+            obj.addProperty(fieldUri, d)
           }
         }
       }
@@ -590,11 +600,11 @@ object FlattenedUnitGraphParser extends GraphContextHelper with GraphParserHelpe
       config = LimitedParseConfig(IgnoringErrorHandler)
   )
 
-  /**
-    * Returns true if `document` contains a @graph node which in turn must contain a Root node.
-    * Root nodes are nodes with @type http://a.ml/vocabularies/document#Unit (BaseUnits) with the property
+  /** Returns true if `document` contains a @graph node which in turn must contain a Root node. Root nodes are nodes
+    * with @type http://a.ml/vocabularies/document#Unit (BaseUnits) with the property
     * http://a.ml/vocabularies/document#root set to true.
-    * @param document document to perform the canParse test on
+    * @param document
+    *   document to perform the canParse test on
     * @return
     */
   def canParse(document: SyamlParsedDocument, aliases: Map[String, String] = Map.empty): Boolean =

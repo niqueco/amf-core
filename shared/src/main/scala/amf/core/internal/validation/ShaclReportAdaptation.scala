@@ -13,34 +13,43 @@ import scala.collection.mutable
 
 trait ShaclReportAdaptation {
 
-  protected def adaptToAmfReport(model: BaseUnit,
-                                 profile: ProfileName,
-                                 report: ValidationReport,
-                                 validations: EffectiveValidations): AMFValidationReport = {
+  protected def adaptToAmfReport(
+      model: BaseUnit,
+      profile: ProfileName,
+      report: ValidationReport,
+      validations: EffectiveValidations
+  ): AMFValidationReport = {
     val amfResults = report.results.flatMap { r =>
       adaptToAmfResult(model, r, profile.messageStyle, validations)
     }
     validation.AMFValidationReport(model.id, profile, amfResults)
   }
 
-  protected def adaptToAmfReport(model: BaseUnit,
-                                 profile: ProfileName,
-                                 report: ValidationReport,
-                                 location: Option[String],
-                                 lexical: LexicalInformation): AMFValidationReport = {
+  protected def adaptToAmfReport(
+      model: BaseUnit,
+      profile: ProfileName,
+      report: ValidationReport,
+      location: Option[String],
+      lexical: LexicalInformation
+  ): AMFValidationReport = {
     val amfResults = report.results.map { result =>
       AMFValidationResult.fromSHACLValidation(model.id, result, location, lexical)
     }
     AMFValidationReport(model.id, profile, amfResults)
   }
 
-  protected def adaptToAmfResult(model: BaseUnit,
-                                 result: ValidationResult,
-                                 messageStyle: MessageStyle,
-                                 validations: EffectiveValidations): Option[AMFValidationResult] = {
+  protected def adaptToAmfResult(
+      model: BaseUnit,
+      result: ValidationResult,
+      messageStyle: MessageStyle,
+      validations: EffectiveValidations
+  ): Option[AMFValidationResult] = {
     val validationSpecToLook = if (result.sourceShape.startsWith(Namespace.Data.base)) {
       result.sourceShape
-        .replace(Namespace.Data.base, "") // this is for custom validations they are all prefixed with the data namespace
+        .replace(
+            Namespace.Data.base,
+            ""
+        ) // this is for custom validations they are all prefixed with the data namespace
     } else {
       result.sourceShape // by default we expect to find a URI here
     }
@@ -51,11 +60,10 @@ trait ShaclReportAdaptation {
         Some(validationSpec)
 
       case None =>
-        validations.all.find {
-          case (v, _) =>
-            // processing property shapes Id computed as constraintID + "/prop"
+        validations.all.find { case (v, _) =>
+          // processing property shapes Id computed as constraintID + "/prop"
 
-            validationSpecToLook.startsWith(v)
+          validationSpecToLook.startsWith(v)
         } match {
           case Some((v, spec)) =>
             idMapping.put(result.sourceShape, v)
@@ -71,8 +79,10 @@ trait ShaclReportAdaptation {
     maybeTargetSpecification.map { spec =>
       val message: String        = computeMessage(spec, result, messageStyle)
       val finalId: SeverityLevel = computeValidationId(result, idMapping)
-      AMFValidationResult.withShapeId(finalId,
-                                      AMFValidationResult.fromSHACLValidation(model, message, result.severity, result))
+      AMFValidationResult.withShapeId(
+          finalId,
+          AMFValidationResult.fromSHACLValidation(model, message, result.severity, result)
+      )
     }
   }
 
@@ -101,9 +111,11 @@ trait ShaclReportAdaptation {
     finalId
   }
 
-  protected def findLevel(id: String,
-                          validations: EffectiveValidations,
-                          default: String = SeverityLevels.VIOLATION): SeverityLevel =
+  protected def findLevel(
+      id: String,
+      validations: EffectiveValidations,
+      default: String = SeverityLevels.VIOLATION
+  ): SeverityLevel =
     validations.findSecurityLevelFor(id).getOrElse(SeverityLevels.unapply(default))
 
 }

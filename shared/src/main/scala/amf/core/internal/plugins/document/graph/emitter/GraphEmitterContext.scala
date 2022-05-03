@@ -10,12 +10,14 @@ import org.yaml.builder.DocBuilder.Entry
 
 import scala.collection.mutable
 
-class GraphEmitterContext(val prefixes: mutable.Map[String, String],
-                          var base: String,
-                          val options: RenderOptions,
-                          var emittingDeclarations: Boolean = false,
-                          var emittingReferences: Boolean = false,
-                          val namespaceAliases: NamespaceAliases = Namespace.defaultAliases) {
+class GraphEmitterContext(
+    val prefixes: mutable.Map[String, String],
+    var base: String,
+    val options: RenderOptions,
+    var emittingDeclarations: Boolean = false,
+    var emittingReferences: Boolean = false,
+    val namespaceAliases: NamespaceAliases = Namespace.defaultAliases
+) {
   var counter: Int = 1
 
   private val declarations: mutable.LinkedHashSet[AmfElement] = mutable.LinkedHashSet.empty
@@ -58,9 +60,9 @@ class GraphEmitterContext(val prefixes: mutable.Map[String, String],
     this
   }
 
-  /**
-    * Used to register shapes that are either declarations or references but are not present in base unit (case of default pipeline)
-    * These shapes are registered as they can be extracted to declares and optimize emission of the jsonld.
+  /** Used to register shapes that are either declarations or references but are not present in base unit (case of
+    * default pipeline) These shapes are registered as they can be extracted to declares and optimize emission of the
+    * jsonld.
     */
   def registerDeclaredAndReferencedFromAnnotations(ids: Seq[String]): this.type = {
     validToExtract ++= ids
@@ -127,13 +129,15 @@ class GraphEmitterContext(val prefixes: mutable.Map[String, String],
 
   def emitContext[T](b: Entry[T]): Unit = {
     if (shouldCompact)
-      b.entry(JsonLdKeywords.Context, _.obj { b =>
-        b.entry(JsonLdKeywords.Base, base)
-        prefixes.foreach {
-          case (p, v) =>
-            b.entry(p, v)
-        }
-      })
+      b.entry(
+          JsonLdKeywords.Context,
+          _.obj { b =>
+            b.entry(JsonLdKeywords.Base, base)
+            prefixes.foreach { case (p, v) =>
+              b.entry(p, v)
+            }
+          }
+      )
   }
 }
 
@@ -142,12 +146,13 @@ object GraphEmitterContext {
     new GraphEmitterContext(mutable.Map(), unit.id, options, namespaceAliases = namespaceAliases)
 }
 
-class FlattenedGraphEmitterContext(prefixes: mutable.Map[String, String],
-                                   base: String,
-                                   options: RenderOptions,
-                                   emittingDeclarations: Boolean = false,
-                                   namespaceAliases: NamespaceAliases = Namespace.defaultAliases)
-    extends GraphEmitterContext(prefixes, base, options, emittingDeclarations, namespaceAliases = namespaceAliases) {
+class FlattenedGraphEmitterContext(
+    prefixes: mutable.Map[String, String],
+    base: String,
+    options: RenderOptions,
+    emittingDeclarations: Boolean = false,
+    namespaceAliases: NamespaceAliases = Namespace.defaultAliases
+) extends GraphEmitterContext(prefixes, base, options, emittingDeclarations, namespaceAliases = namespaceAliases) {
   override def canGenerateLink(e: AmfElement): Boolean = false
 }
 

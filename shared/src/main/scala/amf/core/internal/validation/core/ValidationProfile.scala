@@ -5,11 +5,13 @@ import amf.core.internal.validation.core.ValidationProfile.{SeverityLevel, Valid
 
 import scala.collection.mutable
 
-case class ValidationProfile(name: ProfileName,
-                             baseProfile: Option[ProfileName],
-                             validations: Seq[ValidationSpecification],
-                             severities: SeverityMapping,
-                             prefixes: mutable.Map[String, String] = mutable.Map.empty) {
+case class ValidationProfile(
+    name: ProfileName,
+    baseProfile: Option[ProfileName],
+    validations: Seq[ValidationSpecification],
+    severities: SeverityMapping,
+    prefixes: mutable.Map[String, String] = mutable.Map.empty
+) {
 
   def reverseNestedConstraintIndex: NestedToParentIndex = NestedToParentIndex(this)
 
@@ -26,11 +28,13 @@ object SeverityMapping {
   val empty: SeverityMapping = SeverityMapping()
 }
 
-case class SeverityMapping private (violation: Seq[ValidationName] = Seq.empty,
-                                    warning: Seq[ValidationName] = Seq.empty,
-                                    info: Seq[ValidationName] = Seq.empty,
-                                    disabled: Seq[ValidationName] = Seq.empty,
-                                    default: SeverityLevel = SeverityLevels.VIOLATION) {
+case class SeverityMapping private (
+    violation: Seq[ValidationName] = Seq.empty,
+    warning: Seq[ValidationName] = Seq.empty,
+    info: Seq[ValidationName] = Seq.empty,
+    disabled: Seq[ValidationName] = Seq.empty,
+    default: SeverityLevel = SeverityLevels.VIOLATION
+) {
 
   def set(validations: Seq[ValidationName], severity: SeverityLevel): SeverityMapping = {
     severity match {
@@ -52,11 +56,13 @@ case class SeverityMapping private (violation: Seq[ValidationName] = Seq.empty,
   }
 
   def concat(mapping: SeverityMapping): SeverityMapping = {
-    copy(violation ++ mapping.violation,
-         warning ++ mapping.warning,
-         info ++ mapping.info,
-         disabled ++ mapping.disabled,
-         default)
+    copy(
+        violation ++ mapping.violation,
+        warning ++ mapping.warning,
+        info ++ mapping.info,
+        disabled ++ mapping.disabled,
+        default
+    )
   }
 }
 

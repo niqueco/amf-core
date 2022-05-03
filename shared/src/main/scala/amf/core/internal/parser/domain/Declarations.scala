@@ -9,11 +9,13 @@ import amf.core.internal.parser.domain.SearchScope.{All, Fragments, Named}
 import amf.core.internal.validation.CoreValidations.DeclarationNotFound
 import org.mulesoft.lexer.SourceLocation
 
-class Declarations(var libraries: Map[String, Declarations] = Map(),
-                   var fragments: Map[String, FragmentRef] = Map(),
-                   var annotations: Map[String, CustomDomainProperty] = Map(),
-                   errorHandler: AMFErrorHandler,
-                   futureDeclarations: FutureDeclarations) {
+class Declarations(
+    var libraries: Map[String, Declarations] = Map(),
+    var fragments: Map[String, FragmentRef] = Map(),
+    var annotations: Map[String, CustomDomainProperty] = Map(),
+    errorHandler: AMFErrorHandler,
+    futureDeclarations: FutureDeclarations
+) {
 
   var promotedFragments: Seq[Fragment] = Seq[Fragment]()
 
@@ -64,13 +66,15 @@ class Declarations(var libraries: Map[String, Declarations] = Map(),
     }
 
   def findAnnotation(key: String, scope: SearchScope.Scope): Option[CustomDomainProperty] =
-    findForType(key, _.annotations, scope) collect {
-      case a: CustomDomainProperty => a
+    findForType(key, _.annotations, scope) collect { case a: CustomDomainProperty =>
+      a
     }
 
-  def findForType(key: String,
-                  map: Declarations => Map[String, DomainElement],
-                  scope: SearchScope.Scope): Option[DomainElement] = {
+  def findForType(
+      key: String,
+      map: Declarations => Map[String, DomainElement],
+      scope: SearchScope.Scope
+  ): Option[DomainElement] = {
     def inRef(): Option[DomainElement] = {
       val fqn = QName(key)
       val result = if (fqn.isQualified) {
@@ -104,9 +108,11 @@ object FragmentRef {
 
 object Declarations {
 
-  def apply(declarations: Seq[DomainElement],
-            errorHandler: AMFErrorHandler,
-            futureDeclarations: FutureDeclarations): Declarations = {
+  def apply(
+      declarations: Seq[DomainElement],
+      errorHandler: AMFErrorHandler,
+      futureDeclarations: FutureDeclarations
+  ): Declarations = {
     val result = new Declarations(errorHandler = errorHandler, futureDeclarations = futureDeclarations)
     declarations.foreach(result += _)
     result

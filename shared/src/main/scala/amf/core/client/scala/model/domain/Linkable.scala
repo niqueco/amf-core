@@ -55,7 +55,10 @@ trait Linkable extends AmfObject with AdoptionDependantCalls { this: DomainEleme
 
   private[amf] def link[T](label: AmfScalar, annotations: Annotations, fieldAnn: Annotations): T = {
     val copied = linkCopy()
-    val hash   = buildLinkHash(Option(label.value).map(_.toString).getOrElse(""), annotations) // todo: label.value is sometimes null!
+    val hash = buildLinkHash(
+        Option(label.value).map(_.toString).getOrElse(""),
+        annotations
+    ) // todo: label.value is sometimes null!
     copied
       .withId(s"${copied.id}/link-$hash")
       .withLinkTarget(this)
@@ -76,14 +79,15 @@ trait Linkable extends AmfObject with AdoptionDependantCalls { this: DomainEleme
     sb.toString().hashCode
   }
 
-  /**
-    * This can be overriden by subclasses to customise how the links to unresolved classes are generated.
-    * By default it just generates a link.
+  /** This can be overriden by subclasses to customise how the links to unresolved classes are generated. By default it
+    * just generates a link.
     */
-  private[amf] def resolveUnreferencedLink[T](label: String,
-                                              annotations: Annotations = Annotations(),
-                                              unresolved: T,
-                                              supportsRecursion: Boolean): T = {
+  private[amf] def resolveUnreferencedLink[T](
+      label: String,
+      annotations: Annotations = Annotations(),
+      unresolved: T,
+      supportsRecursion: Boolean
+  ): T = {
     if (unresolved.asInstanceOf[Linkable].shouldLink) {
 
       val linked: T = link(AmfScalar(label), annotations, Annotations.synthesized())
@@ -111,7 +115,8 @@ trait Linkable extends AmfObject with AdoptionDependantCalls { this: DomainEleme
       refName: String,
       aliases: Seq[String],
       pos: Option[SourceLocation],
-      unresolvedSeverity: String = "error")(implicit ctx: UnresolvedComponents): DomainElement with Linkable = {
+      unresolvedSeverity: String = "error"
+  )(implicit ctx: UnresolvedComponents): DomainElement with Linkable = {
     isUnresolved = true
     this.unresolvedSeverity = unresolvedSeverity
     this.refName = refName
@@ -146,7 +151,9 @@ trait Linkable extends AmfObject with AdoptionDependantCalls { this: DomainEleme
 
   private val linkCounter = new IdCounter()
 
-  /** generates a new instance of the domain element only clonning his own fields map, and not clonning all the tree (not recursive) */
+  /** generates a new instance of the domain element only clonning his own fields map, and not clonning all the tree
+    * (not recursive)
+    */
   /** Do not generates a new link. */
   def copyElement(): Linkable with DomainElement = classConstructor(fields.copy(), annotations.copy())
 

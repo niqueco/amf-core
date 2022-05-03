@@ -4,8 +4,7 @@ import amf.core.client.scala.model.domain.AmfScalar
 import amf.core.client.scala.parse.document.ParserContext
 import org.yaml.model._
 
-/**
-  * Base spec parser.
+/** Base spec parser.
   */
 trait BaseSpecParser {
 

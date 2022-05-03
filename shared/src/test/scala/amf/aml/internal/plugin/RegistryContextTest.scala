@@ -17,7 +17,8 @@ class RegistryContextTest extends AnyFunSuite with Matchers {
     val ctx = RegistryContext(
         AMFRegistry.empty
           .withEntities(CoreEntities.entities ++ DataNodeEntities.entities)
-          .withAnnotations(CoreSerializableAnnotations.annotations))
+          .withAnnotations(CoreSerializableAnnotations.annotations)
+    )
 
     CoreEntities.entities.values.foreach { `type` =>
       val iri = defaultIri(`type`)
@@ -34,7 +35,8 @@ class RegistryContextTest extends AnyFunSuite with Matchers {
     val ctx = RegistryContext(
         AMFRegistry.empty
           .withEntities(DataNodeEntities.entities)
-          .withAnnotations(CoreSerializableAnnotations.annotations))
+          .withAnnotations(CoreSerializableAnnotations.annotations)
+    )
 
     CoreEntities.entities.values.foreach { `type` =>
       val iri = defaultIri(`type`)

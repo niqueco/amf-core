@@ -13,16 +13,17 @@ import amf.core.internal.plugins.syntax.{SYamlAMFParserErrorHandler, SyamlAMFErr
 import org.mulesoft.lexer.SourceLocation
 import org.yaml.model.{IllegalTypeHandler, ParseErrorHandler, SyamlException, YError}
 
-class GraphParserContext(rootContextDocument: String = "",
-                         refs: Seq[ParsedReference] = Seq.empty,
-                         futureDeclarations: FutureDeclarations = EmptyFutureDeclarations(),
-                         config: ParseConfiguration,
-                         val graphContext: GraphContext = GraphContext())
-    extends SyamlBasedParserErrorHandler(rootContextDocument, refs, futureDeclarations, config) {
+class GraphParserContext(
+    rootContextDocument: String = "",
+    refs: Seq[ParsedReference] = Seq.empty,
+    futureDeclarations: FutureDeclarations = EmptyFutureDeclarations(),
+    config: ParseConfiguration,
+    val graphContext: GraphContext = GraphContext()
+) extends SyamlBasedParserErrorHandler(rootContextDocument, refs, futureDeclarations, config) {
 
   def addTerms(aliases: Map[String, String]): this.type = {
-    aliases.foreach {
-      case (term, id) => graphContext.withTerm(term, id)
+    aliases.foreach { case (term, id) =>
+      graphContext.withTerm(term, id)
     }
     this
   }

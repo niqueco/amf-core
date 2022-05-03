@@ -2,8 +2,7 @@ package amf.core.internal.remote
 
 import amf.core.internal.remote.Mimes._
 
-/**
-  * Syntax
+/** Syntax
   */
 object Syntax {
 
@@ -47,23 +46,27 @@ object Syntax {
       `text/x-yaml`,
       `text/vnd.yaml`,
       `application/yaml`,
-      `application/x-yaml`,
+      `application/x-yaml`
   )
 
-  private val jsonMimes = Set(`application/json`,
-                              `application/ld+json`)
+  private val jsonMimes = Set(`application/json`, `application/ld+json`)
 
-  val proto3Mimes  = Set(`application/x-protobuf`,
-    `application/protobuf`, `application/protobuf_`, `application/vnd_google`, `application/grpc`)
+  val proto3Mimes = Set(
+      `application/x-protobuf`,
+      `application/protobuf`,
+      `application/protobuf_`,
+      `application/vnd_google`,
+      `application/grpc`
+  )
 
-  val graphQLMimes  = Set(`application/graphql`)
+  val graphQLMimes = Set(`application/graphql`)
 
   /** Attempt to resolve [[Syntax]] from [[Mimes]]. */
   def unapply(mime: Option[String]): Option[Syntax] = mime match {
-    case Some(m) if yamlMimes.contains(m) => Some(Yaml)
-    case Some(m) if jsonMimes.contains(m) => Some(Json)
-    case Some(m) if proto3Mimes.contains(m) => Some(Protobuf)
+    case Some(m) if yamlMimes.contains(m)    => Some(Yaml)
+    case Some(m) if jsonMimes.contains(m)    => Some(Json)
+    case Some(m) if proto3Mimes.contains(m)  => Some(Protobuf)
     case Some(m) if graphQLMimes.contains(m) => Some(GraphQL)
-    case _ => None
+    case _                                   => None
   }
 }

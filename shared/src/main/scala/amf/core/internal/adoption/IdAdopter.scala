@@ -25,9 +25,9 @@ class IdAdopter(initialElem: AmfObject, initialId: String) {
     adopted.values.filterType[AdoptionDependantCalls].foreach(_.run())
   }
 
-  /**
-    * adopts the initial element and all of its nested element in a BFS manner
-    * @param isRoot: if the initialElement is the root base unit, used to place fragment in id.
+  /** adopts the initial element and all of its nested element in a BFS manner
+    * @param isRoot:
+    *   if the initialElement is the root base unit, used to place fragment in id.
     */
   private def adoptElement(isRoot: Boolean): Unit = {
     val adoptionQueue: mutable.Queue[PendingAdoption] = new mutable.Queue()
@@ -57,10 +57,9 @@ class IdAdopter(initialElem: AmfObject, initialId: String) {
   }
 
   private def traverseArrayValues(array: AmfArray, id: String): Seq[PendingAdoption] = {
-    array.values.zipWithIndex.map {
-      case (item, i) =>
-        val generatedId = makeId(id, componentId(item).getOrElse(i.toString))
-        PendingAdoption(item, generatedId)
+    array.values.zipWithIndex.map { case (item, i) =>
+      val generatedId = makeId(id, componentId(item).getOrElse(i.toString))
+      PendingAdoption(item, generatedId)
     }
   }
 
@@ -71,15 +70,14 @@ class IdAdopter(initialElem: AmfObject, initialId: String) {
     }.toList
   }
 
-  /** this is done specifically because of RAML scalar valued nodes, extension is only stored in annotation contained in AmfScalar
-    * and needs to have id defined due to potential validations
+  /** this is done specifically because of RAML scalar valued nodes, extension is only stored in annotation contained in
+    * AmfScalar and needs to have id defined due to potential validations
     */
   private def traverseDomainExtensionAnnotation(scalar: AmfScalar, id: String): Seq[PendingAdoption] = {
-    scalar.annotations.collect[PendingAdoption] {
-      case domainAnnotation: DomainExtensionAnnotation =>
-        val extension   = domainAnnotation.extension
-        val generatedId = makeId(id, extension.componentId)
-        PendingAdoption(extension, generatedId)
+    scalar.annotations.collect[PendingAdoption] { case domainAnnotation: DomainExtensionAnnotation =>
+      val extension   = domainAnnotation.extension
+      val generatedId = makeId(id, extension.componentId)
+      PendingAdoption(extension, generatedId)
     }
   }
 

@@ -11,10 +11,12 @@ import org.yaml.model.YDocument
 
 trait SYAMLBasedRenderPlugin extends AMFRenderPlugin {
 
-  override def emit[T](unit: BaseUnit,
-                       builder: ASTBuilder[T],
-                       renderConfiguration: RenderConfiguration,
-                       mediaType: String): Boolean = {
+  override def emit[T](
+      unit: BaseUnit,
+      builder: ASTBuilder[T],
+      renderConfiguration: RenderConfiguration,
+      mediaType: String
+  ): Boolean = {
     builder match {
       case sb: YDocumentBuilder =>
         unparseAsYDocument(unit, renderConfiguration, renderConfiguration.errorHandler) exists { doc =>
@@ -25,9 +27,11 @@ trait SYAMLBasedRenderPlugin extends AMFRenderPlugin {
     }
   }
 
-  protected def unparseAsYDocument(unit: BaseUnit,
-                                   renderConfig: RenderConfiguration,
-                                   errorHandler: AMFErrorHandler): Option[YDocument]
+  protected def unparseAsYDocument(
+      unit: BaseUnit,
+      renderConfig: RenderConfiguration,
+      errorHandler: AMFErrorHandler
+  ): Option[YDocument]
 
   override def mediaTypes: Seq[String] = Seq(`application/json`, `application/yaml`)
 

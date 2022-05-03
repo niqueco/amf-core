@@ -28,8 +28,7 @@ import org.yaml.parser.YamlParser
 
 import scala.collection.mutable.ListBuffer
 
-/**
-  * Parse an object as a fully dynamic value.
+/** Parse an object as a fully dynamic value.
   */
 // TODO: should have private constructor
 
@@ -50,11 +49,12 @@ object NothingOnScalarParseHook extends OnScalarParseHook {
   override def onScalarParse(node: domain.ScalarNode): Unit = {}
 }
 
-class DataNodeParser private (node: YNode,
-                              refsCounter: AliasCounter,
-                              hook: OnScalarParseHook = NothingOnScalarParseHook,
-                              idCounter: IdCounter = new IdCounter)(
-    implicit ctx: ErrorHandlingContext with DataNodeParserContext with IllegalTypeHandler) {
+class DataNodeParser private (
+    node: YNode,
+    refsCounter: AliasCounter,
+    hook: OnScalarParseHook = NothingOnScalarParseHook,
+    idCounter: IdCounter = new IdCounter
+)(implicit ctx: ErrorHandlingContext with DataNodeParserContext with IllegalTypeHandler) {
 
   def parse(): DataNode = {
     if (refsCounter.exceedsThreshold(node)) {
@@ -118,11 +118,14 @@ class DataNodeParser private (node: YNode,
 }
 
 case class ScalarNodeParser(hook: OnScalarParseHook = NothingOnScalarParseHook, idCounter: IdCounter = new IdCounter)(
-    implicit ctx: ErrorHandlingContext with DataNodeParserContext with IllegalTypeHandler) {
+    implicit ctx: ErrorHandlingContext with DataNodeParserContext with IllegalTypeHandler
+) {
 
-  private def newScalarNode(value: amf.core.internal.parser.domain.ScalarNode,
-                            dataType: String,
-                            annotations: Annotations): ScalarNode = {
+  private def newScalarNode(
+      value: amf.core.internal.parser.domain.ScalarNode,
+      dataType: String,
+      annotations: Annotations
+  ): ScalarNode = {
     val scalar = new ScalarNode(Fields(), annotations)
     annotations += ScalarType(dataType)
     scalar.set(ScalarNodeModel.DataType, forDataType(dataType), Annotations.synthesized())
@@ -207,11 +210,13 @@ case class ScalarNodeParser(hook: OnScalarParseHook = NothingOnScalarParseHook, 
     else DataNodeParser(n, hook, idCounter).parse()
   }
 
-  /**
-    * Generates a new LinkNode base on the text of a label and the fragments in the context
-    * @param linkText local text pointing to fragment
-    * @param nodeUrl: location of the source node
-    * @return the parsed LinkNode
+  /** Generates a new LinkNode base on the text of a label and the fragments in the context
+    * @param linkText
+    *   local text pointing to fragment
+    * @param nodeUrl:
+    *   location of the source node
+    * @return
+    *   the parsed LinkNode
     */
   protected def parseLink(linkText: String, nodeUrl: String): LinkNode = {
     if (linkText.contains(":")) {
@@ -256,17 +261,20 @@ case class ScalarNodeParser(hook: OnScalarParseHook = NothingOnScalarParseHook, 
 }
 
 object DataNodeParser {
-  def parse(idCounter: IdCounter)(node: YNode)(
-      implicit ctx: ErrorHandlingContext with DataNodeParserContext with IllegalTypeHandler): DataNode =
+  def parse(idCounter: IdCounter)(node: YNode)(implicit
+      ctx: ErrorHandlingContext with DataNodeParserContext with IllegalTypeHandler
+  ): DataNode =
     new DataNodeParser(node, refsCounter = AliasCounter(ctx.getMaxYamlReferences), idCounter = idCounter).parse()
 
-  def apply(node: YNode, hook: OnScalarParseHook = NothingOnScalarParseHook)(
-      implicit ctx: ErrorHandlingContext with DataNodeParserContext with IllegalTypeHandler): DataNodeParser = {
+  def apply(node: YNode, hook: OnScalarParseHook = NothingOnScalarParseHook)(implicit
+      ctx: ErrorHandlingContext with DataNodeParserContext with IllegalTypeHandler
+  ): DataNodeParser = {
     new DataNodeParser(node = node, refsCounter = AliasCounter(ctx.getMaxYamlReferences), hook = hook)
   }
 
-  def apply(node: YNode, hook: OnScalarParseHook, idCounter: IdCounter)(
-      implicit ctx: ErrorHandlingContext with DataNodeParserContext with IllegalTypeHandler): DataNodeParser = {
+  def apply(node: YNode, hook: OnScalarParseHook, idCounter: IdCounter)(implicit
+      ctx: ErrorHandlingContext with DataNodeParserContext with IllegalTypeHandler
+  ): DataNodeParser = {
     new DataNodeParser(node, AliasCounter(ctx.getMaxYamlReferences), hook, idCounter)
   }
 }

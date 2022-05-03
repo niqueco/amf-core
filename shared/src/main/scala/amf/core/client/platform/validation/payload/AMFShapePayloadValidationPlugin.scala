@@ -25,8 +25,10 @@ trait AMFShapePayloadValidationPlugin extends AMFPlugin[ValidatePayloadRequest] 
 
   def applies(element: ValidatePayloadRequest): Boolean
 
-  def validator(shape: Shape,
-                mediaType: String,
-                config: ShapeValidationConfiguration,
-                validationMode: ValidationMode = StrictValidationMode): AMFShapePayloadValidator
+  def validator(
+      shape: Shape,
+      mediaType: String,
+      config: ShapeValidationConfiguration,
+      validationMode: ValidationMode = StrictValidationMode
+  ): AMFShapePayloadValidator
 }

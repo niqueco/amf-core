@@ -27,10 +27,12 @@ import scala.collection.mutable.ListBuffer
 // TODO: Should be erased. Left for backwards compatibility in AMF Tests
 private[amf] object EmbeddedJsonLdEmitter {
 
-  def emit[T](unit: BaseUnit,
-              builder: DocBuilder[T],
-              renderOptions: RenderOptions = config.RenderOptions(),
-              namespaceAliases: NamespaceAliases = Namespace.defaultAliases): Boolean = {
+  def emit[T](
+      unit: BaseUnit,
+      builder: DocBuilder[T],
+      renderOptions: RenderOptions = config.RenderOptions(),
+      namespaceAliases: NamespaceAliases = Namespace.defaultAliases
+  ): Boolean = {
     implicit val ctx: GraphEmitterContext =
       GraphEmitterContext(unit, renderOptions, namespaceAliases = namespaceAliases)
     new EmbeddedJsonLdEmitter[T](builder, renderOptions, InstanceMetaApplicableFieldRenderProvider).root(unit)
@@ -42,7 +44,8 @@ private[amf] object EmbeddedJsonLdEmitter {
 private[amf] class EmbeddedJsonLdEmitter[T] private (
     val builder: DocBuilder[T],
     val options: RenderOptions,
-    val fieldProvision: ApplicableMetaFieldRenderProvider)(implicit ctx: GraphEmitterContext)
+    val fieldProvision: ApplicableMetaFieldRenderProvider
+)(implicit ctx: GraphEmitterContext)
     extends CommonEmitter
     with MetaModelTypeMapping {
 
@@ -153,37 +156,34 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
     val customProperties: ListBuffer[String] = ListBuffer()
 
     // Collect element custom annotations
-    element.fields.entry(DomainElementModel.CustomDomainProperties) foreach {
-      case FieldEntry(_, v) =>
-        v.value match {
-          case AmfArray(values, _) =>
-            values
-              .sortBy(_.asInstanceOf[DomainExtension].id)
-              .foreach {
-                case extension: DomainExtension =>
-                  val uri = extension.definedBy.id
-                  customProperties += uri
-                  createCustomExtension(b, uri, extension, None)
-              }
-          case _ => // ignore
-        }
+    element.fields.entry(DomainElementModel.CustomDomainProperties) foreach { case FieldEntry(_, v) =>
+      v.value match {
+        case AmfArray(values, _) =>
+          values
+            .sortBy(_.asInstanceOf[DomainExtension].id)
+            .foreach { case extension: DomainExtension =>
+              val uri = extension.definedBy.id
+              customProperties += uri
+              createCustomExtension(b, uri, extension, None)
+            }
+        case _ => // ignore
+      }
     }
 
     // Collect element scalar fields custom annotations
     var count = 1
-    element.fields.foreach {
-      case (f, v) =>
-        v.value.annotations
-          .collect({ case e: DomainExtensionAnnotation => e })
-          .sortBy(_.extension.id)
-          .foreach(e => {
-            val extension = e.extension
-            val uri       = s"${element.id}/scalar-valued/$count/${extension.name.value()}"
-            customProperties += uri
-            adoptTree(uri, extension.extension) // Fix ids
-            createCustomExtension(b, uri, extension, Some(f))
-            count += 1
-          })
+    element.fields.foreach { case (f, v) =>
+      v.value.annotations
+        .collect({ case e: DomainExtensionAnnotation => e })
+        .sortBy(_.extension.id)
+        .foreach(e => {
+          val extension = e.extension
+          val uri       = s"${element.id}/scalar-valued/$count/${extension.name.value()}"
+          customProperties += uri
+          adoptTree(uri, extension.extension) // Fix ids
+          createCustomExtension(b, uri, extension, Some(f))
+          count += 1
+        })
     }
 
     if (customProperties.nonEmpty)
@@ -195,10 +195,12 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
       )
   }
 
-  private def createCustomExtension(b: Entry[T],
-                                    uri: String,
-                                    extension: DomainExtension,
-                                    field: Option[Field] = None): Unit = {
+  private def createCustomExtension(
+      b: Entry[T],
+      uri: String,
+      extension: DomainExtension,
+      field: Option[Field] = None
+  ): Unit = {
     b.entry(
         uri,
         _.obj { b =>
@@ -206,12 +208,12 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
               ctx.emitIri(DomainExtensionModel.Name.value.iri()),
               listWithScalar(_, extension.name.value())
           )
-          field.foreach(
-              f =>
-                b.entry(
-                    ctx.emitIri(DomainExtensionModel.Element.value.iri()),
-                    listWithScalar(_, f.value.iri())
-              ))
+          field.foreach(f =>
+            b.entry(
+                ctx.emitIri(DomainExtensionModel.Element.value.iri()),
+                listWithScalar(_, f.value.iri())
+            )
+          )
           traverse(extension.extension, b)
         }
     )
@@ -223,48 +225,47 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
         val id = s"$parent/list"
         createIdNode(b, id)
         b.entry(JsonLdKeywords.Type, ctx.emitIri((Namespace.Rdfs + "Seq").iri()))
-        seq.zipWithIndex.foreach {
-          case (e, i) =>
-            b.entry(
-                ctx.emitIri((Namespace.Rdfs + s"_${i + 1}").iri()), { b =>
-                  b.list {
-                    b =>
-                      element match {
-                        case _: Obj =>
-                          e match {
-                            case elementInArray: DomainElement with Linkable if elementInArray.isLink =>
-                              link(b, elementInArray, inArray = true)
-                            case elementInArray: AmfObject =>
-                              obj(b, elementInArray, inArray = true)
-                          }
-                        case Str =>
-                          scalar(b, e, SType.Str)
+        seq.zipWithIndex.foreach { case (e, i) =>
+          b.entry(
+              ctx.emitIri((Namespace.Rdfs + s"_${i + 1}").iri()),
+              { b =>
+                b.list { b =>
+                  element match {
+                    case _: Obj =>
+                      e match {
+                        case elementInArray: DomainElement with Linkable if elementInArray.isLink =>
+                          link(b, elementInArray, inArray = true)
+                        case elementInArray: AmfObject =>
+                          obj(b, elementInArray, inArray = true)
+                      }
+                    case Str =>
+                      scalar(b, e, SType.Str)
 
-                        case EncodedIri =>
-                          iri(b, e.asInstanceOf[AmfScalar].toString, inArray = true)
+                    case EncodedIri =>
+                      iri(b, e.asInstanceOf[AmfScalar].toString, inArray = true)
 
-                        case Iri =>
-                          iri(b, e.asInstanceOf[AmfScalar].toString, inArray = true)
+                    case Iri =>
+                      iri(b, e.asInstanceOf[AmfScalar].toString, inArray = true)
 
-                        case Any =>
-                          val scalarElement = e.asInstanceOf[AmfScalar]
-                          scalarElement.value match {
-                            case bool: Boolean =>
-                              typedScalar(b, bool.toString, DataType.Boolean, inArray = true)
-                            case str: String =>
-                              typedScalar(b, str, DataType.String, inArray = true)
-                            case i: Int =>
-                              typedScalar(b, i.toString, DataType.Integer, inArray = true)
-                            case d: Double =>
-                              typedScalar(b, d.toString, DataType.Double, inArray = true)
-                            case f: Float =>
-                              typedScalar(b, f.toString, DataType.Float, inArray = true)
-                            case other => scalar(b, other.toString)
-                          }
+                    case Any =>
+                      val scalarElement = e.asInstanceOf[AmfScalar]
+                      scalarElement.value match {
+                        case bool: Boolean =>
+                          typedScalar(b, bool.toString, DataType.Boolean, inArray = true)
+                        case str: String =>
+                          typedScalar(b, str, DataType.String, inArray = true)
+                        case i: Int =>
+                          typedScalar(b, i.toString, DataType.Integer, inArray = true)
+                        case d: Double =>
+                          typedScalar(b, d.toString, DataType.Double, inArray = true)
+                        case f: Float =>
+                          typedScalar(b, f.toString, DataType.Float, inArray = true)
+                        case other => scalar(b, other.toString)
                       }
                   }
                 }
-            )
+              }
+          )
         }
       }
     }
@@ -393,7 +394,8 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
         typedScalar(
             b,
             dateTime.toString,
-            if (dateTime.timeOfDay.isDefined || dateTime.zoneOffset.isDefined) DataType.DateTime else DataType.Date)
+            if (dateTime.timeOfDay.isDefined || dateTime.zoneOffset.isDefined) DataType.DateTime else DataType.Date
+        )
       case _ =>
         listWithScalar(b, v.value)
     }
@@ -523,10 +525,12 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
     }
   }
 
-  private def createEternalsAnnotationsNodes(id: String,
-                                             options: RenderOptions,
-                                             b: Entry[T],
-                                             sources: SourceMap): Unit = {
+  private def createEternalsAnnotationsNodes(
+      id: String,
+      options: RenderOptions,
+      b: Entry[T],
+      sources: SourceMap
+  ): Unit = {
     if (sources.eternals.nonEmpty)
       if (options.isWithRawSourceMaps) {
         b.entry(
@@ -549,34 +553,34 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
       }
   }
 
-  private def createAnnotationNodes(id: String,
-                                    b: Entry[T],
-                                    annotations: mutable.ListMap[String, mutable.ListMap[String, String]]): Unit = {
-    annotations.foreach({
-      case (a, values) =>
-        if (ctx.options.isWithRawSourceMaps) {
-          b.entry(
-              a,
-              _.obj { o =>
-                values.foreach {
-                  case (iri, v) =>
-                    o.entry(
-                        ctx.emitId(ctx.emitIri(iri)),
-                        raw(_, v)
-                    )
-                }
+  private def createAnnotationNodes(
+      id: String,
+      b: Entry[T],
+      annotations: mutable.ListMap[String, mutable.ListMap[String, String]]
+  ): Unit = {
+    annotations.foreach({ case (a, values) =>
+      if (ctx.options.isWithRawSourceMaps) {
+        b.entry(
+            a,
+            _.obj { o =>
+              values.foreach { case (iri, v) =>
+                o.entry(
+                    ctx.emitId(ctx.emitIri(iri)),
+                    raw(_, v)
+                )
               }
-          )
-        } else {
-          b.entry(
-              ctx.emitIri(ValueType(Namespace.SourceMaps, a).iri()),
-              _.list(b =>
-                values.zipWithIndex.foreach {
-                  case (tuple, index) =>
-                    createAnnotationValueNode(s"$id/$a/element_$index", b, tuple)
-              })
-          )
-        }
+            }
+        )
+      } else {
+        b.entry(
+            ctx.emitIri(ValueType(Namespace.SourceMaps, a).iri()),
+            _.list(b =>
+              values.zipWithIndex.foreach { case (tuple, index) =>
+                createAnnotationValueNode(s"$id/$a/element_$index", b, tuple)
+              }
+            )
+        )
+      }
     })
   }
 

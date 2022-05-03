@@ -54,8 +54,7 @@ class AMFGraphPartialCompiler(compilerContext: CompilerContext, startingPoint: S
       }
     }
 
-    /**
-      * media types which specifies vendors that are parsed by this plugin.
+    /** media types which specifies vendors that are parsed by this plugin.
       */
     override def mediaTypes: Seq[String] = Seq(Mimes.`application/graph`, Mimes.`application/ld+json`)
 
@@ -71,8 +70,7 @@ class AMFGraphPartialCompiler(compilerContext: CompilerContext, startingPoint: S
 
     override def spec: Spec = AMF
 
-    /**
-      * media types which specifies vendors that may be referenced.
+    /** media types which specifies vendors that may be referenced.
       */
     override def validSpecsToReference: Seq[Spec] = Seq(AMF)
   }
@@ -86,10 +84,11 @@ class AMFGraphPartialCompiler(compilerContext: CompilerContext, startingPoint: S
   }
 }
 
-private[amf] case class AmfObjectUnitContainer(result: AmfObject,
-                                               override val fields: Fields = Fields(),
-                                               override val annotations: Annotations = Annotations())
-    extends BaseUnit {
+private[amf] case class AmfObjectUnitContainer(
+    result: AmfObject,
+    override val fields: Fields = Fields(),
+    override val annotations: Annotations = Annotations()
+) extends BaseUnit {
 
   /** Meta data for the document */
   override def meta: BaseUnitModel = DocumentModel

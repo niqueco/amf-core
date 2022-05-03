@@ -7,8 +7,8 @@ import amf.core.client.scala.model.domain.AmfObject
 import amf.core.client.scala.vocabulary.Namespace.Document
 import amf.core.client.scala.vocabulary.ValueType
 
-/**
-  * A fragment with including raw information that cannot be semantically processed, the information is encoded as a raw opaque textual description.
+/** A fragment with including raw information that cannot be semantically processed, the information is encoded as a raw
+  * opaque textual description.
   */
 object ExternalFragmentModel extends FragmentModel {
   override val fields: List[Field] = FragmentModel.fields

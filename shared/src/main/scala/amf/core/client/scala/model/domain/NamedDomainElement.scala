@@ -6,8 +6,7 @@ import amf.core.internal.parser.domain.{ScalarNode => ScalarNodeObj}
 import amf.core.internal.parser.domain.Annotations
 import org.yaml.model.YNode
 
-/**
-  * All DomainElements supporting name
+/** All DomainElements supporting name
   */
 trait NamedDomainElement extends DomainElement {
 
