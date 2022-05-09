@@ -34,6 +34,8 @@ object Type {
 
   object Int extends Scalar("int")
 
+  object Long extends Scalar("long")
+
   object Float extends Scalar("float")
 
   object Double extends Scalar("double")

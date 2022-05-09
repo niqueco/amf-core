@@ -293,7 +293,7 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
       case Bool =>
         listWithScalar(b, v.value, SType.Bool)
         sources(v)
-      case Type.Int =>
+      case Type.Int | Type.Long =>
         listWithScalar(b, v.value, SType.Int)
         sources(v)
       case Type.Double | Type.Float =>
@@ -330,7 +330,7 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
               seq.values.asInstanceOf[Seq[AmfScalar]].foreach(e => iri(b, e.toString, inArray = true))
             case LiteralUri =>
               typedScalar(b, v.value.asInstanceOf[AmfScalar].toString, DataType.AnyUri, inArray = true)
-            case Type.Int =>
+            case Type.Int | Type.Long =>
               seq.values
                 .asInstanceOf[Seq[AmfScalar]]
                 .foreach(e => scalar(b, e.value.toString, SType.Int))

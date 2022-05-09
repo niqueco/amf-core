@@ -107,6 +107,7 @@ package object BaseEmitters {
         case Type.Int                 => YType.Int
         case Type.Bool                => YType.Bool
         case Type.Double | Type.Float => YType.Float
+        case Type.Long                => YType.Int
         case _                        => YType.Str
       }
     }
