@@ -1,22 +1,19 @@
 package amf.core.internal.plugins.document.graph.parser
 
+import amf.core.client.scala.model.document._
+import amf.core.client.scala.model.domain._
+import amf.core.client.scala.model.domain.extensions.{CustomDomainProperty, DomainExtension}
+import amf.core.client.scala.parse.document.SyamlParsedDocument
+import amf.core.client.scala.vocabulary.Namespace
 import amf.core.internal.annotations.DomainExtensionAnnotation
 import amf.core.internal.metamodel.Type.{Array, Bool, Iri, LiteralUri, RegExp, SortedArray, Str}
 import amf.core.internal.metamodel._
 import amf.core.internal.metamodel.document.BaseUnitModel.Location
 import amf.core.internal.metamodel.domain._
 import amf.core.internal.metamodel.domain.extensions.DomainExtensionModel
-import amf.core.client.scala.model.document._
-import amf.core.client.scala.model.domain._
-import amf.core.client.scala.model.domain.extensions.{CustomDomainProperty, DomainExtension}
 import amf.core.internal.parser._
-import amf.core.internal.parser.domain.FieldEntry
-import amf.core.client.scala.parse.document.SyamlParsedDocument
-import amf.core.client.scala.vocabulary.Namespace
-import amf.core.internal.parser.CompilerConfiguration
 import amf.core.internal.parser.domain.{Annotations, FieldEntry}
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
-import amf.core.internal.plugins.syntax.SyamlAMFErrorHandler
 import amf.core.internal.validation.CoreValidations.{NotLinkable, UnableToParseDocument, UnableToParseNode}
 import org.yaml.convert.YRead.SeqNodeYRead
 import org.yaml.model._
@@ -317,6 +314,8 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
           instance.setWithoutId(f, bool(node), annotations(nodes, sources, key))
         case Type.Int =>
           instance.setWithoutId(f, int(node), annotations(nodes, sources, key))
+        case Type.Long =>
+          instance.setWithoutId(f, long(node), annotations(nodes, sources, key))
         case Type.Float =>
           instance.setWithoutId(f, double(node), annotations(nodes, sources, key))
         case Type.Double =>

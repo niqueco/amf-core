@@ -1,5 +1,5 @@
 package amf.core.internal.plugins.document.graph.parser
-import amf.core.client.scala.config.ParsingOptions
+
 import amf.core.client.scala.errorhandling.IgnoringErrorHandler
 import amf.core.client.scala.model.document._
 import amf.core.client.scala.model.domain._
@@ -532,6 +532,8 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
           instance.setWithoutId(f, double(node), annotations(nodes, sources, key))
         case Type.Double =>
           instance.setWithoutId(f, double(node), annotations(nodes, sources, key))
+        case Type.Long =>
+          instance.setWithoutId(f, long(node), annotations(nodes, sources, key))
         case Type.DateTime =>
           instance.setWithoutId(f, date(node), annotations(nodes, sources, key))
         case Type.Date =>

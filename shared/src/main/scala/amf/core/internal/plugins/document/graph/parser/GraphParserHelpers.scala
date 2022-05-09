@@ -1,6 +1,12 @@
 package amf.core.internal.plugins.document.graph.parser
 
 import amf.core.client.scala.errorhandling.AMFErrorHandler
+import amf.core.client.scala.model.DataType
+import amf.core.client.scala.model.document.SourceMap
+import amf.core.client.scala.model.domain.AmfScalar
+import amf.core.client.scala.parse.document.ParserContext
+import amf.core.client.scala.vocabulary.Namespace.SourceMaps
+import amf.core.client.scala.vocabulary._
 import amf.core.internal.metamodel.Type._
 import amf.core.internal.metamodel.document.{ExtensionLikeModel, SourceMapModel}
 import amf.core.internal.metamodel.domain.{
@@ -10,14 +16,7 @@ import amf.core.internal.metamodel.domain.{
   RecursiveShapeModel
 }
 import amf.core.internal.metamodel.{Field, Obj, Type}
-import amf.core.client.scala.model.DataType
-import amf.core.client.scala.model.document.SourceMap
-import amf.core.client.scala.model.domain.AmfScalar
 import amf.core.internal.parser._
-import amf.core.client.scala.parse.document.ParserContext
-import amf.core.client.scala.vocabulary.Namespace.SourceMaps
-import amf.core.client.scala.vocabulary._
-import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
 import amf.core.internal.plugins.document.graph.context.{
   ExpandedTermDefinition,
@@ -53,6 +52,7 @@ trait GraphParserHelpers extends GraphContextHelper {
     detectedType match {
       case DataType.Boolean => bool(node)
       case DataType.Integer => int(node)
+      case DataType.Long    => long(node)
       case DataType.Double  => double(node)
       case DataType.Float   => double(node)
       case _                => str(node)
@@ -69,7 +69,7 @@ trait GraphParserHelpers extends GraphContextHelper {
       case _ => node.as[YScalar].text
     }
 
-  val fieldsWithId = Set(
+  val fieldsWithId: Set[Field] = Set(
       RecursiveShapeModel.FixPoint,
       LinkableElementModel.TargetId,
       ExternalSourceElementModel.ReferenceId,
@@ -102,6 +102,18 @@ trait GraphParserHelpers extends GraphContextHelper {
           case _           => node.as[YScalar].text.toInt
         }
       case _ => node.as[YScalar].text.toInt
+    }
+    AmfScalar(value)
+  }
+
+  protected def long(node: YNode)(implicit errorHandler: IllegalTypeHandler): AmfScalar = {
+    val value = node.tagType match {
+      case YType.Map =>
+        node.as[YMap].entries.find(_.key.as[String] == JsonLdKeywords.Value) match {
+          case Some(entry) => entry.value.as[YScalar].text.toLong
+          case _           => node.as[YScalar].text.toLong
+        }
+      case _ => node.as[YScalar].text.toLong
     }
     AmfScalar(value)
   }
