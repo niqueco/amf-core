@@ -17,6 +17,7 @@ import amf.core.internal.parser.domain.{Annotations, FieldEntry, Value}
 import amf.core.client.scala.vocabulary.{Namespace, NamespaceAliases, ValueType}
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
 import amf.core.internal.plugins.document.graph.emitter.flattened.utils.{Emission, EmissionQueue, Metadata}
+import amf.core.internal.plugins.document.graph.emitter.utils.SourceMapsAllowList
 import org.mulesoft.common.time.SimpleDateTime
 import org.yaml.builder.DocBuilder
 import org.yaml.builder.DocBuilder.{Entry, Part, SType, Scalar}
@@ -51,6 +52,7 @@ class FlattenedJsonLdEmitter[T](
 
   val pending: EmissionQueue[T] = EmissionQueue()
   var root: Part[T]             = _
+  val allowList: List[String]   = SourceMapsAllowList()
 
   def root(unit: BaseUnit): Unit = {
     builder.obj { ob =>
@@ -676,13 +678,16 @@ class FlattenedJsonLdEmitter[T](
   )
 
   private def createSourcesNode(id: String, sources: SourceMap, b: Entry[T]): Unit = {
-    if (options.isWithSourceMaps && sources.nonEmpty) {
+    val filteredSources  = if(options.governanceMode) filterSourceMaps(sources) else sources
+    val withSourceMaps   = options.isWithSourceMaps || options.governanceMode
+
+    if (withSourceMaps && filteredSources.nonEmpty) {
       if (options.isWithRawSourceMaps) {
         b.entry(
             "smaps",
             _.obj { b =>
-              createAnnotationNodes(id, b, sources.annotations)
-              createAnnotationNodes(id, b, sources.eternals)
+              createAnnotationNodes(id, b, filteredSources.annotations)
+              createAnnotationNodes(id, b, filteredSources.eternals)
             }
         )
       } else {
@@ -695,8 +700,8 @@ class FlattenedJsonLdEmitter[T](
                   part.obj { rb =>
                     createIdNode(rb, id)
                     createTypeNode(rb, SourceMapModel)
-                    createAnnotationNodes(id, rb, sources.annotations)
-                    createAnnotationNodes(id, rb, sources.eternals)
+                    createAnnotationNodes(id, rb, filteredSources.annotations)
+                    createAnnotationNodes(id, rb, filteredSources.eternals)
                   }
                 }) with Metadata
                 e.id = Some(id)
@@ -708,8 +713,14 @@ class FlattenedJsonLdEmitter[T](
         )
       }
     } else {
-      createEternalsAnnotationsNodes(id, options, b, sources)
+      createEternalsAnnotationsNodes(id, options, b, filteredSources)
     }
+  }
+
+  private def filterSourceMaps(sources: SourceMap) = {
+    val filteredAnnotations = sources.annotations.filter(a => allowList.contains(a._1))
+    val filteredEternals    = sources.eternals.filter(a => allowList.contains(a._1))
+    new SourceMap(filteredAnnotations, filteredEternals)
   }
 
   private def createEternalsAnnotationsNodes(
