@@ -2,21 +2,21 @@ package amf.core.internal.plugins.document.graph.emitter
 
 import amf.core.client.scala.config
 import amf.core.client.scala.config.RenderOptions
+import amf.core.client.scala.model.DataType
+import amf.core.client.scala.model.document.{BaseUnit, SourceMap}
+import amf.core.client.scala.model.domain.DataNodeOps.adoptTree
+import amf.core.client.scala.model.domain._
+import amf.core.client.scala.model.domain.extensions.DomainExtension
+import amf.core.client.scala.vocabulary.{Namespace, NamespaceAliases, ValueType}
 import amf.core.internal.annotations._
 import amf.core.internal.metamodel.Type.{Any, Array, Bool, EncodedIri, Iri, LiteralUri, SortedArray, Str}
 import amf.core.internal.metamodel._
 import amf.core.internal.metamodel.document.{ModuleModel, SourceMapModel}
 import amf.core.internal.metamodel.domain.extensions.DomainExtensionModel
 import amf.core.internal.metamodel.domain.{DomainElementModel, LinkableElementModel, ShapeModel}
-import amf.core.client.scala.model.DataType
-import amf.core.client.scala.model.document.{BaseUnit, SourceMap}
-import amf.core.client.scala.model.domain.DataNodeOps.adoptTree
-import amf.core.client.scala.model.domain._
-import amf.core.client.scala.model.domain.extensions.DomainExtension
-import amf.core.internal.parser.domain.FieldEntry
-import amf.core.client.scala.vocabulary.{Namespace, NamespaceAliases, ValueType}
 import amf.core.internal.parser.domain.{Annotations, FieldEntry, Value}
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
+import amf.core.internal.plugins.document.graph.emitter.utils.SourceMapsAllowList
 import org.mulesoft.common.time.SimpleDateTime
 import org.yaml.builder.DocBuilder
 import org.yaml.builder.DocBuilder.{Entry, Part, SType, Scalar}
@@ -50,6 +50,7 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
     with MetaModelTypeMapping {
 
   val cache: mutable.Map[String, T] = mutable.Map[String, T]()
+  val allowList: List[String]       = SourceMapsAllowList()
 
   def root(unit: BaseUnit): Unit = {
     val declaresEntry: Option[FieldEntry]   = unit.fields.entry(ModuleModel.Declares)
@@ -498,13 +499,16 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
   )
 
   private def createSourcesNode(id: String, sources: SourceMap, b: Entry[T]): Unit = {
-    if (options.isWithSourceMaps && sources.nonEmpty) {
+    val filteredSources  = if(options.governanceMode) filterSourceMaps(sources) else sources
+    val withSourceMaps   = options.isWithSourceMaps || options.governanceMode
+
+    if (withSourceMaps && filteredSources.nonEmpty) {
       if (options.isWithRawSourceMaps) {
         b.entry(
             "smaps",
             _.obj { b =>
-              createAnnotationNodes(id, b, sources.annotations)
-              createAnnotationNodes(id, b, sources.eternals)
+              createAnnotationNodes(id, b, filteredSources.annotations)
+              createAnnotationNodes(id, b, filteredSources.eternals)
             }
         )
       } else {
@@ -514,15 +518,21 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
               _.obj { b =>
                 createIdNode(b, id)
                 createTypeNode(b, SourceMapModel)
-                createAnnotationNodes(id, b, sources.annotations)
-                createAnnotationNodes(id, b, sources.eternals)
+                createAnnotationNodes(id, b, filteredSources.annotations)
+                createAnnotationNodes(id, b, filteredSources.eternals)
               }
             }
         )
       }
     } else {
-      createEternalsAnnotationsNodes(id, options, b, sources)
+      createEternalsAnnotationsNodes(id, options, b, filteredSources)
     }
+  }
+
+  private def filterSourceMaps(sources: SourceMap) = {
+    val filteredAnnotations = sources.annotations.filter(a => allowList.contains(a._1))
+    val filteredEternals    = sources.eternals.filter(a => allowList.contains(a._1))
+    new SourceMap(filteredAnnotations, filteredEternals)
   }
 
   private def createEternalsAnnotationsNodes(
