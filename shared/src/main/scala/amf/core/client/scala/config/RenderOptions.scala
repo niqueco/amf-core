@@ -23,7 +23,8 @@ case class RenderOptions(
     compactedEmission: Boolean = true,
     emitWarningForUnsupportedValidationFacets: Boolean = false,
     schema: JSONSchemaVersion = JSONSchemaVersions.Unspecified,
-    rawFieldEmission: Boolean = false
+    rawFieldEmission: Boolean = false,
+    governanceMode: Boolean = false
 ) {
 
   /** Include PrettyPrint when rendering to graph. */
@@ -104,6 +105,9 @@ case class RenderOptions(
   /** Emit raw field with original external content at graph */
   def withRawFieldEmission: RenderOptions = copy(rawFieldEmission = true)
 
+  /** Include a reduced version of source maps when rendering to graph. */
+  def withGovernanceMode: RenderOptions = copy(governanceMode = true)
+
   def isWithDocumentation: Boolean                             = documentation
   def isWithCompactedEmission: Boolean                         = compactedEmission
   def shouldEmitWarningForUnsupportedValidationFacets: Boolean = emitWarningForUnsupportedValidationFacets
@@ -119,6 +123,7 @@ case class RenderOptions(
   def isPrettyPrint: Boolean                          = prettyPrint
   def isEmitNodeIds: Boolean                          = emitNodeIds
   def isRawFieldEmission: Boolean                     = rawFieldEmission
+  def isGovernanceMode: Boolean                       = governanceMode
 
   // TODO: remove when embeddedform is deleted
   private[amf] def toGraphSerialization: GraphSerialization = {
