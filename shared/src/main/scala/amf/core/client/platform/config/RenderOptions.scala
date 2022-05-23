@@ -67,6 +67,9 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
   /** Emit raw field with original external content at graph */
   def withRawFieldEmission(): RenderOptions = _internal.withRawFieldEmission
 
+  /** Include a reduced version of source maps when rendering to graph. */
+  def withGovernanceMode: RenderOptions = _internal.withGovernanceMode
+
   def isWithDocumentation: Boolean     = _internal.isWithDocumentation
   def isWithCompactedEmission: Boolean = _internal.isWithCompactedEmission
   def schemaVersion: JSONSchemaVersion = _internal.schemaVersion
@@ -78,5 +81,5 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
   def isPrettyPrint: Boolean            = _internal.prettyPrint
   def isEmitNodeIds: Boolean            = _internal.emitNodeIds
   def isRawFieldEmission: Boolean       = _internal.rawFieldEmission
-
+  def isGovernanceMode: Boolean         = _internal.governanceMode
 }
