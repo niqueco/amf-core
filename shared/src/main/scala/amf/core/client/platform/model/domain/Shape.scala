@@ -31,6 +31,7 @@ trait Shape extends DomainElement with Linkable with NamedDomainElement {
   def ifShape: Shape                                            = _internal.ifShape
   def elseShape: Shape                                          = _internal.elseShape
   def thenShape: Shape                                          = _internal.thenShape
+  def isExtension: BoolField                                    = _internal.isExtension
 
   def withName(name: String): this.type = {
     _internal.withName(name)
@@ -128,6 +129,11 @@ trait Shape extends DomainElement with Linkable with NamedDomainElement {
 
   def withThen(thenShape: Shape): this.type = {
     _internal.withThen(thenShape)
+    this
+  }
+
+  def withIsExtension(value: Boolean): this.type = {
+    _internal.withIsExtension(value)
     this
   }
 }
