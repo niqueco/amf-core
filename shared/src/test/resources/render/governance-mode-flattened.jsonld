@@ -1,0 +1,69 @@
+{
+  "@graph": [
+    {
+      "@id": "null/BaseUnitProcessingData",
+      "@type": [
+        "http://a.ml/vocabularies/document#BaseUnitProcessingData"
+      ],
+      "http://a.ml/vocabularies/document#transformed": false
+    },
+    {
+      "@id": "amf://id1",
+      "http://a.ml/vocabularies/document#declares": [
+        {
+          "@id": "amf://id2"
+        }
+      ],
+      "@type": [
+        "http://a.ml/vocabularies/document#Document",
+        "http://a.ml/vocabularies/document#Fragment",
+        "http://a.ml/vocabularies/document#Module",
+        "http://a.ml/vocabularies/document#Unit"
+      ],
+      "http://a.ml/vocabularies/document#root": true,
+      "http://a.ml/vocabularies/document#processingData": {
+        "@id": "null/BaseUnitProcessingData"
+      }
+    },
+    {
+      "@id": "amf://id2",
+      "@type": [
+        "http://a.ml/vocabularies/data#Object",
+        "http://a.ml/vocabularies/data#Node",
+        "http://a.ml/vocabularies/document#DomainElement"
+      ],
+      "http://a.ml/vocabularies/core#name": "Node",
+      "http://a.ml/vocabularies/document-source-maps#sources": [
+        {
+          "@id": "amf://id2#/source-map"
+        }
+      ]
+    },
+    {
+      "@id": "amf://id2#/source-map",
+      "@type": [
+        "http://a.ml/vocabularies/document-source-maps#SourceMap"
+      ],
+      "http://a.ml/vocabularies/document-source-maps#declared-element": [
+        {
+          "@id": "amf://id2#/source-map/declared-element/element_0"
+        }
+      ],
+      "http://a.ml/vocabularies/document-source-maps#tracked-element": [
+        {
+          "@id": "amf://id2#/source-map/tracked-element/element_0"
+        }
+      ]
+    },
+    {
+      "@id": "amf://id2#/source-map/declared-element/element_0",
+      "http://a.ml/vocabularies/document-source-maps#element": "amf://id2",
+      "http://a.ml/vocabularies/document-source-maps#value": ""
+    },
+    {
+      "@id": "amf://id2#/source-map/tracked-element/element_0",
+      "http://a.ml/vocabularies/document-source-maps#element": "amf://id2",
+      "http://a.ml/vocabularies/document-source-maps#value": ""
+    }
+  ]
+}

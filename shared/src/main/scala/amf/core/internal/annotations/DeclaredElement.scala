@@ -6,13 +6,15 @@ import amf.core.client.scala.model.domain._
 case class TypeAlias(aliasId: String) extends Annotation
 
 case class DeclaredElement() extends SerializableAnnotation with PerpetualAnnotation {
-  override val name: String = "declared-element"
+  override val name: String = DeclaredElement.name
 
   override val value: String = ""
 }
 
 object DeclaredElement extends AnnotationGraphLoader {
   override def unparse(value: String, objects: Map[String, AmfElement]): Option[Annotation] = Some(DeclaredElement())
+
+  def name: String = "declared-element"
 }
 
 trait ErrorDeclaration[M <: DomainElementModel] extends DomainElement {

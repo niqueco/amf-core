@@ -17,7 +17,7 @@ class TrackedElement private (private val elements: Either[Set[AmfObject], Set[S
   }
 
   /** Extension name. */
-  override val name: String = "tracked-element"
+  override val name: String = TrackedElement.name
 
   /** Value as string. */
   override def value: String     = parents.mkString(",")
@@ -46,4 +46,5 @@ object TrackedElement extends AnnotationGraphLoader {
   def fromInstance(obj: AmfObject): TrackedElement        = new TrackedElement(Left(Set(obj)))
   def fromInstances(objs: Set[AmfObject]): TrackedElement = new TrackedElement(Left(objs))
   def apply(ids: Set[String]): TrackedElement             = new TrackedElement(Right(ids))
+  def name: String                                        = "tracked-element"
 }
