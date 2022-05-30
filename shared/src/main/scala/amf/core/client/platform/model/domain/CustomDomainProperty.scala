@@ -22,7 +22,7 @@ case class CustomDomainProperty(private[amf] val _internal: InternalCustomDomain
 
   def domain: ClientList[StrField] = _internal.domain.asClient
 
-  def schema: Shape = _internal.schema
+  def schema: Shape                = _internal.schema
   def serializationOrder: IntField = _internal.serializationOrder
 
   def withSerializationOrder(order: Int): this.type = {

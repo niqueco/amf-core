@@ -1,6 +1,12 @@
 package amf.core.internal.plugins.document.graph.parser
 
 import amf.core.client.scala.errorhandling.AMFErrorHandler
+import amf.core.client.scala.model.DataType
+import amf.core.client.scala.model.document.SourceMap
+import amf.core.client.scala.model.domain.AmfScalar
+import amf.core.client.scala.parse.document.ParserContext
+import amf.core.client.scala.vocabulary.Namespace.SourceMaps
+import amf.core.client.scala.vocabulary._
 import amf.core.internal.metamodel.Type._
 import amf.core.internal.metamodel.document.{ExtensionLikeModel, SourceMapModel}
 import amf.core.internal.metamodel.domain.{
@@ -10,14 +16,7 @@ import amf.core.internal.metamodel.domain.{
   RecursiveShapeModel
 }
 import amf.core.internal.metamodel.{Field, Obj, Type}
-import amf.core.client.scala.model.DataType
-import amf.core.client.scala.model.document.SourceMap
-import amf.core.client.scala.model.domain.AmfScalar
 import amf.core.internal.parser._
-import amf.core.client.scala.parse.document.ParserContext
-import amf.core.client.scala.vocabulary.Namespace.SourceMaps
-import amf.core.client.scala.vocabulary._
-import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
 import amf.core.internal.plugins.document.graph.context.{
   ExpandedTermDefinition,
@@ -53,6 +52,7 @@ trait GraphParserHelpers extends GraphContextHelper {
     detectedType match {
       case DataType.Boolean => bool(node)
       case DataType.Integer => int(node)
+      case DataType.Long    => long(node)
       case DataType.Double  => double(node)
       case DataType.Float   => double(node)
       case _                => str(node)
@@ -69,10 +69,12 @@ trait GraphParserHelpers extends GraphContextHelper {
       case _ => node.as[YScalar].text
     }
 
-  val fieldsWithId = Set(RecursiveShapeModel.FixPoint,
-                         LinkableElementModel.TargetId,
-                         ExternalSourceElementModel.ReferenceId,
-                         ExtensionLikeModel.Extends)
+  val fieldsWithId: Set[Field] = Set(
+      RecursiveShapeModel.FixPoint,
+      LinkableElementModel.TargetId,
+      ExternalSourceElementModel.ReferenceId,
+      ExtensionLikeModel.Extends
+  )
 
   protected def iri(node: YNode, field: Field)(implicit ctx: GraphParserContext): AmfScalar = {
     val uri         = stringValue(node)
@@ -100,6 +102,18 @@ trait GraphParserHelpers extends GraphContextHelper {
           case _           => node.as[YScalar].text.toInt
         }
       case _ => node.as[YScalar].text.toInt
+    }
+    AmfScalar(value)
+  }
+
+  protected def long(node: YNode)(implicit errorHandler: IllegalTypeHandler): AmfScalar = {
+    val value = node.tagType match {
+      case YType.Map =>
+        node.as[YMap].entries.find(_.key.as[String] == JsonLdKeywords.Value) match {
+          case Some(entry) => entry.value.as[YScalar].text.toLong
+          case _           => node.as[YScalar].text.toLong
+        }
+      case _ => node.as[YScalar].text.toLong
     }
     AmfScalar(value)
   }
@@ -150,11 +164,11 @@ trait GraphParserHelpers extends GraphContextHelper {
   def defineField(field: Field)(ctx: GraphParserContext): Option[TermDefinition] = {
     ctx.graphContext
       .definitions()
-      .find {
-        case (term, _) => equal(term, field.value.iri())(ctx.graphContext)
+      .find { case (term, _) =>
+        equal(term, field.value.iri())(ctx.graphContext)
       }
-      .map {
-        case (_, definition) => definition
+      .map { case (_, definition) =>
+        definition
       }
   }
 
@@ -168,7 +182,8 @@ trait GraphParserHelpers extends GraphContextHelper {
   }
 
   private def assertFieldTypeWithDefinition(field: Field, definition: ExpandedTermDefinition)(
-      ctx: GraphParserContext) = {
+      ctx: GraphParserContext
+  ) = {
     definition.`type`.forall { typeFromCtxDefinition =>
       val fieldTypes: immutable.Seq[ValueType] = field.`type`.`type`
       fieldTypes.exists(fieldType => equal(fieldType.iri(), typeFromCtxDefinition)(ctx.graphContext))
@@ -204,8 +219,10 @@ trait GraphParserHelpers extends GraphContextHelper {
               contentOfNode(e) foreach { element =>
                 val k = element.key(compactUriFromContext(SourceMapModel.Element.value.iri())).get
                 val v = element.key(compactUriFromContext(SourceMapModel.Value.value.iri())).get
-                consumer(value(SourceMapModel.Element.`type`, k.value).as[YScalar].text,
-                         value(SourceMapModel.Value.`type`, v.value).as[YScalar].text)
+                consumer(
+                    value(SourceMapModel.Element.`type`, k.value).as[YScalar].text,
+                    value(SourceMapModel.Value.`type`, v.value).as[YScalar].text
+                )
               }
             })
         case _ => // Unknown annotation identifier
@@ -220,14 +237,16 @@ trait GraphParserHelpers extends GraphContextHelper {
   val amlDocumentIris: Seq[ValueType] =
     asIris(
         Namespace.Meta,
-        Seq("DialectInstance",
+        Seq(
+            "DialectInstance",
             "DialectInstanceFragment",
             "DialectInstanceLibrary",
             "DialectInstancePatch",
             "DialectLibrary",
             "DialectFragment",
             "Dialect",
-            "Vocabulary")
+            "Vocabulary"
+        )
     )
 
   val coreDocumentIris: Seq[ValueType] =
@@ -235,11 +254,13 @@ trait GraphParserHelpers extends GraphContextHelper {
 
   val documentIris: Seq[ValueType] = amlDocumentIris ++ coreDocumentIris
 
-  /**
-    * Returns a list a sequence of type from a YMap defined in the @type entry
-    * @param map ymap input
-    * @param id some id to throw an error if type retrieval fails
-    * @param ctx graph parsing context
+  /** Returns a list a sequence of type from a YMap defined in the @type entry
+    * @param map
+    *   ymap input
+    * @param id
+    *   some id to throw an error if type retrieval fails
+    * @param ctx
+    *   graph parsing context
     * @return
     */
   protected def ts(map: YMap, id: String)(implicit ctx: GraphParserContext): Seq[String] = {
@@ -253,7 +274,10 @@ trait GraphParserHelpers extends GraphContextHelper {
         val nodes            = entry.value.toOption[Seq[YNode]].getOrElse(List(entry.value))
         val allTypes         = nodes.flatMap(v => v.toOption[YScalar].map(_.text))
         val nonDocumentTypes = allTypes.filter(t => !documentTypesSet.contains(t))
-        val documentTypes    = allTypes.filter(t => documentTypesSet.contains(t)).sorted // we just use the fact that lexical order is correct
+        val documentTypes =
+          allTypes
+            .filter(t => documentTypesSet.contains(t))
+            .sorted // we just use the fact that lexical order is correct
         nonDocumentTypes ++ documentTypes
 
       case _ =>

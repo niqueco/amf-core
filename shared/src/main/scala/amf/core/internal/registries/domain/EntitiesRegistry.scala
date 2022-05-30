@@ -3,9 +3,11 @@ package amf.core.internal.registries.domain
 import amf.core.client.scala.model.domain.AnnotationGraphLoader
 import amf.core.internal.metamodel.{ModelDefaultBuilder, Obj, Type}
 
-private[amf] case class EntitiesRegistry(domainEntities: Map[String, ModelDefaultBuilder],
-                                         serializableAnnotations: Map[String, AnnotationGraphLoader],
-                                         extensionTypes: Map[String, Map[String, Type]]) {
+private[amf] case class EntitiesRegistry(
+    domainEntities: Map[String, ModelDefaultBuilder],
+    serializableAnnotations: Map[String, AnnotationGraphLoader],
+    extensionTypes: Map[String, Map[String, Type]]
+) {
 
   def withEntities(entities: Map[String, ModelDefaultBuilder]): EntitiesRegistry =
     copy(domainEntities = domainEntities ++ entities)

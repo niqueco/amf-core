@@ -79,10 +79,10 @@ object InflectorBase {
 
   implicit class Inflector(val word: String) {
 
-    /**
-      * Replaces a found pattern in a word and returns a transformed word.
+    /** Replaces a found pattern in a word and returns a transformed word.
       *
-      * @return Replaces a found pattern in a word and returns a transformed word. Null is pattern does not match.
+      * @return
+      *   Replaces a found pattern in a word and returns a transformed word. Null is pattern does not match.
       */
     private def gsub(word: String, rule: String, replacement: String): Option[String] = {
       val pattern: Pattern = Pattern.compile(rule, Pattern.CASE_INSENSITIVE)
@@ -139,11 +139,12 @@ object InflectorBase {
       b.toString.toLowerCase()
     }
 
-    /**
-      * Generates a camel case version of a phrase from dash.
+    /** Generates a camel case version of a phrase from dash.
       *
-      * @param capitalizeFirstChar set to true if first character needs to be capitalized, false if not.
-      * @return camel case version of dash.
+      * @param capitalizeFirstChar
+      *   set to true if first character needs to be capitalized, false if not.
+      * @return
+      *   camel case version of dash.
       */
     def camelize(capitalizeFirstChar: Boolean = false): String = {
 

@@ -30,79 +30,99 @@ trait AMFErrorHandler {
     message ++ location.getOrElse("") ++ lexical.map(_.value).getOrElse("")
   }
 
-  def reportConstraint(id: String,
-                       node: String,
-                       property: Option[String],
-                       message: String,
-                       lexical: Option[LexicalInformation],
-                       level: String,
-                       location: Option[String]): Unit =
+  def reportConstraint(
+      id: String,
+      node: String,
+      property: Option[String],
+      message: String,
+      lexical: Option[LexicalInformation],
+      level: String,
+      location: Option[String]
+  ): Unit =
     report(AMFValidationResult(message, level, node, property, id, lexical, location, this))
 
-  def reportConstraint(id: String,
-                       node: AmfObject,
-                       property: Option[String],
-                       message: String,
-                       lexical: Option[LexicalInformation],
-                       level: String,
-                       location: Option[String]): Unit =
+  def reportConstraint(
+      id: String,
+      node: AmfObject,
+      property: Option[String],
+      message: String,
+      lexical: Option[LexicalInformation],
+      level: String,
+      location: Option[String]
+  ): Unit =
     report(AMFValidationResult(message, level, node, property, id, lexical, location, this))
 
-  def reportConstraint(specification: ValidationSpecification,
-                       node: String,
-                       message: String,
-                       pos: SourceLocation,
-                       level: String): Unit =
+  def reportConstraint(
+      specification: ValidationSpecification,
+      node: String,
+      message: String,
+      pos: SourceLocation,
+      level: String
+  ): Unit =
     reportConstraint(specification.id, node, None, message, lexical(pos), level, pos.sourceName.option)
 
   /** Report constraint failure of severity violation. */
-  def violation(specification: ValidationSpecification,
-                node: String,
-                property: Option[String],
-                message: String,
-                lexical: Option[LexicalInformation],
-                location: Option[String]): Unit = {
+  def violation(
+      specification: ValidationSpecification,
+      node: String,
+      property: Option[String],
+      message: String,
+      lexical: Option[LexicalInformation],
+      location: Option[String]
+  ): Unit = {
     reportConstraint(specification.id, node, property, message, lexical, VIOLATION, location)
   }
 
-  def violation(specification: ValidationSpecification,
-                node: AmfObject,
-                property: Option[String],
-                message: String,
-                lexical: Option[LexicalInformation],
-                location: Option[String]): Unit = {
+  def violation(
+      specification: ValidationSpecification,
+      node: AmfObject,
+      property: Option[String],
+      message: String,
+      lexical: Option[LexicalInformation],
+      location: Option[String]
+  ): Unit = {
     reportConstraint(specification.id, node, property, message, lexical, VIOLATION, location)
   }
 
-  def violation(specification: ValidationSpecification,
-                node: String,
-                message: String,
-                annotations: Annotations): Unit = {
-    violation(specification,
-              node,
-              None,
-              message,
-              annotations.find(classOf[LexicalInformation]),
-              annotations.find(classOf[AmfSourceLocation]).map(_.location))
+  def violation(
+      specification: ValidationSpecification,
+      node: String,
+      message: String,
+      annotations: Annotations
+  ): Unit = {
+    violation(
+        specification,
+        node,
+        None,
+        message,
+        annotations.find(classOf[LexicalInformation]),
+        annotations.find(classOf[AmfSourceLocation]).map(_.location)
+    )
   }
 
-  def violation(specification: ValidationSpecification,
-                node: AmfObject,
-                message: String,
-                annotations: Annotations): Unit = {
-    violation(specification,
-              node,
-              None,
-              message,
-              annotations.find(classOf[LexicalInformation]),
-              annotations.find(classOf[AmfSourceLocation]).map(_.location))
+  def violation(
+      specification: ValidationSpecification,
+      node: AmfObject,
+      message: String,
+      annotations: Annotations
+  ): Unit = {
+    violation(
+        specification,
+        node,
+        None,
+        message,
+        annotations.find(classOf[LexicalInformation]),
+        annotations.find(classOf[AmfSourceLocation]).map(_.location)
+    )
   }
 
   /** Report constraint failure of severity violation for the given amf object. */
-  def violation(specification: ValidationSpecification,
-                element: AmfObject,
-                target: Option[String],
-                message: String): Unit =
+  def violation(
+      specification: ValidationSpecification,
+      element: AmfObject,
+      target: Option[String],
+      message: String
+  ): Unit =
     violation(specification, element.id, target, message, element.position(), element.location())
 
   /** Report constraint failure of severity violation with location file. */
@@ -118,11 +138,13 @@ trait AMFErrorHandler {
   def violation(spec: ValidationSpecification, n: String, prop: Option[String], msg: String, l: SourceLocation): Unit =
     violation(spec, n, prop, msg, lexical(l), l.sourceName.option)
 
-  def violation(spec: ValidationSpecification,
-                n: AmfObject,
-                prop: Option[String],
-                msg: String,
-                l: SourceLocation): Unit =
+  def violation(
+      spec: ValidationSpecification,
+      n: AmfObject,
+      prop: Option[String],
+      msg: String,
+      l: SourceLocation
+  ): Unit =
     violation(spec, n, prop, msg, lexical(l), l.sourceName.option)
 
   def violation(specification: ValidationSpecification, node: String, message: String, loc: SourceLocation): Unit =
@@ -138,20 +160,24 @@ trait AMFErrorHandler {
     violation(specification, node, None, message, None, None)
 
   /** Report constraint failure of severity warning. */
-  def warning(specification: ValidationSpecification,
-              node: String,
-              property: Option[String],
-              message: String,
-              lexical: Option[LexicalInformation],
-              location: Option[String]): Unit =
+  def warning(
+      specification: ValidationSpecification,
+      node: String,
+      property: Option[String],
+      message: String,
+      lexical: Option[LexicalInformation],
+      location: Option[String]
+  ): Unit =
     reportConstraint(specification.id, node, property, message, lexical, WARNING, location)
 
-  def warning(specification: ValidationSpecification,
-              node: AmfObject,
-              property: Option[String],
-              message: String,
-              lexical: Option[LexicalInformation],
-              location: Option[String]): Unit =
+  def warning(
+      specification: ValidationSpecification,
+      node: AmfObject,
+      property: Option[String],
+      message: String,
+      lexical: Option[LexicalInformation],
+      location: Option[String]
+  ): Unit =
     reportConstraint(specification.id, node, property, message, lexical, WARNING, location)
 
   /** Report constraint failure of severity violation for the given amf object. */
@@ -159,37 +185,45 @@ trait AMFErrorHandler {
     warning(spec, element, target, message, element.position(), element.location())
 
   /** Report constraint failure of severity warning. */
-  def warning(specification: ValidationSpecification,
-              node: String,
-              property: Option[String],
-              message: String,
-              location: SourceLocation): Unit =
+  def warning(
+      specification: ValidationSpecification,
+      node: String,
+      property: Option[String],
+      message: String,
+      location: SourceLocation
+  ): Unit =
     warning(specification, node, property, message, lexical(location), location.sourceName.option)
 
-  def warning(specification: ValidationSpecification,
-              node: AmfObject,
-              property: Option[String],
-              message: String,
-              location: SourceLocation): Unit =
+  def warning(
+      specification: ValidationSpecification,
+      node: AmfObject,
+      property: Option[String],
+      message: String,
+      location: SourceLocation
+  ): Unit =
     warning(specification, node, property, message, lexical(location), location.sourceName.option)
 
   def warning(specification: ValidationSpecification, node: String, message: String, location: SourceLocation): Unit =
     warning(specification, node, None, message, location)
 
-  def warning(specification: ValidationSpecification,
-              node: AmfObject,
-              message: String,
-              location: SourceLocation): Unit =
+  def warning(
+      specification: ValidationSpecification,
+      node: AmfObject,
+      message: String,
+      location: SourceLocation
+  ): Unit =
     warning(specification, node, None, message, location)
 
   /** Report constraint failure of severity warning. */
   def warning(specification: ValidationSpecification, node: String, message: String, annotations: Annotations): Unit =
-    warning(specification,
-            node,
-            None,
-            message,
-            annotations.find(classOf[LexicalInformation]),
-            annotations.find(classOf[AmfSourceLocation]).map(_.location))
+    warning(
+        specification,
+        node,
+        None,
+        message,
+        annotations.find(classOf[LexicalInformation]),
+        annotations.find(classOf[AmfSourceLocation]).map(_.location)
+    )
 
   private def lexical(loc: SourceLocation): Option[LexicalInformation] = {
     loc.inputRange match {

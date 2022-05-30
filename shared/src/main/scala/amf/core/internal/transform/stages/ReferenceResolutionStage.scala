@@ -17,16 +17,20 @@ import amf.core.internal.transform.stages.selectors.{LinkNodeSelector, LinkSelec
 import scala.collection.mutable
 
 class ReferenceResolutionStage(keepEditingInfo: Boolean) extends TransformationStep {
-  override def transform(model: BaseUnit,
-                         errorHandler: AMFErrorHandler,
-                         configuration: AMFGraphConfiguration): BaseUnit = {
+  override def transform(
+      model: BaseUnit,
+      errorHandler: AMFErrorHandler,
+      configuration: AMFGraphConfiguration
+  ): BaseUnit = {
     new ReferenceResolutionInnerClass()(errorHandler).transform(model, configuration)
   }
 
   // TODO should be in an Adapter specific for ExtendsResolution
-  def resolveDomainElement[T <: DomainElement](element: T,
-                                               errorHandler: AMFErrorHandler,
-                                               configuration: AMFGraphConfiguration): T = {
+  def resolveDomainElement[T <: DomainElement](
+      element: T,
+      errorHandler: AMFErrorHandler,
+      configuration: AMFGraphConfiguration
+  ): T = {
     val doc = Document().withId("http://resolutionstage.com/test#")
     if (element.id != null) {
       doc.fields.setWithoutId(DocumentModel.Encodes, element)
@@ -49,14 +53,18 @@ class ReferenceResolutionStage(keepEditingInfo: Boolean) extends TransformationS
     def transform[T <: BaseUnit](model: T, configuration: AMFGraphConfiguration): T = {
       this.modelResolver = Some(new ModelReferenceResolver(model))
       model
-        .transform(LinkSelector || LinkNodeSelector,
-                   (element: DomainElement, isCycle: Boolean) => transformation(element, isCycle, configuration))
+        .transform(
+            LinkSelector || LinkNodeSelector,
+            (element: DomainElement, isCycle: Boolean) => transformation(element, isCycle, configuration)
+        )
         .asInstanceOf[T]
     }
 
-    private def transformation(element: DomainElement,
-                               isCycle: Boolean,
-                               configuration: AMFGraphConfiguration): Option[DomainElement] =
+    private def transformation(
+        element: DomainElement,
+        isCycle: Boolean,
+        configuration: AMFGraphConfiguration
+    ): Option[DomainElement] =
       transformer.transform(element, configuration)
 
     override def transformer: ElementStageTransformer[DomainElement] =

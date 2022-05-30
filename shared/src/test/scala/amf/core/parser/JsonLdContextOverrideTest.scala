@@ -11,8 +11,8 @@ class JsonLdContextOverrideTest extends AsyncFunSuite with Matchers {
 
   override implicit def executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
-  private val aliases     = Map("doc" -> "http://a.ml/vocabularies/document#", "data" -> "http://a.ml/vocabularies/data#")
-  private val plugin      = AMFGraphParsePlugin(aliases)
+  private val aliases = Map("doc" -> "http://a.ml/vocabularies/document#", "data" -> "http://a.ml/vocabularies/data#")
+  private val plugin  = AMFGraphParsePlugin(aliases)
   private val errorClient = AMFGraphConfiguration.predefined().baseUnitClient()
   private val validClient = AMFGraphConfiguration.predefined().withPlugin(plugin).baseUnitClient()
 

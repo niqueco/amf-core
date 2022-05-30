@@ -1,11 +1,12 @@
 package amf.core.client.scala.config
 
-/**
-  * Immutable implementation of parsing options
+/** Immutable implementation of parsing options
   */
-case class ParsingOptions(amfJsonLdSerialization: Boolean = true,
-                          baseUnitUrl: Option[String] = None,
-                          maxYamlReferences: Option[Int] = None) {
+case class ParsingOptions(
+    amfJsonLdSerialization: Boolean = true,
+    baseUnitUrl: Option[String] = None,
+    maxYamlReferences: Option[Int] = None
+) {
 
   /** Parse specific AMF JSON-LD serialization */
   def withoutAmfJsonLdSerialization: ParsingOptions = copy(amfJsonLdSerialization = false)

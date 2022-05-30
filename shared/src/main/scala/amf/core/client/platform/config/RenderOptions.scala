@@ -45,10 +45,14 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
   /** Include Node IDs in rendering */
   def withNodeIds(): RenderOptions = _internal.withNodeIds
 
-  /** Include documentation info in rendering such as examples, descriptions, display names, etc. (only supported for json schema rendering) */
+  /** Include documentation info in rendering such as examples, descriptions, display names, etc. (only supported for
+    * json schema rendering)
+    */
   def withDocumentation(): RenderOptions = _internal.withDocumentation
 
-  /** Remove documentation info as examples, descriptions, display names, etc. (only supported for json schema rendering) */
+  /** Remove documentation info as examples, descriptions, display names, etc. (only supported for json schema
+    * rendering)
+    */
   def withoutDocumentation(): RenderOptions = _internal.withoutDocumentation
 
   /** Render shapes extracting common types to definitions (feature is enable by default for OAS and json schema) */
@@ -63,6 +67,9 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
   /** Emit raw field with original external content at graph */
   def withRawFieldEmission(): RenderOptions = _internal.withRawFieldEmission
 
+  /** Include a reduced version of source maps when rendering to graph. */
+  def withGovernanceMode: RenderOptions = _internal.withGovernanceMode
+
   def isWithDocumentation: Boolean     = _internal.isWithDocumentation
   def isWithCompactedEmission: Boolean = _internal.isWithCompactedEmission
   def schemaVersion: JSONSchemaVersion = _internal.schemaVersion
@@ -74,5 +81,5 @@ case class RenderOptions(private[amf] val _internal: InternalRenderOptions) {
   def isPrettyPrint: Boolean            = _internal.prettyPrint
   def isEmitNodeIds: Boolean            = _internal.emitNodeIds
   def isRawFieldEmission: Boolean       = _internal.rawFieldEmission
-
+  def isGovernanceMode: Boolean         = _internal.governanceMode
 }

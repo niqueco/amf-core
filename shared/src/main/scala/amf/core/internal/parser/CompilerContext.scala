@@ -10,17 +10,18 @@ import org.mulesoft.lexer.SourceLocation
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CompilerContext(val url: String,
-                      val parserContext: ParserContext,
-                      val compilerConfig: CompilerConfiguration,
-                      val fileContext: Context,
-                      val allowedSpecs: Seq[Spec],
-                      cache: Cache) {
+class CompilerContext(
+    val url: String,
+    val parserContext: ParserContext,
+    val compilerConfig: CompilerConfiguration,
+    val fileContext: Context,
+    val allowedSpecs: Seq[Spec],
+    cache: Cache
+) {
 
   implicit val executionContext: ExecutionContext = compilerConfig.executionContext
 
-  /**
-    * The resolved path that result to be the normalized url
+  /** The resolved path that result to be the normalized url
     */
   val location: String = fileContext.current
   val path: String     = url.normalizePath
@@ -35,8 +36,9 @@ class CompilerContext(val url: String,
 
   def fetchContent(): Future[Content] = compilerConfig.resolveContent(location)
 
-  def forReference(refUrl: String, allowedSpecs: Seq[Spec] = Seq.empty)(
-      implicit executionContext: ExecutionContext): CompilerContext = {
+  def forReference(refUrl: String, allowedSpecs: Seq[Spec] = Seq.empty)(implicit
+      executionContext: ExecutionContext
+  ): CompilerContext = {
 
     new CompilerContextBuilder(refUrl, fileContext.platform, compilerConfig)
       .withFileContext(fileContext)

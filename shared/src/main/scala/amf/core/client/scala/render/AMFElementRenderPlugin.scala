@@ -15,9 +15,11 @@ trait AMFElementRenderPlugin extends AMFPlugin[ElementRenderRequest] {
   override def applies(request: ElementRenderRequest): Boolean = applies(request.element, request.config)
   def applies(element: DomainElement, config: RenderConfiguration): Boolean
 
-  def render(element: DomainElement,
-             errorHandler: AMFErrorHandler,
-             renderConfiguration: RenderConfiguration): ParsedDocument
+  def render(
+      element: DomainElement,
+      errorHandler: AMFErrorHandler,
+      renderConfiguration: RenderConfiguration
+  ): ParsedDocument
 
   override def priority: PluginPriority = NormalPriority
 }

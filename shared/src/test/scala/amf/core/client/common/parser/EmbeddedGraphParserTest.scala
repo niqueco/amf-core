@@ -41,7 +41,7 @@ trait EmbeddedGraphParserTest
 
   test("Test that file with '@type' cannot be parsed by expanded parser") {
 
-    val doc       = YDocument.parseJson("""
+    val doc = YDocument.parseJson("""
           |[{
           |  "id": "id",
           |  "@type": "some type"

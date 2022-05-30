@@ -6,9 +6,7 @@ import amf.core.client.scala.vocabulary.ValueType
 
 import scala.collection.immutable
 
-/**
-  *
-  */
+/** */
 trait Type {
   val `type`: List[ValueType]
   def typeIris: List[String] = `type`.map(_.iri())
@@ -35,6 +33,8 @@ object Type {
   object RegExp extends Scalar("regexp")
 
   object Int extends Scalar("int")
+
+  object Long extends Scalar("long")
 
   object Float extends Scalar("float")
 

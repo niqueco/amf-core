@@ -17,11 +17,11 @@ import org.yaml.model.{YMapEntry, YNode, YScalar, YType}
 
 import scala.collection.mutable
 
-case class DataNodeEmitter(dataNode: DataNode,
-                           ordering: SpecOrdering,
-                           referencesCollector: mutable.Map[String, DomainElement] = mutable.Map())(
-    implicit eh: AMFErrorHandler,
-    nodeRefIds: mutable.Map[YNode, String] = mutable.Map.empty)
+case class DataNodeEmitter(
+    dataNode: DataNode,
+    ordering: SpecOrdering,
+    referencesCollector: mutable.Map[String, DomainElement] = mutable.Map()
+)(implicit eh: AMFErrorHandler, nodeRefIds: mutable.Map[YNode, String] = mutable.Map.empty)
     extends PartEmitter {
   private val xsdString: String  = Namespace.XsdTypes.xsdString.iri()
   private val xsdInteger: String = Namespace.XsdTypes.xsdInteger.iri()
@@ -79,11 +79,13 @@ case class DataNodeEmitter(dataNode: DataNode,
       }
       .map { f =>
         val value = objectNode.fields.getValue(f)
-        DataPropertyEmitter(f.value.name.urlComponentDecoded,
-                            value.value.asInstanceOf[DataNode],
-                            ordering,
-                            referencesCollector,
-                            value.annotations)(eh, nodeRefIds)
+        DataPropertyEmitter(
+            f.value.name.urlComponentDecoded,
+            value.value.asInstanceOf[DataNode],
+            ordering,
+            referencesCollector,
+            value.annotations
+        )(eh, nodeRefIds)
       }
       .toSeq
   }
@@ -147,8 +149,8 @@ private[datanode] case class DataPropertyEmitter(
     value: DataNode,
     ordering: SpecOrdering,
     referencesCollector: mutable.Map[String, DomainElement] = mutable.Map(),
-    propertyAnnotations: Annotations)(implicit eh: AMFErrorHandler,
-                                      nodeRefIds: mutable.Map[YNode, String] = mutable.Map.empty)
+    propertyAnnotations: Annotations
+)(implicit eh: AMFErrorHandler, nodeRefIds: mutable.Map[YNode, String] = mutable.Map.empty)
     extends EntryEmitter {
 
   override def emit(b: EntryBuilder): Unit = {

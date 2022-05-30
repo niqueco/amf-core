@@ -10,8 +10,9 @@ import amf.core.internal.validation.{EffectiveValidations, ValidationConfigurati
 import scala.concurrent.{ExecutionContext, Future}
 
 trait AMFValidatePlugin extends AMFPlugin[ValidationInfo] with PlatformSecrets {
-  def validate(unit: BaseUnit, options: ValidationOptions)(
-      implicit executionContext: ExecutionContext): Future[ValidationResult]
+  def validate(unit: BaseUnit, options: ValidationOptions)(implicit
+      executionContext: ExecutionContext
+  ): Future[ValidationResult]
 }
 
 case class ValidationOptions(config: ValidationConfiguration)

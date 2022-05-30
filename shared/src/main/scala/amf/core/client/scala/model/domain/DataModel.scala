@@ -155,8 +155,10 @@ class ObjectNode(override val fields: Fields, val annotations: Annotations) exte
           val value = v.value
             .asInstanceOf[DataNode]
             .replaceVariables(values, maybeTree.map(_.subtrees).getOrElse(Nil))(
-                if (decodedKey
-                      .endsWith("?") && maybeTree.isEmpty) // TODO review this logic
+                if (
+                    decodedKey
+                      .endsWith("?") && maybeTree.isEmpty
+                ) // TODO review this logic
                   (_: String) => Unit
                 else reportError
             ) // if its an optional node, ignore the violation of the var not implement
@@ -331,9 +333,8 @@ class ArrayNode(override val fields: Fields, val annotations: Annotations) exten
     withMembers(newMembers)
   }
 
-  def positionFields(): Seq[Field] = members.zipWithIndex.map {
-    case (_, i) =>
-      Field(EncodedIri, Namespace.Data + s"pos$i", ModelDoc(ModelVocabularies.Data, s"pos$i"))
+  def positionFields(): Seq[Field] = members.zipWithIndex.map { case (_, i) =>
+    Field(EncodedIri, Namespace.Data + s"pos$i", ModelDoc(ModelVocabularies.Data, s"pos$i"))
   }
 
   override def meta: ArrayNodeModel.type = ArrayNodeModel
@@ -363,8 +364,10 @@ object ArrayNode {
 }
 
 /** Dynamic node representing a link to another dynamic node
-  * @param fields default fields for the dynamic node
-  * @param annotations default annotations for the dynamic node
+  * @param fields
+  *   default fields for the dynamic node
+  * @param annotations
+  *   default annotations for the dynamic node
   */
 class LinkNode(override val fields: Fields, val annotations: Annotations) extends DataNode(annotations) {
 

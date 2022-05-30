@@ -2,9 +2,9 @@ package amf.core.internal.annotations
 
 import amf.core.client.scala.model.domain._
 
-/**
-  * Keeps tack of the original link target information after resolution
-  * @param linkTargetId id of the linked (target) domain element
+/** Keeps tack of the original link target information after resolution
+  * @param linkTargetId
+  *   id of the linked (target) domain element
   */
 case class ResolvedLinkTargetAnnotation(linkTargetId: String)
     extends SerializableAnnotation

@@ -17,13 +17,11 @@ trait AMFParsePlugin extends AMFPlugin[Root] {
 
   def parse(document: Root, ctx: ParserContext): BaseUnit
 
-  /**
-    * media types which specifies vendors that are parsed by this plugin.
+  /** media types which specifies vendors that are parsed by this plugin.
     */
   def mediaTypes: Seq[String]
 
-  /**
-    * media types which specifies vendors that may be referenced.
+  /** media types which specifies vendors that may be referenced.
     */
   def validSpecsToReference: Seq[Spec] = Nil
 

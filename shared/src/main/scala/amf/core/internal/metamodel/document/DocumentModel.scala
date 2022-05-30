@@ -6,12 +6,13 @@ import amf.core.client.scala.model.document.Document
 import amf.core.client.scala.vocabulary.Namespace
 import amf.core.client.scala.vocabulary.ValueType
 
-/**
-  * Document metamodel
+/** Document metamodel
   *
-  * A Document is a parsing Unit that encodes a stand-alone DomainElement and can include references to other DomainElements that reference from the encoded DomainElement.
-  * Since it encodes a DomainElement, but also declares references, it behaves like a Fragment and a Module at the same time.
-  * The main difference is that the Document encoded DomainElement is stand-alone and that the references declared are supposed to be private not for re-use from other Units
+  * A Document is a parsing Unit that encodes a stand-alone DomainElement and can include references to other
+  * DomainElements that reference from the encoded DomainElement. Since it encodes a DomainElement, but also declares
+  * references, it behaves like a Fragment and a Module at the same time. The main difference is that the Document
+  * encoded DomainElement is stand-alone and that the references declared are supposed to be private not for re-use from
+  * other Units
   */
 trait DocumentModel extends FragmentModel with ModuleModel {
 

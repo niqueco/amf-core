@@ -4,9 +4,7 @@ import amf.core.internal.unsafe.PlatformSecrets
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 
-/**
-  *
-  */
+/** */
 class ContextTest extends AnyFunSuite with Matchers with PlatformSecrets {
 
   test("Test context URL resolutions") {
@@ -75,9 +73,11 @@ class ContextTest extends AnyFunSuite with Matchers with PlatformSecrets {
         "http://localhost:3000/some/intermediate/inter.raml",
         "http://localhost:3000/some/intermediate/relative-to-parent.raml"
     )
-    c3ToRoot.history should contain theSameElementsInOrderAs List("http://localhost:3000/some/input.yaml",
-                                                                  "http://localhost:3000/some/intermediate/inter.raml",
-                                                                  "http://localhost:3000/some/relative-to-root.raml")
+    c3ToRoot.history should contain theSameElementsInOrderAs List(
+        "http://localhost:3000/some/input.yaml",
+        "http://localhost:3000/some/intermediate/inter.raml",
+        "http://localhost:3000/some/relative-to-root.raml"
+    )
   }
 
   test("Resolve file path") {

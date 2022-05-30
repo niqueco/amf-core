@@ -25,18 +25,20 @@ private[amf] case class ErrorFallbackValidationPlugin(defaultSeverity: String = 
 
   override def applies(element: ValidatePayloadRequest): Boolean = true
 
-  override def validator(s: Shape,
-                         mediaType: String,
-                         config: ShapeValidationConfiguration,
-                         validationMode: ValidationMode): AMFShapePayloadValidator =
+  override def validator(
+      s: Shape,
+      mediaType: String,
+      config: ShapeValidationConfiguration,
+      validationMode: ValidationMode
+  ): AMFShapePayloadValidator =
     ErrorFallbackPayloadValidator(s, mediaType, defaultSeverity)(config.executionContext)
 
   override def priority: PluginPriority = LowPriority
 }
 
-case class ErrorFallbackPayloadValidator(shape: Shape, mediaType: String, defaultSeverity: String)(
-    implicit executionContext: ExecutionContext)
-    extends AMFShapePayloadValidator {
+case class ErrorFallbackPayloadValidator(shape: Shape, mediaType: String, defaultSeverity: String)(implicit
+    executionContext: ExecutionContext
+) extends AMFShapePayloadValidator {
 
   override def validate(payload: String): Future[AMFValidationReport] = {
     Future.successful(syncValidate(payload))

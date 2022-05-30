@@ -11,9 +11,11 @@ trait BaseUnitProcessingDataModel extends ModelDefaultBuilder {
   val Transformed: Field = Field(
       Bool,
       Document + "transformed",
-      ModelDoc(ModelVocabularies.AmlDoc,
-               "transformed",
-               "Indicates whether a BaseUnit was transformed with some pipeline")
+      ModelDoc(
+          ModelVocabularies.AmlDoc,
+          "transformed",
+          "Indicates whether a BaseUnit was transformed with some pipeline"
+      )
   )
 
   val SourceSpec: Field =
@@ -31,8 +33,10 @@ object BaseUnitProcessingDataModel extends BaseUnitProcessingDataModel {
 
   override def fields: List[Field] = List(Transformed, SourceSpec)
 
-  override val doc: ModelDoc = ModelDoc(ModelVocabularies.AmlDoc,
-                                        "BaseUnitProcessingData",
-                                        "Class that groups data related to how a Base Unit was processed")
+  override val doc: ModelDoc = ModelDoc(
+      ModelVocabularies.AmlDoc,
+      "BaseUnitProcessingData",
+      "Class that groups data related to how a Base Unit was processed"
+  )
 
 }

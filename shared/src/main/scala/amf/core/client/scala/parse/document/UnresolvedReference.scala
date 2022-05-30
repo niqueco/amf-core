@@ -28,7 +28,7 @@ trait UnresolvedReference { this: DomainElement =>
                     this,
                     None,
                     s"Unresolved reference '$reference'"
-              )
+                )
           )
       )
     case _ => throw new Exception("Cannot create unresolved reference with missing parsing context")

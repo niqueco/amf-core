@@ -1,22 +1,19 @@
 package amf.core.internal.plugins.document.graph.parser
 
+import amf.core.client.scala.model.document._
+import amf.core.client.scala.model.domain._
+import amf.core.client.scala.model.domain.extensions.{CustomDomainProperty, DomainExtension}
+import amf.core.client.scala.parse.document.SyamlParsedDocument
+import amf.core.client.scala.vocabulary.Namespace
 import amf.core.internal.annotations.DomainExtensionAnnotation
 import amf.core.internal.metamodel.Type.{Array, Bool, Iri, LiteralUri, RegExp, SortedArray, Str}
 import amf.core.internal.metamodel._
 import amf.core.internal.metamodel.document.BaseUnitModel.Location
 import amf.core.internal.metamodel.domain._
 import amf.core.internal.metamodel.domain.extensions.DomainExtensionModel
-import amf.core.client.scala.model.document._
-import amf.core.client.scala.model.domain._
-import amf.core.client.scala.model.domain.extensions.{CustomDomainProperty, DomainExtension}
 import amf.core.internal.parser._
-import amf.core.internal.parser.domain.FieldEntry
-import amf.core.client.scala.parse.document.SyamlParsedDocument
-import amf.core.client.scala.vocabulary.Namespace
-import amf.core.internal.parser.CompilerConfiguration
 import amf.core.internal.parser.domain.{Annotations, FieldEntry}
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
-import amf.core.internal.plugins.syntax.SyamlAMFErrorHandler
 import amf.core.internal.validation.CoreValidations.{NotLinkable, UnableToParseDocument, UnableToParseNode}
 import org.yaml.convert.YRead.SeqNodeYRead
 import org.yaml.model._
@@ -24,8 +21,7 @@ import org.yaml.model._
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
-/**
-  * AMF Graph parser
+/** AMF Graph parser
   */
 class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val ctx: GraphParserContext)
     extends GraphParserHelpers {
@@ -53,8 +49,8 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
         head <- seq.headOption
         parsed <- {
           head.key(JsonLdKeywords.Context, e => JsonLdGraphContextParser(e.value, ctx).parse())
-          aliases.foreach {
-            case (term, iri) => ctx.graphContext.withTerm(term, iri)
+          aliases.foreach { case (term, iri) =>
+            ctx.graphContext.withTerm(term, iri)
           }
           parse(head)
         }
@@ -93,7 +89,8 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
           case _: Obj   => parse(n.as[YMap])
           case Type.Any => Some(typedValue(n, ctx.graphContext))
           case _ =>
-            try { Some(str(value(listElement, n))) } catch {
+            try { Some(str(value(listElement, n))) }
+            catch {
               case _: Exception => None
             }
         }
@@ -230,7 +227,9 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
       val extensions = properties
         .flatMap { uri =>
           map
-            .key(transformIdFromContext(uri)) // See ADR adrs/0006-custom-domain-properties-json-ld-rendering.md last consequence item
+            .key(
+                transformIdFromContext(uri)
+            ) // See ADR adrs/0006-custom-domain-properties-json-ld-rendering.md last consequence item
             .map(entry => {
               val extension = DomainExtension()
               val obj       = entry.value.as[YMap]
@@ -271,9 +270,8 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
           .fieldsMeta()
           .find(f => e.element.is(f.value.iri()))
           .foreach(f => {
-            instance.fields.entry(f).foreach {
-              case FieldEntry(_, value) =>
-                value.value.annotations += DomainExtensionAnnotation(e)
+            instance.fields.entry(f).foreach { case FieldEntry(_, value) =>
+              value.value.annotations += DomainExtensionAnnotation(e)
             }
           })
       }
@@ -283,10 +281,12 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
       map.entries.foreach { entry =>
         val uri = expandUriFromContext(entry.key.as[String])
         val v   = entry.value
-        if (uri != JsonLdKeywords.Type && uri != JsonLdKeywords.Id && uri != DomainElementModel.Sources.value
+        if (
+            uri != JsonLdKeywords.Type && uri != JsonLdKeywords.Id && uri != DomainElementModel.Sources.value
               .iri() && uri != "smaps" &&
             uri != (Namespace.Core + "extensionName").iri() && !fields
-              .exists(_.value.iri() == uri)) { // we do this to prevent parsing name of annotations
+              .exists(_.value.iri() == uri)
+        ) { // we do this to prevent parsing name of annotations
           v.as[Seq[YMap]]
             .headOption
             .flatMap(parse)
@@ -314,6 +314,8 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
           instance.setWithoutId(f, bool(node), annotations(nodes, sources, key))
         case Type.Int =>
           instance.setWithoutId(f, int(node), annotations(nodes, sources, key))
+        case Type.Long =>
+          instance.setWithoutId(f, long(node), annotations(nodes, sources, key))
         case Type.Float =>
           instance.setWithoutId(f, double(node), annotations(nodes, sources, key))
         case Type.Double =>
@@ -366,7 +368,7 @@ object EmbeddedGraphParser {
       case Some(m: YMap) =>
         val toDocumentNamespace: String => String = a => (Namespace.Document + a).iri()
         val keys                                  = Seq("encodes", "declares", "references").map(toDocumentNamespace)
-        val types                                 = Seq("Document", "Fragment", "Module", "Unit").map(toDocumentNamespace)
+        val types = Seq("Document", "Fragment", "Module", "Unit").map(toDocumentNamespace)
 
         val acceptedKeys  = keys ++ keys.map(Namespace.defaultAliases.compact)
         val acceptedTypes = types ++ types.map(Namespace.defaultAliases.compact)

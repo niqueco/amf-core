@@ -5,8 +5,7 @@ import amf.core.internal.parser.domain.Annotations
 
 import scala.collection.mutable
 
-/**
-  * Amf element including DomainElements and BaseUnits
+/** Amf element including DomainElements and BaseUnits
   */
 trait AmfElement {
 

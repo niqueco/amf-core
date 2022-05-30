@@ -6,8 +6,7 @@ import amf.core.client.scala.model.domain.templates.{VariableValue => InternalVa
 
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
-/**
-  * VariableValue model class.
+/** VariableValue model class.
   */
 @JSExportAll
 case class VariableValue private[amf] (private[amf] val _internal: InternalVariableValue) extends DomainElement {

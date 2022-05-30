@@ -25,20 +25,25 @@ object PayloadValidationPluginConverter {
   implicit object PayloadValidationPluginMatcher
       extends BidirectionalMatcherWithEC[AMFShapePayloadValidationPlugin, ClientAMFShapePayloadValidationPlugin] {
 
-    override def asInternal(from: ClientAMFShapePayloadValidationPlugin)(
-        implicit executionContext: ExecutionContext): AMFShapePayloadValidationPlugin = {
+    override def asInternal(
+        from: ClientAMFShapePayloadValidationPlugin
+    )(implicit executionContext: ExecutionContext): AMFShapePayloadValidationPlugin = {
       new AMFShapePayloadValidationPlugin {
         override def applies(element: ValidatePayloadRequest): Boolean =
           from.applies(payload.ValidatePayloadRequest(element))
 
-        override def validator(shape: Shape,
-                               mediaType: String,
-                               config: ShapeValidationConfiguration,
-                               validationMode: ValidationMode): AMFShapePayloadValidator = {
-          val clientValidator = from.validator(platform.wrap[ClientShape](shape),
-                                               mediaType,
-                                               new payload.ShapeValidationConfiguration(config),
-                                               validationMode)
+        override def validator(
+            shape: Shape,
+            mediaType: String,
+            config: ShapeValidationConfiguration,
+            validationMode: ValidationMode
+        ): AMFShapePayloadValidator = {
+          val clientValidator = from.validator(
+              platform.wrap[ClientShape](shape),
+              mediaType,
+              new payload.ShapeValidationConfiguration(config),
+              validationMode
+          )
           new AMFShapePayloadValidator {
             override def validate(payload: String): Future[AMFValidationReport] =
               clientValidator.validate(payload).asInternal
@@ -55,22 +60,26 @@ object PayloadValidationPluginConverter {
       }
     }
 
-    override def asClient(from: AMFShapePayloadValidationPlugin)(
-        implicit executionContext: ExecutionContext): ClientAMFShapePayloadValidationPlugin = {
+    override def asClient(
+        from: AMFShapePayloadValidationPlugin
+    )(implicit executionContext: ExecutionContext): ClientAMFShapePayloadValidationPlugin = {
       new ClientAMFShapePayloadValidationPlugin {
         override def applies(element: payload.ValidatePayloadRequest): Boolean = from.applies(element._internal)
 
-        override def validator(shape: ClientShape,
-                               mediaType: String,
-                               config: payload.ShapeValidationConfiguration,
-                               validationMode: ValidationMode): ClientAMFShapePayloadValidator = {
+        override def validator(
+            shape: ClientShape,
+            mediaType: String,
+            config: payload.ShapeValidationConfiguration,
+            validationMode: ValidationMode
+        ): ClientAMFShapePayloadValidator = {
           val validator = from.validator(shape._internal, mediaType, config._internal, validationMode)
           new ClientAMFShapePayloadValidator {
             override def validate(payload: String): CoreClientConverters.ClientFuture[ClientValidationReport] =
               validator.validate(payload).asClient
 
             override def validate(
-                payloadFragment: ClientPayloadFragment): CoreClientConverters.ClientFuture[ClientValidationReport] =
+                payloadFragment: ClientPayloadFragment
+            ): CoreClientConverters.ClientFuture[ClientValidationReport] =
               validator.validate(PayloadFragmentMatcher.asInternal(payloadFragment)).asClient
 
             override def syncValidate(payload: String): ClientValidationReport =
@@ -88,8 +97,9 @@ object PayloadValidatorConverter {
   implicit object PayloadValidatorMatcher
       extends BidirectionalMatcherWithEC[AMFShapePayloadValidator, ClientAMFShapePayloadValidator] {
 
-    override def asClient(from: AMFShapePayloadValidator)(
-        implicit executionContext: ExecutionContext): ClientAMFShapePayloadValidator = {
+    override def asClient(
+        from: AMFShapePayloadValidator
+    )(implicit executionContext: ExecutionContext): ClientAMFShapePayloadValidator = {
       new ClientAMFShapePayloadValidator {
         override def validate(payload: String): ClientFuture[ClientValidationReport] =
           InternalFutureOps(from.validate(payload)).asClient
@@ -102,8 +112,9 @@ object PayloadValidatorConverter {
       }
     }
 
-    override def asInternal(from: ClientAMFShapePayloadValidator)(
-        implicit executionContext: ExecutionContext): AMFShapePayloadValidator = {
+    override def asInternal(
+        from: ClientAMFShapePayloadValidator
+    )(implicit executionContext: ExecutionContext): AMFShapePayloadValidator = {
       new AMFShapePayloadValidator {
         override def validate(payload: String): Future[AMFValidationReport] = from.validate(payload).asInternal
 

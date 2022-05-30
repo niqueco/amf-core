@@ -11,8 +11,10 @@ trait TransformationPipeline {
 }
 
 // transformation pipelines can only run internally within amf.
-private[amf] case class TransformationPipelineRunner(errorHandler: AMFErrorHandler,
-                                                     configuration: AMFGraphConfiguration) {
+private[amf] case class TransformationPipelineRunner(
+    errorHandler: AMFErrorHandler,
+    configuration: AMFGraphConfiguration
+) {
 
   private def notifyEvent(e: AMFEvent): Unit = configuration.listeners.foreach(_.notifyEvent(e))
 
@@ -20,11 +22,10 @@ private[amf] case class TransformationPipelineRunner(errorHandler: AMFErrorHandl
     notifyEvent(StartingTransformationEvent(pipeline))
     var transformedModel = model
     val steps            = pipeline.steps
-    steps.zipWithIndex foreach {
-      case (step, index) =>
-        notifyEvent(StartedTransformationStepEvent(step, index))
-        transformedModel = step.transform(transformedModel, errorHandler, configuration)
-        notifyEvent(FinishedTransformationStepEvent(step, index))
+    steps.zipWithIndex foreach { case (step, index) =>
+      notifyEvent(StartedTransformationStepEvent(step, index))
+      transformedModel = step.transform(transformedModel, errorHandler, configuration)
+      notifyEvent(FinishedTransformationStepEvent(step, index))
     }
 
     val processingData = Option(transformedModel.processingData).getOrElse(BaseUnitProcessingData())

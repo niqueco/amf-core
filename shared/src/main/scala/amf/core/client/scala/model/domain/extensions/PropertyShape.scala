@@ -11,8 +11,7 @@ import amf.core.client.scala.traversal.{ModelTraversalRegistry, ShapeTraversalRe
 import amf.core.internal.utils.AmfStrings
 import amf.core.internal.parser.domain.{Annotations, Fields}
 
-/**
-  * Property shape
+/** Property shape
   */
 case class PropertyShape(fields: Fields, annotations: Annotations) extends Shape {
 
@@ -43,10 +42,12 @@ case class PropertyShape(fields: Fields, annotations: Annotations) extends Shape
 
   override def meta: ShapeModel = PropertyShapeModel
 
-  override def cloneShape(recursionErrorHandler: Option[AMFErrorHandler],
-                          withRecursionBase: Option[String],
-                          traversal: ShapeTraversalRegistry,
-                          cloneExamples: Boolean = false): PropertyShape = {
+  override def cloneShape(
+      recursionErrorHandler: Option[AMFErrorHandler],
+      withRecursionBase: Option[String],
+      traversal: ShapeTraversalRegistry,
+      cloneExamples: Boolean = false
+  ): PropertyShape = {
     val cloned = PropertyShape(Annotations(annotations))
     cloned.id = this.id
     copyFields(recursionErrorHandler, cloned, withRecursionBase, traversal)

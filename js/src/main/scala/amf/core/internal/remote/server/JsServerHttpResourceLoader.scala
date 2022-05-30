@@ -43,9 +43,8 @@ case class JsServerHttpResourceLoader() extends BaseHttpResourceLoader {
       }
     }
 
-    promise.future.recover {
-      case e: Throwable =>
-        throw NetworkError(e)
+    promise.future.recover { case e: Throwable =>
+      throw NetworkError(e)
     }.toJSPromise
   }
 
@@ -69,11 +68,12 @@ case class JsServerHttpResourceLoader() extends BaseHttpResourceLoader {
           response.on("data", dataCb)
 
           val completedCb: js.Function = () => {
-            val mediaType = try {
-              Some(response.headers.asInstanceOf[Dictionary[String]]("content-type"))
-            } catch {
-              case e: Throwable => None
-            }
+            val mediaType =
+              try {
+                Some(response.headers.asInstanceOf[Dictionary[String]]("content-type"))
+              } catch {
+                case e: Throwable => None
+              }
             promise.success(new Content(str, resource, mediaType))
           }
           response.on("end", completedCb)

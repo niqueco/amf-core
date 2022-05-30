@@ -14,22 +14,27 @@ import amf.core.client.scala.validation.{AMFValidationResult => InternalValidati
 class AMFValidationResult(private[amf] val _internal: InternalValidationResult) {
 
   @JSExportTopLevel("AMFValidationResult")
-  def this(message: String,
-           level: String,
-           targetNode: String,
-           targetProperty: String,
-           validationId: String,
-           position: Range,
-           location: String) =
+  def this(
+      message: String,
+      level: String,
+      targetNode: String,
+      targetProperty: String,
+      validationId: String,
+      position: Range,
+      location: String
+  ) =
     this(
-        InternalValidationResult(message,
-                                 level,
-                                 targetNode,
-                                 targetProperty.option,
-                                 validationId,
-                                 Some(LexicalInformation(position)),
-                                 location.option,
-                                 null))
+        InternalValidationResult(
+            message,
+            level,
+            targetNode,
+            targetProperty.option,
+            validationId,
+            Some(LexicalInformation(position)),
+            location.option,
+            null
+        )
+    )
 
   def message: String        = _internal.message
   def severityLevel: String  = _internal.severityLevel

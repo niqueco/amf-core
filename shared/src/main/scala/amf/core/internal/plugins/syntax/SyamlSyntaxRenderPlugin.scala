@@ -34,13 +34,15 @@ object SyamlSyntaxRenderPlugin extends AMFSyntaxRenderPlugin with PlatformSecret
   override def applies(element: ParsedDocument): Boolean = element.isInstanceOf[SyamlParsedDocument]
 
   override def mediaTypes: Seq[String] =
-    Seq(`application/yaml`,
+    Seq(
+        `application/yaml`,
         `application/x-yaml`,
         `text/yaml`,
         `text/x-yaml`,
         `application/json`,
         `text/json`,
-        `text/vnd.yaml`)
+        `text/vnd.yaml`
+    )
 
   override val id: String = "syaml-render"
 

@@ -7,8 +7,7 @@ trait AMFSyntaxParsePlugin extends AMFPlugin[CharSequence] {
 
   def parse(text: CharSequence, mediaType: String, ctx: ParserContext): ParsedDocument
 
-  /**
-    * media types which specifies vendors that are parsed by this plugin.
+  /** media types which specifies vendors that are parsed by this plugin.
     */
   def mediaTypes: Seq[String]
 

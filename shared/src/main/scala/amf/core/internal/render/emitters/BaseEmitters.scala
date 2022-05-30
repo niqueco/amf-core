@@ -49,9 +49,11 @@ package object BaseEmitters {
 
   case class ScalarEmitter(v: AmfScalar, tag: YType = YType.Str) extends PartEmitter {
     override def emit(b: PartBuilder): Unit =
-      sourceOr(v.annotations, {
-        b += YNode(YScalar(v.value), tag)
-      })
+      sourceOr(
+          v.annotations, {
+            b += YNode(YScalar(v.value), tag)
+          }
+      )
 
     override def position(): Position = pos(v.annotations)
   }
@@ -63,9 +65,9 @@ package object BaseEmitters {
     override def position(): Position = pos(annotations)
   }
 
-  case class TextScalarEmitter(value: String, annotations: Annotations, tag: YType = YType.Str)(
-      implicit nodeRefIds: mutable.Map[YNode, String] = mutable.Map.empty)
-      extends PartEmitter {
+  case class TextScalarEmitter(value: String, annotations: Annotations, tag: YType = YType.Str)(implicit
+      nodeRefIds: mutable.Map[YNode, String] = mutable.Map.empty
+  ) extends PartEmitter {
     override def emit(b: PartBuilder): Unit = {
       sourceOr(
           annotations, {
@@ -82,9 +84,14 @@ package object BaseEmitters {
 
   case class LinkScalaEmitter(alias: String, annotations: Annotations) extends PartEmitter {
     override def emit(b: PartBuilder): Unit =
-      sourceOr(annotations, {
-        b += YNode(YScalar.withLocation(alias, YType.Include, annotations.sourceLocation), YType.Include) // YNode(YScalar(alias), YType.Include)
-      })
+      sourceOr(
+          annotations, {
+            b += YNode(
+                YScalar.withLocation(alias, YType.Include, annotations.sourceLocation),
+                YType.Include
+            ) // YNode(YScalar(alias), YType.Include)
+          }
+      )
 
     override def position(): Position = pos(annotations)
   }
@@ -100,6 +107,7 @@ package object BaseEmitters {
         case Type.Int                 => YType.Int
         case Type.Bool                => YType.Bool
         case Type.Double | Type.Float => YType.Float
+        case Type.Long                => YType.Int
         case _                        => YType.Str
       }
     }
@@ -178,11 +186,12 @@ package object BaseEmitters {
     }
   }
 
-  case class EntryPartEmitter(key: String,
-                              value: PartEmitter,
-                              tag: YType = YType.Str,
-                              position: Position = Position.ZERO)
-      extends EntryEmitter {
+  case class EntryPartEmitter(
+      key: String,
+      value: PartEmitter,
+      tag: YType = YType.Str,
+      position: Position = Position.ZERO
+  ) extends EntryEmitter {
 
     override def emit(b: EntryBuilder): Unit = {
       b.entry(key, value.emit _)
@@ -204,11 +213,13 @@ package object BaseEmitters {
   protected[amf] def link(b: PartBuilder, id: String): Unit = b.obj(_.entry("@id", id.trim))
 
   object ArrayEmitter {
-    def apply(key: String,
-              f: FieldEntry,
-              ordering: SpecOrdering,
-              forceMultiple: Boolean = false,
-              valuesTag: YType = YType.Str) = {
+    def apply(
+        key: String,
+        f: FieldEntry,
+        ordering: SpecOrdering,
+        forceMultiple: Boolean = false,
+        valuesTag: YType = YType.Str
+    ) = {
       val isSingleValue = isSingleValueArray(f) || isSingleValueArray(f.element)
       if (isSingleValue && !forceMultiple) SingleValueArrayEmitter(key, f, valuesTag)
       else MultipleValuesArrayEmitter(key, f, ordering, valuesTag)
@@ -236,11 +247,12 @@ package object BaseEmitters {
     }
   }
 
-  case class MultipleValuesArrayEmitter(key: String,
-                                        f: FieldEntry,
-                                        ordering: SpecOrdering,
-                                        valuesTag: YType = YType.Str)
-      extends EntryEmitter {
+  case class MultipleValuesArrayEmitter(
+      key: String,
+      f: FieldEntry,
+      ordering: SpecOrdering,
+      valuesTag: YType = YType.Str
+  ) extends EntryEmitter {
 
     override def emit(b: EntryBuilder): Unit = sourceOr(
         f.value,

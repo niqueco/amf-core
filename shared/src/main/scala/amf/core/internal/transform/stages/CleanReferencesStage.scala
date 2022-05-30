@@ -8,9 +8,11 @@ import amf.core.client.scala.model.document.{BaseUnit, Fragment, Module}
 import amf.core.client.scala.transform.TransformationStep
 
 class CleanReferencesStage() extends TransformationStep {
-  override def transform(model: BaseUnit,
-                         errorHandler: AMFErrorHandler,
-                         configuration: AMFGraphConfiguration): BaseUnit = {
+  override def transform(
+      model: BaseUnit,
+      errorHandler: AMFErrorHandler,
+      configuration: AMFGraphConfiguration
+  ): BaseUnit = {
     persistReferenceShapes(model)
 
     model.fields.removeField(BaseUnitModel.References)
