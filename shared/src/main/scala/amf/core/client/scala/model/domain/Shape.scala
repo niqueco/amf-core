@@ -35,8 +35,10 @@ abstract class Shape extends DomainElement with Linkable with NamedDomainElement
   def ifShape: Shape                                     = fields.field(If)
   def elseShape: Shape                                   = fields.field(Else)
   def thenShape: Shape                                   = fields.field(Then)
+  def isExtension: BoolField                             = fields.field(IsExtension)
 
-  def withDisplayName(name: String): this.type        = set(DisplayName, name)
+  def withDisplayName(name: String): this.type = set(DisplayName, name)
+
   def withDescription(description: String): this.type = set(Description, description)
   def withDefault(default: DataNode, annotations: Annotations = Annotations()): this.type =
     set(Default, default, annotations)
@@ -63,6 +65,7 @@ abstract class Shape extends DomainElement with Linkable with NamedDomainElement
   def withThen(thenShape: Shape): this.type          = set(Then, thenShape)
 
   def withDefaultStr(value: String): Shape.this.type = set(DefaultValueString, value, Annotations.synthesized())
+  def withIsExtension(value: Boolean): this.type     = set(IsExtension, value)
 
   def effectiveInherits: Seq[Shape] = {
     inherits.map { base =>
@@ -144,16 +147,16 @@ abstract class Shape extends DomainElement with Linkable with NamedDomainElement
         case s: Shape if s.id == this.id => s
         case a: AmfArray =>
           AmfArray(
-              a.values.map {
-                case e: Shape if e.id != this.id =>
-                  traversal.runNested((t: ShapeTraversalRegistry) => {
-                    e.cloneShape(recursionErrorHandler, recursionBase, t)
-                  })
+            a.values.map {
+              case e: Shape if e.id != this.id =>
+                traversal.runNested((t: ShapeTraversalRegistry) => {
+                  e.cloneShape(recursionErrorHandler, recursionBase, t)
+                })
 //                e.cloneShape(recursionErrorHandler, recursionBase, traversed.push(prevBaseId),Some(prevBaseId))
-                case e: Shape if e.id == this.id => e
-                case o                           => o
-              },
-              a.annotations
+              case e: Shape if e.id == this.id => e
+              case o                           => o
+            },
+            a.annotations
           )
         case o => o
       }
