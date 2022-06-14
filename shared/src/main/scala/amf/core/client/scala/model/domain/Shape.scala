@@ -1,14 +1,13 @@
 package amf.core.client.scala.model.domain
 
 import amf.core.client.scala.errorhandling.AMFErrorHandler
-import amf.core.internal.metamodel.Field
-import amf.core.internal.metamodel.domain.ShapeModel._
 import amf.core.client.scala.model.domain.extensions.{PropertyShape, ShapeExtension}
 import amf.core.client.scala.model.{BoolField, StrField}
 import amf.core.client.scala.traversal.ShapeTraversalRegistry
+import amf.core.internal.metamodel.Field
+import amf.core.internal.metamodel.domain.ShapeModel._
 import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.plugins.domain.shapes.models.ShapeHelper
-
 import scala.collection.mutable
 
 /** Shape.
@@ -66,6 +65,9 @@ abstract class Shape extends DomainElement with Linkable with NamedDomainElement
 
   def withDefaultStr(value: String): Shape.this.type = set(DefaultValueString, value, Annotations.synthesized())
   def withIsExtension(value: Boolean): this.type     = set(IsExtension, value)
+
+  def hasExplicitName: Boolean =
+    fields.exists(Name) && !fields.getValue(Name).isInferred && !fields.getValue(Name).isSynthesized
 
   def effectiveInherits: Seq[Shape] = {
     inherits.map { base =>
