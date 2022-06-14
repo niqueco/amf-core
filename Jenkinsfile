@@ -50,6 +50,19 @@ pipeline {
         }
       }
     }
+    stage('Triggers') {
+      when {
+        anyOf {
+          branch 'develop'
+        }
+      }
+      steps {
+        script {
+          echo "Triggering amf-aml on develop branch"
+          build job: 'application/AMF/amf-aml/develop', wait: false
+        }
+      }
+    }
     stage('Tag version') {
       when {
         anyOf {
