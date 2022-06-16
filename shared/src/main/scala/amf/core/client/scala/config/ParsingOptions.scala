@@ -5,7 +5,8 @@ package amf.core.client.scala.config
 case class ParsingOptions(
     amfJsonLdSerialization: Boolean = true,
     baseUnitUrl: Option[String] = None,
-    maxYamlReferences: Option[Int] = None
+    maxYamlReferences: Option[Int] = None,
+    maxJSONComplexity: Option[Int] = None
 ) {
 
   /** Parse specific AMF JSON-LD serialization */
@@ -22,6 +23,10 @@ case class ParsingOptions(
 
   /** Defines an upper bound of yaml alias that will be resolved when parsing a DataNode */
   def setMaxYamlReferences(value: Int): ParsingOptions = copy(maxYamlReferences = Some(value))
+
+  /** Defines the maximum of combining complexity that will be supported when converting a JSON Schema to an AML Dialect
+    */
+  def setMaxJSONComplexity(value: Int): ParsingOptions = copy(maxJSONComplexity = Some(value))
 
   def isAmfJsonLdSerialization: Boolean = amfJsonLdSerialization
   def definedBaseUrl: Option[String]    = baseUnitUrl

@@ -14,6 +14,7 @@ case class ParsingOptions(private[amf] val _internal: InternalParsingOptions) {
   def isAmfJsonLdSerialization: Boolean       = _internal.amfJsonLdSerialization
   def definedBaseUrl: ClientOption[String]    = _internal.baseUnitUrl.asClient
   def getMaxYamlReferences: ClientOption[Int] = _internal.maxYamlReferences.asClient
+  def getMaxJSONComplexity: ClientOption[Int] = _internal.maxJSONComplexity.asClient
 
   /** Parse specific AMF JSON-LD serialization */
   def withoutAmfJsonLdSerialization(): ParsingOptions = _internal.withoutAmfJsonLdSerialization
@@ -29,4 +30,8 @@ case class ParsingOptions(private[amf] val _internal: InternalParsingOptions) {
 
   /** Defines an upper bound of yaml alias that will be resolved when parsing a DataNode */
   def setMaxYamlReferences(value: Int): ParsingOptions = _internal.setMaxYamlReferences(value)
+
+  /** Defines the maximum of combining complexity that will be supported when converting a JSON Schema to an AML Dialect
+    */
+  def setMaxJSONComplexity(value: Int): ParsingOptions = _internal.setMaxJSONComplexity(value)
 }
