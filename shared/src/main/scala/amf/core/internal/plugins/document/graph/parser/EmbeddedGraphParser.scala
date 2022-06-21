@@ -307,7 +307,7 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
           parse(node.as[YMap]).foreach(n => instance.setWithoutId(f, n, annotations(nodes, sources, key)))
           instance
         case Iri =>
-          instance.setWithoutId(f, iri(node, f), annotations(nodes, sources, key))
+          instance.setWithoutId(f, iri(node), annotations(nodes, sources, key))
         case Str | RegExp | LiteralUri =>
           instance.setWithoutId(f, str(node), annotations(nodes, sources, key))
         case Bool =>
@@ -332,7 +332,8 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
           val items = node.as[Seq[YNode]]
           val values: Seq[AmfElement] = a.element match {
             case _: Obj    => items.flatMap(n => parse(n.as[YMap]))
-            case Str | Iri => items.map(n => str(value(a.element, n)))
+            case Str => items.map(n => str(value(a.element, n)))
+            case Iri => items.map(n => iri(value(a.element, n)))
           }
           instance.setArrayWithoutId(f, values, annotations(nodes, sources, key))
       }
