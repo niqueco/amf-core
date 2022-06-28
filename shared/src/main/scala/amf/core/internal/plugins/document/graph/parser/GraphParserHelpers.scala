@@ -69,16 +69,9 @@ trait GraphParserHelpers extends GraphContextHelper {
       case _ => node.as[YScalar].text
     }
 
-  val fieldsWithId: Set[Field] = Set(
-      RecursiveShapeModel.FixPoint,
-      LinkableElementModel.TargetId,
-      ExternalSourceElementModel.ReferenceId,
-      ExtensionLikeModel.Extends
-  )
-
-  protected def iri(node: YNode, field: Field)(implicit ctx: GraphParserContext): AmfScalar = {
+  protected def iri(node: YNode)(implicit ctx: GraphParserContext): AmfScalar = {
     val uri         = stringValue(node)
-    val transformed = if (fieldsWithId.contains(field)) transformIdFromContext(uri) else uri
+    val transformed = transformIdFromContext(uri)
     AmfScalar(transformed)
   }
 

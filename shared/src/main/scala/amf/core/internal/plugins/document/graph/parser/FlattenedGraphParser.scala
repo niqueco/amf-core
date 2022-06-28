@@ -521,7 +521,7 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
           parse(node.as[YMap]).foreach(n => instance.setWithoutId(f, n, annotations(nodes, sources, key)))
           instance
         case Iri =>
-          instance.setWithoutId(f, iri(node, f), annotations(nodes, sources, key))
+          instance.setWithoutId(f, iri(node), annotations(nodes, sources, key))
         case Str | RegExp | LiteralUri =>
           instance.setWithoutId(f, str(node), annotations(nodes, sources, key))
         case Bool =>
@@ -549,7 +549,8 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
               val rawItems = node.as[Seq[YNode]]
               val values: Seq[AmfElement] = a.element match {
                 case _: Obj    => rawItems.flatMap(n => parse(n.as[YMap]))
-                case Str | Iri => rawItems.map(n => str(value(a.element, n)))
+                case Str => rawItems.map(n => str(value(a.element, n)))
+                case Iri => rawItems.map(n => iri(value(a.element, n)))
               }
               instance.setArrayWithoutId(f, values, annotations(nodes, sources, key))
             case (YType.Map, _: Obj) =>
