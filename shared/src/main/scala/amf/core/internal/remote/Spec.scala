@@ -169,6 +169,11 @@ private[amf] case object GraphQL extends Spec {
   override val mediaType: String = `application/graphql`
 }
 
+private[amf] case object GraphQLFederation extends Spec {
+  override val id: String        = "GraphQLFederation"
+  override val mediaType: String = `application/graphql`
+}
+
 private[amf] case object JsonSchemaDialect extends Spec {
   override val id: String        = "JSON Schema Dialect"
   override val mediaType: String = `application/semantics+schema+json`
