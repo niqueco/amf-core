@@ -38,6 +38,7 @@ pipeline {
         anyOf {
           branch 'master'
           branch 'develop'
+          branch 'freeze-positions-ast'
         }
       }
       steps {
