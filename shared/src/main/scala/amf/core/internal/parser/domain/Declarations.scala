@@ -46,9 +46,13 @@ class Declarations(
       case Some(lib) => lib
       case None =>
         val result = new Declarations(errorHandler = errorHandler, futureDeclarations = futureDeclarations)
-        libraries = libraries + (alias -> result)
+        addLibrary(alias, result)
         result
     }
+  }
+
+  protected def addLibrary(alias: String, declarations: Declarations) = {
+    libraries = libraries + (alias -> declarations)
   }
 
   protected def error(message: String, pos: SourceLocation): Unit =
