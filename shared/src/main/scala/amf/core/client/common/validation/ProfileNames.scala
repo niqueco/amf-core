@@ -18,6 +18,7 @@ object ProfileNames {
   val PAYLOAD: ProfileName = PayloadProfile
   val GRPC: ProfileName    = GrpcProfile
   val GRAPHQL: ProfileName = GraphQLProfile
+  val GRAPHQL_FEDERATION: ProfileName = GraphQLProfile
 
   lazy val specProfiles: Seq[ProfileName] =
     Seq(
@@ -73,6 +74,11 @@ object GrpcProfile extends ProfileName(Grpc.id, AMFStyle) {
 }
 
 object GraphQLProfile extends ProfileName(GraphQL.id, AMFStyle) {
+  override def isOas(): Boolean  = false
+  override def isRaml(): Boolean = false
+}
+
+object GraphQLFederationProfile extends ProfileName(GraphQL.id, AMFStyle) {
   override def isOas(): Boolean  = false
   override def isRaml(): Boolean = false
 }
