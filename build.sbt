@@ -15,6 +15,7 @@ jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv()
 
 lazy val sonarUrl   = sys.env.getOrElse("SONAR_SERVER_URL", "Not found url.")
 lazy val sonarToken = sys.env.getOrElse("SONAR_SERVER_TOKEN", "Not found token.")
+lazy val branch     = sys.env.getOrElse("BRANCH_NAME", "develop")
 
 sonarProperties ++= Map(
     "sonar.login"                      -> sonarToken,
@@ -22,10 +23,10 @@ sonarProperties ++= Map(
     "sonar.projectName"                -> "AMF-CORE",
     "sonar.projectVersion"             -> "4.0.0",
     "sonar.sourceEncoding"             -> "UTF-8",
-    "sonar.github.repository"          -> "mulesoft/amf-core",
+    "sonar.github.repository"          -> "aml-org/amf-core",
+    "sonar.branch.name"                -> branch,
     "sonar.sources"                    -> "shared/src/main/scala",
     "sonar.tests"                      -> "shared/src/test/scala",
-    "sonar.scala.coverage.reportPaths" -> "jvm/target/scala-2.12/scoverage-report/scoverage.xml"
 )
 
 val settings = Common.settings ++ Common.publish ++ Seq(
