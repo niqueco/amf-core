@@ -49,7 +49,7 @@ class SyamlAMFErrorHandler(val eh: AMFErrorHandler)
   override def handle[T](error: YError, defaultValue: T): T              = syamleh.handle(error, defaultValue)
 }
 
-object SyamlSyntaxParsePlugin extends AMFSyntaxParsePlugin with PlatformSecrets {
+class SyamlSyntaxParsePlugin extends AMFSyntaxParsePlugin with PlatformSecrets {
 
   private def getFormat(mediaType: String): String = if (mediaType.contains("json")) "json" else "yaml"
 
@@ -98,3 +98,5 @@ object SyamlSyntaxParsePlugin extends AMFSyntaxParsePlugin with PlatformSecrets 
 
   override def priority: PluginPriority = NormalPriority
 }
+
+object SyamlSyntaxParsePlugin extends SyamlSyntaxParsePlugin
