@@ -35,6 +35,10 @@ object ModelVocabularies {
     ModelVocabulary("apiBinding", Namespace.ApiBinding.base, "API binding vocabulary", "api_binding.yaml")
   val Core =
     ModelVocabulary("core", Namespace.Core.base, "Core vocabulary with common classes and properties", "core.yaml")
+
+  val Federation =
+    ModelVocabulary("federation", Namespace.Federation.base, "Federation vocabulary", "federation.yaml")
+
   val Shapes = ModelVocabulary(
       "shapes",
       Namespace.Shapes.base,

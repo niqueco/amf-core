@@ -1,23 +1,11 @@
 package amf.core.internal.entities
 
-import amf.core.internal.metamodel.{ModelDefaultBuilder, Obj}
-import amf.core.internal.metamodel.document.{
-  BaseUnitProcessingDataModel,
-  BaseUnitSourceInformationModel,
-  DocumentModel,
-  ExternalFragmentModel,
-  LocationInformationModel,
-  ModuleModel,
-  SourceMapModel
-}
-import amf.core.internal.metamodel.domain.{ExternalDomainElementModel, RecursiveShapeModel}
-import amf.core.internal.metamodel.domain.extensions.{
-  CustomDomainPropertyModel,
-  DomainExtensionModel,
-  PropertyShapeModel,
-  ShapeExtensionModel
-}
+import amf.core.internal.metamodel.ModelDefaultBuilder
+import amf.core.internal.metamodel.document._
+import amf.core.internal.metamodel.domain.extensions._
+import amf.core.internal.metamodel.domain.federation.{FederationMetadataModel, ShapeFederationMetadataModel}
 import amf.core.internal.metamodel.domain.templates.VariableValueModel
+import amf.core.internal.metamodel.domain.{ExternalDomainElementModel, RecursiveShapeModel}
 
 private[amf] object CoreEntities extends Entities {
 
@@ -34,7 +22,8 @@ private[amf] object CoreEntities extends Entities {
       DomainExtensionModel,
       BaseUnitProcessingDataModel,
       BaseUnitSourceInformationModel,
-      LocationInformationModel
+      LocationInformationModel,
+      PropertyShapePathModel,
+      ShapeFederationMetadataModel
   )
-
 }
