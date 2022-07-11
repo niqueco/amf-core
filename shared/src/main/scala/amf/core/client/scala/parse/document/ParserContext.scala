@@ -20,7 +20,10 @@ class SyamlBasedParserErrorHandler(
 ) extends ParserContext(rootContextDocument, refs, futureDeclarations, config)
     with SYamlBasedErrorHandler
 
-abstract class ErrorHandlingContext(implicit val eh: AMFErrorHandler) {
+trait ErrorHandlingContext {
+
+  implicit def eh: AMFErrorHandler
+
   def violation(violationId: ValidationSpecification, node: String, message: String)
 
   def violation(violationId: ValidationSpecification, node: AmfObject, message: String)
@@ -40,9 +43,10 @@ case class ParserContext(
     refs: Seq[ParsedReference] = Seq.empty,
     futureDeclarations: FutureDeclarations = EmptyFutureDeclarations(),
     config: ParseConfiguration
-) extends ErrorHandlingContext()(config.eh)
+) extends ErrorHandlingContext
     with UnresolvedComponents {
 
+  override def eh                           = config.eh
   var globalSpace: mutable.Map[String, Any] = mutable.Map()
 
   def forLocation(newLocation: String): ParserContext = {
