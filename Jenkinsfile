@@ -1,7 +1,20 @@
 #!groovy
 @Library('amf-jenkins-library') _
 
+import groovy.transform.Field
+
+def SLACK_CHANNEL = '#amf-jenkins'
+def PRODUCT_NAME = "AMF"
+def lastStage = ""
+def color = '#FF8C00'
+def headerFlavour = "WARNING"
+@Field AMF_AML_JOB = "application/AMF/amf-aml/develop"
+
 pipeline {
+  options {
+    timeout(time: 30, unit: 'MINUTES')
+    ansiColor('xterm')
+  }
   agent {
     dockerfile {
       filename 'Dockerfile'
@@ -16,20 +29,25 @@ pipeline {
   stages {
     stage('Test') {
       steps {
-        wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
-          sh 'sbt -mem 4096 -Dfile.encoding=UTF-8 clean coverage test coverageReport'
+        script {
+          lastStage = env.STAGE_NAME
+          sh 'sbt -mem 4096 -Dfile.encoding=UTF-8 clean coverage test coverageAggregate'
         }
       }
     }
     stage('Coverage') {
       when {
-        branch 'develop'
+        anyOf {
+            branch 'develop'
+            branch 'fix-sonar-integration'
+        }
       }
       steps {
-        wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
-          withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'sonarqube-official', passwordVariable: 'SONAR_SERVER_TOKEN', usernameVariable: 'SONAR_SERVER_URL']]) {
-            sh 'sbt -Dsonar.host.url=${SONAR_SERVER_URL} sonarScan'
-          }
+        withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'sonarqube-official', passwordVariable: 'SONAR_SERVER_TOKEN', usernameVariable: 'SONAR_SERVER_URL']]) {
+            script {
+                lastStage = env.STAGE_NAME
+                sh 'sbt -Dsonar.host.url=${SONAR_SERVER_URL} sonarScan'
+            }
         }
       }
     }
@@ -41,12 +59,9 @@ pipeline {
         }
       }
       steps {
-        wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
-          sh '''
-              echo "about to publish in sbt"
-              sbt publish
-              echo "sbt publishing successful"
-          '''
+        script {
+            lastStage = env.STAGE_NAME
+            sh 'sbt publish'
         }
       }
     }
@@ -58,8 +73,9 @@ pipeline {
       }
       steps {
         script {
+          lastStage = env.STAGE_NAME
           echo "Triggering amf-aml on develop branch"
-          build job: 'application/AMF/amf-aml/develop', wait: false
+          build job: AMF_AML_JOB, wait: false
         }
       }
     }
@@ -73,11 +89,20 @@ pipeline {
       steps {
         withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'github-salt', passwordVariable: 'GITHUB_PASS', usernameVariable: 'GITHUB_USER']]) {
           script {
+            lastStage = env.STAGE_NAME
             def version = sbtArtifactVersion("coreJVM")
             tagCommitToGithub(version)
           }
         }
       }
+    }
+  }
+  post {
+      unsuccessful {
+        failureSlackNotify(lastStage, SLACK_CHANNEL, PRODUCT_NAME)
+      }
+      success {
+        successSlackNotify(SLACK_CHANNEL, PRODUCT_NAME)
     }
   }
 }
