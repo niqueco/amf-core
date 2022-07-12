@@ -27,6 +27,7 @@ sonarProperties ++= Map(
     "sonar.branch.name"                -> branch,
     "sonar.sources"                    -> "shared/src/main/scala",
     "sonar.tests"                      -> "shared/src/test/scala",
+    "sonar.scala.scoverage.reportPath" -> "target/scala-2.12/scoverage-report/scoverage.xml"
 )
 
 val settings = Common.settings ++ Common.publish ++ Seq(
