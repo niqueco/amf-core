@@ -7,6 +7,7 @@ import amf.core.internal.metamodel.Type.EncodedIri
 import amf.core.internal.metamodel.domain.DataNodeModel._
 import amf.core.internal.metamodel.domain.{ScalarNodeModel, _}
 import amf.core.client.scala.model.domain.ScalarNode.forDataType
+import amf.core.client.scala.model.domain.federation.HasShapeFederationMetadata
 import amf.core.client.scala.model.domain.templates.Variable
 import amf.core.client.scala.model.{DataType, StrField}
 import amf.core.internal.parser.domain.FieldEntry
@@ -22,7 +23,7 @@ import scala.collection.mutable
 
 /** Base class for all dynamic DataNodes
   */
-abstract class DataNode(annotations: Annotations) extends DomainElement with NamedDomainElement {
+abstract class DataNode(annotations: Annotations) extends DomainElement with NamedDomainElement with HasShapeFederationMetadata {
 
   override protected def nameField: Field = DataNodeModel.Name // ??
 
@@ -177,7 +178,7 @@ class ObjectNode(override val fields: Fields, val annotations: Annotations) exte
     override def fields: List[Field] =
       propertyFields().toList ++ DataNodeModel.fields
 
-    override def modelInstance: AmfObject = ObjectNode()
+    override def modelInstance: ObjectNode = ObjectNode()
 
     override val doc: ModelDoc = ModelDoc(
         ModelVocabularies.Data,

@@ -1,35 +1,36 @@
 package amf.core.client.scala.model.domain.extensions
 
 import amf.core.client.scala.errorhandling.AMFErrorHandler
-import amf.core.internal.metamodel.domain.ShapeModel
-import amf.core.internal.metamodel.domain.extensions.PropertyShapeModel
-import amf.core.internal.metamodel.domain.extensions.PropertyShapeModel._
 import amf.core.client.scala.model.domain.{DomainElement, Linkable, Shape}
 import amf.core.client.scala.model.{IntField, StrField}
-import amf.core.internal.parser.domain.Fields
-import amf.core.client.scala.traversal.{ModelTraversalRegistry, ShapeTraversalRegistry}
-import amf.core.internal.utils.AmfStrings
+import amf.core.client.scala.traversal.ShapeTraversalRegistry
+import amf.core.internal.metamodel.domain.extensions.PropertyShapeModel
+import amf.core.internal.metamodel.domain.extensions.PropertyShapeModel._
 import amf.core.internal.parser.domain.{Annotations, Fields}
+import amf.core.internal.utils.AmfStrings
 
 /** Property shape
   */
-case class PropertyShape(fields: Fields, annotations: Annotations) extends Shape {
+case class PropertyShape(fields: Fields, annotations: Annotations)
+    extends Shape {
 
-  def path: StrField               = fields.field(Path)
-  def range: Shape                 = fields.field(Range)
-  def minCount: IntField           = fields.field(MinCount)
-  def maxCount: IntField           = fields.field(MaxCount)
-  def patternName: StrField        = fields.field(PatternName)
-  def serializationOrder: IntField = fields.field(SerializationOrder)
+  def path: StrField                   = fields.field(Path)
+  def range: Shape                     = fields.field(Range)
+  def minCount: IntField               = fields.field(MinCount)
+  def maxCount: IntField               = fields.field(MaxCount)
+  def patternName: StrField            = fields.field(PatternName)
+  def serializationOrder: IntField     = fields.field(SerializationOrder)
+  def requires: Seq[PropertyShapePath] = fields.field(Requires)
+  def provides: Seq[PropertyShapePath] = fields.field(Provides)
 
-  def withSerializationOrder(order: Int): this.type = set(SerializationOrder, order)
-
-  def withPath(path: String): this.type  = set(Path, path)
-  def withRange(range: Shape): this.type = set(Range, range)
-
-  def withMinCount(min: Int): this.type           = set(MinCount, min)
-  def withMaxCount(max: Int): this.type           = set(MaxCount, max)
-  def withPatternName(pattern: String): this.type = set(PatternName, pattern)
+  def withSerializationOrder(order: Int): this.type             = set(SerializationOrder, order)
+  def withPath(path: String): this.type                         = set(Path, path)
+  def withRange(range: Shape): this.type                        = set(Range, range)
+  def withMinCount(min: Int): this.type                         = set(MinCount, min)
+  def withMaxCount(max: Int): this.type                         = set(MaxCount, max)
+  def withPatternName(pattern: String): this.type               = set(PatternName, pattern)
+  def withRequires(requires: Seq[PropertyShapePath]): this.type = setArray(Requires, requires)
+  def withProvides(provides: Seq[PropertyShapePath]): this.type = setArray(Provides, provides)
 
   override def adopted(parent: String, cycle: Seq[String] = Seq()): this.type = {
     simpleAdoption(parent)
@@ -40,7 +41,7 @@ case class PropertyShape(fields: Fields, annotations: Annotations) extends Shape
 
   override def linkCopy(): PropertyShape = PropertyShape().withId(id)
 
-  override def meta: ShapeModel = PropertyShapeModel
+  override def meta: PropertyShapeModel.type = PropertyShapeModel
 
   override def cloneShape(
       recursionErrorHandler: Option[AMFErrorHandler],

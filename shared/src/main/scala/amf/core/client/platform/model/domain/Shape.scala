@@ -1,5 +1,6 @@
 package amf.core.client.platform.model.domain
 
+import amf.core.client.platform.model.domain.federation.ShapeFederationMetadata
 import amf.core.internal.convert.CoreClientConverters._
 import amf.core.client.platform.model.{BoolField, StrField}
 import amf.core.client.scala.model.domain.{Shape => InternalShape}
@@ -32,6 +33,8 @@ trait Shape extends DomainElement with Linkable with NamedDomainElement {
   def elseShape: Shape                                          = _internal.elseShape
   def thenShape: Shape                                          = _internal.thenShape
   def isExtension: BoolField                                    = _internal.isExtension
+  def isStub: BoolField                                         = _internal.isStub
+  def federationMetadata: ShapeFederationMetadata               = _internal.federationMetadata
 
   def withName(name: String): this.type = {
     _internal.withName(name)
@@ -136,6 +139,17 @@ trait Shape extends DomainElement with Linkable with NamedDomainElement {
     _internal.withIsExtension(value)
     this
   }
+
+  def withIsStub(value: Boolean): this.type = {
+    _internal.withIsStub(value)
+    this
+  }
+
+  def withFederationMetadata(metadata: ShapeFederationMetadata): this.type = {
+    _internal.withFederationMetadata(metadata)
+    this
+  }
+
 
   def hasExplicitName: Boolean = _internal.hasExplicitName
 }
