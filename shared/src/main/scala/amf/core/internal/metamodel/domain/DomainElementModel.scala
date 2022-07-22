@@ -55,7 +55,7 @@ object ModelVocabularies {
   val Security =
     ModelVocabulary("security", Namespace.Security.base, "Vocabulary for HTTP security information", "security.yaml")
 
-  val all: Seq[ModelVocabulary] = Seq(AmlDoc, Core, ApiContract, ApiBinding, Shapes, Data, Security, Meta)
+  val all: Seq[ModelVocabulary] = Seq(AmlDoc, Core, ApiContract, ApiBinding, Shapes, Data, Security, Meta, Federation)
 }
 
 object ExternalModelVocabularies {
