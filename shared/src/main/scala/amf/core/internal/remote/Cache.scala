@@ -15,17 +15,18 @@ class Cache {
   protected val dependencyGraph: mutable.Map[String, Set[String]] = mutable.Map()
 
   protected def addFromToEdge(from: String, to: String): Unit = {
-    val fromNodes = dependencyGraph.getOrElse(to, Set())
-    dependencyGraph.update(to, fromNodes.+(from))
+    val toNodes = dependencyGraph.getOrElse(from, Set())
+    dependencyGraph.update(from, toNodes.+(to))
   }
 
-  protected def findCycles(node: String, acc: Set[String] = Set()): Boolean = {
-    if (acc.contains(node)) {
-      true
-    } else {
-      val sources = dependencyGraph.getOrElse(node, Set())
+  protected def findCycles(from: String): Boolean = findCycles(from, from, isFirstLookup = true)
+
+  protected def findCycles(toLook: String, current: String, isFirstLookup: Boolean): Boolean = {
+    if (toLook == current && !isFirstLookup) true
+    else {
+      val sources = dependencyGraph.getOrElse(current, Set())
       sources.exists { source =>
-        findCycles(source, acc + node)
+        findCycles(toLook, source, isFirstLookup = false)
       }
     }
   }
