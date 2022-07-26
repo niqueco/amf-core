@@ -55,12 +55,12 @@ class Fields {
 
     def empty(): T =
       (f.`type` match {
-        case Str | Iri    => StrFieldImpl(None, Annotations(), f)
-        case Bool         => BoolFieldImpl(None, Annotations(), f)
-        case Type.Int     => IntFieldImpl(None, Annotations(), f)
-        case Type.Float   => DoubleFieldImpl(None, Annotations(), f)
-        case Type.Double  => DoubleFieldImpl(None, Annotations(), f)
-        case Type.Any     => AnyFieldImpl(None, Annotations(), f)
+        case Str | Iri    => StrFieldImpl(f.defaultValue.asInstanceOf[Option[String]], Annotations(), f)
+        case Bool         => BoolFieldImpl(f.defaultValue.asInstanceOf[Option[Boolean]], Annotations(), f)
+        case Type.Int     => IntFieldImpl(f.defaultValue.asInstanceOf[Option[Int]], Annotations(), f)
+        case Type.Float   => DoubleFieldImpl(f.defaultValue.asInstanceOf[Option[Double]], Annotations(), f)
+        case Type.Double  => DoubleFieldImpl(f.defaultValue.asInstanceOf[Option[Double]], Annotations(), f)
+        case Type.Any     => AnyFieldImpl(f.defaultValue, Annotations(), f)
         case ArrayLike(_) => Nil
         case _: Obj       => null
       }).asInstanceOf[T]
@@ -267,10 +267,10 @@ class Value(var value: AmfElement, val annotations: Annotations) {
             value = resolved
           } else {
             value = resolved.resolveUnreferencedLink(
-                linkable.refName,
-                linkable.annotations,
-                linkable,
-                linkable.supportsRecursion.option().getOrElse(false)
+              linkable.refName,
+              linkable.annotations,
+              linkable,
+              linkable.supportsRecursion.option().getOrElse(false)
             ) // mutation of the field value
           }
           val syntax = value match {
@@ -294,10 +294,10 @@ class Value(var value: AmfElement, val annotations: Annotations) {
                   unresolved += (element
                     .asInstanceOf[Linkable] -> syntax) // we need to collect the linkables unresolved instances, to run the after resolve trigger. This will end the father parser logic when its necessary
                   resolved.resolveUnreferencedLink(
-                      linkable.refName,
-                      linkable.annotations,
-                      element,
-                      linkable.supportsRecursion.option().getOrElse(false)
+                    linkable.refName,
+                    linkable.annotations,
+                    element,
+                    linkable.supportsRecursion.option().getOrElse(false)
                   )
                 } else {
                   element
