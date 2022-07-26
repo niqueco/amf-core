@@ -7,7 +7,7 @@ import amf.core.client.scala.model.domain.extensions.CustomDomainProperty
 import amf.core.internal.utils.QName
 import amf.core.internal.parser.domain.SearchScope.{All, Fragments, Named}
 import amf.core.internal.validation.CoreValidations.DeclarationNotFound
-import org.mulesoft.lexer.SourceLocation
+import org.mulesoft.common.client.lexical.SourceLocation
 
 class Declarations(
     var libraries: Map[String, Declarations] = Map(),
@@ -46,9 +46,13 @@ class Declarations(
       case Some(lib) => lib
       case None =>
         val result = new Declarations(errorHandler = errorHandler, futureDeclarations = futureDeclarations)
-        libraries = libraries + (alias -> result)
+        addLibrary(alias, result)
         result
     }
+  }
+
+  protected def addLibrary(alias: String, declarations: Declarations) = {
+    libraries = libraries + (alias -> declarations)
   }
 
   protected def error(message: String, pos: SourceLocation): Unit =

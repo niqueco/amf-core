@@ -19,6 +19,7 @@ object Spec {
       case JsonSchema.id        => Some(JsonSchema)
       case Grpc.id              => Some(Grpc)
       case GraphQL.id           => Some(GraphQL)
+      case GraphQLFederation.id => Some(GraphQLFederation)
       case JsonSchemaDialect.id => Some(JsonSchemaDialect)
       case _                    => None
     }
@@ -30,18 +31,19 @@ object Spec {
     case _          => UnknownSpec(name)
   }
 
-  @JSExport val RAML08: Spec            = Raml08
-  @JSExport val RAML10: Spec            = Raml10
-  @JSExport val OAS20: Spec             = Oas20
-  @JSExport val OAS30: Spec             = Oas30
-  @JSExport val ASYNC20: Spec           = AsyncApi20
-  @JSExport val AMF: Spec               = Amf
-  @JSExport val PAYLOAD: Spec           = Payload
-  @JSExport val AML: Spec               = Aml
-  @JSExport val JSONSCHEMA: Spec        = JsonSchema
-  @JSExport val GRPC: Spec              = Grpc
-  @JSExport val GRAPHQL: Spec           = GraphQL
-  @JSExport val JSONSCHEMADIALECT: Spec = JsonSchemaDialect
+  @JSExport val RAML08: Spec             = Raml08
+  @JSExport val RAML10: Spec             = Raml10
+  @JSExport val OAS20: Spec              = Oas20
+  @JSExport val OAS30: Spec              = Oas30
+  @JSExport val ASYNC20: Spec            = AsyncApi20
+  @JSExport val AMF: Spec                = Amf
+  @JSExport val PAYLOAD: Spec            = Payload
+  @JSExport val AML: Spec                = Aml
+  @JSExport val JSONSCHEMA: Spec         = JsonSchema
+  @JSExport val GRPC: Spec               = Grpc
+  @JSExport val GRAPHQL: Spec            = GraphQL
+  @JSExport val GRAPHQL_FEDERATION: Spec = GraphQLFederation
+  @JSExport val JSONSCHEMADIALECT: Spec  = JsonSchemaDialect
 }
 
 @JSExportAll
@@ -166,6 +168,11 @@ private[amf] case object Grpc extends Spec {
 
 private[amf] case object GraphQL extends Spec {
   override val id: String        = "GraphQL"
+  override val mediaType: String = `application/graphql`
+}
+
+private[amf] case object GraphQLFederation extends Spec {
+  override val id: String        = "GraphQLFederation"
   override val mediaType: String = `application/graphql`
 }
 

@@ -22,6 +22,7 @@ object Namespace {
   val SourceMaps: Namespace       = Namespace("http://a.ml/vocabularies/document-source-maps#")
   val Shacl: Namespace            = Namespace("http://www.w3.org/ns/shacl#")
   val Core: Namespace             = Namespace("http://a.ml/vocabularies/core#")
+  val Federation: Namespace       = Namespace("http://a.ml/vocabularies/federation#")
   val Xsd: Namespace              = Namespace("http://www.w3.org/2001/XMLSchema#")
   val AnonShapes: Namespace       = Namespace("http://a.ml/vocabularies/shapes/anon#")
   val Rdf: Namespace              = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
@@ -46,6 +47,7 @@ object Namespace {
     case "http://a.ml/vocabularies/document-source-maps" => Some(SourceMaps)
     case "http://www.w3.org/ns/shacl"                    => Some(Shacl)
     case "http://a.ml/vocabularies/core#"                => Some(Core)
+    case "http://a.ml/vocabularies/federation#"          => Some(Federation)
     case "http://www.w3.org/2001/XMLSchema"              => Some(Xsd)
     case "http://a.ml/vocabularies/shapes/anon"          => Some(AnonShapes)
     case "http://www.w3.org/1999/02/22-rdf-syntax-ns"    => Some(Rdf)
@@ -135,27 +137,28 @@ object NamespaceAliases {
 
   // Leave as function, throws NullPointerException on initialization if it is val.
   private def knownAliases: Map[String, Namespace] = ListMap(
-      "shacl"          -> Namespace.Shacl,
-      "sh"             -> Namespace.Shacl,
-      "raml-shapes"    -> Namespace.Shapes,
-      "shapes"         -> Namespace.Shapes,
-      "doc"            -> Namespace.Document,
-      "raml-doc"       -> Namespace.Document,
-      "rdf"            -> Namespace.Rdf,
-      "security"       -> Namespace.Security,
-      "core"           -> Namespace.Core,
-      "xsd"            -> Namespace.Xsd,
-      "amf-parser"     -> Namespace.AmfParser,
-      "amf-core"       -> Namespace.AmfCore,
-      "apiContract"    -> Namespace.ApiContract,
-      "apiBinding"     -> Namespace.ApiBinding,
-      "amf-resolution" -> Namespace.AmfResolution,
-      "amf-validation" -> Namespace.AmfValidation,
-      "amf-render"     -> Namespace.AmfRender,
-      "data"           -> Namespace.Data,
-      "sourcemaps"     -> Namespace.SourceMaps,
-      "meta"           -> Namespace.Meta,
-      "owl"            -> Namespace.Owl,
-      "rdfs"           -> Namespace.Rdfs
+    "shacl"          -> Namespace.Shacl,
+    "sh"             -> Namespace.Shacl,
+    "raml-shapes"    -> Namespace.Shapes,
+    "shapes"         -> Namespace.Shapes,
+    "doc"            -> Namespace.Document,
+    "raml-doc"       -> Namespace.Document,
+    "rdf"            -> Namespace.Rdf,
+    "security"       -> Namespace.Security,
+    "core"           -> Namespace.Core,
+    "federation"     -> Namespace.Federation,
+    "xsd"            -> Namespace.Xsd,
+    "amf-parser"     -> Namespace.AmfParser,
+    "amf-core"       -> Namespace.AmfCore,
+    "apiContract"    -> Namespace.ApiContract,
+    "apiBinding"     -> Namespace.ApiBinding,
+    "amf-resolution" -> Namespace.AmfResolution,
+    "amf-validation" -> Namespace.AmfValidation,
+    "amf-render"     -> Namespace.AmfRender,
+    "data"           -> Namespace.Data,
+    "sourcemaps"     -> Namespace.SourceMaps,
+    "meta"           -> Namespace.Meta,
+    "owl"            -> Namespace.Owl,
+    "rdfs"           -> Namespace.Rdfs
   )
 }

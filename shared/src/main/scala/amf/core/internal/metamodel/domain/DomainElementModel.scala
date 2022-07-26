@@ -35,6 +35,10 @@ object ModelVocabularies {
     ModelVocabulary("apiBinding", Namespace.ApiBinding.base, "API binding vocabulary", "api_binding.yaml")
   val Core =
     ModelVocabulary("core", Namespace.Core.base, "Core vocabulary with common classes and properties", "core.yaml")
+
+  val Federation =
+    ModelVocabulary("federation", Namespace.Federation.base, "Federation vocabulary", "federation.yaml")
+
   val Shapes = ModelVocabulary(
       "shapes",
       Namespace.Shapes.base,
@@ -51,7 +55,7 @@ object ModelVocabularies {
   val Security =
     ModelVocabulary("security", Namespace.Security.base, "Vocabulary for HTTP security information", "security.yaml")
 
-  val all: Seq[ModelVocabulary] = Seq(AmlDoc, Core, ApiContract, ApiBinding, Shapes, Data, Security, Meta)
+  val all: Seq[ModelVocabulary] = Seq(AmlDoc, Core, ApiContract, ApiBinding, Shapes, Data, Security, Meta, Federation)
 }
 
 object ExternalModelVocabularies {

@@ -3,11 +3,9 @@ package amf.core.internal.convert
 import amf.core.client.platform.model.document.{Document, ExternalFragment, Fragment, Module}
 import amf.core.client.platform.model.domain._
 import amf.core.internal.convert.CoreClientConverters._
-import amf.core.internal.metamodel.document.{
-  BaseUnitProcessingDataModel,
-  BaseUnitSourceInformationModel,
-  LocationInformationModel
-}
+import amf.core.internal.metamodel.document.{BaseUnitProcessingDataModel, BaseUnitSourceInformationModel, LocationInformationModel}
+import amf.core.internal.metamodel.domain.extensions.PropertyShapePathModel
+import amf.core.internal.metamodel.domain.federation.ShapeFederationMetadataModel
 import amf.core.internal.remote.Platform
 
 /** Shared Core registrations. */
@@ -79,6 +77,14 @@ object CoreRegister extends UniqueInitializer {
       case v: amf.core.client.scala.model.document.LocationInformation =>
         new amf.core.client.platform.model.document.LocationInformation(v)
     }
+    platform.registerWrapper(PropertyShapePathModel) {
+      case s: amf.core.client.scala.model.domain.extensions.PropertyShapePath =>
+        amf.core.client.platform.model.domain.PropertyShapePath(s)
+    }
+    platform.registerWrapper(ShapeFederationMetadataModel) {
+      case s: amf.core.client.scala.model.domain.federation.ShapeFederationMetadata => amf.core.client.platform.model.domain.federation.ShapeFederationMetadata(s)
+    }
+
   }
 
 }

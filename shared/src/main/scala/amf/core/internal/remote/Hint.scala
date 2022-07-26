@@ -10,6 +10,8 @@ case class Hint(spec: Spec, syntax: Syntax, kind: ReferenceKind = UnspecifiedRef
 
 object GraphQLHint extends Hint(GraphQL, GraphQLSyntax)
 
+object GraphQLFederationHint extends Hint(GraphQLFederation, GraphQLSyntax)
+
 object GrpcProtoHint extends Hint(Grpc, Protobuf)
 
 object AmlHint extends Hint(Aml, Yaml)

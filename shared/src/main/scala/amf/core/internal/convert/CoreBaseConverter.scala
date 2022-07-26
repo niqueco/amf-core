@@ -1,7 +1,7 @@
 package amf.core.internal.convert
 
 import amf.core.client.common.remote.Content
-import amf.core.client.common.validation.{ProfileName, ValidationMode, ValidationProfile}
+import amf.core.client.common.validation.{ProfileName, ValidationProfile}
 import amf.core.client.platform
 import amf.core.client.platform.config.{
   AMFEventConverter,
@@ -56,33 +56,22 @@ import amf.core.client.platform.{config, model, transform, AMFResult => ClientAM
 import amf.core.client.scala.config._
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model._
-import amf.core.client.scala.model.document.{
-  BaseUnit,
-  BaseUnitProcessingData,
-  BaseUnitSourceInformation,
-  LocationInformation,
-  Document,
-  Module,
-  PayloadFragment
-}
+import amf.core.client.scala.model.document._
 import amf.core.client.scala.model.domain._
 import amf.core.client.scala.model.domain.extensions.{
   CustomDomainProperty,
   DomainExtension,
   PropertyShape,
+  PropertyShapePath,
   ShapeExtension
 }
+import amf.core.client.scala.model.domain.federation.ShapeFederationMetadata
 import amf.core.client.scala.model.domain.templates.{AbstractDeclaration, ParametrizedDeclaration, VariableValue}
 import amf.core.client.scala.resource.ResourceLoader
 import amf.core.client.scala.transform.{TransformationPipelineBuilder, TransformationStep}
-import amf.core.client.scala.validation.payload.{
-  AMFShapePayloadValidator,
-  ShapeValidationConfiguration,
-  ValidatePayloadRequest
-}
+import amf.core.client.scala.validation.payload.{ShapeValidationConfiguration, ValidatePayloadRequest}
 import amf.core.client.scala.validation.{AMFValidationReport, AMFValidationResult}
 import amf.core.client.scala.{AMFGraphConfiguration, AMFObjectResult, AMFParseResult, AMFResult}
-import amf.core.internal.convert.PayloadValidatorConverter.PayloadValidatorMatcher
 import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.reference.UnitCacheAdapter
 import amf.core.internal.remote.Spec
@@ -134,7 +123,9 @@ trait CoreBaseConverter
     with AmfObjectResultConverter
     with BaseUnitProcessingDataConverter
     with BaseUnitSourceInformationConverter
-    with LocationInformationConverter {
+    with LocationInformationConverter
+    with ShapeFederationMetadataConverter
+    with PropertyShapePathConverter {
 
   implicit def asClient[Internal, Client](from: Internal)(implicit m: InternalClientMatcher[Internal, Client]): Client =
     m.asClient(from)
@@ -672,9 +663,9 @@ trait TransformationStepConverter extends BaseUnitConverter with AMFGraphConfigu
         {
           val result: BaseUnit =
             from.transform(
-                BaseUnitMatcher.asInternal(model),
-                ClientErrorHandlerConverter.convert(errorHandler),
-                AMFGraphConfigurationMatcher.asInternal(configuration)
+              BaseUnitMatcher.asInternal(model),
+              ClientErrorHandlerConverter.convert(errorHandler),
+              AMFGraphConfigurationMatcher.asInternal(configuration)
             )
           BaseUnitMatcher.asClient(result)
         }
@@ -684,9 +675,9 @@ trait TransformationStepConverter extends BaseUnitConverter with AMFGraphConfigu
         {
           val result: ClientBaseUnit =
             from.transform(
-                BaseUnitMatcher.asClient(model),
-                ClientErrorHandlerConverter.convertToClient(errorHandler),
-                AMFGraphConfigurationMatcher.asClient(configuration)
+              BaseUnitMatcher.asClient(model),
+              ClientErrorHandlerConverter.convertToClient(errorHandler),
+              AMFGraphConfigurationMatcher.asClient(configuration)
             )
           BaseUnitMatcher.asInternal(result)
         }
@@ -808,5 +799,31 @@ trait LocationInformationConverter extends PlatformSecrets {
 
     override def asClient(from: LocationInformation): model.document.LocationInformation =
       platform.wrap(from)
+  }
+}
+
+trait ShapeFederationMetadataConverter extends PlatformSecrets {
+  implicit object ShapeFederationMetadataMatcher
+      extends BidirectionalMatcher[
+        ShapeFederationMetadata,
+        amf.core.client.platform.model.domain.federation.ShapeFederationMetadata
+      ] {
+    override def asClient(
+        from: ShapeFederationMetadata
+    ): amf.core.client.platform.model.domain.federation.ShapeFederationMetadata =
+      platform.wrap[amf.core.client.platform.model.domain.federation.ShapeFederationMetadata](from)
+    override def asInternal(
+        from: amf.core.client.platform.model.domain.federation.ShapeFederationMetadata
+    ): ShapeFederationMetadata = from._internal
+  }
+}
+
+trait PropertyShapePathConverter extends PlatformSecrets {
+  implicit object PropertyShapePathMatcher
+      extends BidirectionalMatcher[PropertyShapePath, amf.core.client.platform.model.domain.PropertyShapePath] {
+    override def asClient(from: PropertyShapePath): amf.core.client.platform.model.domain.PropertyShapePath =
+      platform.wrap[amf.core.client.platform.model.domain.PropertyShapePath](from)
+    override def asInternal(from: amf.core.client.platform.model.domain.PropertyShapePath): PropertyShapePath =
+      from._internal
   }
 }

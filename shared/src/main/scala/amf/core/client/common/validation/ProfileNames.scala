@@ -7,29 +7,33 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 @JSExportAll
 @JSExportTopLevel("ProfileNames")
 object ProfileNames {
-  val AMF: ProfileName     = AmfProfile
-  val OAS20: ProfileName   = Oas20Profile
-  val OAS30: ProfileName   = Oas30Profile
-  val RAML10: ProfileName  = Raml10Profile
-  val RAML08: ProfileName  = Raml08Profile
-  val ASYNC: ProfileName   = AsyncProfile
-  val ASYNC20: ProfileName = Async20Profile
-  val AML: ProfileName     = AmlProfile
-  val PAYLOAD: ProfileName = PayloadProfile
-  val GRPC: ProfileName    = GrpcProfile
-  val GRAPHQL: ProfileName = GraphQLProfile
+  val AMF: ProfileName                = AmfProfile
+  val OAS20: ProfileName              = Oas20Profile
+  val OAS30: ProfileName              = Oas30Profile
+  val RAML10: ProfileName             = Raml10Profile
+  val RAML08: ProfileName             = Raml08Profile
+  val ASYNC: ProfileName              = AsyncProfile
+  val ASYNC20: ProfileName            = Async20Profile
+  val AML: ProfileName                = AmlProfile
+  val PAYLOAD: ProfileName            = PayloadProfile
+  val GRPC: ProfileName               = GrpcProfile
+  val GRAPHQL: ProfileName            = GraphQLProfile
+  val GRAPHQL_FEDERATION: ProfileName = GraphQLProfile
+  val JSONSCHEMA: ProfileName         = JsonSchemaProfile
 
   lazy val specProfiles: Seq[ProfileName] =
     Seq(
-        AmfProfile,
-        Oas20Profile,
-        Oas30Profile,
-        Raml08Profile,
-        Raml10Profile,
-        AsyncProfile,
-        Async20Profile,
-        GraphQLProfile,
-        GrpcProfile
+      AmfProfile,
+      Oas20Profile,
+      Oas30Profile,
+      Raml08Profile,
+      Raml10Profile,
+      AsyncProfile,
+      Async20Profile,
+      GraphQLProfile,
+      GraphQLFederationProfile,
+      GrpcProfile,
+      JsonSchemaProfile
     )
 }
 
@@ -77,30 +81,44 @@ object GraphQLProfile extends ProfileName(GraphQL.id, AMFStyle) {
   override def isRaml(): Boolean = false
 }
 
+object GraphQLFederationProfile extends ProfileName(GraphQLFederation.id, AMFStyle) {
+  override def isOas(): Boolean  = false
+  override def isRaml(): Boolean = false
+}
+
+object JsonSchemaProfile extends ProfileName(JsonSchema.id, AMFStyle) {
+  override def isOas(): Boolean  = false
+  override def isRaml(): Boolean = false
+}
+
 object ProfileName {
   def unapply(name: String): Option[ProfileName] =
     name match {
-      case AmfProfile.p     => Some(AmfProfile)
-      case Oas30Profile.p   => Some(Oas30Profile)
-      case Raml08Profile.p  => Some(Raml08Profile)
-      case AsyncProfile.p   => Some(AsyncProfile)
-      case Async20Profile.p => Some(Async20Profile)
-      case GrpcProfile.p    => Some(GrpcProfile)
-      case GraphQLProfile.p => Some(GraphQLProfile)
-      case _                => None
+      case AmfProfile.p               => Some(AmfProfile)
+      case Oas30Profile.p             => Some(Oas30Profile)
+      case Raml08Profile.p            => Some(Raml08Profile)
+      case AsyncProfile.p             => Some(AsyncProfile)
+      case Async20Profile.p           => Some(Async20Profile)
+      case GrpcProfile.p              => Some(GrpcProfile)
+      case GraphQLProfile.p           => Some(GraphQLProfile)
+      case GraphQLFederationProfile.p => Some(GraphQLFederationProfile)
+      case JsonSchemaProfile.p        => Some(JsonSchemaProfile)
+      case _                          => None
     }
 
   def apply(profile: String): ProfileName = profile match {
-    case Amf.id             => AmfProfile
-    case "OAS" | Oas20.id   => Oas20Profile  // for compatibility
-    case Oas30.id           => Oas30Profile
-    case Raml08.id          => Raml08Profile
-    case "RAML" | Raml10.id => Raml10Profile // for compatibility
-    case AsyncApi.id        => AsyncProfile
-    case AsyncApi20.id      => Async20Profile
-    case Grpc.id            => GrpcProfile
-    case GraphQL.id         => GraphQLProfile
-    case custom             => new ProfileName(custom)
+    case Amf.id               => AmfProfile
+    case "OAS" | Oas20.id     => Oas20Profile  // for compatibility
+    case Oas30.id             => Oas30Profile
+    case Raml08.id            => Raml08Profile
+    case "RAML" | Raml10.id   => Raml10Profile // for compatibility
+    case AsyncApi.id          => AsyncProfile
+    case AsyncApi20.id        => Async20Profile
+    case Grpc.id              => GrpcProfile
+    case GraphQL.id           => GraphQLProfile
+    case GraphQLFederation.id => GraphQLFederationProfile
+    case JsonSchema.id        => JsonSchemaProfile
+    case custom               => new ProfileName(custom)
   }
 }
 

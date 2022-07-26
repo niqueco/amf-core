@@ -42,24 +42,24 @@ object Syntax {
   }
 
   private val yamlMimes = Set(
-      `text/yaml`,
-      `text/x-yaml`,
-      `text/vnd.yaml`,
-      `application/yaml`,
-      `application/x-yaml`
+    `text/yaml`,
+    `text/x-yaml`,
+    `text/vnd.yaml`,
+    `application/yaml`,
+    `application/x-yaml`
   )
 
   private val jsonMimes = Set(`application/json`, `application/ld+json`)
 
-  val proto3Mimes = Set(
-      `application/x-protobuf`,
-      `application/protobuf`,
-      `application/protobuf_`,
-      `application/vnd_google`,
-      `application/grpc`
+  val proto3Mimes: Set[String] = Set(
+    `application/x-protobuf`,
+    `application/protobuf`,
+    `application/protobuf_`,
+    `application/vnd_google`,
+    `application/grpc`
   )
 
-  val graphQLMimes = Set(`application/graphql`)
+  val graphQLMimes: Set[String] = Set(`application/graphql`)
 
   /** Attempt to resolve [[Syntax]] from [[Mimes]]. */
   def unapply(mime: Option[String]): Option[Syntax] = mime match {

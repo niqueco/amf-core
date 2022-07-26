@@ -10,7 +10,7 @@ import amf.core.internal.remote.Mimes
 import amf.core.internal.remote.Mimes._
 import amf.core.internal.unsafe.PlatformSecrets
 import amf.core.internal.validation.CoreValidations.SyamlError
-import org.mulesoft.lexer.SourceLocation
+import org.mulesoft.common.client.lexical.SourceLocation
 import org.yaml.model._
 import org.yaml.parser.YamlParser
 
@@ -49,7 +49,7 @@ class SyamlAMFErrorHandler(val eh: AMFErrorHandler)
   override def handle[T](error: YError, defaultValue: T): T              = syamleh.handle(error, defaultValue)
 }
 
-object SyamlSyntaxParsePlugin extends AMFSyntaxParsePlugin with PlatformSecrets {
+class SyamlSyntaxParsePlugin extends AMFSyntaxParsePlugin with PlatformSecrets {
 
   private def getFormat(mediaType: String): String = if (mediaType.contains("json")) "json" else "yaml"
 
@@ -98,3 +98,5 @@ object SyamlSyntaxParsePlugin extends AMFSyntaxParsePlugin with PlatformSecrets 
 
   override def priority: PluginPriority = NormalPriority
 }
+
+object SyamlSyntaxParsePlugin extends SyamlSyntaxParsePlugin

@@ -11,7 +11,7 @@ object RecursiveShapeModel extends ShapeModel {
 
   /** Link to the base of the recursion for a recursive shape
     */
-  val FixPoint = Field(
+  val FixPoint: Field = Field(
       Iri,
       Namespace.Shapes + "fixPoint",
       ModelDoc(ModelVocabularies.Shapes, "fixpoint", "Link to the base of the recursion for a recursive shape")
@@ -22,7 +22,7 @@ object RecursiveShapeModel extends ShapeModel {
   override val `type`: List[ValueType] =
     List(Namespace.Shapes + "RecursiveShape") ++ ShapeModel.`type`
 
-  override def modelInstance: AmfObject = RecursiveShape()
+  override def modelInstance: RecursiveShape = RecursiveShape()
 
   override val doc: ModelDoc = ModelDoc(
       ModelVocabularies.Shapes,

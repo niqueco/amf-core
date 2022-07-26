@@ -5,28 +5,35 @@ import amf.core.internal.metamodel.Type.{Array, Bool, Iri, SortedArray, Str}
 import amf.core.internal.metamodel.domain.common.DescriptionField
 import amf.core.internal.metamodel.domain.extensions.{PropertyShapeModel, ShapeExtensionModel}
 import amf.core.internal.metamodel.domain.templates.KeyField
-import amf.core.client.scala.vocabulary.Namespace.{Core, Shacl, Shapes}
+import amf.core.client.scala.vocabulary.Namespace.{Core, Federation, Shacl, Shapes}
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
+import amf.core.internal.metamodel.domain.federation.{HasShapeFederationMetadataModel, ShapeFederationMetadataModel}
 
 /** Base class for all shapes. Shapes are Domain Entities that define constraints over parts of a data graph. They can
   * be used to define and enforce schemas for the data graph information through SHACL. Shapes can be recursive and
   * inherit from other shapes.
   */
-trait ShapeModel extends DomainElementModel with LinkableElementModel with KeyField with DescriptionField {
+trait ShapeModel
+    extends DomainElementModel
+    with LinkableElementModel
+    with KeyField
+    with DescriptionField
+    with HasShapeFederationMetadataModel {
 
-  val Name = Field(Str, Shacl + "name", ModelDoc(ExternalModelVocabularies.Shacl, "name", "Name for a data shape"))
+  val Name: Field =
+    Field(Str, Shacl + "name", ModelDoc(ExternalModelVocabularies.Shacl, "name", "Name for a data shape"))
 
-  val DisplayName =
+  val DisplayName: Field =
     Field(Str, Core + "name", ModelDoc(ModelVocabularies.Core, "displayName", "Human readable name for the term"))
 
-  val Default = Field(
+  val Default: Field = Field(
     DataNodeModel,
     Shacl + "defaultValue",
     ModelDoc(ExternalModelVocabularies.Shacl, "defaultValue", "Default value parsed for a data shape property")
   )
 
   // TODO: change namespace
-  val DefaultValueString = Field(
+  val DefaultValueString: Field = Field(
     Str,
     Shacl + "defaultValueStr",
     ModelDoc(
@@ -36,13 +43,13 @@ trait ShapeModel extends DomainElementModel with LinkableElementModel with KeyFi
     )
   )
 
-  val Values = Field(
+  val Values: Field = Field(
     SortedArray(DataNodeModel),
     Shacl + "in",
     ModelDoc(ExternalModelVocabularies.Shacl, "in", "Enumeration of possible values for a data shape property")
   )
 
-  val Closure = Field(
+  val Closure: Field = Field(
     Array(Iri),
     Shapes + "closure",
     ModelDoc(
@@ -56,7 +63,7 @@ trait ShapeModel extends DomainElementModel with LinkableElementModel with KeyFi
     * specialization of the constraints of the base shapes. Graphs validating this shape should also validate all the
     * constraints for the base shapes
     */
-  val Inherits = Field(
+  val Inherits: Field = Field(
     Array(ShapeModel),
     Shapes + "inherits",
     ModelDoc(ModelVocabularies.Shapes, "inherits", "Relationship of inheritance between data shapes")
@@ -67,7 +74,7 @@ trait ShapeModel extends DomainElementModel with LinkableElementModel with KeyFi
     * (i.e. might be declared on another API). This is a similar concept to RAML Extensions at the Shape level, and
     * without the explicit reference to the extended file.
     */
-  val IsExtension = Field(
+  val IsExtension: Field = Field(
     Bool,
     Shapes + "isExtension",
     ModelDoc(
@@ -79,61 +86,61 @@ trait ShapeModel extends DomainElementModel with LinkableElementModel with KeyFi
 
   // Logical constraints:
 
-  val Or = Field(
+  val Or: Field = Field(
     Array(ShapeModel),
     Shacl + "or",
     ModelDoc(ExternalModelVocabularies.Shacl, "or", "Logical or composition of data shapes")
   )
 
-  val And = Field(
+  val And: Field = Field(
     Array(ShapeModel),
     Shacl + "and",
     ModelDoc(ExternalModelVocabularies.Shacl, "and", "Logical and composition of data shapes")
   )
 
-  val Xone = Field(
+  val Xone: Field = Field(
     Array(ShapeModel),
     Shacl + "xone",
     ModelDoc(ExternalModelVocabularies.Shacl, "exclusiveOr", "Logical exclusive or composition of data shapes")
   )
 
-  val Not = Field(
+  val Not: Field = Field(
     ShapeModel,
     Shacl + "not",
     ModelDoc(ExternalModelVocabularies.Shacl, "not", "Logical not composition of data shapes")
   )
 
-  val If = Field(
+  val If: Field = Field(
     ShapeModel,
     Shacl + "if",
     ModelDoc(ExternalModelVocabularies.Shacl, "if", "Condition for applying composition of data shapes")
   )
 
-  val Then = Field(
+  val Then: Field = Field(
     ShapeModel,
     Shacl + "then",
     ModelDoc(ExternalModelVocabularies.Shacl, "then", "Composition of data shape when if data shape is valid")
   )
 
-  val Else = Field(
+  val Else: Field = Field(
     ShapeModel,
     Shacl + "else",
     ModelDoc(ExternalModelVocabularies.Shacl, "else", "Composition of data shape when if data shape is invalid")
   )
 
-  val ReadOnly =
+  val ReadOnly: Field =
     Field(Bool, Shapes + "readOnly", ModelDoc(ModelVocabularies.Shapes, "readOnly", "Read only property constraint"))
 
-  val WriteOnly =
+  val WriteOnly: Field =
     Field(Bool, Shapes + "writeOnly", ModelDoc(ModelVocabularies.Shapes, "writeOnly", "Write only property constraint"))
 
-  val Deprecated = Field(
+  val Deprecated: Field = Field(
     Bool,
     Shapes + "deprecated",
     ModelDoc(ModelVocabularies.Shapes, "deprecated", "Deprecated annotation for a property constraint")
   )
 
-  val SerializationSchema = Field(
+  val SerializationSchema: Field = Field(
     ShapeModel,
     Shapes + "serializationSchema",
     ModelDoc(ModelVocabularies.Shapes, "serializationSchema", "Serialization schema for a shape")
@@ -142,7 +149,7 @@ trait ShapeModel extends DomainElementModel with LinkableElementModel with KeyFi
   override val key: Field = Name
 
   // RAML user-defined facets: definitions and values
-  lazy val CustomShapePropertyDefinitions = Field(
+  lazy val CustomShapePropertyDefinitions: Field = Field(
     Array(PropertyShapeModel),
     Shapes + "customShapePropertyDefinitions",
     ModelDoc(
@@ -151,12 +158,23 @@ trait ShapeModel extends DomainElementModel with LinkableElementModel with KeyFi
       "Custom constraint definitions added over a data shape"
     )
   )
-  lazy val CustomShapeProperties = Field(
+  lazy val CustomShapeProperties: Field = Field(
     Array(ShapeExtensionModel),
     Shapes + "customShapeProperties",
     ModelDoc(ModelVocabularies.Shapes, "customShapeProperties", "Custom constraint values for a data shape")
   )
   //
+
+  val IsStub: Field =
+    Field(
+      Bool,
+      Federation + "isStub",
+      ModelDoc(
+        ModelVocabularies.Federation,
+        "isStub",
+        "Indicates if an element is a stub from an external component from another component of the federated graph"
+      )
+    )
 
 }
 
@@ -182,7 +200,9 @@ object ShapeModel extends ShapeModel {
     WriteOnly,
     SerializationSchema,
     Deprecated,
-    IsExtension
+    IsExtension,
+    FederationMetadata,
+    IsStub
   )
 
   override val `type`: List[ValueType] = List(Shacl + "Shape", Shapes + "Shape") ++ DomainElementModel.`type`
