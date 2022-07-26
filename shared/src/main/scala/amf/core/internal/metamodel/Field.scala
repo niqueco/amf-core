@@ -10,7 +10,8 @@ case class Field(
     value: ValueType,
     doc: ModelDoc = ModelDoc(),
     jsonldField: Boolean = true,
-    deprecated: Boolean = false
+    deprecated: Boolean = false,
+    defaultValue: Option[Any] = None
 ) {
   override def toString: String = value.iri()
 
