@@ -4,7 +4,7 @@
 import groovy.transform.Field
 
 def SLACK_CHANNEL = '#amf-jenkins'
-def PRODUCT_NAME = "AMF"
+def PRODUCT_NAME = "AMF-CORE"
 def lastStage = ""
 def color = '#FF8C00'
 def headerFlavour = "WARNING"
