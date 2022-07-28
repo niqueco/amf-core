@@ -1,5 +1,7 @@
 package amf.core.internal.validation.core
 
+import amf.core.internal.annotations.LexicalInformation
+
 /** Created by antoniogarrote on 18/07/2017.
   */
 
@@ -12,6 +14,8 @@ trait ValidationResult {
   def focusNode: String
   def severity: String
   def sourceShape: String
+  def position: Option[LexicalInformation]
+  def location: Option[String]
 }
 
 /** A report created after the application of a graph of shapes to a graph of ata

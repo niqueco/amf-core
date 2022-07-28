@@ -165,8 +165,8 @@ object AMFValidationResult {
             targetNode = node.id,
             targetProperty = Option(validation.path),
             validation.sourceShape,
-            position = pos,
-            location = location,
+            position = validation.position.orElse(pos),
+            location = validation.location.orElse(location),
             source = validation
         )
     }
