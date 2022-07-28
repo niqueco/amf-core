@@ -18,22 +18,22 @@ object ProfileNames {
   val PAYLOAD: ProfileName            = PayloadProfile
   val GRPC: ProfileName               = GrpcProfile
   val GRAPHQL: ProfileName            = GraphQLProfile
-  val GRAPHQL_FEDERATION: ProfileName = GraphQLProfile
+  val GRAPHQL_FEDERATION: ProfileName = GraphQLFederationProfile
   val JSONSCHEMA: ProfileName         = JsonSchemaProfile
 
   lazy val specProfiles: Seq[ProfileName] =
     Seq(
-      AmfProfile,
-      Oas20Profile,
-      Oas30Profile,
-      Raml08Profile,
-      Raml10Profile,
-      AsyncProfile,
-      Async20Profile,
-      GraphQLProfile,
-      GraphQLFederationProfile,
-      GrpcProfile,
-      JsonSchemaProfile
+        AmfProfile,
+        Oas20Profile,
+        Oas30Profile,
+        Raml08Profile,
+        Raml10Profile,
+        AsyncProfile,
+        Async20Profile,
+        GraphQLProfile,
+        GraphQLFederationProfile,
+        GrpcProfile,
+        JsonSchemaProfile
     )
 }
 
