@@ -13,9 +13,11 @@ import org.mulesoft.common.functional.MonadInstances.{Identity, identityMonad}
 
 import scala.collection.mutable
 
-class IdAdopter(initialElem: AmfObject, initialId: String) {
-
-  val adopted: mutable.Map[String, AmfObject] = mutable.Map.empty
+class IdAdopter(
+    initialElem: AmfObject,
+    initialId: String,
+    private val adopted: mutable.Map[String, AmfObject] = mutable.Map.empty
+) {
 
   def adoptFromRoot(): Unit     = adopt(isRoot = true)
   def adoptFromRelative(): Unit = adopt(isRoot = false)
