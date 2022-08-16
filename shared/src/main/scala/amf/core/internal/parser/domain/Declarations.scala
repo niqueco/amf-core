@@ -9,12 +9,28 @@ import amf.core.internal.parser.domain.SearchScope.{All, Fragments, Named}
 import amf.core.internal.validation.CoreValidations.DeclarationNotFound
 import org.mulesoft.common.client.lexical.SourceLocation
 
+trait QualifiedNameExtractor {
+  def apply(name: String): QName
+}
+
+object DotQualifiedNameExtractor extends QualifiedNameExtractor {
+  override def apply(name: String): QName = QName(name)
+}
+
+object OasComponentQualifiedNameExtractor extends QualifiedNameExtractor {
+  override def apply(name: String): QName = name.split("#").toList match {
+    case namespace :: name => QName(namespace, name.mkString("#").replace("/components/responses/", ""))
+    case Nil               => QName("", name)
+  }
+}
+
 class Declarations(
     var libraries: Map[String, Declarations] = Map(),
     var fragments: Map[String, FragmentRef] = Map(),
     var annotations: Map[String, CustomDomainProperty] = Map(),
     errorHandler: AMFErrorHandler,
-    futureDeclarations: FutureDeclarations
+    futureDeclarations: FutureDeclarations,
+    extractor: QualifiedNameExtractor
 ) {
 
   var promotedFragments: Seq[Fragment] = Seq[Fragment]()
@@ -45,7 +61,8 @@ class Declarations(
     libraries.get(alias) match {
       case Some(lib) => lib
       case None =>
-        val result = new Declarations(errorHandler = errorHandler, futureDeclarations = futureDeclarations)
+        val result =
+          new Declarations(errorHandler = errorHandler, futureDeclarations = futureDeclarations, extractor = extractor)
         addLibrary(alias, result)
         result
     }
@@ -58,8 +75,7 @@ class Declarations(
   protected def error(message: String, pos: SourceLocation): Unit =
     errorHandler.violation(DeclarationNotFound, "", message, pos)
 
-  def declarables(): Seq[DomainElement] =
-    annotations.values.toSeq
+  def declarables(): Seq[DomainElement] = annotations.values.toSeq
 
   def findAnnotationOrError(pos: SourceLocation)(key: String, scope: SearchScope.Scope): CustomDomainProperty =
     findAnnotation(key, scope) match {
@@ -80,7 +96,7 @@ class Declarations(
       scope: SearchScope.Scope
   ): Option[DomainElement] = {
     def inRef(): Option[DomainElement] = {
-      val fqn = QName(key)
+      val fqn = extractor(key)
       val result = if (fqn.isQualified) {
         libraries.get(fqn.qualification).flatMap(_.findForType(fqn.name, map, scope))
       } else None
@@ -115,9 +131,11 @@ object Declarations {
   def apply(
       declarations: Seq[DomainElement],
       errorHandler: AMFErrorHandler,
-      futureDeclarations: FutureDeclarations
+      futureDeclarations: FutureDeclarations,
+      extractor: QualifiedNameExtractor
   ): Declarations = {
-    val result = new Declarations(errorHandler = errorHandler, futureDeclarations = futureDeclarations)
+    val result =
+      new Declarations(errorHandler = errorHandler, futureDeclarations = futureDeclarations, extractor = extractor)
     declarations.foreach(result += _)
     result
   }
