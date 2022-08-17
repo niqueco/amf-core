@@ -9,6 +9,8 @@ import amf.core.internal.parser.domain.SearchScope.{All, Fragments, Named}
 import amf.core.internal.validation.CoreValidations.DeclarationNotFound
 import org.mulesoft.common.client.lexical.SourceLocation
 
+import scala.language.higherKinds
+
 trait QualifiedNameExtractor {
   def apply(name: String): QName
 }
@@ -19,7 +21,7 @@ object DotQualifiedNameExtractor extends QualifiedNameExtractor {
 
 object OasComponentQualifiedNameExtractor extends QualifiedNameExtractor {
   override def apply(name: String): QName = name.split("#").toList match {
-    case namespace :: name => QName(namespace, name.mkString("#").replace("/components/responses/", ""))
+    case namespace :: name => QName(namespace, name.mkString("#").replaceFirst("\\/components\\/.+\\/", ""))
     case Nil               => QName("", name)
   }
 }
@@ -86,16 +88,18 @@ class Declarations(
     }
 
   def findAnnotation(key: String, scope: SearchScope.Scope): Option[CustomDomainProperty] =
-    findForType(key, _.annotations, scope) collect { case a: CustomDomainProperty =>
+    findForType[Identity](key, _.annotations, scope) collect { case a: CustomDomainProperty =>
       a
     }
 
-  def findForType(
+  type Identity[T] = T
+
+  def findForType[C[_]](
       key: String,
-      map: Declarations => Map[String, DomainElement],
+      map: Declarations => Map[String, C[DomainElement]],
       scope: SearchScope.Scope
-  ): Option[DomainElement] = {
-    def inRef(): Option[DomainElement] = {
+  )(implicit wrapper: DomainElement => C[DomainElement]): Option[C[DomainElement]] = {
+    def inRef(): Option[C[DomainElement]] = {
       val fqn = extractor(key)
       val result = if (fqn.isQualified) {
         libraries.get(fqn.qualification).flatMap(_.findForType(fqn.name, map, scope))
@@ -109,7 +113,7 @@ class Declarations(
 
     scope match {
       case All       => inRef().orElse(fragments.get(key).map(_.encoded))
-      case Fragments => fragments.get(key).map(_.encoded)
+      case Fragments => fragments.get(key).map(_.encoded).map(wrapper(_))
       case Named     => inRef()
     }
   }
