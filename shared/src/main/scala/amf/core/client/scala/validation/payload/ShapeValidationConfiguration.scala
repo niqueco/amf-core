@@ -11,7 +11,7 @@ object ShapeValidationConfiguration {
 }
 
 case class ShapeValidationConfiguration(private[amf] val config: AMFGraphConfiguration) {
-  val eh: AMFErrorHandler                = config.errorHandlerProvider.errorHandler()
+  def eh: AMFErrorHandler                = config.errorHandlerProvider.errorHandler()
   val executionContext: ExecutionContext = config.getExecutionContext
   val maxYamlReferences: Option[Int]     = config.options.parsingOptions.maxYamlReferences
 
