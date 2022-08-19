@@ -88,13 +88,29 @@ class Declarations(
     }
 
   def findAnnotation(key: String, scope: SearchScope.Scope): Option[CustomDomainProperty] =
-    findForType[Identity](key, _.annotations, scope) collect { case a: CustomDomainProperty =>
+    findForTypeContained[Identity](key, _.annotations, scope) collect { case a: CustomDomainProperty =>
       a
     }
 
   type Identity[T] = T
 
-  def findForType[C[_]](
+  def findForType(
+      key: String,
+      map: Declarations => Map[String, DomainElement],
+      scope: SearchScope.Scope
+  ): Option[DomainElement] = {
+    findForTypeContained[Identity](key, map, scope)
+  }
+
+  def findManyForType(
+      key: String,
+      map: Declarations => Map[String, List[DomainElement]],
+      scope: SearchScope.Scope
+  ): Option[List[DomainElement]] = {
+    findForTypeContained[List](key, map, scope)(List(_))
+  }
+
+  private def findForTypeContained[C[_]](
       key: String,
       map: Declarations => Map[String, C[DomainElement]],
       scope: SearchScope.Scope
@@ -102,7 +118,7 @@ class Declarations(
     def inRef(): Option[C[DomainElement]] = {
       val fqn = extractor(key)
       val result = if (fqn.isQualified) {
-        libraries.get(fqn.qualification).flatMap(_.findForType(fqn.name, map, scope))
+        libraries.get(fqn.qualification).flatMap(_.findForTypeContained(fqn.name, map, scope))
       } else None
 
       result
