@@ -11,7 +11,9 @@ object ShapeValidationConfiguration {
 }
 
 case class ShapeValidationConfiguration(private[amf] val config: AMFGraphConfiguration) {
-  def eh: AMFErrorHandler                = config.errorHandlerProvider.errorHandler()
+  @deprecated("use newErrorHandler instead", "5.0.13")
+  val eh: AMFErrorHandler                = config.errorHandlerProvider.errorHandler()
+  def newErrorHandler(): AMFErrorHandler = config.errorHandlerProvider.errorHandler()
   val executionContext: ExecutionContext = config.getExecutionContext
   val maxYamlReferences: Option[Int]     = config.options.parsingOptions.maxYamlReferences
 
