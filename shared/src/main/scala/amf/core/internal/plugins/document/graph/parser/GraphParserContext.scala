@@ -10,6 +10,7 @@ import amf.core.internal.parser.ParseConfiguration
 import amf.core.internal.parser.domain.FutureDeclarations
 import amf.core.internal.plugins.document.graph.context.GraphContext
 import amf.core.internal.plugins.syntax.{SYamlAMFParserErrorHandler, SyamlAMFErrorHandler}
+import amf.core.internal.validation.core.ValidationSpecification
 import org.mulesoft.common.client.lexical.SourceLocation
 import org.yaml.model.{IllegalTypeHandler, ParseErrorHandler, SyamlException, YError}
 
@@ -27,4 +28,11 @@ class GraphParserContext(
     }
     this
   }
+
+  override def violation(
+      specification: ValidationSpecification,
+      node: String,
+      message: String,
+      loc: SourceLocation
+  ): Unit = eh.violation(specification, node, message, loc)
 }

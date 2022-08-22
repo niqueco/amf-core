@@ -86,4 +86,10 @@ case class ParserContext(
 
   def parsingOptions: ParsingOptions = config.parsingOptions
 
+  override def violation(
+      specification: ValidationSpecification,
+      node: String,
+      message: String,
+      loc: SourceLocation
+  ): Unit = eh.violation(specification, node, message, loc)
 }

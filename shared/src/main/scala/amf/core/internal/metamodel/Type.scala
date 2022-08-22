@@ -54,6 +54,7 @@ object Type {
 
   object Bool extends Scalar("boolean")
 
+  object Null extends Scalar("null")
   object ObjType extends Obj {
     override val fields: List[Field]     = Nil
     override val `type`: List[ValueType] = Nil
