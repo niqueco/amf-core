@@ -9,23 +9,23 @@ import scala.collection.mutable
 
 class SourceCodeBlock(val indentation: Integer, val lines: mutable.Buffer[(String, Position)] = mutable.Buffer()) {
 
-  def sortedBuilder: StringBuilder = {
-    val b            = new StringBuilder()
+  def sortedBuilder: mutable.StringBuilder = {
+    val b            = stringBuilder()
     var previousLine = minPos.line
     lines.sortBy(_._2).foreach { case (l, p) =>
       while (previousLine + 1 < p.line) {
         b.append("\n")
         previousLine += 1
       }
-      b.append(s"${l}\n")
+      b.append(s"$l\n")
       val newLines = l.count(c => c == '\n')
       previousLine += (newLines + 1)
     }
     b
   }
 
-  def sortedBuilderWithDelimiter(delimiter: String): StringBuilder = {
-    val b = new StringBuilder()
+  def sortedBuilderWithDelimiter(delimiter: String): mutable.StringBuilder = {
+    val b = stringBuilder()
     lines.sortBy(_._2).map(_._1).zipWithIndex.foreach { case (l, idx) =>
       if (idx < lines.length - 1) {
         b.append(s"$l$delimiter")
@@ -36,10 +36,8 @@ class SourceCodeBlock(val indentation: Integer, val lines: mutable.Buffer[(Strin
     b
   }
 
-  private def countOccurrences(src: String, tgt: String): Int = src.sliding(tgt.length).count(window => window == tgt)
-
-  def builder: StringBuilder = {
-    val b = new StringBuilder()
+  def builder: mutable.StringBuilder = {
+    val b = stringBuilder()
     lines.foreach { case (l, _) =>
       b.append(s"$l\n")
     }
@@ -54,7 +52,7 @@ class SourceCodeBlock(val indentation: Integer, val lines: mutable.Buffer[(Strin
   }
 
   def +=(s: String, pos: Position = Position.ZERO): SourceCodeBlock = {
-    lines.append((s"${" " * indentation}${s}", pos))
+    lines.append((s"${" " * indentation}$s", pos))
     this
   }
 
@@ -62,6 +60,10 @@ class SourceCodeBlock(val indentation: Integer, val lines: mutable.Buffer[(Strin
     lines.append((s, pos))
     this
   }
+
+  private def stringBuilder(): StringBuilder = new mutable.StringBuilder()
+
+  private def countOccurrences(src: String, tgt: String): Int = src.sliding(tgt.length).count(window => window == tgt)
 }
 
 object SourceCodeBlock {
@@ -74,56 +76,32 @@ object StringDocBuilder {
 
 class StringDocBuilder(document: SourceCodeBlock = SourceCodeBlock()) extends ASTBuilder[SourceCodeBlock] {
 
-  def inilined(f: StringDocBuilder => Unit): String = {
-    val cb = new SourceCodeBlock(0)
-    val b  = new StringDocBuilder(cb)
+  def inlined(f: StringDocBuilder => Unit): String = {
+    val scb = sourceCodeBlock(0)
+    val b   = new StringDocBuilder(scb)
     f(b)
-    cb.builder.toString().replaceAll("\n", "")
+    scb.builder.toString().replaceAll("\n", "")
   }
 
-  def listWithDelimiter(delimiter: String)(f: StringDocBuilder => Unit) = {
-    val sb               = new SourceCodeBlock(document.indentation)
-    val sortedDocBuilder = new StringDocBuilder(sb)
-    f(sortedDocBuilder)
-    val s   = sb.sortedBuilderWithDelimiter(delimiter).toString()
-    val pos = sb.minPos
-    merge(s, pos)
-    this
+  def listWithDelimiter(delimiter: String)(f: StringDocBuilder => Unit): StringDocBuilder = {
+    stringDocBuilder(f = f, toString = _.sortedBuilderWithDelimiter(delimiter).toString())
   }
 
   def list(f: StringDocBuilder => Unit): StringDocBuilder = {
-    val sb               = new SourceCodeBlock(document.indentation)
-    val sortedDocBuilder = new StringDocBuilder(sb)
-    f(sortedDocBuilder)
-    val s   = sb.sortedBuilder.toString().dropRight(1)
-    val pos = sb.minPos
-    merge(s, pos)
-    this
+    stringDocBuilder(f = f)
   }
 
   def fixed(f: StringDocBuilder => Unit): StringDocBuilder = {
-    val sb              = new SourceCodeBlock(document.indentation)
-    val fixedDocBuilder = new StringDocBuilder(sb)
-    f(fixedDocBuilder)
-    val s   = sb.builder.toString().dropRight(1)
-    val pos = sb.minPos
-    merge(s, pos)
-    this
+    stringDocBuilder(f = f)
   }
 
   def obj(f: StringDocBuilder => Unit): StringDocBuilder = {
-    val sb               = new SourceCodeBlock(document.indentation + INDENTATION_WIDTH)
-    val nestedDocBuilder = new StringDocBuilder(sb)
-    f(nestedDocBuilder)
-    val s   = sb.builder.toString().dropRight(1)
-    val pos = sb.minPos
-    merge(s, pos)
-    this
+    stringDocBuilder(document.indentation + INDENTATION_WIDTH, f = f)
   }
 
   def doc(f: StringDocBuilder => Unit): StringDocBuilder = {
-    val sb  = new SourceCodeBlock(0, document.lines)
-    val sdb = new StringDocBuilder(sb)
+    val scb = new SourceCodeBlock(0, document.lines)
+    val sdb = new StringDocBuilder(scb)
     f(sdb)
     sdb
   }
@@ -136,4 +114,25 @@ class StringDocBuilder(document: SourceCodeBlock = SourceCodeBlock()) extends AS
   override def astResult: SourceCodeBlock = document
 
   override def parsedDocument: ParsedDocument = StringParsedDocument(document)
+
+  private def sourceCodeBlock(
+      indentation: Integer = document.indentation,
+      lines: mutable.Buffer[(String, Position)] = mutable.Buffer()
+  ): SourceCodeBlock =
+    new SourceCodeBlock(indentation, lines)
+
+  private def stringDocBuilder(
+      indentation: Integer = document.indentation,
+      lines: mutable.Buffer[(String, Position)] = mutable.Buffer(),
+      f: StringDocBuilder => Unit,
+      toString: SourceCodeBlock => String = _.builder.toString().dropRight(1)
+  ): StringDocBuilder = {
+    val scb              = sourceCodeBlock(indentation, lines)
+    val stringDocBuilder = new StringDocBuilder(scb)
+    f(stringDocBuilder)
+    val s   = toString(scb)
+    val pos = scb.minPos
+    merge(s, pos)
+    this
+  }
 }
