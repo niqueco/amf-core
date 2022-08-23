@@ -21,14 +21,10 @@ object ShapeValidationConfiguration {
 
 class ShapeValidationConfiguration(private[amf] val _internal: InternalShapeValidationConfiguration) {
   @JSExport
-  def newErrorHandler(): AMFErrorHandler = _internal.newErrorHandler()
+  def eh(): ClientErrorHandler = new ClientErrorHandler {
+    override def getResults: CoreClientConverters.ClientList[AMFValidationResult] = _internal.eh().getResults.asClient
 
-  @JSExport
-  @deprecated("use newErrorHandler instead", "5.0.13")
-  val eh: ClientErrorHandler = new ClientErrorHandler {
-    override def getResults: CoreClientConverters.ClientList[AMFValidationResult] = _internal.eh.getResults.asClient
-
-    override def report(result: AMFValidationResult): Unit = _internal.eh.report(result)
+    override def report(result: AMFValidationResult): Unit = _internal.eh().report(result)
   }
   val executionContext: ExecutionContext = _internal.executionContext
 
