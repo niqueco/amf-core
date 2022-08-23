@@ -1,6 +1,6 @@
 package amf.core.client.platform.model.domain
 
-import amf.core.client.platform.model.{StrField, IntField}
+import amf.core.client.platform.model.{BoolField, IntField, StrField}
 import amf.core.internal.convert.CoreClientConverters._
 import amf.core.client.scala.model.domain.extensions.{CustomDomainProperty => InternalCustomDomainProperty}
 
@@ -23,7 +23,10 @@ case class CustomDomainProperty(private[amf] val _internal: InternalCustomDomain
   def domain: ClientList[StrField] = _internal.domain.asClient
 
   def schema: Shape                = _internal.schema
+
   def serializationOrder: IntField = _internal.serializationOrder
+
+  def repeatable: BoolField = _internal.repeatable
 
   def withSerializationOrder(order: Int): this.type = {
     _internal.withSerializationOrder(order)
@@ -52,6 +55,11 @@ case class CustomDomainProperty(private[amf] val _internal: InternalCustomDomain
 
   def withSchema(schema: Shape): this.type = {
     _internal.withSchema(schema)
+    this
+  }
+
+  def withRepeatable(repeatable: Boolean): this.type = {
+    _internal.withRepeatable(repeatable)
     this
   }
 
