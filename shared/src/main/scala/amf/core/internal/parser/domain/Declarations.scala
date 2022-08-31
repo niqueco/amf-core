@@ -2,34 +2,43 @@ package amf.core.internal.parser.domain
 
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model.document.Fragment
-import amf.core.client.scala.model.domain.DomainElement
+import amf.core.client.scala.model.domain.{DomainElement, NamedDomainElement}
 import amf.core.client.scala.model.domain.extensions.CustomDomainProperty
-import amf.core.internal.utils.QName
 import amf.core.internal.parser.domain.SearchScope.{All, Fragments, Named}
 import amf.core.internal.validation.CoreValidations.DeclarationNotFound
 import org.mulesoft.common.client.lexical.SourceLocation
+
+import scala.language.higherKinds
 
 class Declarations(
     var libraries: Map[String, Declarations] = Map(),
     var fragments: Map[String, FragmentRef] = Map(),
     var annotations: Map[String, CustomDomainProperty] = Map(),
     errorHandler: AMFErrorHandler,
-    futureDeclarations: FutureDeclarations
+    futureDeclarations: FutureDeclarations,
+    extractor: QualifiedNameExtractor
 ) {
+
+  type Identity[T] = T
 
   var promotedFragments: Seq[Fragment] = Seq[Fragment]()
 
-  def +=(fragment: (String, Fragment)): Declarations = {
-    fragment match {
-      case (url, f) => fragments = fragments + (url -> FragmentRef(f.encodes, f.location()))
-    }
+  def +=(indexKey: String, fragment: Fragment): Declarations = {
+    fragments = fragments + (indexKey -> FragmentRef(fragment.encodes, fragment.location()))
     this
   }
 
-  def +=(element: DomainElement): Declarations = {
+  def +=(element: DomainElement): this.type = {
+    element match {
+      case named: NamedDomainElement => this.+=(named.name.value(), element)
+      case _                         => this
+    }
+  }
+
+  def +=(indexKey: String, element: DomainElement): this.type = {
     element match {
       case a: CustomDomainProperty =>
-        annotations = annotations + (a.name.value() -> a)
+        annotations = annotations + (indexKey -> a)
     }
     this
   }
@@ -45,7 +54,8 @@ class Declarations(
     libraries.get(alias) match {
       case Some(lib) => lib
       case None =>
-        val result = new Declarations(errorHandler = errorHandler, futureDeclarations = futureDeclarations)
+        val result =
+          new Declarations(errorHandler = errorHandler, futureDeclarations = futureDeclarations, extractor = extractor)
         addLibrary(alias, result)
         result
     }
@@ -79,10 +89,26 @@ class Declarations(
       map: Declarations => Map[String, DomainElement],
       scope: SearchScope.Scope
   ): Option[DomainElement] = {
-    def inRef(): Option[DomainElement] = {
-      val fqn = QName(key)
+    findForTypeContained[Identity](key, map, scope)
+  }
+
+  def findManyForType(
+      key: String,
+      map: Declarations => Map[String, List[DomainElement]],
+      scope: SearchScope.Scope
+  ): Option[List[DomainElement]] = {
+    findForTypeContained[List](key, map, scope)(List(_))
+  }
+
+  private def findForTypeContained[C[_]](
+      key: String,
+      map: Declarations => Map[String, C[DomainElement]],
+      scope: SearchScope.Scope
+  )(implicit wrapper: DomainElement => C[DomainElement]): Option[C[DomainElement]] = {
+    def inRef(): Option[C[DomainElement]] = {
+      val fqn = extractor(key)
       val result = if (fqn.isQualified) {
-        libraries.get(fqn.qualification).flatMap(_.findForType(fqn.name, map, scope))
+        libraries.get(fqn.qualification).flatMap(_.findForTypeContained(fqn.name, map, scope))
       } else None
 
       result
@@ -93,7 +119,7 @@ class Declarations(
 
     scope match {
       case All       => inRef().orElse(fragments.get(key).map(_.encoded))
-      case Fragments => fragments.get(key).map(_.encoded)
+      case Fragments => fragments.get(key).map(_.encoded).map(wrapper(_))
       case Named     => inRef()
     }
   }
@@ -115,9 +141,11 @@ object Declarations {
   def apply(
       declarations: Seq[DomainElement],
       errorHandler: AMFErrorHandler,
-      futureDeclarations: FutureDeclarations
+      futureDeclarations: FutureDeclarations,
+      extractor: QualifiedNameExtractor
   ): Declarations = {
-    val result = new Declarations(errorHandler = errorHandler, futureDeclarations = futureDeclarations)
+    val result =
+      new Declarations(errorHandler = errorHandler, futureDeclarations = futureDeclarations, extractor = extractor)
     declarations.foreach(result += _)
     result
   }
