@@ -10,7 +10,7 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 class AbstractDeclaration(private[amf] val _internal: InternalAbstractDeclaration)
     extends DomainElement
     with Linkable
-    with NamedAmfObject {
+    with NamedDomainElement {
 
   override def name: StrField         = _internal.name
   def description: StrField           = _internal.description
