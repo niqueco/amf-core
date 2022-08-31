@@ -8,7 +8,7 @@ import amf.core.client.scala.model.domain.{Shape => InternalShape}
 import scala.scalajs.js.annotation.JSExportAll
 
 @JSExportAll
-trait Shape extends DomainElement with Linkable with NamedAmfObject {
+trait Shape extends DomainElement with Linkable with NamedDomainElement {
 
   override private[amf] val _internal: InternalShape
 
