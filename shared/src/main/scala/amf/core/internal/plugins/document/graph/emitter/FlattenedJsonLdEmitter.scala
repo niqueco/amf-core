@@ -237,20 +237,7 @@ class FlattenedJsonLdEmitter[T](
 
   def traverseMetaModel(id: String, element: AmfObject, sources: SourceMap, obj: Obj, b: Entry[T]): Unit = {
     val modelFields: Seq[Field] = fieldProvision.fieldsFor(element, options)
-
-    // no longer necessary?
-    element match {
-      case e: ObjectNode if options.isValidation =>
-        val url = Namespace.AmfValidation.base + "/properties"
-        b.entry(
-            url,
-            value(Type.Int, Value(AmfScalar(e.propertyFields().size), Annotations()), id, _ => {}, _)
-        )
-      case _ => // Nothing to do
-    }
-
     emitFields(id, element, sources, b, modelFields)
-
   }
 
   private def emitFields(

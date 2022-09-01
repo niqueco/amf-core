@@ -85,24 +85,10 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
 
   def traverseMetaModel(id: String, element: AmfObject, sources: SourceMap, obj: Obj, b: Entry[T]): Unit = {
     createTypeNode(b, obj)
-
     val modelFields = fieldProvision.fieldsFor(element, options)
-
-    // no longer necessary?
-    element match {
-      case e: ObjectNode if options.isValidation =>
-        val url = Namespace.AmfValidation.base + "/properties"
-        b.entry(
-            url,
-            value(Type.Int, Value(AmfScalar(e.propertyFields().size), Annotations()), id, _ => {}, _)
-        )
-      case _ => // Nothing to do
-    }
-
     modelFields.foreach { f =>
       emitStaticField(f, element, id, sources, b)
     }
-
   }
 
   override protected def createCustomExtension(
