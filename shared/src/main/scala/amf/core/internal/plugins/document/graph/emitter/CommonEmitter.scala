@@ -21,6 +21,7 @@ import amf.core.internal.annotations.{DeclaredElement, Declares, DomainExtension
 import amf.core.internal.metamodel.Type.{Any, Array, Bool, EncodedIri, Iri, LiteralUri, SortedArray, Str}
 import amf.core.internal.metamodel.{Field, Obj, Type}
 import amf.core.internal.metamodel.document.ModuleModel
+import amf.core.internal.metamodel.domain.extensions.DomainExtensionModel
 import amf.core.internal.metamodel.domain.{DomainElementModel, LinkableElementModel, ShapeModel}
 import amf.core.internal.parser.domain.{Annotations, FieldEntry, Value}
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
@@ -230,28 +231,32 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
 
   protected def isSemanticExtension(extension: DomainExtension): Boolean = Option(extension.extension).isEmpty
 
-  protected def createCustomExtensions(element: AmfObject, b: Entry[T]): Unit = {
+  protected def emitDomainExtensions(element: AmfObject, b: Entry[T]): Unit = {
     val customProperties: ListBuffer[String] = ListBuffer()
 
     // Collect element custom annotations
-    element.fields.entry(DomainElementModel.CustomDomainProperties) foreach { case FieldEntry(_, v) =>
-      v.value match {
+    element.fields
+      .entry(DomainElementModel.CustomDomainProperties)
+      .map(_.value.value)
+      .foreach {
         case AmfArray(values, _) =>
-          values
-            .sortBy(_.asInstanceOf[DomainExtension].id)
-            .collect {
-              case extension: DomainExtension if !isSemanticExtension(extension) => Some(extension)
-              case _                                                             => None
-            }
-            .flatten
-            .foreach { extension =>
-              val uri = extension.definedBy.id
+          val extensions = values.asInstanceOf[Seq[DomainExtension]]
+
+          val groupedExtensions = extensions.groupBy(_.definedBy.id)
+
+          // we sort by extension ID and then access the unordered above hash map
+          extensions
+            .filter(!isSemanticExtension(_))
+            .sortBy(_.id)
+            .map(_.definedBy.id)
+            .distinct
+            .foreach { uri =>
+              val extensions = groupedExtensions(uri)
               customProperties += uri
-              createCustomExtension(b, uri, extension, None)
+              emitGroupedDomainExtensions(b, uri, extensions, None)
             }
         case _ => // ignore
       }
-    }
 
     // Collect element scalar fields custom annotations
     var count = 1
@@ -264,7 +269,7 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
           val uri       = s"${element.id}/scalar-valued/$count/${extension.name.value()}"
           customProperties += uri
           adoptTree(uri, extension.extension) // Fix ids
-          createCustomExtension(b, uri, extension, Some(f))
+          emitGroupedDomainExtensions(b, uri, Seq(extension), Some(f))
           count += 1
         })
     }
@@ -278,7 +283,34 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
       )
   }
 
-  protected def createCustomExtension(
+  protected def emitGroupedDomainExtensions(
+      b: Entry[T],
+      uri: String,
+      extensions: Seq[DomainExtension],
+      field: Option[Field] = None
+  ): Unit = {
+    extensions.size match {
+      case 1 =>
+        b.entry(
+          uri,
+          _.obj { objectBuilder =>
+            createCustomExtensionNode(objectBuilder, uri, extensions.head, field)
+          }
+        )
+      case x if x > 1 =>
+        b.entry(
+          uri,
+          _.list { listBuilder =>
+            extensions.foreach { extension =>
+              listBuilder.obj { objectBuilder => createCustomExtensionNode(objectBuilder, uri, extension, field) }
+            }
+          }
+        )
+      case _ => // ignore, maybe throw validation?
+    }
+  }
+
+  protected def createCustomExtensionNode(
       b: Entry[T],
       uri: String,
       extension: DomainExtension,

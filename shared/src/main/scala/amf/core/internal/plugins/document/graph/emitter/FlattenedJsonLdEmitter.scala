@@ -172,7 +172,7 @@ class FlattenedJsonLdEmitter[T](
           pending.skip(id) // Skip emitting encodes node (since it is the same as this node)
           emitFields(id, u, sources, b, fieldProvision.fieldsFor(u, options))
 
-          createCustomExtensions(u, b)
+          emitDomainExtensions(u, b)
 
           val sourceMapId: String = sourceMapIdFor(id)
           createSourcesNode(sourceMapId, sources, b)
@@ -194,7 +194,7 @@ class FlattenedJsonLdEmitter[T](
       val obj     = metaModel(unit)
       createTypeNode(b, obj)
       traverseMetaModel(id, unit, sources, obj, b)
-      createCustomExtensions(unit, b)
+      emitDomainExtensions(unit, b)
 
       val sourceMapId: String = sourceMapIdFor(id)
       createSourcesNode(sourceMapId, sources, b)
@@ -229,7 +229,7 @@ class FlattenedJsonLdEmitter[T](
     createTypeNode(b, obj)
     traverseMetaModel(id, amfObject, sources, obj, b)
 
-    createCustomExtensions(amfObject, b)
+    emitDomainExtensions(amfObject, b)
 
     val sourceMapId: String = sourceMapIdFor(id)
     createSourcesNode(sourceMapId, sources, b)
@@ -253,37 +253,32 @@ class FlattenedJsonLdEmitter[T](
 
   }
 
-  override protected def createCustomExtension(
+  override protected def createCustomExtensionNode(
       b: Entry[T],
       uri: String,
       extension: DomainExtension,
       field: Option[Field] = None
   ): Unit = {
-    b.entry(
-        uri,
-        _.obj { b =>
-          createIdNode(b, extension.extension.id)
-          val e = new Emission((part: Part[T]) => {
-            part.obj { rb =>
-              rb.entry(
-                  ctx.emitIri(DomainExtensionModel.Name.value.iri()),
-                  emitScalar(_, extension.name.value())
-              )
-              field.foreach(f =>
-                rb.entry(
-                    ctx.emitIri(DomainExtensionModel.Element.value.iri()),
-                    emitScalar(_, f.value.iri())
-                )
-              )
-              emitObject(extension.extension, rb)
-            }
-          }) with Metadata
-          e.id = Some(extension.extension.id)
-          e.isDeclaration = ctx.emittingDeclarations
-          e.isReference = ctx.emittingReferences
-          pending.tryEnqueue(e)
-        }
-    )
+    createIdNode(b, extension.extension.id)
+    val e = new Emission((part: Part[T]) => {
+      part.obj { rb =>
+        rb.entry(
+          ctx.emitIri(DomainExtensionModel.Name.value.iri()),
+          emitScalar(_, extension.name.value())
+        )
+        field.foreach(f =>
+          rb.entry(
+            ctx.emitIri(DomainExtensionModel.Element.value.iri()),
+            emitScalar(_, f.value.iri())
+          )
+        )
+        emitObject(extension.extension, rb)
+      }
+    }) with Metadata
+    e.id = Some(extension.extension.id)
+    e.isDeclaration = ctx.emittingDeclarations
+    e.isReference = ctx.emittingReferences
+    pending.tryEnqueue(e)
   }
 
   override protected def createSortedArray(b: Part[T], seq: Seq[AmfElement], parent: String, element: Type): Unit = {

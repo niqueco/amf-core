@@ -77,7 +77,7 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
     val obj = metaModel(element)
     traverseMetaModel(id, element, sources, obj, b)
 
-    createCustomExtensions(element, b)
+    emitDomainExtensions(element, b)
 
     val sourceMapId = sourceMapIdFor(id)
     createSourcesNode(sourceMapId, sources, b)
@@ -91,28 +91,23 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
     }
   }
 
-  override protected def createCustomExtension(
+  override protected def createCustomExtensionNode(
       b: Entry[T],
       uri: String,
       extension: DomainExtension,
       field: Option[Field] = None
   ): Unit = {
     b.entry(
-        uri,
-        _.obj { b =>
-          b.entry(
-              ctx.emitIri(DomainExtensionModel.Name.value.iri()),
-              emitScalar(_, extension.name.value())
-          )
-          field.foreach(f =>
-            b.entry(
-                ctx.emitIri(DomainExtensionModel.Element.value.iri()),
-                emitScalar(_, f.value.iri())
-            )
-          )
-          traverse(extension.extension, b)
-        }
+      ctx.emitIri(DomainExtensionModel.Name.value.iri()),
+      emitScalar(_, extension.name.value())
     )
+    field.foreach(f =>
+      b.entry(
+        ctx.emitIri(DomainExtensionModel.Element.value.iri()),
+        emitScalar(_, f.value.iri())
+      )
+    )
+    traverse(extension.extension, b)
   }
 
   override protected def createSortedArray(b: Part[T], seq: Seq[AmfElement], parent: String, element: Type): Unit = {
