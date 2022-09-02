@@ -174,8 +174,6 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
         .foreach(s => instance.withLinkLabel(s))
     }
 
-    override protected def mapValueFrom(entry: YMapEntry): YMap = entry.value.as[YMap]
-
     private def parseObjectNodeProperties(obj: ObjectNode, map: YMap, fields: List[Field]): Unit = {
       map.entries.foreach { entry =>
         val uri = expandUriFromContext(entry.key.as[String])

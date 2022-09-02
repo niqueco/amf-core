@@ -1,11 +1,9 @@
 package amf.core.internal.plugins.document.graph.parser
 
-import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model.DataType
 import amf.core.client.scala.model.document.SourceMap
 import amf.core.client.scala.model.domain._
 import amf.core.client.scala.model.domain.extensions.{CustomDomainProperty, DomainExtension}
-import amf.core.client.scala.parse.document.ParserContext
 import amf.core.client.scala.vocabulary.Namespace.SourceMaps
 import amf.core.client.scala.vocabulary._
 import amf.core.internal.annotations.DomainExtensionAnnotation
@@ -18,14 +16,15 @@ import amf.core.internal.parser._
 import amf.core.internal.parser.domain.{Annotations, FieldEntry}
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
 import amf.core.internal.plugins.document.graph.context.{ExpandedTermDefinition, GraphContext, TermDefinition}
-import amf.core.internal.validation.CoreValidations.{MissingIdInNode, MissingTypeInNode, NotLinkable}
+import amf.core.internal.validation.CoreValidations.{MissingTypeInNode, NotLinkable, UnableToParseDomainElement}
 import org.mulesoft.common.time.SimpleDateTime
 import org.yaml.convert.YRead.SeqNodeYRead
 import org.yaml.model._
 
 import scala.collection.{immutable, mutable}
 
-abstract class GraphParserHelpers(val nodes: mutable.Map[String, AmfElement])(implicit ctx: GraphParserContext) extends GraphContextHelper {
+abstract class GraphParserHelpers(val nodes: mutable.Map[String, AmfElement])(implicit ctx: GraphParserContext)
+    extends GraphContextHelper {
   protected def double(node: YNode)(implicit errorHandler: IllegalTypeHandler): AmfScalar = {
     val value = node.tagType match {
       case YType.Map =>
@@ -351,42 +350,22 @@ abstract class GraphParserHelpers(val nodes: mutable.Map[String, AmfElement])(im
     }
   }
 
+  private def asSeq[T](opt: Option[T]): Seq[T] = {
+    opt match {
+      case Some(v) => Seq(v)
+      case None    => Nil
+    }
+  }
+
   protected def parseCustomProperties(map: YMap, instance: DomainElement): Unit = {
-    val properties = map
-      .key(compactUriFromContext(DomainElementModel.CustomDomainProperties.value.iri()))
-      .map(_.value.as[Seq[YNode]].map(value(Iri, _).as[YScalar].text))
-      .getOrElse(Nil)
-
-    val extensions = properties
-      .flatMap { uri =>
-        map
-          .key(
-            transformIdFromContext(uri)
-          ) // See ADR adrs/0006-custom-domain-properties-json-ld-rendering.md last consequence item
-          .map(entry => {
-            val extension = DomainExtension()
-            val obj       = mapValueFrom(entry)
-
-            parseScalarProperty(obj, DomainExtensionModel.Name)
-              .map(s => extension.set(DomainExtensionModel.Name, s))
-            parseScalarProperty(obj, DomainExtensionModel.Element)
-              .map(extension.withElement)
-
-            val definition = CustomDomainProperty()
-            definition.id = transformIdFromContext(uri)
-            extension.withDefinedBy(definition)
-
-            parse(obj).collect({ case d: DataNode => d }).foreach { pn =>
-              extension.withId(pn.id)
-              extension.withExtension(pn)
-            }
-
-            val sources = retrieveSources(map)
-            extension.annotations ++= annotations(nodes, sources, extension.id)
-
-            extension
-          })
-      }
+    // See ADR adrs/0006-custom-domain-properties-json-ld-rendering.md last consequence item
+    val extensions: Seq[DomainExtension] = for {
+      uri       <- customDomainPropertiesFor(map)
+      entry     <- asSeq(map.key(transformIdFromContext(uri)))
+      extension <- parseCustomDomainPropertyEntry(uri, entry)
+    } yield {
+      extension
+    }
 
     if (extensions.nonEmpty) {
       extensions.partition(_.isScalarExtension) match {
@@ -397,8 +376,68 @@ abstract class GraphParserHelpers(val nodes: mutable.Map[String, AmfElement])(im
     }
   }
 
-  protected def mapValueFrom(entry: YMapEntry): YMap
+  protected def parseCustomDomainPropertyEntry(uri: String, entry: YMapEntry): Seq[DomainExtension] = {
+    entry.value.tagType match {
+      case YType.Map =>
+        Seq(parseSingleDomainExtension(entry.value.as[YMap], uri))
+      case YType.Seq =>
+        val values = entry.value.as[YSequence]
+        values.nodes.map { value =>
+          parseSingleDomainExtension(value.as[YMap], uri)
+        }
+      case _ =>
+        ctx.eh.violation(UnableToParseDomainElement, uri, s"Cannot parse domain extensions for '$uri'", entry.location)
+        Nil
+    }
+  }
 
+  protected def customDomainPropertiesFor(map: YMap): Seq[String] = {
+    val fieldIri   = DomainElementModel.CustomDomainProperties.value.iri()
+    val compactIri = compactUriFromContext(fieldIri)
+
+    map.key(compactIri) match {
+      case Some(entry) =>
+        for {
+          valueNode <- entry.value.as[Seq[YNode]]
+        } yield {
+          value(Iri, valueNode).as[YScalar].text
+        }
+      case _ =>
+        Nil
+    }
+  }
+
+  private def parseSingleDomainExtension(map: YMap, uri: String) = {
+    val extension = DomainExtension()
+    contentOfNode(map) match {
+      case Some(obj) =>
+        parseScalarProperty(obj, DomainExtensionModel.Name)
+          .map(s => extension.set(DomainExtensionModel.Name, s))
+        parseScalarProperty(obj, DomainExtensionModel.Element)
+          .map(extension.withElement)
+
+        val definition = CustomDomainProperty()
+        definition.id = transformIdFromContext(uri)
+        extension.withDefinedBy(definition)
+
+        parse(obj).collect({ case d: DataNode => d }).foreach { pn =>
+          extension.withId(pn.id)
+          extension.withExtension(pn)
+        }
+
+        val sources = retrieveSources(obj)
+        extension.annotations ++= annotations(nodes, sources, extension.id)
+      case None =>
+        val nodeId = s"${retrieveId(map, ctx)}"
+        ctx.eh.violation(
+          UnableToParseDomainElement,
+          nodeId,
+          s"Cannot find node definition for node '$nodeId'",
+          map.location
+        )
+    }
+    extension
+  }
 
   protected def buildType(modelType: ModelDefaultBuilder, ann: Annotations): AmfObject = {
     val instance = modelType.modelInstance
