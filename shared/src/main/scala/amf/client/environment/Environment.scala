@@ -66,6 +66,13 @@ case class Environment private (private[amf] val _internal: InternalEnvironment,
   def setMaxYamlReferences(value: Long): Environment = {
     Environment(_internal.setMaxYamlReferences(value))
   }
+
+  /**
+    * Defines an upper bound of yaml depth that will be asserted when validating payloads
+    */
+  def setMaxYamlDepth(value: Long): Environment = {
+    Environment(_internal.setMaxYamlDepth(value))
+  }
 }
 
 object Environment {
