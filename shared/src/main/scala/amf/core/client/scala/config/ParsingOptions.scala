@@ -6,7 +6,8 @@ case class ParsingOptions(
     amfJsonLdSerialization: Boolean = true,
     baseUnitUrl: Option[String] = None,
     maxYamlReferences: Option[Int] = None,
-    maxJSONComplexity: Option[Int] = None
+    maxJSONComplexity: Option[Int] = None,
+    maxJsonYamlDepth: Option[Int] = None
 ) {
 
   /** Parse specific AMF JSON-LD serialization */
@@ -28,7 +29,12 @@ case class ParsingOptions(
     */
   def setMaxJSONComplexity(value: Int): ParsingOptions = copy(maxJSONComplexity = Some(value))
 
+  /** Defines the maximum amount of nesting depth that a parsed JSON or YAML can have
+    */
+  def setMaxJsonYamlDepth(value: Int): ParsingOptions = copy(maxJsonYamlDepth = Some(value))
+
   def isAmfJsonLdSerialization: Boolean = amfJsonLdSerialization
   def definedBaseUrl: Option[String]    = baseUnitUrl
   def getMaxYamlReferences: Option[Int] = maxYamlReferences
+  def getMaxJsonYamlDepth: Option[Int]  = maxJsonYamlDepth
 }
