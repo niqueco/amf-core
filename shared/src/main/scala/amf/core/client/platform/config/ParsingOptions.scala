@@ -1,7 +1,7 @@
 package amf.core.client.platform.config
 
-import amf.core.internal.convert.CoreClientConverters._
 import amf.core.client.scala.config.{ParsingOptions => InternalParsingOptions}
+import amf.core.internal.convert.CoreClientConverters._
 
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
@@ -15,6 +15,7 @@ case class ParsingOptions(private[amf] val _internal: InternalParsingOptions) {
   def definedBaseUrl: ClientOption[String]    = _internal.baseUnitUrl.asClient
   def getMaxYamlReferences: ClientOption[Int] = _internal.maxYamlReferences.asClient
   def getMaxJSONComplexity: ClientOption[Int] = _internal.maxJSONComplexity.asClient
+  def getMaxJsonYamlDepth: ClientOption[Int]  = _internal.maxJsonYamlDepth.asClient
 
   /** Parse specific AMF JSON-LD serialization */
   def withoutAmfJsonLdSerialization(): ParsingOptions = _internal.withoutAmfJsonLdSerialization
@@ -34,4 +35,8 @@ case class ParsingOptions(private[amf] val _internal: InternalParsingOptions) {
   /** Defines the maximum of combining complexity that will be supported when converting a JSON Schema to an AML Dialect
     */
   def setMaxJSONComplexity(value: Int): ParsingOptions = _internal.setMaxJSONComplexity(value)
+
+  /** Defines the maximum amount of nesting depth that a parsed JSON or YAML can have
+    */
+  def setMaxJsonYamlDepth(value: Int): ParsingOptions = _internal.setMaxJsonYamlDepth(value)
 }
