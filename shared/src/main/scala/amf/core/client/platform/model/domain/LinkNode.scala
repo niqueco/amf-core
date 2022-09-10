@@ -1,13 +1,14 @@
 package amf.core.client.platform.model.domain
 
 import amf.core.client.platform.model.StrField
+import amf.core.client.platform.model.domain.common.HasDescription
 import amf.core.client.scala.model.domain.{LinkNode => InternalLinkNode}
 import amf.core.internal.convert.CoreClientConverters._
 
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 @JSExportAll
-case class LinkNode(override private[amf] val _internal: InternalLinkNode) extends DataNode {
+case class LinkNode(override private[amf] val _internal: InternalLinkNode) extends DataNode with HasDescription {
 
   @JSExportTopLevel("LinkNode")
   def this() = this(InternalLinkNode())

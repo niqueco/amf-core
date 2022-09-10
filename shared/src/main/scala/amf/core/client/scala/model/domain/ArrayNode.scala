@@ -1,5 +1,6 @@
 package amf.core.client.scala.model.domain
 
+import amf.core.client.scala.model.domain.common.HasDescription
 import amf.core.client.scala.model.domain.templates.Variable
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
 import amf.core.internal.metamodel.Field
@@ -10,7 +11,7 @@ import org.yaml.model.YSequence
 
 /** Arrays of values
   */
-class ArrayNode(override val fields: Fields, val annotations: Annotations) extends DataNode(annotations) {
+class ArrayNode(override val fields: Fields, val annotations: Annotations) extends DataNode(annotations) with HasDescription {
 
   def members: Seq[DataNode] = fields.field(ArrayNodeModel.Member)
 

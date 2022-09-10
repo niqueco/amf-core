@@ -1,6 +1,7 @@
 package amf.core.client.scala.model.domain
 
 import amf.core.client.scala.model.StrField
+import amf.core.client.scala.model.domain.common.HasDescription
 import amf.core.client.scala.model.domain.templates.Variable
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
 import amf.core.internal.metamodel.domain.LinkNodeModel
@@ -15,7 +16,7 @@ import scala.collection.mutable
   * @param annotations
   *   default annotations for the dynamic node
   */
-class LinkNode(override val fields: Fields, val annotations: Annotations) extends DataNode(annotations) {
+class LinkNode(override val fields: Fields, val annotations: Annotations) extends DataNode(annotations) with HasDescription {
 
   def link: StrField  = fields.field(LinkNodeModel.Value)
   def alias: StrField = fields.field(LinkNodeModel.Alias)

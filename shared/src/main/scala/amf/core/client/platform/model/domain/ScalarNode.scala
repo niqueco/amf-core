@@ -1,13 +1,14 @@
 package amf.core.client.platform.model.domain
 
 import amf.core.client.platform.model.StrField
+import amf.core.client.platform.model.domain.common.HasDescription
 import amf.core.client.scala.model.domain.{ScalarNode => InternalScalarNode}
 import amf.core.internal.convert.CoreClientConverters._
 
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 @JSExportAll
-case class ScalarNode(override private[amf] val _internal: InternalScalarNode) extends DataNode {
+case class ScalarNode(override private[amf] val _internal: InternalScalarNode) extends DataNode with HasDescription {
 
   @JSExportTopLevel("ScalarNode")
   def this() = this(InternalScalarNode())

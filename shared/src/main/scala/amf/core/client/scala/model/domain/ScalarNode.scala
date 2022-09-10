@@ -1,22 +1,26 @@
 package amf.core.client.scala.model.domain
 
 import amf.core.client.scala.model.domain.ScalarNode.forDataType
+import amf.core.client.scala.model.domain.common.HasDescription
 import amf.core.client.scala.model.{DataType, StrField}
 import amf.core.client.scala.model.domain.templates.Variable
 import amf.core.internal.annotations.ScalarType
 import amf.core.internal.metamodel.domain.ScalarNodeModel
+import amf.core.internal.metamodel.domain.ScalarNodeModel._
 import amf.core.internal.parser.domain.{Annotations, Fields}
 import amf.core.internal.transform.VariableReplacer
 import org.yaml.model.YPart
 
 /** Scalar values with associated data type
   */
-class ScalarNode(override val fields: Fields, val annotations: Annotations) extends DataNode(annotations) {
+class ScalarNode(override val fields: Fields, val annotations: Annotations)
+    extends DataNode(annotations)
+    with HasDescription {
 
   def withValue(v: String): this.type = withValue(v, Annotations())
 
   def withValue(v: String, ann: Annotations): this.type =
-    set(ScalarNodeModel.Value, AmfScalar(v, ann))
+    set(Value, AmfScalar(v, ann))
 
   def withDataType(dataType: String): this.type =
     set(ScalarNodeModel.DataType, forDataType(dataType))
@@ -24,7 +28,7 @@ class ScalarNode(override val fields: Fields, val annotations: Annotations) exte
   def withDataType(dataType: String, ann: Annotations): this.type =
     set(ScalarNodeModel.DataType, AmfScalar(dataType, ann))
 
-  def value: StrField = fields.field(ScalarNodeModel.Value)
+  def value: StrField = fields.field(Value)
 
   def dataType: StrField = fields.field(ScalarNodeModel.DataType)
 
@@ -57,7 +61,7 @@ object ScalarNode {
       annotations += ScalarType(d)
       scalar.withDataType(d)
     })
-    scalar.set(ScalarNodeModel.Value, AmfScalar(value, annotations), Annotations.inferred())
+    scalar.set(Value, AmfScalar(value, annotations), Annotations.inferred())
   }
 
   def forDataType(dataTypeUri: String): AmfScalar = dataTypeUri match {
