@@ -2,12 +2,12 @@ package amf.core.internal.metamodel.domain.templates
 
 import amf.core.internal.metamodel.Field
 import amf.core.internal.metamodel.Type.{Array, Str}
-import amf.core.internal.metamodel.domain.common.{DescriptionField, NameFieldSchema}
+import amf.core.internal.metamodel.domain.common.{DescribedElementModel, NameFieldSchema}
 import amf.core.internal.metamodel.domain._
 import amf.core.client.scala.vocabulary.Namespace._
 import amf.core.client.scala.vocabulary.ValueType
 
-trait AbstractDeclarationModel extends DomainElementModel with KeyField with NameFieldSchema with DescriptionField {
+trait AbstractDeclarationModel extends DomainElementModel with KeyField with NameFieldSchema with DescribedElementModel {
 
   val DataNode = Field(
       DataNodeModel,

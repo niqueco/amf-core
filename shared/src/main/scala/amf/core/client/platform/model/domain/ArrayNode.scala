@@ -1,13 +1,13 @@
 package amf.core.client.platform.model.domain
 
-import amf.core.client.platform.model.domain.common.HasDescription
+import amf.core.client.platform.model.domain.common.DescribedElement
 import amf.core.internal.convert.CoreClientConverters._
 import amf.core.client.scala.model.domain.{ArrayNode => InternalArrayNode}
 
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 @JSExportAll
-case class ArrayNode(override private[amf] val _internal: InternalArrayNode) extends DataNode with HasDescription {
+case class ArrayNode(override private[amf] val _internal: InternalArrayNode) extends DataNode with DescribedElement {
 
   @JSExportTopLevel("ArrayNode")
   def this() = this(InternalArrayNode())

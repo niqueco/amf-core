@@ -7,7 +7,7 @@ import amf.core.internal.metamodel.{Field, Obj}
 
 /** Description field.
   */
-trait DescriptionField extends Obj {
+trait DescribedElementModel extends Obj {
   val Description: Field = Field(
     Str,
     Core + "description",
@@ -17,7 +17,7 @@ trait DescriptionField extends Obj {
 
 // We should avoid doing this
 // DescriptionField is not a concrete model but a trait from other models. Should be a trait not an object
-object DescriptionField {
+object DescribedElementModel {
   val Description: Field = Field(
     Str,
     Core + "description",

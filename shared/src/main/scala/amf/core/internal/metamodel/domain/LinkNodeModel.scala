@@ -5,10 +5,10 @@ import amf.core.client.scala.vocabulary.Namespace.Data
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
 import amf.core.internal.metamodel.Field
 import amf.core.internal.metamodel.Type.Str
-import amf.core.internal.metamodel.domain.common.DescriptionField
+import amf.core.internal.metamodel.domain.common.DescribedElementModel
 import amf.core.internal.metamodel.domain.federation.HasShapeFederationMetadataModel
 
-object LinkNodeModel extends DomainElementModel with HasShapeFederationMetadataModel with DescriptionField {
+object LinkNodeModel extends DomainElementModel with HasShapeFederationMetadataModel with DescribedElementModel {
 
   val Value: Field = Field(Str, Namespace.Data + "value", ModelDoc(ModelVocabularies.Data, "value"))
   val Alias: Field = Field(Str, Namespace.Data + "alias", ModelDoc(ModelVocabularies.Data, "alias"))

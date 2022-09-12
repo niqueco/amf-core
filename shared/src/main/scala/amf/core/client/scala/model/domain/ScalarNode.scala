@@ -1,7 +1,7 @@
 package amf.core.client.scala.model.domain
 
 import amf.core.client.scala.model.domain.ScalarNode.forDataType
-import amf.core.client.scala.model.domain.common.HasDescription
+import amf.core.client.scala.model.domain.common.DescribedElement
 import amf.core.client.scala.model.{DataType, StrField}
 import amf.core.client.scala.model.domain.templates.Variable
 import amf.core.internal.annotations.ScalarType
@@ -15,7 +15,7 @@ import org.yaml.model.YPart
   */
 class ScalarNode(override val fields: Fields, val annotations: Annotations)
     extends DataNode(annotations)
-    with HasDescription {
+    with DescribedElement {
 
   def withValue(v: String): this.type = withValue(v, Annotations())
 
