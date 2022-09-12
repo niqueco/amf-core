@@ -5,14 +5,15 @@ import amf.core.client.scala.vocabulary.Namespace.Data
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
 import amf.core.internal.metamodel.Field
 import amf.core.internal.metamodel.Type.Array
+import amf.core.internal.metamodel.domain.common.DescribedElementModel
 import amf.core.internal.metamodel.domain.federation.HasShapeFederationMetadataModel
 
-object ArrayNodeModel extends DomainElementModel with HasShapeFederationMetadataModel {
+object ArrayNodeModel extends DomainElementModel with HasShapeFederationMetadataModel with DescribedElementModel {
 
   val Member: Field =
     Field(Array(DataNodeModel), Namespace.Rdfs + "member", ModelDoc(ExternalModelVocabularies.Rdf, "member", ""))
 
-  override val fields: List[Field]      = Member :: DataNodeModel.fields
+  override val fields: List[Field]      = Member :: Description :: DataNodeModel.fields
   override val `type`: List[ValueType]  = Data + "Array" :: Namespace.Rdf + "Seq" :: DataNodeModel.`type`
   override def modelInstance: ArrayNode = ArrayNode()
 

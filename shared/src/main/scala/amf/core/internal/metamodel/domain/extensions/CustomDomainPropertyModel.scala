@@ -6,7 +6,7 @@ import amf.core.client.scala.vocabulary.ValueType
 import amf.core.internal.metamodel.Field
 import amf.core.internal.metamodel.Type.{Array, Int, Iri, Str, Bool}
 import amf.core.internal.metamodel.domain._
-import amf.core.internal.metamodel.domain.common.{DescriptionField, DisplayNameField}
+import amf.core.internal.metamodel.domain.common.{DescribedElementModel, DisplayNameField}
 import amf.core.internal.metamodel.domain.templates.KeyField
 
 /** Custom Domain Property
@@ -21,7 +21,7 @@ import amf.core.internal.metamodel.domain.templates.KeyField
   * Contrast this extension mechanism with the creation of a propertyTerm in a vocabulary, a more re-usable and generic
   * way of achieving the same functionality
   */
-object CustomDomainPropertyModel extends DomainElementModel with KeyField with DisplayNameField with DescriptionField {
+object CustomDomainPropertyModel extends DomainElementModel with KeyField with DisplayNameField with DescribedElementModel {
 
   /** The name of the extension
     */
