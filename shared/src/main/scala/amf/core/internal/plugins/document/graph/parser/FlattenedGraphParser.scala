@@ -375,6 +375,11 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
         .foreach(s => instance.withLinkLabel(s))
     }
 
+    override protected def mapValueFrom(entry: YMapEntry): YMap = {
+      val entryValue = entry.value
+      contentOfNode(entryValue).getOrElse(entryValue.as[YMap])
+    }
+
     private def parseObjectNodeProperties(obj: ObjectNode, map: YMap, fields: Seq[Field]): Unit = {
       val ignoredFields: Seq[String] =
         Seq(
