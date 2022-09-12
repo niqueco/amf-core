@@ -9,7 +9,7 @@ import amf.core.internal.metamodel.domain.federation.HasShapeFederationMetadataM
 
 trait ObjectNodeModel extends DomainElementModel with HasShapeFederationMetadataModel with DescribedElementModel {
 
-  override def fields: List[Field]       = DataNodeModel.fields
+  override def fields: List[Field]       = DataNodeModel.fields ++ Seq(Description)
   override val `type`: List[ValueType]   = Data + "Object" :: DataNodeModel.`type`
   override def modelInstance: ObjectNode = ObjectNode()
 
