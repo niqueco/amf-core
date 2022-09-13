@@ -36,6 +36,7 @@ object Namespace {
   val AmfResolution: Namespace    = Namespace("http://a.ml/vocabularies/amf/resolution#")
   val AmfValidation: Namespace    = Namespace("http://a.ml/vocabularies/amf/validation#")
   val AmfRender: Namespace        = Namespace("http://a.ml/vocabularies/amf/render#")
+  val GraphQL: Namespace          = Namespace("http://a.ml/vocabularies/graphql#")
 
   def find(uri: String): Option[Namespace] = uri match {
     case "http://a.ml/vocabularies/document"             => Some(Document)
@@ -56,6 +57,7 @@ object Namespace {
     case "http://www.w3.org/2002/07/owl"                 => Some(Owl)
     case "http://www.w3.org/2000/01/rdf-schema"          => Some(Rdfs)
     case "http://a.ml/vocabularies/amf/parser"           => Some(AmfParser)
+    case "http://a.ml/vocabularies/graphql#"             => Some(GraphQL)
     case _                                               => None
   }
 
@@ -159,6 +161,7 @@ object NamespaceAliases {
     "sourcemaps"     -> Namespace.SourceMaps,
     "meta"           -> Namespace.Meta,
     "owl"            -> Namespace.Owl,
-    "rdfs"           -> Namespace.Rdfs
+    "rdfs"           -> Namespace.Rdfs,
+    "graphql"        -> Namespace.GraphQL
   )
 }
