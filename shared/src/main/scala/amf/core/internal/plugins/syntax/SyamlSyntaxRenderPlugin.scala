@@ -41,7 +41,8 @@ object SyamlSyntaxRenderPlugin extends AMFSyntaxRenderPlugin with PlatformSecret
         `text/x-yaml`,
         `application/json`,
         `text/json`,
-        `text/vnd.yaml`
+        `text/vnd.yaml`,
+        "application/schemald+json"
     )
 
   override val id: String = "syaml-render"

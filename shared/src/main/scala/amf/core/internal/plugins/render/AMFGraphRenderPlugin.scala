@@ -1,9 +1,11 @@
 package amf.core.internal.plugins.render
 
 import amf.core.client.common.{LowPriority, PluginPriority}
+import amf.core.client.scala.config.RenderOptions
 import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.scala.vocabulary.{Namespace, NamespaceAliases}
 import amf.core.internal.plugins.document.graph.emitter.{
+  ApplicableMetaFieldRenderProvider,
   EmbeddedJsonLdEmitter,
   FlattenedJsonLdEmitter,
   SemanticExtensionAwareFieldRenderProvision,
@@ -15,7 +17,8 @@ import amf.core.internal.remote.Amf
 import amf.core.internal.remote.Mimes._
 import org.yaml.builder.DocBuilder
 
-object AMFGraphRenderPlugin extends AMFRenderPlugin {
+object AMFGraphRenderPlugin extends AMFGraphRenderPlugin
+trait AMFGraphRenderPlugin extends AMFRenderPlugin {
 
   override val id: String = Amf.id
 
@@ -34,6 +37,9 @@ object AMFGraphRenderPlugin extends AMFRenderPlugin {
     }
   }
 
+  def flattenEmissionFN[T]
+      : (BaseUnit, DocBuilder[T], RenderOptions, NamespaceAliases, ApplicableMetaFieldRenderProvider) => Boolean =
+    FlattenedJsonLdEmitter.emit
   def emitToYDocBuilder[T](unit: BaseUnit, builder: DocBuilder[T], renderConfig: RenderConfiguration): Boolean = {
     val options          = renderConfig.renderOptions
     val namespaceAliases = renderConfig.namespaceAliases
@@ -41,7 +47,7 @@ object AMFGraphRenderPlugin extends AMFRenderPlugin {
       case JsonLdSerialization(EmbeddedForm) => EmbeddedJsonLdEmitter.emit(unit, builder, options, namespaceAliases)
       // defaults to flatten
       case _ =>
-        FlattenedJsonLdEmitter.emit(
+        flattenEmissionFN(
             unit,
             builder,
             options,

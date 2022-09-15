@@ -374,6 +374,7 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
         emitScalar(b, v.value, SType.Int)
         sources(v)
       case Type.Double | Type.Float =>
+        // Doubles get emitted as floats without the @type entry
         emitScalar(b, v.value, SType.Float)
         sources(v)
       case Type.DateTime =>
@@ -386,79 +387,89 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
       case a: SortedArray =>
         createSortedArray(b, v.value.asInstanceOf[AmfArray].values, parent, a.element)
         sources(v)
-      case a: Array =>
-        b.list { b =>
-          val seq = v.value.asInstanceOf[AmfArray]
-          sources(v)
-          a.element match {
-            case _: Obj =>
-              seq.values.asInstanceOf[Seq[AmfObject]].foreach {
-                case v @ (_: Shape) if ctx.canGenerateLink(v) =>
-                  extractToLink(v, b, inArray = true)
-                case elementInArray: DomainElement with Linkable if elementInArray.isLink =>
-                  link(b, elementInArray, inArray = true)
-                case elementInArray =>
-                  emitArrayObjectMember(b, elementInArray)
-              }
-            case Str =>
-              seq.values.asInstanceOf[Seq[AmfScalar]].foreach { e =>
-                scalar(b, e.toString)
-              }
-            case EncodedIri | Iri =>
-              seq.values.asInstanceOf[Seq[AmfScalar]].foreach(e => iri(b, e.toString, inArray = true))
-            case LiteralUri =>
-              typedScalar(b, v.value.asInstanceOf[AmfScalar].toString, DataType.AnyUri, inArray = true)
-            case Type.Int | Type.Long =>
-              seq.values
-                .asInstanceOf[Seq[AmfScalar]]
-                .foreach(e => scalar(b, e.value.toString, SType.Int))
-            case Type.Float =>
-              seq.values
-                .asInstanceOf[Seq[AmfScalar]]
-                .foreach(e => scalar(b, e.value.toString, SType.Float))
-            case Bool =>
-              seq.values
-                .asInstanceOf[Seq[AmfScalar]]
-                .foreach(e => scalar(b, e.value.toString, SType.Bool))
-            case Type.DateTime =>
-              seq.values
-                .asInstanceOf[Seq[AmfScalar]]
-                .foreach { e =>
-                  val dateTime = e.value.asInstanceOf[SimpleDateTime]
-                  typedScalar(b, dateTime.toString, DataType.DateTime)
-                }
-            case Type.Date =>
-              seq.values
-                .asInstanceOf[Seq[AmfScalar]]
-                .foreach { e =>
-                  val dateTime = e.value.asInstanceOf[SimpleDateTime]
-                  emitSimpleDateTime(b, dateTime, inArray = false)
-                }
-            case Any =>
-              seq.values.asInstanceOf[Seq[AmfScalar]].foreach { scalarElement =>
-                scalarElement.value match {
-                  case bool: Boolean =>
-                    typedScalar(b, bool.toString, DataType.Boolean, inArray = true)
-                  case i: Int              => typedScalar(b, i.toString, DataType.Integer, inArray = true)
-                  case f: Float            => typedScalar(b, f.toString, DataType.Float, inArray = true)
-                  case d: Double           => typedScalar(b, d.toString, DataType.Double, inArray = true)
-                  case sdt: SimpleDateTime => emitSimpleDateTime(b, sdt)
-                  case other               => scalar(b, other.toString)
-                }
-              }
-            case _ => seq.values.asInstanceOf[Seq[AmfScalar]].foreach(e => iri(b, e.toString, inArray = true))
-          }
-        }
-
+      case a: Array => emitArray(a, v, b, sources)
       case Any if v.value.isInstanceOf[AmfScalar] =>
         v.value.asInstanceOf[AmfScalar].value match {
-          case bool: Boolean       => typedScalar(b, bool.toString, DataType.Boolean, inArray = true)
-          case i: Int              => typedScalar(b, i.toString, DataType.Integer, inArray = true)
-          case f: Float            => typedScalar(b, f.toString, DataType.Float, inArray = true)
-          case d: Double           => typedScalar(b, d.toString, DataType.Double, inArray = true)
+          case bool: Boolean => typedScalar(b, bool.toString, DataType.Boolean, inArray = true)
+          case i: Int => typedScalar(b, i.toString, DataType.Integer, inArray = true)
+          case f: Float => typedScalar(b, f.toString, DataType.Float, inArray = true)
+          case d: Double => typedScalar(b, d.toString, DataType.Double, inArray = true)
           case sdt: SimpleDateTime => emitSimpleDateTime(b, sdt)
-          case other               => scalar(b, other.toString)
+          case other => scalar(b, other.toString)
         }
+    }
+  }
+
+  protected def emitArray(a: Array, v: Value, b: Part[T], sources: Value => Unit) = {
+    b.list { b =>
+      val seq = v.value.asInstanceOf[AmfArray]
+      sources(v)
+      createArrayValues(a, seq, b, v)
+    }
+  }
+
+  protected def emitObjMember(amfObject: AmfObject, b: Part[T]) = amfObject match {
+    case v@(_: Shape) if ctx.canGenerateLink(v) =>
+      extractToLink(v.asInstanceOf[Shape], b, inArray = true)
+    case elementInArray: DomainElement with Linkable if elementInArray.isLink =>
+      link(b, elementInArray, inArray = true)
+    case elementInArray =>
+      obj(b, elementInArray)
+  }
+
+  protected def createArrayValues(a: Array, seq: AmfArray, b: Part[T], v: Value): Unit = {
+    a.element match {
+      case _: Obj =>
+        seq.values.asInstanceOf[Seq[AmfObject]].foreach(emitObjMember(_, b))
+      case Str =>
+        seq.values.asInstanceOf[Seq[AmfScalar]].foreach { e =>
+          scalar(b, e.toString)
+        }
+      case EncodedIri | Iri =>
+        seq.values.asInstanceOf[Seq[AmfScalar]].foreach(e => iri(b, e.toString, inArray = true))
+      case LiteralUri =>
+        typedScalar(b, v.value.asInstanceOf[AmfScalar].toString, DataType.AnyUri, inArray = true)
+      case Type.Int | Type.Long =>
+        seq.values
+          .asInstanceOf[Seq[AmfScalar]]
+          .foreach(e => scalar(b, e.value.toString, SType.Int))
+      case Type.Float =>
+        seq.values
+          .asInstanceOf[Seq[AmfScalar]]
+          .foreach(e => scalar(b, e.value.toString, SType.Float))
+      case Bool =>
+        seq.values
+          .asInstanceOf[Seq[AmfScalar]]
+          .foreach(e => scalar(b, e.value.toString, SType.Bool))
+      case Type.DateTime =>
+        seq.values
+          .asInstanceOf[Seq[AmfScalar]]
+          .foreach { e =>
+            val dateTime = e.value.asInstanceOf[SimpleDateTime]
+            typedScalar(b, dateTime.toString, DataType.DateTime)
+          }
+      case Type.Date =>
+        seq.values
+          .asInstanceOf[Seq[AmfScalar]]
+          .foreach { e =>
+            val dateTime = e.value.asInstanceOf[SimpleDateTime]
+            emitSimpleDateTime(b, dateTime, inArray = false)
+          }
+      case Any =>
+        seq.values.asInstanceOf[Seq[AmfScalar]].foreach(emitScalarMember(_, b))
+      case _ => seq.values.asInstanceOf[Seq[AmfScalar]].foreach(e => iri(b, e.toString, inArray = true))
+    }
+  }
+
+  protected def emitScalarMember(scalarElement: AmfScalar, b: Part[T]): Unit = {
+    scalarElement.value match {
+      case bool: Boolean =>
+        typedScalar(b, bool.toString, DataType.Boolean, inArray = true)
+      case i: Int => typedScalar(b, i.toString, DataType.Integer, inArray = true)
+      case f: Float => typedScalar(b, f.toString, DataType.Float, inArray = true)
+      case d: Double => typedScalar(b, d.toString, DataType.Double, inArray = true)
+      case sdt: SimpleDateTime => emitSimpleDateTime(b, sdt)
+      case other => scalar(b, other.toString)
     }
   }
 
