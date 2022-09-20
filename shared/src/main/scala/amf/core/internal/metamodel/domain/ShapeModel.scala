@@ -2,7 +2,7 @@ package amf.core.internal.metamodel.domain
 
 import amf.core.internal.metamodel.Field
 import amf.core.internal.metamodel.Type.{Array, Bool, Iri, SortedArray, Str}
-import amf.core.internal.metamodel.domain.common.DescriptionField
+import amf.core.internal.metamodel.domain.common.DescribedElementModel
 import amf.core.internal.metamodel.domain.extensions.{PropertyShapeModel, ShapeExtensionModel}
 import amf.core.internal.metamodel.domain.templates.KeyField
 import amf.core.client.scala.vocabulary.Namespace.{Core, Federation, Shacl, Shapes}
@@ -17,7 +17,7 @@ trait ShapeModel
     extends DomainElementModel
     with LinkableElementModel
     with KeyField
-    with DescriptionField
+    with DescribedElementModel
     with HasShapeFederationMetadataModel {
 
   val Name: Field =

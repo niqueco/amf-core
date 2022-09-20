@@ -1,5 +1,6 @@
 package amf.core.client.scala.model.domain
 
+import amf.core.client.scala.model.domain.common.DescribedElement
 import amf.core.client.scala.model.domain.templates.Variable
 import amf.core.client.scala.vocabulary.Namespace.Data
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
@@ -12,7 +13,9 @@ import org.yaml.model.YPart
 
 /** Data records, with a list of properties
   */
-class ObjectNode(override val fields: Fields, val annotations: Annotations) extends DataNode(annotations) {
+class ObjectNode(override val fields: Fields, val annotations: Annotations)
+    extends DataNode(annotations)
+    with DescribedElement {
 
   def getFromKey(key: String): Option[DataNode] =
     fields

@@ -366,4 +366,9 @@ abstract class GraphContextHelper extends GraphContextOperations {
     val prefix       = prefixOption.getOrElse("")
     s"$prefix$id"
   }
+
+  protected def asSeq[T](opt: Option[T]): Seq[T] = opt match {
+    case Some(v) => Seq(v)
+    case None    => Nil
+  }
 }

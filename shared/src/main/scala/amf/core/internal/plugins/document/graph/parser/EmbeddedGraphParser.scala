@@ -14,7 +14,12 @@ import amf.core.internal.metamodel.domain.extensions.DomainExtensionModel
 import amf.core.internal.parser._
 import amf.core.internal.parser.domain.{Annotations, FieldEntry}
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
-import amf.core.internal.validation.CoreValidations.{NotLinkable, UnableToParseDocument, UnableToParseNode}
+import amf.core.internal.validation.CoreValidations.{
+  NotLinkable,
+  UnableToParseDocument,
+  UnableToParseDomainElement,
+  UnableToParseNode
+}
 import org.yaml.convert.YRead.SeqNodeYRead
 import org.yaml.model._
 
@@ -219,42 +224,14 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
     }
 
     private def parseCustomProperties(map: YMap, instance: DomainElement): Unit = {
-      val properties = map
-        .key(compactUriFromContext(DomainElementModel.CustomDomainProperties.value.iri()))
-        .map(_.value.as[Seq[YNode]].map(value(Iri, _).as[YScalar].text))
-        .getOrElse(Nil)
-
-      val extensions = properties
-        .flatMap { uri =>
-          map
-            .key(
-                transformIdFromContext(uri)
-            ) // See ADR adrs/0006-custom-domain-properties-json-ld-rendering.md last consequence item
-            .map(entry => {
-              val extension = DomainExtension()
-              val obj       = entry.value.as[YMap]
-
-              parseScalarProperty(obj, DomainExtensionModel.Name)
-                .map(extension.set(DomainExtensionModel.Name, _))
-              parseScalarProperty(obj, DomainExtensionModel.Element)
-                .map(extension.withElement)
-
-              val definition = CustomDomainProperty()
-              definition.id = transformIdFromContext(uri)
-              extension.withDefinedBy(definition)
-
-              parse(obj).collect({ case d: DataNode => d }).foreach { pn =>
-                extension.withId(pn.id)
-                extension.withExtension(pn)
-              }
-
-              val sources = retrieveSources(map)
-              extension.annotations ++= annotations(nodes, sources, extension.id)
-
-              extension
-            })
-        }
-
+      // See ADR adrs/0006-custom-domain-properties-json-ld-rendering.md last consequence item
+      val extensions: Seq[DomainExtension] = for {
+        uri       <- customDomainPropertiesFor(map)
+        entry     <- asSeq(map.key(transformIdFromContext(uri)))
+        extension <- parseCustomDomainPropertyEntry(uri, entry)
+      } yield {
+        extension
+      }
       if (extensions.nonEmpty) {
         extensions.partition(_.isScalarExtension) match {
           case (scalars, objects) =>
@@ -262,6 +239,70 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
             applyScalarDomainProperties(instance, scalars)
         }
       }
+    }
+
+    protected def parseCustomDomainPropertyEntry(uri: String, entry: YMapEntry): Seq[DomainExtension] = {
+      entry.value.tagType match {
+        case YType.Map =>
+          Seq(parseSingleDomainExtension(entry.value.as[YMap], uri))
+        case YType.Seq =>
+          val values = entry.value.as[YSequence]
+          values.nodes.map { value =>
+            parseSingleDomainExtension(value.as[YMap], uri)
+          }
+        case _ =>
+          ctx.eh
+            .violation(UnableToParseDomainElement, uri, s"Cannot parse domain extensions for '$uri'", entry.location)
+          Nil
+      }
+    }
+
+    protected def customDomainPropertiesFor(map: YMap): Seq[String] = {
+      val fieldIri   = DomainElementModel.CustomDomainProperties.value.iri()
+      val compactIri = compactUriFromContext(fieldIri)
+
+      map.key(compactIri) match {
+        case Some(entry) =>
+          for {
+            valueNode <- entry.value.as[Seq[YNode]]
+          } yield {
+            value(Iri, valueNode).as[YScalar].text
+          }
+        case _ =>
+          Nil
+      }
+    }
+
+    private def parseSingleDomainExtension(map: YMap, uri: String) = {
+      val extension = DomainExtension()
+      contentOfNode(map) match {
+        case Some(obj) =>
+          parseScalarProperty(obj, DomainExtensionModel.Name)
+            .map(s => extension.set(DomainExtensionModel.Name, s))
+          parseScalarProperty(obj, DomainExtensionModel.Element)
+            .map(extension.withElement)
+
+          val definition = CustomDomainProperty()
+          definition.id = transformIdFromContext(uri)
+          extension.withDefinedBy(definition)
+
+          parse(obj).collect({ case d: DataNode => d }).foreach { pn =>
+            extension.withId(pn.id)
+            extension.withExtension(pn)
+          }
+
+          val sources = retrieveSources(obj)
+          extension.annotations ++= annotations(nodes, sources, extension.id)
+        case None =>
+          val nodeId = s"${retrieveId(map, ctx)}"
+          ctx.eh.violation(
+              UnableToParseDomainElement,
+              nodeId,
+              s"Cannot find node definition for node '$nodeId'",
+              map.location
+          )
+      }
+      extension
     }
 
     private def applyScalarDomainProperties(instance: DomainElement, scalars: Seq[DomainExtension]): Unit = {
@@ -331,9 +372,9 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
         case a: Array =>
           val items = node.as[Seq[YNode]]
           val values: Seq[AmfElement] = a.element match {
-            case _: Obj    => items.flatMap(n => parse(n.as[YMap]))
-            case Str => items.map(n => str(value(a.element, n)))
-            case Iri => items.map(n => iri(value(a.element, n)))
+            case _: Obj => items.flatMap(n => parse(n.as[YMap]))
+            case Str    => items.map(n => str(value(a.element, n)))
+            case Iri    => items.map(n => iri(value(a.element, n)))
           }
           instance.setArrayWithoutId(f, values, annotations(nodes, sources, key))
       }

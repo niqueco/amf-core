@@ -11,9 +11,10 @@ object ShapeValidationConfiguration {
 }
 
 case class ShapeValidationConfiguration(private[amf] val config: AMFGraphConfiguration) {
-  val eh: AMFErrorHandler                = config.errorHandlerProvider.errorHandler()
+  def eh(): AMFErrorHandler              = config.errorHandlerProvider.errorHandler()
   val executionContext: ExecutionContext = config.getExecutionContext
   val maxYamlReferences: Option[Int]     = config.options.parsingOptions.maxYamlReferences
+  val maxJsonYamlDepth: Option[Int]      = config.options.parsingOptions.maxJsonYamlDepth
 
   // Necessary for Java XML Payload Validator
   def fetchContent(url: String): Future[Content] = config.resolvers.resolveContent(url)

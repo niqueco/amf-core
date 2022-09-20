@@ -32,4 +32,5 @@ object PipelineId {
   val Editing       = "editing"
   val Compatibility = "compatibility"
   val Cache         = "cache"
+  val Introspection = "introspection"
 }

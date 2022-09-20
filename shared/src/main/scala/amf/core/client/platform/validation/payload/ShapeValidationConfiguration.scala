@@ -4,6 +4,7 @@ import amf.core.client.common.remote.Content
 import amf.core.client.platform.AMFGraphConfiguration
 import amf.core.client.platform.errorhandling.ClientErrorHandler
 import amf.core.client.platform.validation.AMFValidationResult
+import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.validation.payload.{ShapeValidationConfiguration => InternalShapeValidationConfiguration}
 import amf.core.internal.convert.CoreClientConverters
 import amf.core.internal.convert.CoreClientConverters._
@@ -20,10 +21,10 @@ object ShapeValidationConfiguration {
 
 class ShapeValidationConfiguration(private[amf] val _internal: InternalShapeValidationConfiguration) {
   @JSExport
-  val eh: ClientErrorHandler = new ClientErrorHandler {
-    override def getResults: CoreClientConverters.ClientList[AMFValidationResult] = _internal.eh.getResults.asClient
+  def eh(): ClientErrorHandler = new ClientErrorHandler {
+    override def getResults: CoreClientConverters.ClientList[AMFValidationResult] = _internal.eh().getResults.asClient
 
-    override def report(result: AMFValidationResult): Unit = _internal.eh.report(result)
+    override def report(result: AMFValidationResult): Unit = _internal.eh().report(result)
   }
   val executionContext: ExecutionContext = _internal.executionContext
 
