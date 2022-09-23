@@ -34,7 +34,7 @@ trait AmfObject extends AmfElement {
   }
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  private[amf] def componentId: String
+  def componentId: String
 
   /** Call after object has been adopted by specified parent. */
   final def simpleAdoption(parent: String): this.type = {
