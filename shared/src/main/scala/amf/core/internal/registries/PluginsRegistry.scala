@@ -57,8 +57,16 @@ case class PluginsRegistry private[amf] (
     copy(rootParsePlugins = rootParsePlugins.filter(_.id != plugin.id) :+ plugin)
   }
 
+  def withRootParsePlugins(plugins: List[AMFParsePlugin]): PluginsRegistry = {
+    plugins.foldLeft(this) { case (registry, plugin) => registry.withRootParsePlugin(plugin) }
+  }
+
   def withReferenceParsePlugin(plugin: AMFParsePlugin): PluginsRegistry = {
     copy(referenceParsePlugins = referenceParsePlugins.filter(_.id != plugin.id) :+ plugin)
+  }
+
+  def withReferenceParsePlugins(plugins: List[AMFParsePlugin]): PluginsRegistry = {
+    plugins.foldLeft(this) { case (registry, plugin) => registry.withReferenceParsePlugin(plugin) }
   }
 
   def withPlugins(plugins: Seq[AMFPlugin[_]]): PluginsRegistry = {
