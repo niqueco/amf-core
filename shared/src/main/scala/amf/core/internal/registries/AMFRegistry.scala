@@ -46,10 +46,16 @@ private[amf] class AMFRegistry(
   def withReferenceParsePlugin(parsePlugin: AMFParsePlugin): AMFRegistry =
     copy(plugins = plugins.withReferenceParsePlugin(parsePlugin))
 
+  def withReferenceParsePlugins(parsePlugin: List[AMFParsePlugin]): AMFRegistry =
+    copy(plugins = plugins.withReferenceParsePlugins(parsePlugin))
+
   def withPlugins(amfPlugins: List[AMFPlugin[_]]): AMFRegistry = copy(plugins = plugins.withPlugins(amfPlugins))
 
   def withRootParsePlugin(aMFParsePlugin: AMFParsePlugin): AMFRegistry =
     copy(plugins = plugins.withRootParsePlugin(aMFParsePlugin))
+
+  def withRootParsePlugins(amfParsePlugins: List[AMFParsePlugin]): AMFRegistry =
+    copy(plugins = plugins.withRootParsePlugins(amfParsePlugins))
 
   def withFallback(plugin: DomainParsingFallback): AMFRegistry = copy(plugins = plugins.withFallback(plugin))
 
