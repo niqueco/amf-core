@@ -15,7 +15,7 @@ trait Fragment extends BaseUnit with EncodesModel {
   override def meta: FragmentModel = FragmentModel
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  private[amf] override def componentId: String = ""
+  override def componentId: String = ""
 
 }
 

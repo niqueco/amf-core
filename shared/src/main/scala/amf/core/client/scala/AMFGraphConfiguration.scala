@@ -167,7 +167,7 @@ class AMFGraphConfiguration private[amf] (
 
   private[amf] def emptyEntities(): AMFGraphConfiguration   = super._emptyEntities()
   private[amf] def getParsingOptions: ParsingOptions        = options.parsingOptions
-  private[amf] def getRegistry: AMFRegistry                 = registry
+  def getRegistry: AMFRegistry                              = registry
   private[amf] def getResourceLoaders: List[ResourceLoader] = resolvers.resourceLoaders
   private[amf] def getUnitsCache: Option[UnitCache]         = resolvers.unitCache
   private[amf] def getExecutionContext: ExecutionContext    = resolvers.executionEnv.context

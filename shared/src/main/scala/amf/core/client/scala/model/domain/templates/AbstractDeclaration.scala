@@ -22,7 +22,7 @@ abstract class AbstractDeclaration(fields: Fields, annotations: Annotations)
   def withDescription(description: String): this.type  = set(Description, description)
 
   protected def declarationComponent: String
-  private[amf] override def componentId: String =
+  override def componentId: String =
     "/" + declarationComponent + "/" + name.option().getOrElse("default-abstract").urlComponentEncoded
   override def nameField: Field = Name
 }

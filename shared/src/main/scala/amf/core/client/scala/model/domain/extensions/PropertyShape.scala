@@ -11,8 +11,7 @@ import amf.core.internal.utils.AmfStrings
 
 /** Property shape
   */
-case class PropertyShape(fields: Fields, annotations: Annotations)
-    extends Shape {
+case class PropertyShape(fields: Fields, annotations: Annotations) extends Shape {
 
   def path: StrField                   = fields.field(Path)
   def range: Shape                     = fields.field(Range)
@@ -56,7 +55,7 @@ case class PropertyShape(fields: Fields, annotations: Annotations)
   }
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  private[amf] override def componentId: String =
+  override def componentId: String =
     "/property/" + name.option().getOrElse("default-property").urlComponentEncoded
 
   /** apply method for create a new instance with fields and annotations. Aux method for copy */
