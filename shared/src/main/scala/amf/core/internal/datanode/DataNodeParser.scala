@@ -98,7 +98,7 @@ class DataNodeParser private (
   }
 
   protected def parseObject(value: YMap): DataNode = {
-    val node = DataObjectNode(Annotations(value)).withSynthesizeName(idCounter.genId("object"))
+    val node = DataObjectNode(Annotations(value)).withSynthesizedName(idCounter.genId("object"))
     value.entries.map { entry =>
       hook.onScalarParse(entry.key)
       val value               = entry.value
@@ -134,7 +134,7 @@ case class ScalarNodeParser(hook: OnScalarParseHook = NothingOnScalarParseHook, 
     val finalDataType = DataType(dataType)
     val scalarNode    = amf.core.internal.parser.domain.ScalarNode(node)
     val dataNode = newScalarNode(scalarNode, finalDataType, Annotations(node))
-      .withSynthesizeName(idCounter.genId("scalar"))
+      .withSynthesizedName(idCounter.genId("scalar"))
     hook.onScalarParse(scalarNode)
     dataNode
   }
