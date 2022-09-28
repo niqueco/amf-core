@@ -124,7 +124,7 @@ class Annotations() {
 
   def isInferred: Boolean = find(classOf[Inferred]).isDefined
 
-  def clear: Unit = annotations = new ListBuffer()
+  def clear(): Unit = annotations.clear()
 }
 
 object Annotations {

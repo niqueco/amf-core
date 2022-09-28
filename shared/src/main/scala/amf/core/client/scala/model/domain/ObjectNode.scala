@@ -33,7 +33,7 @@ class ObjectNode(override val fields: Fields, val annotations: Annotations)
     objectValue.fields
       .getValueAsOption(DataNodeModel.Name)
       .fold({
-        objectValue.withSynthesizedName(newName)
+        objectValue.withSynthesizeName(newName)
       })(value => {
         objectValue.set(DataNodeModel.Name, AmfScalar(newName, value.value.annotations), value.annotations)
       })
