@@ -5,7 +5,7 @@ import amf.core.client.scala.model.domain._
 
 case class TypeAlias(aliasId: String) extends Annotation
 
-case class DeclaredElement() extends SerializableAnnotation with PerpetualAnnotation {
+case class DeclaredElement() extends EternalSerializedAnnotation {
   override val name: String = DeclaredElement.name
 
   override val value: String = ""

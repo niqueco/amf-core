@@ -25,4 +25,6 @@ trait NamedAmfObject extends AmfObject {
 
   def withSynthesizeName(name: String): this.type = set(nameField, AmfScalar(name), Annotations.synthesized())
 
+  def withInferredName(name: String): this.type = set(nameField, AmfScalar(name), Annotations.inferred())
+
 }
