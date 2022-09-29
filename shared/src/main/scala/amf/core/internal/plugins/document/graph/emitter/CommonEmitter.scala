@@ -27,7 +27,7 @@ import amf.core.internal.parser.domain.{Annotations, FieldEntry, Value}
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
 import amf.core.internal.plugins.document.graph.emitter.utils.{ScalarEmitter, SourceMapEmitter, SourceMapsAllowList}
 import org.mulesoft.common.time.SimpleDateTime
-import org.yaml.builder.DocBuilder.{Entry, Part, SType}
+import org.yaml.builder.DocBuilder.{Entry, Part, SType, Scalar}
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -384,6 +384,9 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
       case Type.Date =>
         emitDate(v, b)
         sources(v)
+      case Type.Null =>
+        emitNull(b)
+        sources(v)
       case a: SortedArray =>
         createSortedArray(b, v.value.asInstanceOf[AmfArray].values, parent, a.element)
         sources(v)
@@ -400,6 +403,9 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
     }
   }
 
+  protected def emitNull(b: Part[T]) = {
+    b += Scalar(SType.Null, null)
+  }
   protected def emitArray(a: Array, v: Value, b: Part[T], sources: Value => Unit) = {
     b.list { b =>
       val seq = v.value.asInstanceOf[AmfArray]
