@@ -20,3 +20,11 @@ case class VirtualElement() extends SerializableAnnotation with PerpetualAnnotat
   override val name: String  = "virtual-element"
   override def value: String = "true"
 }
+
+object VirtualElement extends AnnotationGraphLoader {
+  override def unparse(annotatedValue: String, objects: Map[String, AmfElement]): Option[Annotation] = Some(
+      VirtualElement()
+  )
+
+  def name: String = "virtual-element"
+}
