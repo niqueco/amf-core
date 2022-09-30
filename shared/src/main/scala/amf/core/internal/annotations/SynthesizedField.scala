@@ -1,6 +1,6 @@
 package amf.core.internal.annotations
 
-import amf.core.client.scala.model.domain.{AmfElement, Annotation, AnnotationGraphLoader, SerializableAnnotation}
+import amf.core.client.scala.model.domain._
 
 trait VirtualNode extends Annotation
 
@@ -16,4 +16,7 @@ object SynthesizedField extends AnnotationGraphLoader {
 
 case class Inferred() extends VirtualNode
 
-case class VirtualElement() extends VirtualNode
+case class VirtualElement() extends SerializableAnnotation with PerpetualAnnotation with VirtualNode {
+  override val name: String  = "virtual-element"
+  override def value: String = "true"
+}
