@@ -4,7 +4,7 @@ import amf.core.client.scala.AMFGraphConfiguration
 import amf.core.client.scala.config.RenderOptions
 import amf.core.client.scala.model.document.Document
 import amf.core.client.scala.model.domain.{ObjectNode, SerializableAnnotation}
-import amf.core.internal.annotations.{DeclaredElement, TrackedElement}
+import amf.core.internal.annotations.{DeclaredElement, TrackedElement, VirtualElement}
 import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.remote.Spec.AMF
 import amf.core.io.FileAssertionTest
@@ -12,12 +12,12 @@ import org.scalatest.funsuite.AsyncFunSuite
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class GovernanceModeTest
-  extends AsyncFunSuite with FileAssertionTest {
+class GovernanceModeTest extends AsyncFunSuite with FileAssertionTest {
 
   override implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
-  protected val allowedAnnotations: Annotations = Annotations() += TrackedElement(Set("")) += DeclaredElement()
+  protected val allowedAnnotations: Annotations =
+    Annotations() += TrackedElement(Set("")) += DeclaredElement() += VirtualElement()
 
   protected case class DisallowedAnnotation() extends SerializableAnnotation {
     override val name: String  = "disallowed-annotation"
@@ -38,11 +38,11 @@ class GovernanceModeTest
 
     for {
       rendered <- Future.successful(
-        AMFGraphConfiguration
-          .predefined()
-          .withRenderOptions(RenderOptions().withPrettyPrint.withGovernanceMode)
-          .baseUnitClient()
-          .render(documentWithNodeWithAnnotations, AMF.mediaType)
+          AMFGraphConfiguration
+            .predefined()
+            .withRenderOptions(RenderOptions().withPrettyPrint.withGovernanceMode)
+            .baseUnitClient()
+            .render(documentWithNodeWithAnnotations, AMF.mediaType)
       )
       file   <- writeTemporaryFile(golden)(rendered)
       result <- assertDifferences(file, golden)
@@ -59,11 +59,11 @@ class GovernanceModeTest
 
     for {
       rendered <- Future.successful(
-        AMFGraphConfiguration
-          .predefined()
-          .withRenderOptions(RenderOptions().withPrettyPrint.withGovernanceMode.withoutFlattenedJsonLd)
-          .baseUnitClient()
-          .render(documentWithNodeWithAnnotations, AMF.mediaType)
+          AMFGraphConfiguration
+            .predefined()
+            .withRenderOptions(RenderOptions().withPrettyPrint.withGovernanceMode.withoutFlattenedJsonLd)
+            .baseUnitClient()
+            .render(documentWithNodeWithAnnotations, AMF.mediaType)
       )
       file   <- writeTemporaryFile(golden)(rendered)
       result <- assertDifferences(file, golden)
