@@ -5,7 +5,7 @@ import org.mulesoft.common.client.lexical.{Position, PositionRange}
 import org.yaml.model.YNode.MutRef
 import org.yaml.model.YPart
 
-case class LexicalInformation(range: PositionRange) extends EternalSerializedAnnotation {
+case class LexicalInformation(range: PositionRange) extends SerializableAnnotation with PerpetualAnnotation {
   override val name: String = "lexical"
 
   override val value: String = range.toString
