@@ -41,6 +41,7 @@ pipeline {
                 anyOf {
                     branch 'master'
                     branch 'develop'
+                    branch 'scala-bump'
                 }
             }
             steps {
@@ -57,6 +58,7 @@ pipeline {
                 anyOf {
                     branch 'master'
                     branch 'develop'
+                    branch 'scala-bump'
                 }
             }
             steps {
