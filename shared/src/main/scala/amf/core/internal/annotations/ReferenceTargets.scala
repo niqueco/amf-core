@@ -2,6 +2,7 @@ package amf.core.internal.annotations
 
 import amf.core.client.scala.model.domain.Annotation
 import org.mulesoft.common.client.lexical.PositionRange
+import org.mulesoft.common.collections._
 
 case class ReferenceTargets(targets: Map[String, Seq[PositionRange]]) extends Annotation {
   def +(t: (String, PositionRange)): ReferenceTargets =
@@ -15,5 +16,5 @@ case class ReferenceTargets(targets: Map[String, Seq[PositionRange]]) extends An
     )
 
   def ++(t: Map[String, Seq[PositionRange]]): ReferenceTargets =
-    copy((targets.toSeq ++ t.toSeq).groupBy(_._1).mapValues(_.flatMap(_._2).distinct))
+    copy((targets.toSeq ++ t.toSeq).legacyGroupBy(_._1).mapValues(_.flatMap(_._2).distinct))
 }
