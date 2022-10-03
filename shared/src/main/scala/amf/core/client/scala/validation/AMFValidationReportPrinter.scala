@@ -3,6 +3,7 @@ package amf.core.client.scala.validation
 import amf.core.client.common.validation.SeverityLevels.{INFO, VIOLATION, WARNING}
 import amf.core.internal.annotations.LexicalInformation
 import org.mulesoft.common.client.lexical.{Position, PositionRange}
+import org.mulesoft.common.collections._
 import org.mulesoft.common.io.Output
 import org.mulesoft.common.io.Output._
 
@@ -32,7 +33,7 @@ object AMFValidationReportPrinter {
     writer.append(s"Number of results: ${conformance.results.length}\n")
 
     val groupedValidations =
-      conformance.results.take(max).sortWith((c1, c2) => c1.compare(c2) < 0).groupBy(_.severityLevel)
+      conformance.results.take(max).sortWith((c1, c2) => c1.compare(c2) < 0).legacyGroupBy(_.severityLevel)
 
     groupedValidations.get(VIOLATION).foreach(violations => appendValidations(VIOLATION, violations, writer))
     groupedValidations.get(WARNING).foreach(violations => appendValidations(WARNING, violations, writer))
