@@ -9,6 +9,7 @@ import amf.core.internal.parser.ParseConfiguration
 import amf.core.internal.parser.domain.FutureDeclarations
 import amf.core.internal.plugins.syntax.SYamlBasedErrorHandler
 import amf.core.internal.validation.core.ValidationSpecification
+import org.mulesoft.common.client.lexical.SourceLocation
 
 import scala.collection.mutable
 
@@ -27,6 +28,8 @@ trait ErrorHandlingContext {
   def violation(violationId: ValidationSpecification, node: String, message: String)
 
   def violation(violationId: ValidationSpecification, node: AmfObject, message: String)
+
+  def violation(specification: ValidationSpecification, node: String, message: String, loc: SourceLocation): Unit
 }
 
 trait UnresolvedComponents {
@@ -83,4 +86,10 @@ case class ParserContext(
 
   def parsingOptions: ParsingOptions = config.parsingOptions
 
+  override def violation(
+      specification: ValidationSpecification,
+      node: String,
+      message: String,
+      loc: SourceLocation
+  ): Unit = eh.violation(specification, node, message, loc)
 }

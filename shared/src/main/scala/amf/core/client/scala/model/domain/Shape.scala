@@ -7,6 +7,7 @@ import amf.core.client.scala.model.{BoolField, StrField}
 import amf.core.client.scala.traversal.ShapeTraversalRegistry
 import amf.core.internal.annotations.LexicalInformation
 import amf.core.internal.metamodel.Field
+import amf.core.internal.metamodel.domain.ShapeModel
 import amf.core.internal.metamodel.domain.ShapeModel._
 import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.plugins.domain.shapes.models.ShapeHelper
@@ -160,16 +161,16 @@ abstract class Shape
         case s: Shape if s.id == this.id => s
         case a: AmfArray =>
           AmfArray(
-            a.values.map {
-              case e: Shape if e.id != this.id =>
-                traversal.runNested((t: ShapeTraversalRegistry) => {
-                  e.cloneShape(recursionErrorHandler, recursionBase, t)
-                })
+              a.values.map {
+                case e: Shape if e.id != this.id =>
+                  traversal.runNested((t: ShapeTraversalRegistry) => {
+                    e.cloneShape(recursionErrorHandler, recursionBase, t)
+                  })
 //                e.cloneShape(recursionErrorHandler, recursionBase, traversed.push(prevBaseId),Some(prevBaseId))
-              case e: Shape if e.id == this.id => e
-              case o                           => o
-            },
-            a.annotations
+                case e: Shape if e.id == this.id => e
+                case o                           => o
+              },
+              a.annotations
           )
         case o => o
       }
@@ -186,4 +187,17 @@ abstract class Shape
     val copiedShape = copyElement(a).asInstanceOf[this.type]
     copiedShape
   }
+
+  protected[amf] def isXOne: Boolean = fields.exists(ShapeModel.Xone) && xone.nonEmpty
+
+  protected[amf] def isOr: Boolean = fields.exists(ShapeModel.Or) && or.nonEmpty
+
+  protected[amf] def isAnd: Boolean = fields.exists(ShapeModel.And) && and.nonEmpty
+
+  protected[amf] def isNot: Boolean = fields.exists(ShapeModel.Not)
+
+  protected[amf] def isConditional: Boolean =
+    fields.exists(ShapeModel.If) ||
+      fields.exists(ShapeModel.Else) ||
+      fields.exists(ShapeModel.Then)
 }

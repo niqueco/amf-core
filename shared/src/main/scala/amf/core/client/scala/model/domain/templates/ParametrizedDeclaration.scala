@@ -18,7 +18,7 @@ abstract class ParametrizedDeclaration(fields: Fields, annotations: Annotations)
   /** Set variables property. */
   def withVariables(variables: Seq[VariableValue]): this.type = setArray(Variables, variables)
 
-  private[amf] override def componentId: String =
+  override def componentId: String =
     "/" + name.option().getOrElse("default-parametrized").urlComponentEncoded
 
   override def nameField: Field = Name

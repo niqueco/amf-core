@@ -6,7 +6,7 @@ import org.yaml.model.YMap
 
 case class ShapeFederationMetadata(fields: Fields, annotations: Annotations) extends FederationMetadata {
   override def meta: ShapeFederationMetadataModel.type = ShapeFederationMetadataModel
-  override private[amf] def componentId                = s"/federation-metadata"
+  override def componentId                             = s"/federation-metadata"
 }
 
 object ShapeFederationMetadata {

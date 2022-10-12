@@ -10,7 +10,7 @@ import amf.core.internal.remote.Spec
 class BaseUnitProcessingData(val fields: Fields, val annotations: Annotations) extends AmfObject {
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  override private[amf] def componentId = "/BaseUnitProcessingData"
+  override def componentId = "/BaseUnitProcessingData"
 
   def transformed: BoolField = fields.field(Transformed)
 
