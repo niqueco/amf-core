@@ -10,7 +10,7 @@ import amf.core.internal.metamodel.Type._
 import amf.core.internal.metamodel._
 import amf.core.internal.metamodel.document.{BaseUnitModel, FragmentModel, ModuleModel, SourceMapModel}
 import amf.core.internal.metamodel.domain.extensions.DomainExtensionModel
-import amf.core.internal.parser.domain.{Annotations, FieldEntry, Value}
+import amf.core.internal.parser.domain.{FieldEntry, Value}
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
 import amf.core.internal.plugins.document.graph.emitter.flattened.utils.{Emission, EmissionQueue, Metadata}
 import org.yaml.builder.DocBuilder
@@ -49,69 +49,69 @@ class FlattenedJsonLdEmitter[T](
     builder.obj { ob =>
       // Initialize root object
       ob.entry(
-          JsonLdKeywords.Graph,
-          _.list { rootBuilder =>
-            root = rootBuilder
+        JsonLdKeywords.Graph,
+        _.list { rootBuilder =>
+          root = rootBuilder
 
-            /** First queue non declaration elements. We do this because these elements can generate new declarations
-              * that we need to know before emitting the Base Unit.
-              */
-            val declarationsEntry: Option[FieldEntry] = unit.fields.entry(ModuleModel.Declares)
-            val referencesEntry: Option[FieldEntry]   = unit.fields.entry(ModuleModel.References)
+          /** First queue non declaration elements. We do this because these elements can generate new declarations that
+            * we need to know before emitting the Base Unit.
+            */
+          val declarationsEntry: Option[FieldEntry] = unit.fields.entry(ModuleModel.Declares)
+          val referencesEntry: Option[FieldEntry]   = unit.fields.entry(ModuleModel.References)
 
-            extractDeclarationsAndReferencesToContext(declarationsEntry, referencesEntry, unit.annotations)
+          extractDeclarationsAndReferencesToContext(declarationsEntry, referencesEntry, unit.annotations)
 
-            unit.fields.removeField(ModuleModel.Declares)
-            unit.fields.removeField(ModuleModel.References)
+          unit.fields.removeField(ModuleModel.Declares)
+          unit.fields.removeField(ModuleModel.References)
 
-            unit match {
-              case u: EncodesModel if isSelfEncoded(u) =>
-                /** If it self encoded we do not queue the encodes node because it will be emitted in the same node as
-                  * the base unit
-                  */
-                queueObjectFieldValues(u, (f, _) => f != FragmentModel.Encodes)
-                queueObjectFieldValues(u.encodes) // Still need to queue encodes elements
-              case _ =>
-                queueObjectFieldValues(unit)
-            }
-
-            while (pending.hasPendingEmissions) {
-              val emission = pending.nextEmission()
-              emission.fn(root)
-            }
-
-            /** Emit Base Unit. This will emit declarations also. We don't render the already rendered elements because
-              * the queue avoids duplicate ids
-              */
-            if (isSelfEncoded(unit)) {
-              emitSelfEncodedBaseUnitNode(unit)
-            } else {
-              emitBaseUnitNode(unit)
-            }
-
-            // Check added declarations
-            while (pending.hasPendingEmissions) {
-              val emission = pending.nextEmission()
-              ctx.emittingDeclarations = emission.isDeclaration
-              ctx.emittingReferences = emission.isReference
-              emission.fn(root)
-            }
-
-            // Now process external links, not declared as part of the unit
-            while (pending.hasPendingExternalEmissions) {
-              val emission = pending.nextExternalEmission()
-              ctx.emittingDeclarations = emission.isDeclaration
-              ctx.emittingReferences = emission.isReference
-              emission.fn(root)
-            }
-            // new regular nodes might have been generated, annotations for example
-            while (pending.hasPendingEmissions) {
-              val emission = pending.nextEmission()
-              ctx.emittingDeclarations = emission.isDeclaration
-              ctx.emittingReferences = emission.isReference
-              emission.fn(root)
-            }
+          unit match {
+            case u: EncodesModel if isSelfEncoded(u) =>
+              /** If it self encoded we do not queue the encodes node because it will be emitted in the same node as the
+                * base unit
+                */
+              queueObjectFieldValues(u, (f, _) => f != FragmentModel.Encodes)
+              queueObjectFieldValues(u.encodes) // Still need to queue encodes elements
+            case _ =>
+              queueObjectFieldValues(unit)
           }
+
+          while (pending.hasPendingEmissions) {
+            val emission = pending.nextEmission()
+            emission.fn(root)
+          }
+
+          /** Emit Base Unit. This will emit declarations also. We don't render the already rendered elements because
+            * the queue avoids duplicate ids
+            */
+          if (isSelfEncoded(unit)) {
+            emitSelfEncodedBaseUnitNode(unit)
+          } else {
+            emitBaseUnitNode(unit)
+          }
+
+          // Check added declarations
+          while (pending.hasPendingEmissions) {
+            val emission = pending.nextEmission()
+            ctx.emittingDeclarations = emission.isDeclaration
+            ctx.emittingReferences = emission.isReference
+            emission.fn(root)
+          }
+
+          // Now process external links, not declared as part of the unit
+          while (pending.hasPendingExternalEmissions) {
+            val emission = pending.nextExternalEmission()
+            ctx.emittingDeclarations = emission.isDeclaration
+            ctx.emittingReferences = emission.isReference
+            emission.fn(root)
+          }
+          // new regular nodes might have been generated, annotations for example
+          while (pending.hasPendingEmissions) {
+            val emission = pending.nextEmission()
+            ctx.emittingDeclarations = emission.isDeclaration
+            ctx.emittingReferences = emission.isReference
+            emission.fn(root)
+          }
+        }
       )
       ctx.emitContext(ob)
     }
@@ -281,7 +281,15 @@ class FlattenedJsonLdEmitter[T](
     pending.tryEnqueue(e)
   }
 
-  override protected def createSortedArray(b: Part[T], seq: Seq[AmfElement], parent: String, element: Type): Unit = {
+  override protected def createSortedArray(
+      a: Type,
+      v: Value,
+      b: Part[T],
+      parent: String,
+      sources: Value => Unit
+  ): Unit = {
+    val seq = v.value.asInstanceOf[AmfArray].values
+    sources(v)
     b.obj { b =>
       val id = s"$parent/list"
       createIdNode(b, id)
@@ -291,10 +299,10 @@ class FlattenedJsonLdEmitter[T](
           rb.entry(JsonLdKeywords.Type, ctx.emitIri((Namespace.Rdfs + "Seq").iri()))
           seq.zipWithIndex.foreach { case (e, i) =>
             rb.entry(
-                ctx.emitIri((Namespace.Rdfs + s"_${i + 1}").iri()),
-                { b =>
-                  emitArrayMember(element, e, b)
-                }
+              ctx.emitIri((Namespace.Rdfs + s"_${i + 1}").iri()),
+              { b =>
+                emitArrayMember(a, e, b)
+              }
             )
           }
         }
@@ -320,8 +328,6 @@ class FlattenedJsonLdEmitter[T](
     createIdNode(entry, amfObj.id)
     pending.tryEnqueue(amfObj)
   }
-
-
 
   override protected def emitAnnotations(id: String, filteredSources: SourceMap, b: Entry[T]): Unit = {
     createIdNode(b, id)

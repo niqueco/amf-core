@@ -6,23 +6,13 @@ import amf.core.client.scala.model.DataType
 import amf.core.client.scala.model.document.SourceMap
 import amf.core.client.scala.model.domain.DataNodeOps.adoptTree
 import amf.core.client.scala.model.domain.extensions.DomainExtension
-import amf.core.client.scala.model.domain.{
-  AmfArray,
-  AmfElement,
-  AmfObject,
-  AmfScalar,
-  DomainElement,
-  Linkable,
-  RecursiveShape,
-  Shape
-}
+import amf.core.client.scala.model.domain._
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
-import amf.core.internal.annotations.{DeclaredElement, Declares, DomainExtensionAnnotation, InlineElement, References}
+import amf.core.internal.annotations._
 import amf.core.internal.metamodel.Type.{Any, Array, Bool, EncodedIri, Iri, LiteralUri, SortedArray, Str}
-import amf.core.internal.metamodel.{Field, Obj, Type}
 import amf.core.internal.metamodel.document.ModuleModel
-import amf.core.internal.metamodel.domain.extensions.DomainExtensionModel
 import amf.core.internal.metamodel.domain.{DomainElementModel, LinkableElementModel, ShapeModel}
+import amf.core.internal.metamodel.{Field, Obj, Type}
 import amf.core.internal.parser.domain.{Annotations, FieldEntry, Value}
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
 import amf.core.internal.plugins.document.graph.emitter.utils.{ScalarEmitter, SourceMapEmitter, SourceMapsAllowList}
@@ -61,10 +51,10 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
 
   protected def createTypeNode(b: Entry[T], types: List[String]): Unit = {
     b.entry(
-        JsonLdKeywords.Type,
-        _.list { b =>
-          types.distinct.foreach(t => raw(b, ctx.emitIri(t)))
-        }
+      JsonLdKeywords.Type,
+      _.list { b =>
+        types.distinct.foreach(t => raw(b, ctx.emitIri(t)))
+      }
     )
   }
 
@@ -80,8 +70,8 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
       val url = ctx.emitIri(f.value.iri())
       ctx.emittingReferences(true)
       b.entry(
-          url,
-          value(f.`type`, v, id, sources.property(url), _)
+        url,
+        value(f.`type`, v, id, sources.property(url), _)
       )
     }
     ctx.emittingReferences(false)
@@ -98,24 +88,24 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
     annotations.foreach({ case (a, values) =>
       if (ctx.options.isWithRawSourceMaps) {
         b.entry(
-            a,
-            _.obj { o =>
-              values.foreach { case (iri, v) =>
-                o.entry(
-                    ctx.emitId(ctx.emitIri(iri)),
-                    raw(_, v)
-                )
-              }
+          a,
+          _.obj { o =>
+            values.foreach { case (iri, v) =>
+              o.entry(
+                ctx.emitId(ctx.emitIri(iri)),
+                raw(_, v)
+              )
             }
+          }
         )
       } else {
         b.entry(
-            ctx.emitIri(ValueType(Namespace.SourceMaps, a).iri()),
-            _.list(b =>
-              values.zipWithIndex.foreach { case (annotationEntry, index) =>
-                createAnnotationValueNode(s"$id/$a/element_$index", b, annotationEntry)
-              }
-            )
+          ctx.emitIri(ValueType(Namespace.SourceMaps, a).iri()),
+          _.list(b =>
+            values.zipWithIndex.foreach { case (annotationEntry, index) =>
+              createAnnotationValueNode(s"$id/$a/element_$index", b, annotationEntry)
+            }
+          )
         )
       }
     })
@@ -128,8 +118,8 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
   }
 
   protected def createIdNode(b: Entry[T], id: String): Unit = b.entry(
-      JsonLdKeywords.Id,
-      raw(_, ctx.emitId(id))
+    JsonLdKeywords.Id,
+    raw(_, ctx.emitId(id))
   )
 
   protected def typedScalar(b: Part[T], content: String, dataType: String, inArray: Boolean = false): Unit = {
@@ -156,8 +146,8 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
       val url = ctx.emitIri(f.value.iri())
       ctx.emittingDeclarations(true)
       b.entry(
-          url,
-          value(f.`type`, v, id, sources.property(url), _)
+        url,
+        value(f.`type`, v, id, sources.property(url), _)
       )
     }
     ctx.emittingDeclarations(false)
@@ -168,8 +158,8 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
       case Some(FieldEntry(f, v)) =>
         val url = ctx.emitIri(f.value.iri())
         b.entry(
-            url,
-            value(f.`type`, v, id, sources.property(url), _)
+          url,
+          value(f.`type`, v, id, sources.property(url), _)
         )
       case None => // Missing field
     }
@@ -276,10 +266,10 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
 
     if (customProperties.nonEmpty)
       b.entry(
-          ctx.emitIri(DomainElementModel.CustomDomainProperties.value.iri()),
-          _.list { b =>
-            customProperties.foreach(iri(b, _, inArray = true))
-          }
+        ctx.emitIri(DomainElementModel.CustomDomainProperties.value.iri()),
+        _.list { b =>
+          customProperties.foreach(iri(b, _, inArray = true))
+        }
       )
   }
 
@@ -292,19 +282,19 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
     extensions.size match {
       case 1 =>
         b.entry(
-            uri,
-            _.obj { objectBuilder =>
-              createCustomExtensionNode(objectBuilder, uri, extensions.head, field)
-            }
+          uri,
+          _.obj { objectBuilder =>
+            createCustomExtensionNode(objectBuilder, uri, extensions.head, field)
+          }
         )
       case x if x > 1 =>
         b.entry(
-            uri,
-            _.list { listBuilder =>
-              extensions.foreach { extension =>
-                listBuilder.obj { objectBuilder => createCustomExtensionNode(objectBuilder, uri, extension, field) }
-              }
+          uri,
+          _.list { listBuilder =>
+            extensions.foreach { extension =>
+              listBuilder.obj { objectBuilder => createCustomExtensionNode(objectBuilder, uri, extension, field) }
             }
+          }
         )
       case _ => // ignore, maybe throw validation?
     }
@@ -388,8 +378,7 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
         emitNull(b)
         sources(v)
       case a: SortedArray =>
-        createSortedArray(b, v.value.asInstanceOf[AmfArray].values, parent, a.element)
-        sources(v)
+        createSortedArray(a.element, v, b, parent, sources)
       case a: Array => emitArray(a, v, b, sources)
       case Any if v.value.isInstanceOf[AmfScalar] =>
         v.value.asInstanceOf[AmfScalar].value match {
@@ -479,7 +468,7 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
     }
   }
 
-  protected def createSortedArray(b: Part[T], seq: Seq[AmfElement], parent: String, element: Type): Unit
+  protected def createSortedArray(a: Type, v: Value, b: Part[T], parent: String, sources: Value => Unit): Unit
 
   protected def obj(b: Part[T], obj: AmfObject, inArray: Boolean = false): Unit
 
@@ -526,20 +515,20 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
     if (withSourceMaps && filteredSources.nonEmpty) {
       if (options.isWithRawSourceMaps) {
         b.entry(
-            "smaps",
-            _.obj { b =>
-              createAnnotationNodes(id, b, filteredSources.annotations)
-              createAnnotationNodes(id, b, filteredSources.eternals)
-            }
+          "smaps",
+          _.obj { b =>
+            createAnnotationNodes(id, b, filteredSources.annotations)
+            createAnnotationNodes(id, b, filteredSources.eternals)
+          }
         )
       } else {
         b.entry(
-            ctx.emitIri(DomainElementModel.Sources.value.iri()),
-            _.list {
-              _.obj { b =>
-                emitAnnotations(id, filteredSources, b)
-              }
+          ctx.emitIri(DomainElementModel.Sources.value.iri()),
+          _.list {
+            _.obj { b =>
+              emitAnnotations(id, filteredSources, b)
             }
+          }
         )
       }
     } else {
@@ -558,19 +547,19 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
     if (sources.eternals.nonEmpty)
       if (options.isWithRawSourceMaps) {
         b.entry(
-            "smaps",
-            _.obj { b =>
-              createAnnotationNodes(id, b, sources.eternals)
-            }
+          "smaps",
+          _.obj { b =>
+            createAnnotationNodes(id, b, sources.eternals)
+          }
         )
       } else {
         b.entry(
-            ctx.emitIri(DomainElementModel.Sources.value.iri()),
-            _.list {
-              _.obj { b =>
-                emitEternalsNode(id, sources, b)
-              }
+          ctx.emitIri(DomainElementModel.Sources.value.iri()),
+          _.list {
+            _.obj { b =>
+              emitEternalsNode(id, sources, b)
             }
+          }
         )
       }
   }

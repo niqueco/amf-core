@@ -9,7 +9,7 @@ import amf.core.client.scala.vocabulary.{Namespace, NamespaceAliases}
 import amf.core.internal.metamodel._
 import amf.core.internal.metamodel.document.{ModuleModel, SourceMapModel}
 import amf.core.internal.metamodel.domain.extensions.DomainExtensionModel
-import amf.core.internal.parser.domain.{Annotations, FieldEntry, Value}
+import amf.core.internal.parser.domain.{FieldEntry, Value}
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
 import org.yaml.builder.DocBuilder
 import org.yaml.builder.DocBuilder.{Entry, Part, SType, Scalar}
@@ -66,7 +66,6 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
     referencesEntry.foreach(e => unit.fields.setWithoutId(ModuleModel.References, e.array))
   }
 
-
   def traverse(element: AmfObject, b: Entry[T]): Unit = {
     val id = element.id
 
@@ -110,7 +109,15 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
     traverse(extension.extension, b)
   }
 
-  override protected def createSortedArray(b: Part[T], seq: Seq[AmfElement], parent: String, element: Type): Unit = {
+  override protected def createSortedArray(
+      a: Type,
+      v: Value,
+      b: Part[T],
+      parent: String,
+      sources: Value => Unit
+  ): Unit = {
+    val seq = v.value.asInstanceOf[AmfArray].values
+    sources(v)
     b.list {
       _.obj { b =>
         val id = s"$parent/list"
@@ -118,12 +125,12 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
         b.entry(JsonLdKeywords.Type, ctx.emitIri((Namespace.Rdfs + "Seq").iri()))
         seq.zipWithIndex.foreach { case (e, i) =>
           b.entry(
-              ctx.emitIri((Namespace.Rdfs + s"_${i + 1}").iri()),
-              { b =>
-                b.list { b =>
-                  emitArrayMember(element, e, b)
-                }
+            ctx.emitIri((Namespace.Rdfs + s"_${i + 1}").iri()),
+            { b =>
+              b.list { b =>
+                emitArrayMember(a, e, b)
               }
+            }
           )
         }
       }
