@@ -3,12 +3,11 @@ package amf.core.internal.plugins.render
 import amf.core.client.common.{LowPriority, PluginPriority}
 import amf.core.client.scala.config.RenderOptions
 import amf.core.client.scala.model.document.BaseUnit
-import amf.core.client.scala.vocabulary.{Namespace, NamespaceAliases}
+import amf.core.client.scala.vocabulary.NamespaceAliases
 import amf.core.internal.plugins.document.graph.emitter.{
   ApplicableMetaFieldRenderProvider,
   EmbeddedJsonLdEmitter,
   FlattenedJsonLdEmitter,
-  SemanticExtensionAwareFieldRenderProvision,
   SemanticExtensionAwareMetaFieldRenderProvider
 }
 import amf.core.internal.plugins.document.graph.{EmbeddedForm, JsonLdSerialization}
@@ -48,18 +47,18 @@ trait AMFGraphRenderPlugin extends AMFRenderPlugin {
       // defaults to flatten
       case _ =>
         flattenEmissionFN(
-            unit,
-            builder,
-            options,
-            namespaceAliases,
-            SemanticExtensionAwareMetaFieldRenderProvider(renderConfig.extensionModels, options)
+          unit,
+          builder,
+          options,
+          namespaceAliases,
+          SemanticExtensionAwareMetaFieldRenderProvider(renderConfig.extensionModels, options)
         )
     }
   }
 
   override def mediaTypes: Seq[String] = Seq(
-      `application/ld+json`,
-      `application/graph`
+    `application/ld+json`,
+    `application/graph`
   )
 
   override def applies(element: RenderInfo): Boolean = true
