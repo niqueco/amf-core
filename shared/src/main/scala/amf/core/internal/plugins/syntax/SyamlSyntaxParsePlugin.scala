@@ -61,7 +61,7 @@ class SyamlSyntaxParsePlugin extends AMFSyntaxParsePlugin with PlatformSecrets {
         case "json" => JsonParserFactory.fromCharsWithSource(text, ctx.rootContextDocument)(syamlEH)
         case _      => YamlParser(text, ctx.rootContextDocument)(syamlEH).withIncludeTag("!include")
       }
-      val document1 = parser.document()
+      val document1 = parser.document(ctx.parsingOptions.isTokens)
       val (document, comment) = document1 match {
         case d if d.isNull =>
           (
