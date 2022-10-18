@@ -16,6 +16,7 @@ case class ParsingOptions(private[amf] val _internal: InternalParsingOptions) {
   def getMaxYamlReferences: ClientOption[Int] = _internal.maxYamlReferences.asClient
   def getMaxJSONComplexity: ClientOption[Int] = _internal.maxJSONComplexity.asClient
   def getMaxJsonYamlDepth: ClientOption[Int]  = _internal.maxJsonYamlDepth.asClient
+  def isTokens: Boolean                       = _internal.tokens
 
   /** Parse specific AMF JSON-LD serialization */
   def withoutAmfJsonLdSerialization(): ParsingOptions = _internal.withoutAmfJsonLdSerialization
@@ -39,4 +40,10 @@ case class ParsingOptions(private[amf] val _internal: InternalParsingOptions) {
   /** Defines the maximum amount of nesting depth that a parsed JSON or YAML can have
     */
   def setMaxJsonYamlDepth(value: Int): ParsingOptions = _internal.setMaxJsonYamlDepth(value)
+
+  /** Keep tokens when parsing with SYAML */
+  def withTokens(): ParsingOptions = _internal.withTokens
+
+  /** Discard tokens when parsing with SYAML */
+  def withoutTokens(): ParsingOptions = _internal.withoutTokens
 }
