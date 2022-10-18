@@ -28,7 +28,7 @@ case class Module(fields: Fields, annotations: Annotations)
   override def meta: ModuleModel = ModuleModel
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  private[amf] override def componentId: String = ""
+  override def componentId: String = ""
 
   def customDomainProperties: Seq[DomainExtension] = fields.field(CustomDomainProperties)
 

@@ -16,7 +16,7 @@ case class PropertyShapePath private[amf] (override val fields: Fields, override
 
   override val meta: PropertyShapePathModel.type = PropertyShapePathModel
 
-  private[amf] override def componentId: String = "/property-shape-path"
+  override def componentId: String = "/property-shape-path"
 
 }
 

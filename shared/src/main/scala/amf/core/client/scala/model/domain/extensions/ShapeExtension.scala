@@ -26,7 +26,7 @@ case class ShapeExtension(fields: Fields, annotations: Annotations) extends Exte
   // for the extension point. ID is not required for serialisation
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  private[amf] override def componentId: String =
+  override def componentId: String =
     "/shape-extension/" +
       Option(definedBy).flatMap(_.name.option()).getOrElse("default-extension").urlComponentEncoded
 }
