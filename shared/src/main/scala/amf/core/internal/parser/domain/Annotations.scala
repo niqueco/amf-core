@@ -117,6 +117,14 @@ class Annotations() {
 
   // This should be in amf-shapes BUT PropertyShape is in amf-core
   def isInferredProperty: Boolean = find(classOf[InferredProperty]).isDefined
+
+  def isSynthesized: Boolean = find(classOf[SynthesizedField]).isDefined
+
+  def isVirtual: Boolean = find(classOf[VirtualElement]).isDefined
+
+  def isInferred: Boolean = find(classOf[Inferred]).isDefined
+
+  def clear(): Unit = annotations.clear()
 }
 
 object Annotations {
@@ -130,8 +138,9 @@ object Annotations {
   }
 
   def apply(ast: YPart): Annotations = {
-    val annotations = new Annotations() ++= Set(LexicalInformation(ast),
-                                                SourceYPart(ast),
+    val annotations = new Annotations() ++= Set(
+        LexicalInformation(ast),
+        SourceYPart(ast),
 //      AmfSourceLocation(ast.sourceName))
         AmfSourceLocation(ast)
     )

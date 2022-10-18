@@ -115,6 +115,12 @@ class AMFGraphConfiguration private[amf] (
   def withReferenceParsePlugin(amfPlugin: AMFParsePlugin): AMFGraphConfiguration =
     super._withReferenceParsePlugin(amfPlugin)
 
+  def withRootParsePlugins(amfParsePlugin: List[AMFParsePlugin]): AMFGraphConfiguration =
+    super._withRootParsePlugins(amfParsePlugin)
+
+  def withReferenceParsePlugins(amfPlugin: List[AMFParsePlugin]): AMFGraphConfiguration =
+    super._withReferenceParsePlugins(amfPlugin)
+
   def withPlugins(plugins: List[AMFPlugin[_]]): AMFGraphConfiguration = super._withPlugins(plugins)
 
   def withRootParsePlugin(amfParsePlugin: AMFParsePlugin): AMFGraphConfiguration =
@@ -208,6 +214,9 @@ sealed abstract class BaseAMFConfigurationSetter(
   protected def _withReferenceParsePlugin[T](plugin: AMFParsePlugin): T =
     copy(registry = registry.withReferenceParsePlugin(plugin)).asInstanceOf[T]
 
+  protected def _withReferenceParsePlugins[T](plugins: List[AMFParsePlugin]): T =
+    copy(registry = registry.withReferenceParsePlugins(plugins)).asInstanceOf[T]
+
   protected def _withFallback[T](plugin: DomainParsingFallback): T =
     copy(registry = registry.withFallback(plugin)).asInstanceOf[T]
 
@@ -216,6 +225,9 @@ sealed abstract class BaseAMFConfigurationSetter(
 
   protected def _withRootParsePlugin[T](amfParsePlugin: AMFParsePlugin): T =
     copy(registry = registry.withRootParsePlugin(amfParsePlugin)).asInstanceOf[T]
+
+  protected def _withRootParsePlugins[T](amfParsePlugin: List[AMFParsePlugin]): T =
+    copy(registry = registry.withRootParsePlugins(amfParsePlugin)).asInstanceOf[T]
 
   protected def _withEntities[T](entities: Map[String, ModelDefaultBuilder]): T =
     copy(registry = registry.withEntities(entities)).asInstanceOf[T]

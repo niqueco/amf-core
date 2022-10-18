@@ -5,16 +5,21 @@ import amf.core.client.scala.model.domain.extensions.{PropertyShape, ShapeExtens
 import amf.core.client.scala.model.domain.federation.HasShapeFederationMetadata
 import amf.core.client.scala.model.{BoolField, StrField}
 import amf.core.client.scala.traversal.ShapeTraversalRegistry
+import amf.core.internal.annotations.LexicalInformation
 import amf.core.internal.metamodel.Field
 import amf.core.internal.metamodel.domain.ShapeModel._
 import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.plugins.domain.shapes.models.ShapeHelper
-
 import scala.collection.mutable
 
 /** Shape.
   */
-abstract class Shape extends DomainElement with Linkable with NamedDomainElement with ShapeHelper with HasShapeFederationMetadata {
+abstract class Shape
+    extends DomainElement
+    with Linkable
+    with NamedDomainElement
+    with ShapeHelper
+    with HasShapeFederationMetadata {
 
   override protected def nameField: Field = Name
 
@@ -71,7 +76,9 @@ abstract class Shape extends DomainElement with Linkable with NamedDomainElement
   def withIsStub(isStub: Boolean): this.type         = set(IsStub, isStub)
 
   def hasExplicitName: Boolean =
-    fields.exists(Name) && !fields.getValue(Name).isInferred && !fields.getValue(Name).isSynthesized
+    fields.exists(Name) && fields.getValue(Name).annotations.find(classOf[LexicalInformation]).isDefined && !fields
+      .getValue(Name)
+      .isInferred && !fields.getValue(Name).isSynthesized
 
   def effectiveInherits: Seq[Shape] = {
     inherits.map { base =>
