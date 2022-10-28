@@ -18,7 +18,6 @@ import amf.core.internal.parser.domain
 import amf.core.internal.parser.domain._
 import amf.core.internal.utils._
 import amf.core.internal.validation.CoreValidations.{ExceededMaxYamlReferences, SyamlError}
-import org.mulesoft.common.client.lexical.PositionRange
 import org.mulesoft.common.time.SimpleDateTime
 import org.yaml.model.YNode.MutRef
 import org.yaml.model._
@@ -34,6 +33,7 @@ trait DataNodeParserContext {
   def findAnnotation(key: String, scope: SearchScope.Scope): Option[CustomDomainProperty]
   def refs: Seq[ParsedReference]
   def getMaxYamlReferences: Option[Int]
+  def getMaxYamlJsonDepth: Option[Int]
   def fragments: Map[String, FragmentRef]
 }
 
@@ -57,9 +57,9 @@ class DataNodeParser private (
   def parse(): DataNode = {
     if (refsCounter.exceedsThreshold(node)) {
       ctx.violation(
-          ExceededMaxYamlReferences,
-          "",
-          "Exceeded maximum yaml references threshold"
+        ExceededMaxYamlReferences,
+        "",
+        "Exceeded maximum yaml references threshold"
       )
       DataObjectNode()
     } else {
@@ -200,7 +200,7 @@ case class ScalarNodeParser(hook: OnScalarParseHook = NothingOnScalarParseHook, 
   }
 
   def parseIncludedAST(raw: String, node: YNode): DataNode = {
-    val n = YamlParser(raw, node.sourceName).withIncludeTag("!include").document().node
+    val n = YamlParser(raw, node.sourceName, ctx.getMaxYamlJsonDepth).withIncludeTag("!include").document().node
     if (n.isNull) ScalarNode(raw, Some(DataType.String))
     else DataNodeParser(n, hook, idCounter).parse()
   }
