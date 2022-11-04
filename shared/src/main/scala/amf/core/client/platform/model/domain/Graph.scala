@@ -3,6 +3,7 @@ package amf.core.client.platform.model.domain
 import amf.core.internal.convert.CoreClientConverters._
 import amf.core.client.scala.model.domain.{Graph => InternalGraph}
 import amf.core.client.scala.vocabulary.Namespace
+import org.mulesoft.common.client.lexical.PositionRange
 
 import scala.scalajs.js.annotation.JSExportAll
 
@@ -22,5 +23,7 @@ case class Graph(private[amf] val _internal: InternalGraph) {
     _internal.removeField(uri)
     this
   }
+
+  def propertyLexical(uri: String): PositionRange = _internal.propertyLexical(uri)
 
 }

@@ -4,6 +4,7 @@ import amf.core.internal.metamodel.Field
 import amf.core.internal.parser.domain.FieldEntry
 import amf.core.client.scala.vocabulary.Namespace
 import amf.core.internal.parser.domain.{Annotations, FieldEntry, Value}
+import org.mulesoft.common.client.lexical.PositionRange
 
 case class Graph(e: DomainElement) {
 
@@ -34,10 +35,13 @@ case class Graph(e: DomainElement) {
     properties().contains(Namespace.defaultAliases.uri(uri).iri())
   }
 
-  def getObjectByProperty(uri: String): Seq[DomainElement] = {
+  private def getField(uri: String) = {
     e.fields.fields().find { f: FieldEntry =>
       f.field.value.iri() == Namespace.defaultAliases.uri(uri).iri()
-    } match {
+    }
+  }
+  def getObjectByProperty(uri: String): Seq[DomainElement] = {
+    getField(uri) match {
       case Some(fieldEntry) =>
         fieldEntry.element match {
           case entity: DomainElement => List(entity)
@@ -50,9 +54,7 @@ case class Graph(e: DomainElement) {
   }
 
   def scalarByProperty(uri: String): Seq[Any] = {
-    e.fields.fields().find { f: FieldEntry =>
-      f.field.value.iri() == Namespace.defaultAliases.uri(uri).iri()
-    } match {
+    getField(uri) match {
       case Some(fieldEntry) =>
         fieldEntry.element match {
           case scalar: AmfScalar                    => List(scalar.value)
@@ -67,4 +69,7 @@ case class Graph(e: DomainElement) {
     e.fields.remove(uri)
     this
   }
+
+  def propertyLexical(uri: String): PositionRange =
+    getField(uri).map(f => annotationsForValue(f.field).lexical()).getOrElse(PositionRange.ZERO)
 }
