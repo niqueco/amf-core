@@ -7,7 +7,7 @@ val ivyLocal = Resolver.file("ivy", file(Path.userHome.absolutePath + "/.ivy2/lo
 
 name                     := "amf-core"
 ThisBuild / scalaVersion := "2.12.13"
-ThisBuild / version      := "5.2.0-SNAPSHOT"
+ThisBuild / version      := "5.3.0-SNAPSHOT"
 
 publish := {}
 
@@ -18,7 +18,7 @@ val settings = Common.settings ++ Common.publish ++ Seq(
     resolvers ++= List(ivyLocal, Common.releases, Common.snapshots, Resolver.mavenLocal, Resolver.mavenCentral),
     credentials ++= Common.credentials(),
     libraryDependencies ++= Seq(
-        "org.mule.common" %%% "scala-common-test" % "0.0.10" % Test
+        "org.mule.common" %%% "scala-common-test" % "0.1.12" % Test
     )
 )
 
@@ -30,7 +30,7 @@ lazy val workspaceDirectory: File =
     case _       => Path.userHome / "mulesoft"
   }
 
-val syamlVersion = "1.1.319"
+val syamlVersion = "1.2.326"
 
 lazy val syamlJVMRef = ProjectRef(workspaceDirectory / "syaml", "syamlJVM")
 lazy val syamlJSRef  = ProjectRef(workspaceDirectory / "syaml", "syamlJS")
