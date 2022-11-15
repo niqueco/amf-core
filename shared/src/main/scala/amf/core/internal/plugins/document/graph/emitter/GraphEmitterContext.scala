@@ -2,9 +2,10 @@ package amf.core.internal.plugins.document.graph.emitter
 
 import amf.core.client.scala.config.RenderOptions
 import amf.core.client.scala.model.document.{BaseUnit, Fragment, Module}
+import amf.core.client.scala.model.domain.context.{EntityContext, EntityModel, SelfContainedContext}
 import amf.core.client.scala.model.domain.{AmfElement, DomainElement}
 import amf.core.internal.utils.IdCounter
-import amf.core.client.scala.vocabulary.{Namespace, NamespaceAliases}
+import amf.core.client.scala.vocabulary.{Namespace, NamespaceAliases, ValueType}
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
 import org.yaml.builder.DocBuilder.Entry
 

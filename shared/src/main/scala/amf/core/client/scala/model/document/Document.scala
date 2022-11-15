@@ -22,7 +22,7 @@ case class Document(fields: Fields, annotations: Annotations) extends BaseUnit w
   override def meta: DocumentModel = DocumentModel
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  private[amf] override def componentId: String = ""
+  override def componentId: String = ""
 }
 
 object Document {

@@ -101,8 +101,8 @@ class ModelCloneTest extends AnyFunSuite with ElementsFixture with Matchers {
         override val `type`: List[ValueType]  = Nil
         override def modelInstance: AmfObject = SomeType(Fields(), Annotations())
       }
-      private[amf] override def componentId: String = "someId"
-      override def hashCode(): Int                  = 1
+      override def componentId: String = "someId"
+      override def hashCode(): Int     = 1
     }
 
     val type1 = SomeType(Fields(), Annotations())
@@ -127,8 +127,8 @@ class ModelCloneTest extends AnyFunSuite with ElementsFixture with Matchers {
 
   test("test clone id for error declaration") {
     case class Dummy(fields: Fields = Fields(), annotations: Annotations = Annotations()) extends DomainElement {
-      override def meta: DummyModel.type            = DummyModel
-      private[amf] override def componentId: String = ""
+      override def meta: DummyModel.type = DummyModel
+      override def componentId: String   = ""
     }
 
     object DummyModel extends DomainElementModel {
@@ -148,7 +148,7 @@ class ModelCloneTest extends AnyFunSuite with ElementsFixture with Matchers {
       override val fields: Fields = Fields()
 
       /** Value , path + field value that is used to compose the id when the object its adopted */
-      private[amf] override def componentId: String = "errorTrait"
+      override def componentId: String = "errorTrait"
 
       /** Set of annotations for element. */
       override val annotations: Annotations = Annotations()

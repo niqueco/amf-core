@@ -20,7 +20,7 @@ case class VariableValue(fields: Fields, annotations: Annotations) extends Domai
   override def meta: VariableValueModel.type = VariableValueModel
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  private[amf] override def componentId: String = "/" + name.option().getOrElse("default-variable").urlComponentEncoded
+  override def componentId: String = "/" + name.option().getOrElse("default-variable").urlComponentEncoded
 
   override protected def nameField: Field = Name
 }

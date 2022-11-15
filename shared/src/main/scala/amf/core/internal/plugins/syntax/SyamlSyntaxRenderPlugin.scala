@@ -9,7 +9,7 @@ import org.mulesoft.common.io.Output
 import org.yaml.model.YDocument
 import org.yaml.render.{JsonRender, JsonRenderOptions, YamlRender}
 
-object SyamlSyntaxRenderPlugin extends AMFSyntaxRenderPlugin with PlatformSecrets {
+object SyamlSyntaxRenderPlugin extends AMFSyntaxRenderPlugin with SyamlSyntaxBasePlugin with PlatformSecrets {
 
   override def emit[W: Output](mediaType: String, doc: ParsedDocument, writer: W): Option[W] = {
     doc match {
@@ -29,20 +29,18 @@ object SyamlSyntaxRenderPlugin extends AMFSyntaxRenderPlugin with PlatformSecret
     render(format, ast)
   }
 
-  private def getFormat(mediaType: String) = if (mediaType.contains("json")) "json" else "yaml"
-
   override def applies(element: ParsedDocument): Boolean = element.isInstanceOf[SyamlParsedDocument]
 
   override def mediaTypes: Seq[String] =
     Seq(
-        `application/yaml`,
-        `application/x-yaml`,
-        `text/yaml`,
-        `text/x-yaml`,
-        `application/json`,
-        `text/json`,
-        `text/vnd.yaml`
-    )
+      `application/yaml`,
+      `application/x-yaml`,
+      `text/yaml`,
+      `text/x-yaml`,
+      `application/json`,
+      `text/json`,
+      `text/vnd.yaml`
+    ) ++ graphSyntax
 
   override val id: String = "syaml-render"
 

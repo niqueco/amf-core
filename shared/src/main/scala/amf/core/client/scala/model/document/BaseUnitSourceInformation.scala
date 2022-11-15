@@ -11,7 +11,7 @@ import amf.core.internal.parser.domain.{Annotations, Fields}
 class BaseUnitSourceInformation(val fields: Fields, val annotations: Annotations) extends AmfObject {
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  override private[amf] def componentId = "/BaseUnitSourceInformation"
+  override def componentId = "/BaseUnitSourceInformation"
 
   def rootLocation: StrField                     = fields.field(RootLocation)
   def withRootLocation(value: String): this.type = set(RootLocation, value)
@@ -33,7 +33,7 @@ object BaseUnitSourceInformation {
 class LocationInformation(val fields: Fields, val annotations: Annotations) extends AmfObject {
 
   /** Value , path + field value that is used to compose the id when the object its adopted */
-  override private[amf] def componentId = "/LocationInformation"
+  override def componentId = "/LocationInformation"
 
   def locationValue: StrField                = fields.field(BaseUnitModel.Location)
   def withLocation(value: String): this.type = set(BaseUnitModel.Location, value)

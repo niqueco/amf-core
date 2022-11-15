@@ -37,7 +37,7 @@ class InternalSeqAtGraphParserTest()
         override val fields: Fields = Fields()
 
         /** Value , path + field value that is used to compose the id when the object its adopted */
-        override private[amf] def componentId = "fake"
+        override def componentId = "fake"
 
         /** Set of annotations for element. */
         override val annotations: Annotations = Annotations()

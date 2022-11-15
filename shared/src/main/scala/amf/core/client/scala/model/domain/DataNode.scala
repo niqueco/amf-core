@@ -9,7 +9,10 @@ import amf.core.internal.utils.AmfStrings
 
 /** Base class for all dynamic DataNodes
   */
-abstract class DataNode(annotations: Annotations) extends DomainElement with NamedDomainElement with HasShapeFederationMetadata {
+abstract class DataNode(annotations: Annotations)
+    extends DomainElement
+    with NamedDomainElement
+    with HasShapeFederationMetadata {
 
   override protected def nameField: Field = DataNodeModel.Name // ??
 
@@ -17,7 +20,7 @@ abstract class DataNode(annotations: Annotations) extends DomainElement with Nam
     if (Option(id).isEmpty) simpleAdoption(parent) else this
   }
 
-  private[amf] override def componentId: String =
+  override def componentId: String =
     "/" + name.option().getOrElse("data-node").urlComponentEncoded
 
   /** Replace all raml variables (any name inside double chevrons -> '<<>>') with the provided values. */

@@ -49,26 +49,29 @@ class SyamlAMFErrorHandler(val eh: AMFErrorHandler)
   override def handle[T](error: YError, defaultValue: T): T              = syamleh.handle(error, defaultValue)
 }
 
-class SyamlSyntaxParsePlugin extends AMFSyntaxParsePlugin with PlatformSecrets {
-
-  private def getFormat(mediaType: String): String = if (mediaType.contains("json")) "json" else "yaml"
+class SyamlSyntaxParsePlugin extends AMFSyntaxParsePlugin with SyamlSyntaxBasePlugin with PlatformSecrets {
 
   override def parse(text: CharSequence, mediaType: String, ctx: ParserContext): ParsedDocument = {
     val syamlEH = new SyamlAMFErrorHandler(ctx.eh)
     if (text.length() == 0) SyamlParsedDocument(YDocument(YNode.Null))
     else {
       val parser = getFormat(mediaType) match {
-        case "json" => JsonParserFactory.fromCharsWithSource(text, ctx.rootContextDocument)(syamlEH)
-        case _      => YamlParser(text, ctx.rootContextDocument)(syamlEH).withIncludeTag("!include")
+        case "json" =>
+          JsonParserFactory.fromCharsWithSource(text, ctx.rootContextDocument, ctx.parsingOptions.getMaxJsonYamlDepth)(
+            syamlEH
+          )
+        case _ =>
+          YamlParser(text, ctx.rootContextDocument, ctx.parsingOptions.getMaxJsonYamlDepth)(syamlEH)
+            .withIncludeTag("!include")
       }
-      val document1 = parser.document()
+      val document1 = parser.document(ctx.parsingOptions.isTokens)
       val (document, comment) = document1 match {
         case d if d.isNull =>
           (
-              YDocument(Array(YNode(YMap.empty)), ctx.rootContextDocument),
-              d.children collectFirst { case c: YComment =>
-                c.metaText
-              }
+            YDocument(Array(YNode(YMap.empty)), ctx.rootContextDocument),
+            d.children collectFirst { case c: YComment =>
+              c.metaText
+            }
           )
         case d =>
           (d, d.children collectFirst { case c: YComment => c.metaText })
@@ -81,13 +84,13 @@ class SyamlSyntaxParsePlugin extends AMFSyntaxParsePlugin with PlatformSecrets {
     */
   override def mediaTypes: Seq[String] =
     Seq(
-        `application/yaml`,
-        `application/x-yaml`,
-        `text/yaml`,
-        `text/x-yaml`,
-        `application/json`,
-        `text/json`,
-        `text/vnd.yaml`
+      `application/yaml`,
+      `application/x-yaml`,
+      `text/yaml`,
+      `text/x-yaml`,
+      `application/json`,
+      `text/json`,
+      `text/vnd.yaml`
     )
 
   override def mainMediaType: String = `application/yaml`
