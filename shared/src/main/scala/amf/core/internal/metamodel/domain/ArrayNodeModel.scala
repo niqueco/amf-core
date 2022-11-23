@@ -6,9 +6,9 @@ import amf.core.client.scala.vocabulary.{Namespace, ValueType}
 import amf.core.internal.metamodel.Field
 import amf.core.internal.metamodel.Type.Array
 import amf.core.internal.metamodel.domain.common.DescribedElementModel
-import amf.core.internal.metamodel.domain.federation.HasShapeFederationMetadataModel
+import amf.core.internal.metamodel.domain.federation.HasFederationMetadataModel
 
-object ArrayNodeModel extends DomainElementModel with HasShapeFederationMetadataModel with DescribedElementModel {
+object ArrayNodeModel extends DomainElementModel with HasFederationMetadataModel with DescribedElementModel {
 
   val Member: Field =
     Field(Array(DataNodeModel), Namespace.Rdfs + "member", ModelDoc(ExternalModelVocabularies.Rdf, "member", ""))
@@ -18,8 +18,8 @@ object ArrayNodeModel extends DomainElementModel with HasShapeFederationMetadata
   override def modelInstance: ArrayNode = ArrayNode()
 
   override val doc: ModelDoc = ModelDoc(
-    ModelVocabularies.Data,
-    "ArrayNode",
-    "Node that represents a dynamic array data structure"
+      ModelVocabularies.Data,
+      "ArrayNode",
+      "Node that represents a dynamic array data structure"
   )
 }

@@ -6,14 +6,14 @@ import amf.core.internal.metamodel.domain.common.NameFieldSchema
 import amf.core.client.scala.model.domain._
 import amf.core.client.scala.vocabulary.Namespace.Data
 import amf.core.client.scala.vocabulary.{Namespace, ValueType}
-import amf.core.internal.metamodel.domain.federation.HasShapeFederationMetadataModel
+import amf.core.internal.metamodel.domain.federation.HasFederationMetadataModel
 
 /** Data Model to parse any generic data structure defined by recursive records with arrays and scalar values (think of
   * JSON or RAML) into a RDF graph.
   *
   * This can be used to parse value of annotations, payloads or examples
   */
-object DataNodeModel extends DomainElementModel with NameFieldSchema with HasShapeFederationMetadataModel {
+object DataNodeModel extends DomainElementModel with NameFieldSchema with HasFederationMetadataModel {
 
   // We set this so it can be re-used in the definition of the dynamic types
   override val fields: List[Field]     = List(Name, FederationMetadata) ++ DomainElementModel.fields

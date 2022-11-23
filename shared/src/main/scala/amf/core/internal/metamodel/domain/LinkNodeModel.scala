@@ -6,9 +6,9 @@ import amf.core.client.scala.vocabulary.{Namespace, ValueType}
 import amf.core.internal.metamodel.Field
 import amf.core.internal.metamodel.Type.Str
 import amf.core.internal.metamodel.domain.common.DescribedElementModel
-import amf.core.internal.metamodel.domain.federation.HasShapeFederationMetadataModel
+import amf.core.internal.metamodel.domain.federation.HasFederationMetadataModel
 
-object LinkNodeModel extends DomainElementModel with HasShapeFederationMetadataModel with DescribedElementModel {
+object LinkNodeModel extends DomainElementModel with HasFederationMetadataModel with DescribedElementModel {
 
   val Value: Field = Field(Str, Namespace.Data + "value", ModelDoc(ModelVocabularies.Data, "value"))
   val Alias: Field = Field(Str, Namespace.Data + "alias", ModelDoc(ModelVocabularies.Data, "alias"))
@@ -18,8 +18,8 @@ object LinkNodeModel extends DomainElementModel with HasShapeFederationMetadataM
   override def modelInstance: LinkNode = LinkNode()
 
   override val doc: ModelDoc = ModelDoc(
-    ModelVocabularies.Data,
-    "LinkNode",
-    "Node that represents a dynamic link in a data structure"
+      ModelVocabularies.Data,
+      "LinkNode",
+      "Node that represents a dynamic link in a data structure"
   )
 }

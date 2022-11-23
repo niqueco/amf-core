@@ -1,6 +1,6 @@
 package amf.core.client.scala.model.domain
 
-import amf.core.client.scala.model.domain.federation.HasShapeFederationMetadata
+import amf.core.client.scala.model.domain.federation.{HasFederationMetadata, ShapeFederationMetadata}
 import amf.core.client.scala.model.domain.templates.Variable
 import amf.core.internal.metamodel.Field
 import amf.core.internal.metamodel.domain._
@@ -12,13 +12,15 @@ import amf.core.internal.utils.AmfStrings
 abstract class DataNode(annotations: Annotations)
     extends DomainElement
     with NamedDomainElement
-    with HasShapeFederationMetadata {
+    with HasFederationMetadata[ShapeFederationMetadata] {
 
   override protected def nameField: Field = DataNodeModel.Name // ??
 
   override def adopted(parent: String, cycle: Seq[String] = Seq()): this.type = {
     if (Option(id).isEmpty) simpleAdoption(parent) else this
   }
+
+  override def emptyMetadata(): ShapeFederationMetadata = ShapeFederationMetadata()
 
   override def componentId: String =
     "/" + name.option().getOrElse("data-node").urlComponentEncoded
