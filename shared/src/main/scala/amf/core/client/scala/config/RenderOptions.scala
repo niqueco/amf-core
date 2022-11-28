@@ -111,7 +111,7 @@ case class RenderOptions(
   def withGovernanceMode: RenderOptions = copy(governanceMode = true)
 
   /** Always render `type` facade on types even if the type is already clear by a unique facade. */
-  def withoutImplicitRamlTypes: RenderOptions = copy(implicitRamlTypes = true)
+  def withoutImplicitRamlTypes: RenderOptions = copy(implicitRamlTypes = false)
 
   def isWithDocumentation: Boolean                             = documentation
   def isWithCompactedEmission: Boolean                         = compactedEmission
