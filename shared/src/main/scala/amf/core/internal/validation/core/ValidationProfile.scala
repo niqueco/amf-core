@@ -2,6 +2,7 @@ package amf.core.internal.validation.core
 
 import amf.core.client.common.validation.{ProfileName, SeverityLevels}
 import amf.core.internal.validation.core.ValidationProfile.{SeverityLevel, ValidationName}
+import org.mulesoft.common.collections._
 
 import scala.collection.mutable
 
@@ -83,7 +84,7 @@ case class NestedToParentIndex(profile: ValidationProfile) {
         val child = parent.nested.get
         ParentChildPair(parent, child)
       }
-      .groupBy(_.child)
+      .legacyGroupBy(_.child)
 
     grouped.mapValues { pairs =>
       pairs.map(_.parent)
