@@ -62,6 +62,7 @@ pipeline {
                 anyOf {
                     branch 'master'
                     branch 'develop'
+                    branch 'W-10547516/bump-scalajs'
                 }
             }
             steps {
