@@ -1,5 +1,6 @@
-import org.scalajs.core.tools.linker.ModuleKind
+
 import sbt.Keys.{libraryDependencies, resolvers}
+import sbtcrossproject.CrossPlugin.autoImport.crossProject
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 import sbtsonar.SonarPlugin.autoImport.sonarProperties
 
@@ -7,7 +8,7 @@ val ivyLocal = Resolver.file("ivy", file(Path.userHome.absolutePath + "/.ivy2/lo
 
 name                     := "amf-core"
 ThisBuild / scalaVersion := "2.12.13"
-ThisBuild / version      := "5.3.0-SNAPSHOT"
+ThisBuild / version      := "5.3.0-SCALAJS-SNAPSHOT"
 
 publish := {}
 
@@ -18,7 +19,7 @@ val settings = Common.settings ++ Common.publish ++ Seq(
     resolvers ++= List(ivyLocal, Common.releases, Common.snapshots, Resolver.mavenLocal, Resolver.mavenCentral),
     credentials ++= Common.credentials(),
     libraryDependencies ++= Seq(
-        "org.mule.common" %%% "scala-common-test" % "0.1.12" % Test
+        "org.mule.common" %%% "scala-common-test" % "0.2.0-SCALAJS-SNAPSHOT" % Test
     )
 )
 
@@ -30,12 +31,12 @@ lazy val workspaceDirectory: File =
     case _       => Path.userHome / "mulesoft"
   }
 
-val syamlVersion = "1.2.327"
+val syamlVersion = "1.3.0-SCALAJS-SNAPSHOT"
 
 lazy val syamlJVMRef = ProjectRef(workspaceDirectory / "syaml", "syamlJVM")
 lazy val syamlJSRef  = ProjectRef(workspaceDirectory / "syaml", "syamlJS")
 lazy val syamlLibJVM = "org.mule.syaml" %% "syaml"        % syamlVersion
-lazy val syamlLibJS  = "org.mule.syaml" %% "syaml_sjs0.6" % syamlVersion
+lazy val syamlLibJS  = "org.mule.syaml" %% "syaml_sjs1" % syamlVersion
 
 lazy val defaultProfilesGenerationTask = TaskKey[Unit](
     "defaultValidationProfilesGeneration",
@@ -51,15 +52,17 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
   .in(file("."))
   .settings(settings)
   .jvmSettings(
-      libraryDependencies += "org.scala-js"          %% "scalajs-stubs"           % scalaJSVersion % "provided",
+      libraryDependencies += "org.scala-js"          %% "scalajs-stubs"           % "1.1.0" % "provided",
       libraryDependencies += "org.scala-lang.modules" % "scala-java8-compat_2.12" % "0.8.0",
       Compile / packageDoc / artifactPath := baseDirectory.value / "target" / "artifact" / "amf-core-javadoc.jar"
   )
   .jsSettings(
-      libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.7",
-      scalaJSModuleKind                      := ModuleKind.CommonJSModule,
+      libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.2.0",
+      scalaJSLinkerConfig ~= {
+        _.withModuleKind(ModuleKind.CommonJSModule)
+      },
+      scalacOptions += "-P:scalajs:nowarnGlobalExecutionContext",
       Compile / fullOptJS / artifactPath     := baseDirectory.value / "target" / "artifact" / "amf-core-module.js",
-      scalacOptions += "-P:scalajs:suppressExportDeprecations"
   )
   .disablePlugins(SonarPlugin)
 

@@ -1,11 +1,9 @@
 package amf.core.internal.remote.server
 
-import amf.core.client.platform.execution.{BaseExecutionEnvironment, DefaultExecutionEnvironment, ExecutionEnvironment}
 import amf.core.client.scala.resource.ResourceLoader
-import amf.core.internal.resource.InternalResourceLoaderAdapter
-import amf.core.internal.remote.File.FILE_PROTOCOL
 import amf.core.internal.remote._
 import amf.core.internal.remote.server.JsServerPlatform.OS
+import amf.core.internal.resource.InternalResourceLoaderAdapter
 import org.mulesoft.common.io.{FileSystem, Fs}
 
 import scala.concurrent.ExecutionContext
