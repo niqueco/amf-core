@@ -29,8 +29,15 @@ import org.yaml.model._
 import scala.collection.mutable
 import scala.language.implicitConversions
 
-class FlattenedUnitGraphParser(overrideAliases: Map[String, String] = Map.empty)(implicit val ctx: GraphParserContext)
+class FlattenedUnitGraphParser(
+    overrideAliases: Map[String, String] = Map.empty)(implicit val ctx: GraphParserContext)
     extends GraphParserHelpers {
+
+  protected def parserProvider(
+      rootId: String,
+      overrideAliases: Map[String, String],
+      ctx: GraphParserContext
+  ): FlattenedGraphParser = new FlattenedGraphParser(rootId, overrideAliases)(ctx)
 
   def parse(document: YDocument, location: String): BaseUnit = {
 
@@ -38,7 +45,7 @@ class FlattenedUnitGraphParser(overrideAliases: Map[String, String] = Map.empty)
 
     val unit = rootNode.flatMap(_.toOption[YMap]).flatMap(m => retrieveId(m, ctx)) match {
       case Some(rootId) =>
-        new FlattenedGraphParser(rootId, overrideAliases)(ctx).parse(document) match {
+        parserProvider(rootId, overrideAliases, ctx).parse(document) match {
           case Some(b: BaseUnit) => b
           case Some(_) =>
             ctx.eh.violation(UnableToParseDocument, "", "Root node is not a Base Unit")
@@ -400,9 +407,9 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
             case YType.Seq => retrieveId(entry.value.as[Seq[YMap]].head, ctx)
             case _ =>
               ctx.eh.violation(
-                  UnableToParseDocument,
-                  entry.value,
-                  s"$targetIdFieldIri field must have a map or array value"
+                UnableToParseDocument,
+                entry.value,
+                s"$targetIdFieldIri field must have a map or array value"
               )
               None
           }
@@ -497,10 +504,10 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
         case None =>
           val nodeId = s"${retrieveId(map, ctx)}"
           ctx.eh.violation(
-              UnableToParseDomainElement,
-              nodeId,
-              s"Cannot find node definition for node '$nodeId'",
-              map.location
+            UnableToParseDomainElement,
+            nodeId,
+            s"Cannot find node definition for node '$nodeId'",
+            map.location
           )
       }
       extension
@@ -522,12 +529,12 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
     private def parseObjectNodeProperties(obj: ObjectNode, map: YMap, fields: Seq[Field]): Unit = {
       val ignoredFields: Seq[String] =
         Seq(
-            JsonLdKeywords.Id,
-            JsonLdKeywords.Type,
-            "smaps",
-            DomainElementModel.Sources.value.iri(),
-            (Namespace.Document + "name").iri(),
-            (Namespace.Core + "extensionName").iri()
+          JsonLdKeywords.Id,
+          JsonLdKeywords.Type,
+          "smaps",
+          DomainElementModel.Sources.value.iri(),
+          (Namespace.Document + "name").iri(),
+          (Namespace.Core + "extensionName").iri()
         )
 
       map.entries.foreach { entry =>
@@ -535,8 +542,8 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
         val fieldValue      = entry.value
         val isAlreadyParsed = fields.exists(_.value.iri() == fieldUri)
         if (
-            !ignoredFields
-              .contains(fieldUri) && !isAlreadyParsed
+          !ignoredFields
+            .contains(fieldUri) && !isAlreadyParsed
         ) { // we do this to prevent parsing name of annotations
           parse(fieldValue.as[YMap]).collect { case d: amf.core.client.scala.model.domain.DataNode =>
             obj.addProperty(fieldUri, d)
@@ -625,7 +632,7 @@ object FlattenedUnitGraphParser extends GraphContextHelper with GraphParserHelpe
     new FlattenedUnitGraphParser(aliases)(new GraphParserContext(config = config))
   }
   implicit val ctx: GraphParserContext = new GraphParserContext(
-      config = LimitedParseConfig(IgnoringErrorHandler)
+    config = LimitedParseConfig(IgnoringErrorHandler)
   )
 
   /** Returns true if `document` contains a @graph node which in turn must contain a Root node. Root nodes are nodes
@@ -673,7 +680,7 @@ object FlattenedUnitGraphParser extends GraphContextHelper with GraphParserHelpe
     }
   }
 
-  private[amf] def processGraph(m: YMap, ctx: GraphParserContext, aliases: Map[String, String]) = {
+  private[amf] def processGraph(m: YMap, ctx: GraphParserContext, aliases: Map[String, String]): Option[YNode] = {
     m.key(JsonLdKeywords.Context).foreach(entry => JsonLdGraphContextParser(entry.value, ctx).parse())
     ctx.addTerms(aliases)
     m.key(JsonLdKeywords.Graph).flatMap { graphEntry =>

@@ -8,13 +8,8 @@ import amf.core.client.scala.parse.document.ParserContext
 import amf.core.client.scala.vocabulary.Namespace.SourceMaps
 import amf.core.client.scala.vocabulary._
 import amf.core.internal.metamodel.Type._
-import amf.core.internal.metamodel.document.{ExtensionLikeModel, SourceMapModel}
-import amf.core.internal.metamodel.domain.{
-  DomainElementModel,
-  ExternalSourceElementModel,
-  LinkableElementModel,
-  RecursiveShapeModel
-}
+import amf.core.internal.metamodel.document.SourceMapModel
+import amf.core.internal.metamodel.domain.DomainElementModel
 import amf.core.internal.metamodel.{Field, Obj, Type}
 import amf.core.internal.parser._
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
@@ -213,8 +208,8 @@ trait GraphParserHelpers extends GraphContextHelper {
                 val k = element.key(compactUriFromContext(SourceMapModel.Element.value.iri())).get
                 val v = element.key(compactUriFromContext(SourceMapModel.Value.value.iri())).get
                 consumer(
-                    value(SourceMapModel.Element.`type`, k.value).as[YScalar].text,
-                    value(SourceMapModel.Value.`type`, v.value).as[YScalar].text
+                  value(SourceMapModel.Element.`type`, k.value).as[YScalar].text,
+                  value(SourceMapModel.Value.`type`, v.value).as[YScalar].text
                 )
               }
             })
@@ -224,22 +219,22 @@ trait GraphParserHelpers extends GraphContextHelper {
     result
   }
 
-  def asIris(ns: Namespace, elements: Seq[String]): Seq[ValueType] = elements.map(element => ns + element)
+  private def asIris(ns: Namespace, elements: Seq[String]): Seq[ValueType] = elements.map(element => ns + element)
 
   // declared so they can be referenced from the retrieveType* functions
-  val amlDocumentIris: Seq[ValueType] =
+  private val amlDocumentIris: Seq[ValueType] =
     asIris(
-        Namespace.Meta,
-        Seq(
-            "DialectInstance",
-            "DialectInstanceFragment",
-            "DialectInstanceLibrary",
-            "DialectInstancePatch",
-            "DialectLibrary",
-            "DialectFragment",
-            "Dialect",
-            "Vocabulary"
-        )
+      Namespace.Meta,
+      Seq(
+        "DialectInstance",
+        "DialectInstanceFragment",
+        "DialectInstanceLibrary",
+        "DialectInstancePatch",
+        "DialectLibrary",
+        "DialectFragment",
+        "Dialect",
+        "Vocabulary"
+      )
     )
 
   val coreDocumentIris: Seq[ValueType] =
