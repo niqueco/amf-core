@@ -2,7 +2,7 @@ package amf.core.client.scala.model.domain
 
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model.domain.extensions.{PropertyShape, ShapeExtension}
-import amf.core.client.scala.model.domain.federation.{HasFederationMetadata, ShapeFederationMetadata}
+import amf.core.client.scala.model.domain.federation.{HasFederationMetadata, HasShapeFederationMetadata, ShapeFederationMetadata}
 import amf.core.client.scala.model.{BoolField, StrField}
 import amf.core.client.scala.traversal.ShapeTraversalRegistry
 import amf.core.internal.annotations.LexicalInformation
@@ -21,7 +21,7 @@ abstract class Shape
     with Linkable
     with NamedDomainElement
     with ShapeHelper
-    with HasFederationMetadata[ShapeFederationMetadata] {
+    with HasShapeFederationMetadata {
 
   override protected def nameField: Field = Name
 
