@@ -8,6 +8,7 @@ import amf.core.client.scala.model.domain.AnnotationGraphLoader
 import amf.core.client.scala.parse.AMFParsePlugin
 import amf.core.client.scala.resource.ResourceLoader
 import amf.core.client.scala.transform.TransformationPipeline
+import amf.core.client.scala.vocabulary.NamespaceAliases
 import amf.core.internal.annotations.serializable.CoreSerializableAnnotations
 import amf.core.internal.convert.CoreRegister
 import amf.core.internal.entities.CoreEntities
@@ -126,6 +127,9 @@ class AMFGraphConfiguration private[amf] (
   def withRootParsePlugin(amfParsePlugin: AMFParsePlugin): AMFGraphConfiguration =
     super._withRootParsePlugin(amfParsePlugin)
 
+  def withAliases(aliases: NamespaceAliases): AMFGraphConfiguration =
+    super._withAliases(aliases)
+
   private[amf] def withEntities(entities: Map[String, ModelDefaultBuilder]): AMFGraphConfiguration =
     super._withEntities(entities)
 
@@ -232,6 +236,8 @@ sealed abstract class BaseAMFConfigurationSetter(
   protected def _withEntities[T](entities: Map[String, ModelDefaultBuilder]): T =
     copy(registry = registry.withEntities(entities)).asInstanceOf[T]
 
+  protected def _withAliases[T](aliases: NamespaceAliases): T =
+    copy(registry = registry.withAliases(aliases)).asInstanceOf[T]
   protected def _emptyEntities[T](): T =
     copy(registry = registry.emptyEntities()).asInstanceOf[T]
 
