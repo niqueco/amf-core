@@ -12,7 +12,6 @@ case class RenderOptions(
     rawSourceMaps: Boolean = false,
     sourceInformation: Boolean = false,
     validating: Boolean = false,
-    private[amf] val filterFields: Field => Boolean = (_: Field) => false,
     amfJsonLdSerialization: Boolean = true,
     useJsonLdEmitter: Boolean = false,
     private[amf] val flattenedJsonLd: Boolean = true,
@@ -69,9 +68,6 @@ case class RenderOptions(
   /** Exclude Node IDs when rendering to graph. */
   def withoutNodeIds: RenderOptions = copy(emitNodeIds = false)
 
-  /** Apply function to filter fields when rendering to graph. */
-  private[amf] def withFilterFieldsFunc(f: Field => Boolean): RenderOptions = copy(filterFields = f)
-
   /** Include AmfJsonLdSerialization when rendering to graph. */
   def withAmfJsonLdSerialization: RenderOptions = copy(amfJsonLdSerialization = true)
 
@@ -118,17 +114,16 @@ case class RenderOptions(
   def shouldEmitWarningForUnsupportedValidationFacets: Boolean = emitWarningForUnsupportedValidationFacets
   def schemaVersion: JSONSchemaVersion                         = schema
 
-  def isCompactUris: Boolean                          = compactUris
-  def isWithSourceMaps: Boolean                       = sources
-  def isWithSourceInformation: Boolean                = sourceInformation
-  def isWithRawSourceMaps: Boolean                    = rawSourceMaps
-  def isAmfJsonLdSerialization: Boolean               = amfJsonLdSerialization
-  def isValidation: Boolean                           = validating
-  private[amf] def renderField(field: Field): Boolean = !filterFields(field)
-  def isPrettyPrint: Boolean                          = prettyPrint
-  def isEmitNodeIds: Boolean                          = emitNodeIds
-  def isRawFieldEmission: Boolean                     = rawFieldEmission
-  def isGovernanceMode: Boolean                       = governanceMode
+  def isCompactUris: Boolean            = compactUris
+  def isWithSourceMaps: Boolean         = sources
+  def isWithSourceInformation: Boolean  = sourceInformation
+  def isWithRawSourceMaps: Boolean      = rawSourceMaps
+  def isAmfJsonLdSerialization: Boolean = amfJsonLdSerialization
+  def isValidation: Boolean             = validating
+  def isPrettyPrint: Boolean            = prettyPrint
+  def isEmitNodeIds: Boolean            = emitNodeIds
+  def isRawFieldEmission: Boolean       = rawFieldEmission
+  def isGovernanceMode: Boolean         = governanceMode
 
   // TODO: remove when embeddedform is deleted
   private[amf] def toGraphSerialization: GraphSerialization = {
