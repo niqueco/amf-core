@@ -20,139 +20,131 @@ import scala.collection.mutable.ListBuffer
 /** AMF Graph parser
   */
 class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val ctx: GraphParserContext)
-    extends GraphParserHelpers {
+    extends CommonGraphParser {
 
   def canParse(document: SyamlParsedDocument): Boolean = EmbeddedGraphParser.canParse(document)
 
   def parse(document: YDocument, location: String): BaseUnit = {
-    val parser = Parser()
-    parser.parse(document, location)
+    val parsedOption = for {
+      seq  <- document.node.toOption[Seq[YMap]]
+      head <- seq.headOption
+      parsed <- {
+        head.key(JsonLdKeywords.Context, e => JsonLdGraphContextParser(e.value, ctx).parse())
+        aliases.foreach { case (term, iri) =>
+          ctx.graphContext.withTerm(term, iri)
+        }
+        parse(head)
+      }
+    } yield {
+      parsed
+    }
+
+    parsedOption match {
+      case Some(unit: BaseUnit) => unit.set(Location, location)
+      case _ =>
+        ctx.eh.violation(UnableToParseDocument, location, s"Unable to parse $document", document.location)
+        Document()
+    }
   }
 
-  case class Parser() extends CommonGraphParser {
+  override protected def parse(map: YMap): Option[AmfObject] = {
+    retrieveId(map, ctx)
+      .flatMap(value => retrieveType(value, map).map(value2 => (value, value2)))
+      .flatMap {
+        case (id, model) =>
+          val sources               = retrieveSources(map)
+          val transformedId: String = transformIdFromContext(id)
 
-    def parse(document: YDocument, location: String): BaseUnit = {
-      val parsedOption = for {
-        seq  <- document.node.toOption[Seq[YMap]]
-        head <- seq.headOption
-        parsed <- {
-          head.key(JsonLdKeywords.Context, e => JsonLdGraphContextParser(e.value, ctx).parse())
-          aliases.foreach { case (term, iri) =>
-            ctx.graphContext.withTerm(term, iri)
+          val instance: AmfObject = buildType(model, annotations(nodes, sources, transformedId))
+
+          // workaround for lazy values in shape
+          val modelFields = model match {
+            case shapeModel: ShapeModel =>
+              shapeModel.fields ++ Seq(
+                ShapeModel.CustomShapePropertyDefinitions,
+                ShapeModel.CustomShapeProperties
+              )
+            case _ => model.fields
           }
-          parse(head)
-        }
-      } yield {
-        parsed
-      }
 
-      parsedOption match {
-        case Some(unit: BaseUnit) => unit.set(Location, location)
+          parseNodeFields(map, modelFields, sources, transformedId, instance)
+
+        case _ => None
+      }
+  }
+
+  private def retrieveType(id: String, map: YMap): Option[ModelDefaultBuilder] = {
+    val stringTypes = ts(map, id)
+    findType(stringTypes, id, map)
+  }
+
+  private def parseList(listElement: Type, node: YMap): Seq[AmfElement] = {
+    val buffer = ListBuffer[YNode]()
+    node.entries.sortBy(_.key.as[String]).foreach { entry =>
+      if (entry.key.as[String].startsWith(compactUriFromContext((Namespace.Rdfs + "_").iri()))) {
+        buffer += entry.value.as[Seq[YNode]].head
+      }
+    }
+    buffer.flatMap { n =>
+      listElement match {
+        case _: Obj   => parse(n.as[YMap])
+        case Type.Any => Some(typedValue(n, ctx.graphContext))
         case _ =>
-          ctx.eh.violation(UnableToParseDocument, location, s"Unable to parse $document", document.location)
-          Document()
+          try { Some(str(value(listElement, n))) }
+          catch {
+            case _: Exception => None
+          }
       }
     }
+  }
 
-    override protected def parse(map: YMap): Option[AmfObject] = {
-      retrieveId(map, ctx)
-        .flatMap(value => retrieveType(value, map).map(value2 => (value, value2)))
-        .flatMap {
-          case (id, model) =>
-            val sources = retrieveSources(map)
-            val transformedId: String = transformIdFromContext(id)
-
-            val instance: AmfObject = buildType(model, annotations(nodes, sources, transformedId))
-
-            // workaround for lazy values in shape
-            val modelFields = model match {
-              case shapeModel: ShapeModel =>
-                shapeModel.fields ++ Seq(
-                  ShapeModel.CustomShapePropertyDefinitions,
-                  ShapeModel.CustomShapeProperties
-                )
-              case _ => model.fields
-            }
-
-            parseNodeFields(map, modelFields, sources, transformedId, instance)
-
-          case _ => None
-        }
-    }
-
-    private def retrieveType(id: String, map: YMap): Option[ModelDefaultBuilder] = {
-      val stringTypes = ts(map, id)
-      findType(stringTypes, id, map)
-    }
-
-    private def parseList(listElement: Type, node: YMap): Seq[AmfElement] = {
-      val buffer = ListBuffer[YNode]()
-      node.entries.sortBy(_.key.as[String]).foreach { entry =>
-        if (entry.key.as[String].startsWith(compactUriFromContext((Namespace.Rdfs + "_").iri()))) {
-          buffer += entry.value.as[Seq[YNode]].head
-        }
+  override protected def parseLinkableProperties(map: YMap, instance: DomainElement with Linkable): Unit = {
+    map
+      .key(compactUriFromContext(LinkableElementModel.TargetId.value.iri()))
+      .flatMap(entry => {
+        retrieveId(entry.value.as[Seq[YMap]].head, ctx)
+      })
+      .foreach { targetId =>
+        val transformedId = transformIdFromContext(targetId)
+        setLinkTarget(instance, transformedId)
       }
-      buffer.flatMap { n =>
-        listElement match {
-          case _: Obj   => parse(n.as[YMap])
-          case Type.Any => Some(typedValue(n, ctx.graphContext))
-          case _ =>
-            try { Some(str(value(listElement, n))) }
-            catch {
-              case _: Exception => None
-            }
-        }
+
+    mapLinkableProperties(map, instance)
+  }
+
+  override protected def parseObjectNodeProperties(obj: ObjectNode, map: YMap, fields: Seq[Field]): Unit = {
+    map.entries.foreach { entry =>
+      val uri = expandUriFromContext(entry.key.as[String])
+      val v   = entry.value
+      if (
+        uri != JsonLdKeywords.Type && uri != JsonLdKeywords.Id && uri != DomainElementModel.Sources.value
+          .iri() && uri != "smaps" &&
+        uri != (Namespace.Core + "extensionName").iri() && !fields
+          .exists(_.value.iri() == uri)
+      ) { // we do this to prevent parsing name of annotations
+        v.as[Seq[YMap]]
+          .headOption
+          .flatMap(parse)
+          .collect({ case d: amf.core.client.scala.model.domain.DataNode => obj.addProperty(uri, d) })
       }
     }
+  }
 
-    override protected def parseLinkableProperties(map: YMap, instance: DomainElement with Linkable): Unit = {
-      map
-        .key(compactUriFromContext(LinkableElementModel.TargetId.value.iri()))
-        .flatMap(entry => {
-          retrieveId(entry.value.as[Seq[YMap]].head, ctx)
-        })
-        .foreach { targetId =>
-          val transformedId = transformIdFromContext(targetId)
-          setLinkTarget(instance, transformedId)
-        }
-
-      mapLinkableProperties(map, instance)
-    }
-
-    override protected def parseObjectNodeProperties(obj: ObjectNode, map: YMap, fields: Seq[Field]): Unit = {
-      map.entries.foreach { entry =>
-        val uri = expandUriFromContext(entry.key.as[String])
-        val v   = entry.value
-        if (
-          uri != JsonLdKeywords.Type && uri != JsonLdKeywords.Id && uri != DomainElementModel.Sources.value
-            .iri() && uri != "smaps" &&
-          uri != (Namespace.Core + "extensionName").iri() && !fields
-            .exists(_.value.iri() == uri)
-        ) { // we do this to prevent parsing name of annotations
-          v.as[Seq[YMap]]
-            .headOption
-            .flatMap(parse)
-            .collect({ case d: amf.core.client.scala.model.domain.DataNode => obj.addProperty(uri, d) })
-        }
-      }
-    }
-
-    override protected def parseAtTraversion(node: YNode, `type`: Type): Option[AmfElement] = {
-      `type` match {
-        case _: Obj                    => parse(node.as[YMap])
-        case Iri                       => Some(iri(node))
-        case Str | RegExp | LiteralUri => Some(str(node))
-        case Bool                      => Some(bool(node))
-        case Type.Int                  => Some(int(node))
-        case Type.Long                 => Some(long(node))
-        case Type.Float                => Some(double(node))
-        case Type.Double               => Some(double(node))
-        case Type.DateTime             => Some(date(node))
-        case Type.Date                 => Some(date(node))
-        case Type.Any                  => Some(any(node))
-        case l: SortedArray            => Some(AmfArray(parseList(l.element, node.as[YMap])))
-        case a: Array                  => yNodeSeq(node, a)
-      }
+  override protected def parseAtTraversion(node: YNode, `type`: Type): Option[AmfElement] = {
+    `type` match {
+      case _: Obj                    => parse(node.as[YMap])
+      case Iri                       => Some(iri(node))
+      case Str | RegExp | LiteralUri => Some(str(node))
+      case Bool                      => Some(bool(node))
+      case Type.Int                  => Some(int(node))
+      case Type.Long                 => Some(long(node))
+      case Type.Float                => Some(double(node))
+      case Type.Double               => Some(double(node))
+      case Type.DateTime             => Some(date(node))
+      case Type.Date                 => Some(date(node))
+      case Type.Any                  => Some(any(node))
+      case l: SortedArray            => Some(AmfArray(parseList(l.element, node.as[YMap])))
+      case a: Array                  => yNodeSeq(node, a)
     }
   }
 
