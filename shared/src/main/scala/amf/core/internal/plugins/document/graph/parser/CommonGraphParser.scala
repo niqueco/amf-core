@@ -5,21 +5,104 @@ import amf.core.client.scala.model.domain.extensions.{CustomDomainProperty, Doma
 import amf.core.client.scala.model.domain._
 import amf.core.internal.annotations.DomainExtensionAnnotation
 import amf.core.internal.metamodel.Type.Iri
-import amf.core.internal.metamodel.domain.DomainElementModel
+import amf.core.internal.metamodel.domain.{DomainElementModel, ExternalSourceElementModel, LinkableElementModel}
 import amf.core.internal.metamodel.domain.extensions.DomainExtensionModel
 import amf.core.internal.metamodel.{Field, ModelDefaultBuilder, Type}
-import amf.core.internal.parser.YMapOps
+import amf.core.internal.parser.{YMapOps, YNodeLikeOps}
 import amf.core.internal.parser.domain.{Annotations, FieldEntry}
-import amf.core.internal.validation.CoreValidations.{UnableToParseDomainElement, UnableToParseNode}
+import amf.core.internal.plugins.document.graph.JsonLdKeywords
+import amf.core.internal.validation.CoreValidations.{NotLinkable, UnableToParseDomainElement, UnableToParseNode}
 import org.yaml.model._
+
+import scala.collection.mutable
 
 abstract class CommonGraphParser(implicit ctx: GraphParserContext) extends GraphParserHelpers {
 
+  protected var nodes: Map[String, AmfElement] = Map()
+  protected val unresolvedReferences: mutable.Map[String, Seq[DomainElement]] =
+    mutable.Map[String, Seq[DomainElement]]()
+  protected val unresolvedExtReferencesMap: mutable.Map[String, ExternalSourceElement] =
+    mutable.Map[String, ExternalSourceElement]()
+  protected val referencesMap: mutable.Map[String, DomainElement] = mutable.Map[String, DomainElement]()
+
   protected def parse(map: YMap): Option[AmfObject]
-
   protected def parseAtTraversion(node: YNode, `type`: Type): Option[AmfElement]
+  protected def parseLinkableProperties(map: YMap, instance: DomainElement with Linkable): Unit
+  protected def parseObjectNodeProperties(obj: ObjectNode, map: YMap, fields: Seq[Field]): Unit
 
-  protected def traverseFields(
+  protected def parseNodeFields(
+      node: YMap,
+      fields: Seq[Field],
+      sources: SourceMap,
+      transformedId: String,
+      instance: AmfObject
+  ): Option[AmfObject] = {
+    instance.withId(transformedId)
+    traverseFields(node, fields, instance, sources, nodes)
+    checkLinkables(instance)
+
+    // parsing custom extensions
+    instance match {
+      case l: DomainElement with Linkable =>
+        parseLinkableProperties(node, l)
+      case obj: ObjectNode =>
+        parseObjectNodeProperties(obj, node, fields)
+      case _ => // ignore
+    }
+
+    instance match {
+      case elm: DomainElement => parseCustomProperties(node, elm, nodes)
+      case _                  => // ignore
+    }
+
+    instance match {
+      case ex: ExternalDomainElement
+          if unresolvedExtReferencesMap.contains(ex.id) => // check if other node requested this external reference
+        unresolvedExtReferencesMap.get(ex.id).foreach { element =>
+          ex.raw
+            .option()
+            .foreach(element.set(ExternalSourceElementModel.Raw, _))
+        }
+      case _ => // ignore
+    }
+    nodes = nodes + (transformedId -> instance)
+    Some(instance)
+  }
+
+  protected def checkLinkables(instance: AmfObject): Unit = {
+    instance match {
+      case link: DomainElement with Linkable =>
+        referencesMap += (link.id -> link)
+        unresolvedReferences.getOrElse(link.id, Nil).foreach {
+          case unresolved: Linkable =>
+            unresolved.withLinkTarget(link)
+          case unresolved: LinkNode =>
+            unresolved.withLinkedDomainElement(link)
+          case _ =>
+            ctx.eh.violation(NotLinkable, instance.id, "Only linkable elements can be linked", instance.annotations)
+        }
+        unresolvedReferences.update(link.id, Nil)
+      case _ => // ignore
+    }
+
+    instance match {
+      case ref: ExternalSourceElement =>
+        unresolvedExtReferencesMap += (ref.referenceId.value -> ref) // process when parse the references node
+      case _ => // ignore
+    }
+  }
+
+  protected def setLinkTarget(instance: DomainElement with Linkable, targetId: String): Unit = {
+    referencesMap.get(targetId) match {
+      case Some(target) => instance.withLinkTarget(target)
+      case None =>
+        val unresolved: Seq[DomainElement] =
+          unresolvedReferences.getOrElse(targetId, Nil)
+        unresolvedReferences += (targetId -> (unresolved ++ Seq(instance)))
+    }
+  }
+
+   private def traverseFields(
       map: YMap,
       fields: Seq[Field],
       instance: AmfObject,
@@ -59,6 +142,19 @@ abstract class CommonGraphParser(implicit ctx: GraphParserContext) extends Graph
   ): AmfObject = {
     parseAtTraversion(node, f.`type`).foreach(r => instance.setWithoutId(f, r, annotations(nodes, sources, key)))
     instance
+  }
+
+  protected def mapLinkableProperties(map: YMap, instance: DomainElement with Linkable): Unit = {
+    map
+      .key(compactUriFromContext(LinkableElementModel.Label.value.iri()))
+      .flatMap(entry => {
+        entry.value
+          .toOption[Seq[YNode]]
+          .flatMap(nodes => nodes.head.toOption[YMap])
+          .flatMap(map => map.key(JsonLdKeywords.Value))
+          .flatMap(_.value.toOption[YScalar].map(_.text))
+      })
+      .foreach(s => instance.withLinkLabel(s))
   }
 
   protected def findType(typeIris: Seq[String], id: String, map: YMap): Option[ModelDefaultBuilder] = {
