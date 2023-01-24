@@ -2,24 +2,16 @@ package amf.core.internal.plugins.document.graph.parser
 
 import amf.core.client.scala.model.document._
 import amf.core.client.scala.model.domain._
-import amf.core.client.scala.model.domain.extensions.{CustomDomainProperty, DomainExtension}
 import amf.core.client.scala.parse.document.SyamlParsedDocument
 import amf.core.client.scala.vocabulary.Namespace
-import amf.core.internal.annotations.DomainExtensionAnnotation
 import amf.core.internal.metamodel.Type.{Array, Bool, Iri, LiteralUri, RegExp, SortedArray, Str}
-import amf.core.internal.metamodel.{Obj, Type, _}
 import amf.core.internal.metamodel.document.BaseUnitModel.Location
 import amf.core.internal.metamodel.domain._
-import amf.core.internal.metamodel.domain.extensions.DomainExtensionModel
+import amf.core.internal.metamodel._
 import amf.core.internal.parser._
-import amf.core.internal.parser.domain.{Annotations, FieldEntry}
+import amf.core.internal.parser.domain.Annotations
 import amf.core.internal.plugins.document.graph.JsonLdKeywords
-import amf.core.internal.validation.CoreValidations.{
-  NotLinkable,
-  UnableToParseDocument,
-  UnableToParseDomainElement,
-  UnableToParseNode
-}
+import amf.core.internal.validation.CoreValidations.{NotLinkable, UnableToParseDocument}
 import org.yaml.convert.YRead.SeqNodeYRead
 import org.yaml.model._
 
@@ -38,10 +30,7 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
     parser.parse(document, location)
   }
 
-  def annotations(nodes: Map[String, AmfElement], sources: SourceMap, key: String): Annotations =
-    ctx.config.serializableAnnotationsFacade.retrieveAnnotation(nodes, sources, key)
-
-  case class Parser(var nodes: Map[String, AmfElement]) {
+  case class Parser(var nodes: Map[String, AmfElement]) extends CommonGraphParser {
     private val unresolvedReferences = mutable.Map[String, Seq[DomainElement]]()
     private val unresolvedExtReferencesMap =
       mutable.Map[String, ExternalSourceElement]()
@@ -73,13 +62,7 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
 
     private def retrieveType(id: String, map: YMap): Option[ModelDefaultBuilder] = {
       val stringTypes = ts(map, id)
-      stringTypes.find(findType(_).isDefined) match {
-        case Some(t) => findType(t)
-        case None =>
-          ctx.eh
-            .violation(UnableToParseNode, id, s"Error parsing JSON-LD node, unknown @types $stringTypes", map.location)
-          None
-      }
+      findType(stringTypes, id, map)
     }
 
     private def parseList(listElement: Type, node: YMap): Seq[AmfElement] = {
@@ -102,7 +85,7 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
       }
     }
 
-    private def parse(map: YMap): Option[AmfObject] = {
+    override protected def parse(map: YMap): Option[AmfObject] = {
       retrieveId(map, ctx)
         .flatMap(value => retrieveType(value, map).map(value2 => (value, value2)))
         .flatMap {
@@ -117,20 +100,13 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
             val modelFields = model match {
               case shapeModel: ShapeModel =>
                 shapeModel.fields ++ Seq(
-                    ShapeModel.CustomShapePropertyDefinitions,
-                    ShapeModel.CustomShapeProperties
+                  ShapeModel.CustomShapePropertyDefinitions,
+                  ShapeModel.CustomShapeProperties
                 )
               case _ => model.fields
             }
 
-            modelFields.foreach(f => {
-              val k = compactUriFromContext(f.value.iri())
-              map.key(k) match {
-                case Some(entry) =>
-                  traverse(instance, f, value(f.`type`, entry.value), sources, k)
-                case _ =>
-              }
-            })
+            traverseFields(map, modelFields, instance, sources, nodes)
 
             checkLinkables(instance)
 
@@ -157,7 +133,7 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
             }
 
             instance match {
-              case elm: DomainElement => parseCustomProperties(map, elm)
+              case elm: DomainElement => parseCustomProperties(map, elm, nodes)
               case _                  => // ignore
             }
 
@@ -223,110 +199,15 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
         .foreach(s => instance.withLinkLabel(s))
     }
 
-    private def parseCustomProperties(map: YMap, instance: DomainElement): Unit = {
-      // See ADR adrs/0006-custom-domain-properties-json-ld-rendering.md last consequence item
-      val extensions: Seq[DomainExtension] = for {
-        uri       <- customDomainPropertiesFor(map)
-        entry     <- asSeq(map.key(transformIdFromContext(uri)))
-        extension <- parseCustomDomainPropertyEntry(uri, entry)
-      } yield {
-        extension
-      }
-      if (extensions.nonEmpty) {
-        extensions.partition(_.isScalarExtension) match {
-          case (scalars, objects) =>
-            instance.withCustomDomainProperties(objects)
-            applyScalarDomainProperties(instance, scalars)
-        }
-      }
-    }
-
-    protected def parseCustomDomainPropertyEntry(uri: String, entry: YMapEntry): Seq[DomainExtension] = {
-      entry.value.tagType match {
-        case YType.Map =>
-          Seq(parseSingleDomainExtension(entry.value.as[YMap], uri))
-        case YType.Seq =>
-          val values = entry.value.as[YSequence]
-          values.nodes.map { value =>
-            parseSingleDomainExtension(value.as[YMap], uri)
-          }
-        case _ =>
-          ctx.eh
-            .violation(UnableToParseDomainElement, uri, s"Cannot parse domain extensions for '$uri'", entry.location)
-          Nil
-      }
-    }
-
-    protected def customDomainPropertiesFor(map: YMap): Seq[String] = {
-      val fieldIri   = DomainElementModel.CustomDomainProperties.value.iri()
-      val compactIri = compactUriFromContext(fieldIri)
-
-      map.key(compactIri) match {
-        case Some(entry) =>
-          for {
-            valueNode <- entry.value.as[Seq[YNode]]
-          } yield {
-            value(Iri, valueNode).as[YScalar].text
-          }
-        case _ =>
-          Nil
-      }
-    }
-
-    private def parseSingleDomainExtension(map: YMap, uri: String) = {
-      val extension = DomainExtension()
-      contentOfNode(map) match {
-        case Some(obj) =>
-          parseScalarProperty(obj, DomainExtensionModel.Name)
-            .map(s => extension.set(DomainExtensionModel.Name, s))
-          parseScalarProperty(obj, DomainExtensionModel.Element)
-            .map(extension.withElement)
-
-          val definition = CustomDomainProperty()
-          definition.id = transformIdFromContext(uri)
-          extension.withDefinedBy(definition)
-
-          parse(obj).collect({ case d: DataNode => d }).foreach { pn =>
-            extension.withId(pn.id)
-            extension.withExtension(pn)
-          }
-
-          val sources = retrieveSources(obj)
-          extension.annotations ++= annotations(nodes, sources, extension.id)
-        case None =>
-          val nodeId = s"${retrieveId(map, ctx)}"
-          ctx.eh.violation(
-              UnableToParseDomainElement,
-              nodeId,
-              s"Cannot find node definition for node '$nodeId'",
-              map.location
-          )
-      }
-      extension
-    }
-
-    private def applyScalarDomainProperties(instance: DomainElement, scalars: Seq[DomainExtension]): Unit = {
-      scalars.foreach { e =>
-        instance.fields
-          .fieldsMeta()
-          .find(f => e.element.is(f.value.iri()))
-          .foreach(f => {
-            instance.fields.entry(f).foreach { case FieldEntry(_, value) =>
-              value.value.annotations += DomainExtensionAnnotation(e)
-            }
-          })
-      }
-    }
-
     private def parseObjectNodeProperties(obj: ObjectNode, map: YMap, fields: List[Field]): Unit = {
       map.entries.foreach { entry =>
         val uri = expandUriFromContext(entry.key.as[String])
         val v   = entry.value
         if (
-            uri != JsonLdKeywords.Type && uri != JsonLdKeywords.Id && uri != DomainElementModel.Sources.value
-              .iri() && uri != "smaps" &&
-            uri != (Namespace.Core + "extensionName").iri() && !fields
-              .exists(_.value.iri() == uri)
+          uri != JsonLdKeywords.Type && uri != JsonLdKeywords.Id && uri != DomainElementModel.Sources.value
+            .iri() && uri != "smaps" &&
+          uri != (Namespace.Core + "extensionName").iri() && !fields
+            .exists(_.value.iri() == uri)
         ) { // we do this to prevent parsing name of annotations
           v.as[Seq[YMap]]
             .headOption
@@ -336,17 +217,7 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
       }
     }
 
-    private def traverse(instance: AmfObject, f: Field, node: YNode, sources: SourceMap, key: String) = {
-      if (assertFieldTypeWithContext(f)(ctx)) {
-        doTraverse(instance, f, node, sources, key)
-      } else instance
-    }
-
-    private def doTraverse(instance: AmfObject, f: Field, node: YNode, sources: SourceMap, key: String) = {
-      parseAtTraversion(node, f.`type`).foreach(r => instance.setWithoutId(f, r, annotations(nodes, sources, key)))
-    }
-
-    private def parseAtTraversion(node: YNode, `type`: Type): Option[AmfElement] = {
+    override protected def parseAtTraversion(node: YNode, `type`: Type): Option[AmfElement] = {
       `type` match {
         case _: Obj                    => parse(node.as[YMap])
         case Iri                       => Some(iri(node))
@@ -360,21 +231,9 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
         case Type.Date                 => Some(date(node))
         case Type.Any                  => Some(any(node))
         case l: SortedArray            => Some(AmfArray(parseList(l.element, node.as[YMap])))
-        case a: Array =>
-          val items  = node.as[Seq[YNode]]
-          val values = items.flatMap { i => parseAtTraversion(value(a.element, i), a.element) }
-          Some(AmfArray(values))
+        case a: Array                  => yNodeSeq(node, a)
       }
     }
-  }
-
-  private def parseScalarProperty(definition: YMap, field: Field) =
-    definition
-      .key(compactUriFromContext(field.value.iri()))
-      .map(entry => value(field.`type`, entry.value).as[YScalar].text)
-
-  private def findType(typeString: String): Option[ModelDefaultBuilder] = {
-    ctx.config.registryContext.findType(expandUriFromContext(typeString))
   }
 
   private def buildType(modelType: ModelDefaultBuilder, ann: Annotations): AmfObject = {
