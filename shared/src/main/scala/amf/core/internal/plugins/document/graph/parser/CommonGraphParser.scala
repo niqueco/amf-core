@@ -38,7 +38,7 @@ abstract class CommonGraphParser(implicit ctx: GraphParserContext) extends Graph
       instance: AmfObject
   ): Option[AmfObject] = {
     instance.withId(transformedId)
-    traverseFields(node, fields, instance, sources, nodes)
+    traverseFields(node, fields, instance, sources)
     checkLinkables(instance)
 
     // parsing custom extensions
@@ -51,7 +51,7 @@ abstract class CommonGraphParser(implicit ctx: GraphParserContext) extends Graph
     }
 
     instance match {
-      case elm: DomainElement => parseCustomProperties(node, elm, nodes)
+      case elm: DomainElement => parseCustomProperties(node, elm)
       case _                  => // ignore
     }
 
@@ -102,18 +102,17 @@ abstract class CommonGraphParser(implicit ctx: GraphParserContext) extends Graph
     }
   }
 
-   private def traverseFields(
+  private def traverseFields(
       map: YMap,
       fields: Seq[Field],
       instance: AmfObject,
-      sources: SourceMap,
-      nodes: Map[String, AmfElement]
+      sources: SourceMap
   ): Unit = {
     fields.foreach(f => {
       val k = compactUriFromContext(f.value.iri()) // we are assuming compact uris, we shouldn't!
       map.key(k) match {
         case Some(entry) =>
-          traverse(instance, f, value(f.`type`, entry.value), sources, k, nodes)
+          traverse(instance, f, value(f.`type`, entry.value), sources, k)
         case _ => // Ignore
       }
     })
@@ -124,11 +123,10 @@ abstract class CommonGraphParser(implicit ctx: GraphParserContext) extends Graph
       f: Field,
       node: YNode,
       sources: SourceMap,
-      key: String,
-      nodes: Map[String, AmfElement]
+      key: String
   ): AmfObject = {
     if (assertFieldTypeWithContext(f)(ctx)) {
-      doTraverse(instance, f, node, sources, key, nodes)
+      doTraverse(instance, f, node, sources, key)
     } else instance
   }
 
@@ -137,8 +135,7 @@ abstract class CommonGraphParser(implicit ctx: GraphParserContext) extends Graph
       f: Field,
       node: YNode,
       sources: SourceMap,
-      key: String,
-      nodes: Map[String, AmfElement]
+      key: String
   ): AmfObject = {
     parseAtTraversion(node, f.`type`).foreach(r => instance.setWithoutId(f, r, annotations(nodes, sources, key)))
     instance
@@ -191,12 +188,12 @@ abstract class CommonGraphParser(implicit ctx: GraphParserContext) extends Graph
     Some(AmfArray(values))
   }
 
-  protected def parseCustomProperties(map: YMap, instance: DomainElement, nodes: Map[String, AmfElement]): Unit = {
+  private def parseCustomProperties(map: YMap, instance: DomainElement): Unit = {
     // See ADR adrs/0006-custom-domain-properties-json-ld-rendering.md last consequence item
     val extensions: Seq[DomainExtension] = for {
       uri       <- customDomainPropertiesFor(map)
       entry     <- asSeq(map.key(transformIdFromContext(uri)))
-      extension <- parseCustomDomainPropertyEntry(uri, entry, nodes)
+      extension <- parseCustomDomainPropertyEntry(uri, entry)
     } yield {
       extension
     }
@@ -227,16 +224,15 @@ abstract class CommonGraphParser(implicit ctx: GraphParserContext) extends Graph
 
   private def parseCustomDomainPropertyEntry(
       uri: String,
-      entry: YMapEntry,
-      nodes: Map[String, AmfElement]
+      entry: YMapEntry
   ): Seq[DomainExtension] = {
     entry.value.tagType match {
       case YType.Map =>
-        Seq(parseSingleDomainExtension(entry.value.as[YMap], uri, nodes))
+        Seq(parseSingleDomainExtension(entry.value.as[YMap], uri))
       case YType.Seq =>
         val values = entry.value.as[YSequence]
         values.nodes.map { value =>
-          parseSingleDomainExtension(value.as[YMap], uri, nodes)
+          parseSingleDomainExtension(value.as[YMap], uri)
         }
       case _ =>
         ctx.eh
@@ -247,8 +243,7 @@ abstract class CommonGraphParser(implicit ctx: GraphParserContext) extends Graph
 
   private def parseSingleDomainExtension(
       map: YMap,
-      uri: String,
-      nodes: Map[String, AmfElement]
+      uri: String
   ): DomainExtension = {
     val extension = DomainExtension()
     contentOfNode(map) match {

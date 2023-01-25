@@ -205,7 +205,7 @@ class FlattenedGraphParser(startingPoint: String, overrideAliases: Map[String, S
     findType(typeIris, id, map)
   }
 
-  private def parseSortedArray(listElement: Type, rawNode: YMap): Seq[AmfElement] = {
+  protected def parseSortedArray(listElement: Type, rawNode: YMap): Seq[AmfElement] = {
     def key(entry: YMapEntry): String = entry.key.as[String]
     contentOfNode(rawNode) match {
       case Some(node) =>
