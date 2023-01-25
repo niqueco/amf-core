@@ -16,7 +16,7 @@ import amf.core.internal.plugins.document.graph.parser.{
 import amf.core.internal.remote.Spec.AMF
 import amf.core.internal.remote.{Mimes, Spec}
 
-case class AMFGraphParsePlugin(private val aliases: Map[String, String] = Map.empty) extends AMFParsePlugin {
+case class AMFGraphParsePlugin(protected val aliases: Map[String, String] = Map.empty) extends AMFParsePlugin {
 
   override def spec: Spec = AMF
 
@@ -44,7 +44,7 @@ case class AMFGraphParsePlugin(private val aliases: Map[String, String] = Map.em
 
   override def allowRecursiveReferences: Boolean = true
 
-  private def effectiveUnitUrl(location: String, options: ParsingOptions): String = {
+  protected def effectiveUnitUrl(location: String, options: ParsingOptions): String = {
     options.definedBaseUrl match {
       case Some(url) => url
       case None      => location
