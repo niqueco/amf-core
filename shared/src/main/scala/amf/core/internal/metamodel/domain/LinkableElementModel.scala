@@ -32,6 +32,7 @@ trait LinkableElementModel extends Obj {
       ModelDoc(ModelVocabularies.AmlDoc, "linkLabel", "Label for the type of link")
   )
 
+  // TODO: maybe remove this? What is this used for?
   val SupportsRecursion = Field(
       Bool,
       Namespace.Document + "recursive",
