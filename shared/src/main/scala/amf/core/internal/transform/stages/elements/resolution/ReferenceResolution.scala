@@ -1,17 +1,8 @@
 package amf.core.internal.transform.stages.elements.resolution
 import amf.core.client.scala.AMFGraphConfiguration
 import amf.core.client.scala.errorhandling.AMFErrorHandler
-import amf.core.internal.annotations._
-import amf.core.internal.metamodel.document.DocumentModel
 import amf.core.client.scala.model.document.Document
-import amf.core.client.scala.model.domain.{AmfObject, DomainElement, LinkNode, Linkable, NamedDomainElement}
-import amf.core.internal.transform.stages.elements.resolution.ReferenceResolution.{
-  Condition,
-  VALID_DECLARATION_CONDITION
-}
-import amf.core.internal.transform.stages.helpers.{LinkNodeResolver, ModelReferenceResolver, ResolvedNamedEntity}
-import amf.core.internal.transform.stages.LinkNodeResolutionStage
-import amf.core.internal.transform.stages.selectors.{LinkNodeSelector, LinkSelector}
+import amf.core.client.scala.model.domain.{DomainElement, LinkNode, Linkable, NamedAmfObject, NamedDomainElement}
 import amf.core.client.scala.traversal.{
   DomainElementSelectorAdapter,
   DomainElementTransformationAdapter,
@@ -19,8 +10,20 @@ import amf.core.client.scala.traversal.{
   TransformationTraversal
 }
 import amf.core.client.scala.vocabulary.Namespace
+import amf.core.internal.annotations._
+import amf.core.internal.metamodel.document.DocumentModel
+import amf.core.internal.metamodel.domain.LinkableElementModel._
 import amf.core.internal.parser.domain.Annotations
+import amf.core.internal.transform.stages.LinkNodeResolutionStage
+import amf.core.internal.transform.stages.elements.resolution.ReferenceResolution.{
+  Condition,
+  VALID_DECLARATION_CONDITION
+}
+import amf.core.internal.transform.stages.helpers.{LinkNodeResolver, ModelReferenceResolver, ResolvedNamedEntity}
+import amf.core.internal.transform.stages.selectors.{LinkNodeSelector, LinkSelector}
+import amf.core.internal.validation.CoreValidations.RecursiveShapeSpecification
 
+import scala.annotation.tailrec
 import scala.collection.mutable
 
 class ReferenceResolution(
@@ -39,6 +42,12 @@ class ReferenceResolution(
       conditions: Seq[Condition],
       configuration: AMFGraphConfiguration
   ): Option[DomainElement] = {
+    // First check cyclic links
+    element match {
+      case l: Linkable => checkCyclicLinks(l)
+      case _           => // Nothing
+    }
+
     element match {
       case l: Linkable if l.isLink =>
         if (cache.contains(l.linkTarget.get.id)) Some(cache(l.linkTarget.get.id))
@@ -62,6 +71,42 @@ class ReferenceResolution(
         }
       case ln: LinkNode => LinkNodeResolver.resolveDynamicLink(ln, modelResolver, keepEditingInfo)
       case _            => None
+    }
+  }
+
+  @tailrec
+  private def checkCyclicLinks(
+      next: Linkable,
+      stack: Seq[Linkable] = Seq.empty
+  ): Unit = {
+    if (stack.contains(next)) {
+      // found a cycle
+      val chain = (stack :+ next).map(displayNameForError).mkString(" -> ")
+      errorHandler.violation(RecursiveShapeSpecification, next, s"Invalid cyclic references: $chain", next.annotations)
+
+      // we do not resolve the cycle, just remove link fields, much like cyclic inheritance
+      stack.foreach { e =>
+        e.fields.removeField(Target)
+        e.fields.removeField(TargetId)
+        e.fields.removeField(Label)
+      }
+    } else {
+      next.linkTarget match {
+        case Some(newNext: Linkable) => checkCyclicLinks(newNext, stack :+ next)
+        case _                       => // Nothing
+      }
+    }
+  }
+
+  /**
+   * Link labels are confusing, that's why we prefer using names when possible
+   * For example in amf-cli/shared/src/test/resources/validations/oas-definition-self-chained-ref.yaml link labels are
+   * shifted a's link label is "b", b's link label is "c" and c's link label is "a"
+   */
+  def displayNameForError(l: Linkable): String = {
+    l match {
+      case n: NamedAmfObject => n.name.value()
+      case _                 => l.linkLabel.value()
     }
   }
 
