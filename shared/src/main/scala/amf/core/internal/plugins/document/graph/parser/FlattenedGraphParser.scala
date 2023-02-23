@@ -431,7 +431,13 @@ object FlattenedUnitGraphParser extends GraphContextHelper with GraphParserHelpe
   }
 
   private[amf] def processGraph(m: YMap, ctx: GraphParserContext, aliases: Map[String, String]): Option[YNode] = {
-    m.key(JsonLdKeywords.Context).foreach(entry => JsonLdGraphContextParser(entry.value, ctx).parse())
+    m.key(JsonLdKeywords.Context).foreach { entry =>
+      try {
+        JsonLdGraphContextParser(entry.value, ctx).parse()
+      } catch {
+        case _: Error => None
+      }
+    }
     ctx.addTerms(aliases)
     m.key(JsonLdKeywords.Graph).flatMap { graphEntry =>
       val graphYSeq = graphEntry.value.as[YSequence]
