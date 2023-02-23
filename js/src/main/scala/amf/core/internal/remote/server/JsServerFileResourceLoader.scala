@@ -23,9 +23,9 @@ case class JsServerFileResourceLoader() extends BaseFileResourceLoader {
       .read()
       .map(content =>
         Content(
-            new CharSequenceStream(resource, content),
-            ensureFileAuthority(resource),
-            extension(resource).flatMap(mimeFromExtension)
+          new CharSequenceStream(resource, content),
+          ensureFileAuthority(resource),
+          extension(resource).flatMap(mimeFromExtension)
         )
       )
       .recoverWith {
@@ -34,9 +34,9 @@ case class JsServerFileResourceLoader() extends BaseFileResourceLoader {
             .read()
             .map(content =>
               Content(
-                  new CharSequenceStream(resource, content),
-                  ensureFileAuthority(resource),
-                  extension(resource).flatMap(mimeFromExtension)
+                new CharSequenceStream(resource, content),
+                ensureFileAuthority(resource),
+                extension(resource).flatMap(mimeFromExtension)
               )
             )
             .recover { case io: IOException =>

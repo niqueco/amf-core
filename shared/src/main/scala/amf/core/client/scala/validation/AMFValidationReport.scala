@@ -27,9 +27,9 @@ object AMFValidationReport {
     val profileName = UnknownProfile
     val model       = result.baseUnit
     new AMFValidationReport(
-        model.location().getOrElse(model.id),
-        profileName,
-        result.results
+      model.location().getOrElse(model.id),
+      profileName,
+      result.results
     )
   }
 }

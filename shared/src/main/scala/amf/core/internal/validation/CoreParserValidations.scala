@@ -12,24 +12,24 @@ object CoreParserValidations extends Validations {
   override val namespace: Namespace  = AmfParser
 
   val UnsupportedExampleMediaTypeErrorSpecification: ValidationSpecification = validation(
-      "unsupported-example-media-type",
-      "Cannot validate example with unsupported media type"
+    "unsupported-example-media-type",
+    "Cannot validate example with unsupported media type"
   )
 
   val CantReferenceSpecInFileTree: ValidationSpecification = validation(
-      "cant-reference-spec-in-file-tree",
-      "Cant reference spec in file tree"
+    "cant-reference-spec-in-file-tree",
+    "Cant reference spec in file tree"
   )
 
   val CouldntGuessRoot: ValidationSpecification = validation(
-      "couldnt-guess-root",
-      "Couldnt guess root"
+    "couldnt-guess-root",
+    "Couldnt guess root"
   )
 
   override val validations: List[ValidationSpecification] = List(
-      UnsupportedExampleMediaTypeErrorSpecification,
-      CantReferenceSpecInFileTree,
-      CouldntGuessRoot
+    UnsupportedExampleMediaTypeErrorSpecification,
+    CantReferenceSpecInFileTree,
+    CouldntGuessRoot
   )
   override val levels: Map[String, Map[ProfileName, String]] = Map.empty
 }

@@ -105,12 +105,12 @@ private[amf] class AMFRegistry(
       namespaceAliases: NamespaceAliases = namespaceAliases
   ): AMFRegistry =
     new AMFRegistry(
-        plugins,
-        entitiesRegistry,
-        transformationPipelines,
-        constraintsRules,
-        effectiveValidations,
-        namespaceAliases
+      plugins,
+      entitiesRegistry,
+      transformationPipelines,
+      constraintsRules,
+      effectiveValidations,
+      namespaceAliases
     )
 
   private[amf] lazy val sortedElementRenderPlugins: List[AMFElementRenderPlugin] = plugins.elementRenderPlugins.sorted

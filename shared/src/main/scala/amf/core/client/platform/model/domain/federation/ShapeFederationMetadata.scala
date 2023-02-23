@@ -5,9 +5,9 @@ import amf.core.client.scala.model.domain.federation.{ShapeFederationMetadata =>
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 @JSExportAll
-case class ShapeFederationMetadata(override private[amf] val _internal: InternalShapeFederationMetadata) extends FederationMetadata {
+case class ShapeFederationMetadata(override private[amf] val _internal: InternalShapeFederationMetadata)
+    extends FederationMetadata {
 
   @JSExportTopLevel("ShapeFederationMetadata")
   def this() = this(InternalShapeFederationMetadata())
 }
-

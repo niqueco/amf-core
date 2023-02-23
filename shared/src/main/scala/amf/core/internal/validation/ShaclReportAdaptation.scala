@@ -47,8 +47,8 @@ trait ShaclReportAdaptation {
     val validationSpecToLook = if (result.sourceShape.startsWith(Namespace.Data.base)) {
       result.sourceShape
         .replace(
-            Namespace.Data.base,
-            ""
+          Namespace.Data.base,
+          ""
         ) // this is for custom validations they are all prefixed with the data namespace
     } else {
       result.sourceShape // by default we expect to find a URI here
@@ -80,8 +80,8 @@ trait ShaclReportAdaptation {
       val message: String        = computeMessage(spec, result, messageStyle)
       val finalId: SeverityLevel = computeValidationId(result, idMapping)
       AMFValidationResult.withShapeId(
-          finalId,
-          AMFValidationResult.fromSHACLValidation(model, message, result.severity, result)
+        finalId,
+        AMFValidationResult.fromSHACLValidation(model, message, result.severity, result)
       )
     }
   }

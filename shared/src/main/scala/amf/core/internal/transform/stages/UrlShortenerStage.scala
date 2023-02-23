@@ -93,10 +93,10 @@ class UrlShortenerStage() extends TransformationStep {
     def shorten(uri: String): String =
       if (uri.nonEmpty && !uri.startsWith(s"$base#")) {
         dictionary.getOrElseUpdate(
-            uri, {
-              c = c + 1
-              s"$base#" + c
-            }
+          uri, {
+            c = c + 1
+            s"$base#" + c
+          }
         )
       } else uri
   }

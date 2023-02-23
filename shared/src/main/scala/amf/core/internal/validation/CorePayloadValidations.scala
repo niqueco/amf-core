@@ -12,14 +12,14 @@ object CorePayloadValidations extends Validations {
   override val namespace: Namespace  = AmfValidation
 
   val UnsupportedExampleMediaTypeWarningSpecification: ValidationSpecification = validation(
-      "unsupported-example-media-type-warning",
-      "Cannot validate example with unsupported media type"
+    "unsupported-example-media-type-warning",
+    "Cannot validate example with unsupported media type"
   )
 
   override val validations: List[ValidationSpecification] = List(
-      UnsupportedExampleMediaTypeWarningSpecification
+    UnsupportedExampleMediaTypeWarningSpecification
   )
   override val levels: Map[String, Map[ProfileName, String]] = Map(
-      UnsupportedExampleMediaTypeWarningSpecification.id -> all(WARNING)
+    UnsupportedExampleMediaTypeWarningSpecification.id -> all(WARNING)
   )
 }

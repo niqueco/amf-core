@@ -46,9 +46,9 @@ case class HttpResourceLoader(executionContext: ExecutionContext)
 
   private def createContent(connection: HttpURLConnection, url: String): Content = {
     new Content(
-        CharArraySequence(connection.getInputStream, connection.getContentLength, None).toString,
-        url,
-        Option(connection.getHeaderField("Content-Type"))
+      CharArraySequence(connection.getInputStream, connection.getContentLength, None).toString,
+      url,
+      Option(connection.getHeaderField("Content-Type"))
     )
   }
 }

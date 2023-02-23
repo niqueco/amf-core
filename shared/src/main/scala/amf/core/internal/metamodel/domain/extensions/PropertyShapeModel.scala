@@ -51,13 +51,21 @@ object PropertyShapeModel extends ShapeModel {
   val Requires: Field = Field(
     Array(PropertyShapePathModel),
     Federation + "requires",
-    ModelDoc(ModelVocabularies.Federation, "requires", "External properties (by path) required to retrieve data from this property during federation")
+    ModelDoc(
+      ModelVocabularies.Federation,
+      "requires",
+      "External properties (by path) required to retrieve data from this property during federation"
+    )
   )
 
   val Provides: Field = Field(
     Array(PropertyShapePathModel),
     Federation + "provides",
-    ModelDoc(ModelVocabularies.Federation, "provides", "External properties (by path) that can be provided by this graph during federation")
+    ModelDoc(
+      ModelVocabularies.Federation,
+      "provides",
+      "External properties (by path) that can be provided by this graph during federation"
+    )
   )
 
   override val `type`: List[ValueType] = List(Shacl + "PropertyShape") ++ ShapeModel.`type`
@@ -71,7 +79,7 @@ object PropertyShapeModel extends ShapeModel {
       PatternName,
       SerializationOrder,
       Requires,
-      Provides,
+      Provides
     ) ++ ShapeModel.fields ++ DomainElementModel.fields
 
   override def modelInstance: PropertyShape = PropertyShape()

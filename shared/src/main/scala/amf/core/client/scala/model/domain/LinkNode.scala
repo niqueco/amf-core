@@ -16,7 +16,9 @@ import scala.collection.mutable
   * @param annotations
   *   default annotations for the dynamic node
   */
-class LinkNode(override val fields: Fields, val annotations: Annotations) extends DataNode(annotations) with DescribedElement {
+class LinkNode(override val fields: Fields, val annotations: Annotations)
+    extends DataNode(annotations)
+    with DescribedElement {
 
   def link: StrField  = fields.field(LinkNodeModel.Value)
   def alias: StrField = fields.field(LinkNodeModel.Alias)

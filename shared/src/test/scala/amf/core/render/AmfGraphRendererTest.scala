@@ -27,11 +27,11 @@ trait AmfGraphRendererTest
 
     for {
       rendered <- Future.successful(
-          AMFGraphConfiguration
-            .predefined()
-            .withRenderOptions(RenderOptions().withPrettyPrint.withoutFlattenedJsonLd)
-            .baseUnitClient()
-            .render(document, AMF.mediaType)
+        AMFGraphConfiguration
+          .predefined()
+          .withRenderOptions(RenderOptions().withPrettyPrint.withoutFlattenedJsonLd)
+          .baseUnitClient()
+          .render(document, AMF.mediaType)
       )
       file   <- writeTemporaryFile(golden)(rendered)
       result <- assertDifferences(file, golden)

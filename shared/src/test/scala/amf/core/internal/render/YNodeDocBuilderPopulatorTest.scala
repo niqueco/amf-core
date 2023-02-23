@@ -11,9 +11,9 @@ class YNodeDocBuilderPopulatorTest extends AnyFunSuite with Matchers {
   case class CycleTest(name: String, source: String)
 
   val jsonCycles = Seq(
-      CycleTest(
-          "root object with seq and scalar types",
-          """
+    CycleTest(
+      "root object with seq and scalar types",
+      """
         |  {
         |    "key": [
         |      1,
@@ -23,43 +23,43 @@ class YNodeDocBuilderPopulatorTest extends AnyFunSuite with Matchers {
         |    ]
         |  }
         |""".stripMargin
-      ),
-      CycleTest(
-          "simple scalar type",
-          """
+    ),
+    CycleTest(
+      "simple scalar type",
+      """
         |  5
         |""".stripMargin
-      ),
-      CycleTest(
-          "sequence at root",
-          """
+    ),
+    CycleTest(
+      "sequence at root",
+      """
         |  [
         |    4,
         |    "string"
         |  ]
         |""".stripMargin
-      )
+    )
   )
 
   val yamlCycles = Seq(
-      CycleTest(
-          "root object with seq and scalar types",
-          """
+    CycleTest(
+      "root object with seq and scalar types",
+      """
         |  int: 5
         |  string: some string
         |  float: 4.334
         |  boolean: false
         |  array:
         |    - other value""".stripMargin
-      ),
-      CycleTest("simple scalar type", "5"),
-      CycleTest(
-          "sequence at root",
-          """
+    ),
+    CycleTest("simple scalar type", "5"),
+    CycleTest(
+      "sequence at root",
+      """
         |  - string value
         |  -
         |    other: obj""".stripMargin
-      )
+    )
   )
 
   jsonCycles.foreach { case CycleTest(name, source) =>

@@ -11,7 +11,9 @@ import org.yaml.model.YSequence
 
 /** Arrays of values
   */
-class ArrayNode(override val fields: Fields, val annotations: Annotations) extends DataNode(annotations) with DescribedElement {
+class ArrayNode(override val fields: Fields, val annotations: Annotations)
+    extends DataNode(annotations)
+    with DescribedElement {
 
   def members: Seq[DataNode] = fields.field(ArrayNodeModel.Member)
 

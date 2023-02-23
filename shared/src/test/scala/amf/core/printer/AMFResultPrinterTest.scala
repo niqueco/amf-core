@@ -22,10 +22,10 @@ class AMFResultPrinterTest extends AsyncFunSuite with FileAssertionTest {
   private def buildResult(): AMFResult = {
     val unit = Document().withId("baseDoc")
     val results = List(
-        AMFValidationResult("aMessage1", SeverityLevels.VIOLATION, "a", None, "b", None, None, None),
-        AMFValidationResult("aMessage2", SeverityLevels.WARNING, "c", None, "d", None, None, None),
-        AMFValidationResult("aMessage3", SeverityLevels.INFO, "f", None, "g", None, None, None),
-        AMFValidationResult("aMessage4", SeverityLevels.WARNING, "h", None, "i", None, None, None)
+      AMFValidationResult("aMessage1", SeverityLevels.VIOLATION, "a", None, "b", None, None, None),
+      AMFValidationResult("aMessage2", SeverityLevels.WARNING, "c", None, "d", None, None, None),
+      AMFValidationResult("aMessage3", SeverityLevels.INFO, "f", None, "g", None, None, None),
+      AMFValidationResult("aMessage4", SeverityLevels.WARNING, "h", None, "i", None, None, None)
     )
     AMFResult(unit, results)
   }

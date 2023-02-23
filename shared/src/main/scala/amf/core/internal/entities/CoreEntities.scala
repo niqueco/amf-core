@@ -10,20 +10,20 @@ import amf.core.internal.metamodel.domain.{ExternalDomainElementModel, Recursive
 private[amf] object CoreEntities extends Entities {
 
   override protected val innerEntities: Seq[ModelDefaultBuilder] = Seq(
-      DocumentModel,
-      ModuleModel,
-      VariableValueModel,
-      RecursiveShapeModel,
-      PropertyShapeModel,
-      ShapeExtensionModel,
-      CustomDomainPropertyModel,
-      ExternalFragmentModel,
-      ExternalDomainElementModel,
-      DomainExtensionModel,
-      BaseUnitProcessingDataModel,
-      BaseUnitSourceInformationModel,
-      LocationInformationModel,
-      PropertyShapePathModel,
-      ShapeFederationMetadataModel
+    DocumentModel,
+    ModuleModel,
+    VariableValueModel,
+    RecursiveShapeModel,
+    PropertyShapeModel,
+    ShapeExtensionModel,
+    CustomDomainPropertyModel,
+    ExternalFragmentModel,
+    ExternalDomainElementModel,
+    DomainExtensionModel,
+    BaseUnitProcessingDataModel,
+    BaseUnitSourceInformationModel,
+    LocationInformationModel,
+    PropertyShapePathModel,
+    ShapeFederationMetadataModel
   )
 }

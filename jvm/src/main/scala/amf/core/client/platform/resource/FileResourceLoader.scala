@@ -33,9 +33,9 @@ case class FileResourceLoader(executionContext: ExecutionContext)
         val decoded = resource.urlDecoded
         try {
           Content(
-              new FileStream(decoded),
-              ensureFileAuthority(resource),
-              extension(resource).flatMap(mimeFromExtension)
+            new FileStream(decoded),
+            ensureFileAuthority(resource),
+            extension(resource).flatMap(mimeFromExtension)
           )
         } catch {
           case e: FileNotFoundException => throw FileNotFound(e)
