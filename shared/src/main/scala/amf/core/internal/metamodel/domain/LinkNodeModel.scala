@@ -18,8 +18,8 @@ object LinkNodeModel extends DomainElementModel with HasShapeFederationMetadataM
   override def modelInstance: LinkNode = LinkNode()
 
   override val doc: ModelDoc = ModelDoc(
-      ModelVocabularies.Data,
-      "LinkNode",
-      "Node that represents a dynamic link in a data structure"
+    ModelVocabularies.Data,
+    "LinkNode",
+    "Node that represents a dynamic link in a data structure"
   )
 }

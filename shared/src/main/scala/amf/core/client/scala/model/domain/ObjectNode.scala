@@ -89,12 +89,12 @@ class ObjectNode(override val fields: Fields, val annotations: Annotations)
           val value = v.value
             .asInstanceOf[DataNode]
             .replaceVariables(values, maybeTree.map(_.subtrees).getOrElse(Nil))(
-                if (
-                    decodedKey
-                      .endsWith("?") && maybeTree.isEmpty
-                ) // TODO review this logic
-                  (_: String) => Unit
-                else reportError
+              if (
+                decodedKey
+                  .endsWith("?") && maybeTree.isEmpty
+              ) // TODO review this logic
+                (_: String) => Unit
+              else reportError
             ) // if its an optional node, ignore the violation of the var not implement
           fields.removeField(field)
           addProperty(VariableReplacer.replaceVariablesInKey(decodedKey, values, reportError), value, v.annotations)
@@ -114,9 +114,9 @@ class ObjectNode(override val fields: Fields, val annotations: Annotations)
     override def modelInstance: ObjectNode = ObjectNode()
 
     override val doc: ModelDoc = ModelDoc(
-        ModelVocabularies.Data,
-        "ObjectNode",
-        "Node that represents a dynamic object with records data structure"
+      ModelVocabularies.Data,
+      "ObjectNode",
+      "Node that represents a dynamic object with records data structure"
     )
   }
 

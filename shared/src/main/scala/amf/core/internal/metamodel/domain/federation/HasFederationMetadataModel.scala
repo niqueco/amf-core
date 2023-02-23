@@ -11,13 +11,13 @@ trait HasFederationMetadataModel extends DomainElementModel {
 
   // Has to be a def due to initialization errors. Could receive Model class as arg but it isn't a problem for now and fix is trivial
   def FederationMetadata: Field = Field(
-      metadataModel,
-      Federation + "federationMetadata",
-      ModelDoc(
-          ModelVocabularies.Federation,
-          "federationMetadata",
-          "Metadata about how this DomainElement should be federated"
-      )
+    metadataModel,
+    Federation + "federationMetadata",
+    ModelDoc(
+      ModelVocabularies.Federation,
+      "federationMetadata",
+      "Metadata about how this DomainElement should be federated"
+    )
   )
 }
 

@@ -14,9 +14,9 @@ case class EntityModel(`type`: ValueType, properties: Map[ValueType, ValueType])
 
 class EntityContextBuilder() {
   def build(): EntityContext = new EntityContext(
-      entities
-        .map({ case (uri, list) => EntityModel(uri, list.map(f => f.value -> f.`type`.`type`.head).toMap) })
-        .toList
+    entities
+      .map({ case (uri, list) => EntityModel(uri, list.map(f => f.value -> f.`type`.`type`.head).toMap) })
+      .toList
   )
 
   val entities: mutable.Map[ValueType, Set[Field]] = mutable.Map()

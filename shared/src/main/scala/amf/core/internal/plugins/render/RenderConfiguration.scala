@@ -55,14 +55,14 @@ private[amf] case class DefaultRenderConfiguration(
 object DefaultRenderConfiguration {
   def apply(config: AMFGraphConfiguration): RenderConfiguration = {
     DefaultRenderConfiguration(
-        config.registry.getPluginsRegistry.renderPlugins,
-        config.registry.getPluginsRegistry.syntaxRenderPlugins,
-        config.options.renderOptions,
-        config.errorHandlerProvider.errorHandler(),
-        config.listeners,
-        config.registry.getEntitiesRegistry.extensionTypes,
-        config.registry.getNamespaceAliases,
-        config.registry
+      config.registry.getPluginsRegistry.renderPlugins,
+      config.registry.getPluginsRegistry.syntaxRenderPlugins,
+      config.options.renderOptions,
+      config.errorHandlerProvider.errorHandler(),
+      config.listeners,
+      config.registry.getEntitiesRegistry.extensionTypes,
+      config.registry.getNamespaceAliases,
+      config.registry
     )
   }
 }

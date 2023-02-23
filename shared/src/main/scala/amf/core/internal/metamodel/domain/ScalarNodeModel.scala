@@ -15,9 +15,9 @@ object ScalarNodeModel extends DomainElementModel with HasShapeFederationMetadat
 
   val DataType: Field =
     Field(
-        Iri,
-        Namespace.Shacl + "datatype",
-        ModelDoc(ModelVocabularies.Data, "dataType", "Data type of value for an scalar dynamic node")
+      Iri,
+      Namespace.Shacl + "datatype",
+      ModelDoc(ModelVocabularies.Data, "dataType", "Data type of value for an scalar dynamic node")
     )
 
   override def fields: List[Field]       = Value :: DataType :: Description :: DataNodeModel.fields
@@ -25,8 +25,8 @@ object ScalarNodeModel extends DomainElementModel with HasShapeFederationMetadat
   override def modelInstance: ScalarNode = ScalarNode()
 
   override val doc: ModelDoc = ModelDoc(
-      ModelVocabularies.Data,
-      "ScalarNode",
-      "Node that represents a dynamic scalar value data structure"
+    ModelVocabularies.Data,
+    "ScalarNode",
+    "Node that represents a dynamic scalar value data structure"
   )
 }

@@ -23,8 +23,8 @@ object DataNodeModel extends DomainElementModel with NameFieldSchema with HasSha
     throw new Exception("DataNode is an abstract class and it cannot be instantiated directly")
 
   override val doc: ModelDoc = ModelDoc(
-      ModelVocabularies.Data,
-      "DataNode",
-      "Base class for all data nodes parsed from the data structure"
+    ModelVocabularies.Data,
+    "DataNode",
+    "Base class for all data nodes parsed from the data structure"
   )
 }

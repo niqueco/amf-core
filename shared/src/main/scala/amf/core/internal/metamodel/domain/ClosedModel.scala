@@ -7,8 +7,8 @@ import amf.core.internal.metamodel.Type.Bool
 trait ClosedModel {
 
   val Closed: Field = Field(
-      Bool,
-      Shacl + "closed",
-      ModelDoc(ExternalModelVocabularies.Shacl, "closed", "Additional properties in the input node accepted constraint")
+    Bool,
+    Shacl + "closed",
+    ModelDoc(ExternalModelVocabularies.Shacl, "closed", "Additional properties in the input node accepted constraint")
   )
 }

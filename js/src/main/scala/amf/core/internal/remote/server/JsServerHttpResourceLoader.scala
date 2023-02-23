@@ -21,8 +21,8 @@ case class JsServerHttpResourceLoader() extends BaseHttpResourceLoader {
     if (resource.startsWith("https:")) {
       try {
         val req = Https.get(
-            resource,
-            handleResponse(resource, promise)
+          resource,
+          handleResponse(resource, promise)
         )
         req.on("error", handleError(promise))
       } catch {
@@ -33,8 +33,8 @@ case class JsServerHttpResourceLoader() extends BaseHttpResourceLoader {
     } else {
       try {
         val req = Http.get(
-            resource,
-            handleResponse(resource, promise)
+          resource,
+          handleResponse(resource, promise)
         )
         req.on("error", handleError(promise))
       } catch {

@@ -17,13 +17,13 @@ class CompilerRootUrlTest extends AsyncFunSuite with PlatformSecrets with Matche
 
   class CustomContentUrlResourceLoader(customUrl: String) extends ResourceLoader {
     override def fetch(resource: String): Future[Content] = Future.successful(
-        new Content(
-            """
+      new Content(
+        """
           |{
           |   "a": 5
           |}""".stripMargin,
-            customUrl
-        )
+        customUrl
+      )
     )
     override def accepts(resource: String): Boolean = true
   }

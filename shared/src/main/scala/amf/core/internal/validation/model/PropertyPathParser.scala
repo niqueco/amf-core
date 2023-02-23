@@ -16,8 +16,8 @@ object PropertyPathParser {
     if (path.startsWith("file://") || path.startsWith("http://") || path.startsWith("https://")) {
       PredicatePath(expander(path))
     } else if (
-        path.contains("/") || path.contains("|") || path.contains("^") || path.contains("*") || path
-          .contains("(") || path.contains(")")
+      path.contains("/") || path.contains("|") || path.contains("^") || path.contains("*") || path
+        .contains("(") || path.contains(")")
     ) {
       parse(path, expander)
     } else {
@@ -89,7 +89,7 @@ object PropertyPathParser {
               stack = SequencePath(expand(currentList, expander)) :: og :: rest
             case t =>
               throw new Exception(
-                  s"Property path parsing error '${path}' at position $i ')', unknown token in stack: ${t}"
+                s"Property path parsing error '${path}' at position $i ')', unknown token in stack: ${t}"
               )
           }
           current = PredicatePath()

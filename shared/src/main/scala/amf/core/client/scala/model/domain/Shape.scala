@@ -2,7 +2,11 @@ package amf.core.client.scala.model.domain
 
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model.domain.extensions.{PropertyShape, ShapeExtension}
-import amf.core.client.scala.model.domain.federation.{HasFederationMetadata, HasShapeFederationMetadata, ShapeFederationMetadata}
+import amf.core.client.scala.model.domain.federation.{
+  HasFederationMetadata,
+  HasShapeFederationMetadata,
+  ShapeFederationMetadata
+}
 import amf.core.client.scala.model.{BoolField, StrField}
 import amf.core.client.scala.traversal.ShapeTraversalRegistry
 import amf.core.internal.annotations.LexicalInformation
@@ -162,16 +166,16 @@ abstract class Shape
         case s: Shape if s.id == this.id => s
         case a: AmfArray =>
           AmfArray(
-              a.values.map {
-                case e: Shape if e.id != this.id =>
-                  traversal.runNested((t: ShapeTraversalRegistry) => {
-                    e.cloneShape(recursionErrorHandler, recursionBase, t)
-                  })
+            a.values.map {
+              case e: Shape if e.id != this.id =>
+                traversal.runNested((t: ShapeTraversalRegistry) => {
+                  e.cloneShape(recursionErrorHandler, recursionBase, t)
+                })
 //                e.cloneShape(recursionErrorHandler, recursionBase, traversed.push(prevBaseId),Some(prevBaseId))
-                case e: Shape if e.id == this.id => e
-                case o                           => o
-              },
-              a.annotations
+              case e: Shape if e.id == this.id => e
+              case o                           => o
+            },
+            a.annotations
           )
         case o => o
       }

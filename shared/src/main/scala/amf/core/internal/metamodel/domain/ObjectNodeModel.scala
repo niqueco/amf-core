@@ -14,9 +14,9 @@ trait ObjectNodeModel extends DomainElementModel with HasShapeFederationMetadata
   override def modelInstance: ObjectNode = ObjectNode()
 
   override val doc: ModelDoc = ModelDoc(
-      ModelVocabularies.Data,
-      "ObjectNode",
-      "Node that represents a dynamic object with records data structure"
+    ModelVocabularies.Data,
+    "ObjectNode",
+    "Node that represents a dynamic object with records data structure"
   )
 }
 

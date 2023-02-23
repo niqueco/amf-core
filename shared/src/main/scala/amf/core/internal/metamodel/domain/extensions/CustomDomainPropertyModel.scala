@@ -21,7 +21,11 @@ import amf.core.internal.metamodel.domain.templates.KeyField
   * Contrast this extension mechanism with the creation of a propertyTerm in a vocabulary, a more re-usable and generic
   * way of achieving the same functionality
   */
-object CustomDomainPropertyModel extends DomainElementModel with KeyField with DisplayNameField with DescribedElementModel {
+object CustomDomainPropertyModel
+    extends DomainElementModel
+    with KeyField
+    with DisplayNameField
+    with DescribedElementModel {
 
   /** The name of the extension
     */
@@ -64,7 +68,14 @@ object CustomDomainPropertyModel extends DomainElementModel with KeyField with D
   )
 
   override val fields: List[Field] =
-    List(Domain, Schema, Name, Description, SerializationOrder, Repeatable) ++ LinkableElementModel.fields ++ DomainElementModel.fields
+    List(
+      Domain,
+      Schema,
+      Name,
+      Description,
+      SerializationOrder,
+      Repeatable
+    ) ++ LinkableElementModel.fields ++ DomainElementModel.fields
 
   override val `type`: List[ValueType] = Document + "DomainProperty" :: Rdf + "Property" :: DomainElementModel.`type`
 

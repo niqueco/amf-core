@@ -1,6 +1,10 @@
 package amf.core.client.scala.model.domain
 
-import amf.core.client.scala.model.domain.federation.{HasFederationMetadata, HasShapeFederationMetadata, ShapeFederationMetadata}
+import amf.core.client.scala.model.domain.federation.{
+  HasFederationMetadata,
+  HasShapeFederationMetadata,
+  ShapeFederationMetadata
+}
 import amf.core.client.scala.model.domain.templates.Variable
 import amf.core.internal.metamodel.Field
 import amf.core.internal.metamodel.domain._

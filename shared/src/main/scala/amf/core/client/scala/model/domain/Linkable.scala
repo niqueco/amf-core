@@ -56,8 +56,8 @@ trait Linkable extends AmfObject with AdoptionDependantCalls { this: DomainEleme
   private[amf] def link[T](label: AmfScalar, annotations: Annotations, fieldAnn: Annotations): T = {
     val copied = linkCopy()
     val hash = buildLinkHash(
-        Option(label.value).map(_.toString).getOrElse(""),
-        annotations
+      Option(label.value).map(_.toString).getOrElse(""),
+      annotations
     ) // todo: label.value is sometimes null!
     copied
       .withId(s"${copied.id}/link-$hash")
@@ -130,19 +130,19 @@ trait Linkable extends AmfObject with AdoptionDependantCalls { this: DomainEleme
     refCtx match {
       case Some(ctx) =>
         val promise = DeclarationPromise(
-            resolve,
-            () =>
-              if (unresolvedSeverity == "warning") {
-                ctx.eh.warning(UnresolvedReferenceWarning, this, s"Unresolved reference '$refName'", astPos.get)
+          resolve,
+          () =>
+            if (unresolvedSeverity == "warning") {
+              ctx.eh.warning(UnresolvedReferenceWarning, this, s"Unresolved reference '$refName'", astPos.get)
 
-              } else
-                ctx.eh.violation(UnresolvedReference, this, s"Unresolved reference '$refName'", astPos.get)
+            } else
+              ctx.eh.violation(UnresolvedReference, this, s"Unresolved reference '$refName'", astPos.get)
         )
         (Seq(refName) ++ refAliases).foreach { ref =>
           ctx.futureDeclarations.futureRef(
-              id,
-              ref,
-              promise
+            id,
+            ref,
+            promise
           )
         }
       case _ => throw new Exception("Cannot create unresolved reference with missing parsing context")

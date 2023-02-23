@@ -23,8 +23,8 @@ class JsServerPlatform extends JsPlatform {
   }
 
   override def loaders()(implicit executionContext: ExecutionContext): Seq[ResourceLoader] = Seq(
-      InternalResourceLoaderAdapter(JsServerFileResourceLoader()),
-      InternalResourceLoaderAdapter(JsServerHttpResourceLoader())
+    InternalResourceLoaderAdapter(JsServerFileResourceLoader()),
+    InternalResourceLoaderAdapter(JsServerHttpResourceLoader())
   )
 
   /** Return temporary directory. */

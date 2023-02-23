@@ -9,8 +9,8 @@ import amf.core.client.scala.vocabulary.Namespace
   */
 trait OptionalField extends Obj {
   val Optional = Field(
-      Bool,
-      Namespace.ApiContract + "optional",
-      ModelDoc(ModelVocabularies.ApiContract, "optional", "Marks some information as optional")
+    Bool,
+    Namespace.ApiContract + "optional",
+    ModelDoc(ModelVocabularies.ApiContract, "optional", "Marks some information as optional")
   )
 }

@@ -18,8 +18,8 @@ object ArrayNodeModel extends DomainElementModel with HasShapeFederationMetadata
   override def modelInstance: ArrayNode = ArrayNode()
 
   override val doc: ModelDoc = ModelDoc(
-      ModelVocabularies.Data,
-      "ArrayNode",
-      "Node that represents a dynamic array data structure"
+    ModelVocabularies.Data,
+    "ArrayNode",
+    "Node that represents a dynamic array data structure"
   )
 }

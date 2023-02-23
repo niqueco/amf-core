@@ -23,7 +23,7 @@ case class VirtualElement() extends SerializableAnnotation with PerpetualAnnotat
 
 object VirtualElement extends AnnotationGraphLoader {
   override def unparse(annotatedValue: String, objects: Map[String, AmfElement]): Option[Annotation] = Some(
-      VirtualElement()
+    VirtualElement()
   )
 
   def name: String = "virtual-element"

@@ -39,10 +39,10 @@ object PayloadValidationPluginConverter {
             validationMode: ValidationMode
         ): AMFShapePayloadValidator = {
           val clientValidator = from.validator(
-              platform.wrap[ClientShape](shape),
-              mediaType,
-              new payload.ShapeValidationConfiguration(config),
-              validationMode
+            platform.wrap[ClientShape](shape),
+            mediaType,
+            new payload.ShapeValidationConfiguration(config),
+            validationMode
           )
           new AMFShapePayloadValidator {
             override def validate(payload: String): Future[AMFValidationReport] =

@@ -56,27 +56,27 @@ case class ErrorFallbackPayloadValidator(shape: Shape, mediaType: String, defaul
 
   private def createResult(payload: String) = {
     AMFValidationResult(
-        s"Unsupported validation for mediatype: $mediaType and shape ${shape.id}",
-        defaultSeverity,
-        "",
-        Some((Namespace.Document + "value").iri()),
-        computeSpecificationId,
-        None,
-        None,
-        null
+      s"Unsupported validation for mediatype: $mediaType and shape ${shape.id}",
+      defaultSeverity,
+      "",
+      Some((Namespace.Document + "value").iri()),
+      computeSpecificationId,
+      None,
+      None,
+      null
     )
   }
 
   private def createResult(fragment: PayloadFragment) = {
     AMFValidationResult(
-        s"Unsupported validation for mediatype: ${fragment.mediaType.value()} and shape ${shape.id}",
-        defaultSeverity,
-        fragment.encodes.id,
-        Some((Namespace.Document + "value").iri()),
-        computeSpecificationId,
-        fragment.encodes.position(),
-        fragment.encodes.location(),
-        null
+      s"Unsupported validation for mediatype: ${fragment.mediaType.value()} and shape ${shape.id}",
+      defaultSeverity,
+      fragment.encodes.id,
+      Some((Namespace.Document + "value").iri()),
+      computeSpecificationId,
+      fragment.encodes.position(),
+      fragment.encodes.location(),
+      null
     )
   }
   private def computeSpecificationId = {
