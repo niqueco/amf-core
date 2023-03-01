@@ -14,8 +14,8 @@ import amf.core.client.scala.validation.{AMFValidationReport, AMFValidationResul
 import amf.core.client.scala.vocabulary.Namespace
 import amf.core.internal.validation.CoreParserValidations.UnsupportedExampleMediaTypeErrorSpecification
 import amf.core.internal.validation.CorePayloadValidations.UnsupportedExampleMediaTypeWarningSpecification
-import amf.core.internal.validation.ValidationConfiguration
 
+import java.io.InputStream
 import scala.concurrent.{ExecutionContext, Future}
 
 private[amf] case class ErrorFallbackValidationPlugin(defaultSeverity: String = SeverityLevels.WARNING)
@@ -49,12 +49,13 @@ case class ErrorFallbackPayloadValidator(shape: Shape, mediaType: String, defaul
     Future.successful(AMFValidationReport("", ProfileName(""), Seq(results)))
   }
 
-  override def syncValidate(payload: String): AMFValidationReport = {
-    val results = createResult(payload)
-    AMFValidationReport("", ProfileName(""), Seq(results))
-  }
+  override def syncValidate(payload: String): AMFValidationReport = emptyResult
 
-  private def createResult(payload: String) = {
+  override def syncValidate(stream: InputStream): AMFValidationReport = emptyResult
+
+  private def emptyResult: AMFValidationReport = AMFValidationReport("", ProfileName(""), Seq(createResult))
+
+  private def createResult = {
     AMFValidationResult(
       s"Unsupported validation for mediatype: $mediaType and shape ${shape.id}",
       defaultSeverity,

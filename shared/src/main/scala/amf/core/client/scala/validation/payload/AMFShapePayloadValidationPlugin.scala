@@ -7,6 +7,7 @@ import amf.core.client.scala.model.domain.Shape
 import amf.core.client.scala.validation.{AMFValidationReport, AMFValidationResult}
 import amf.core.internal.plugins.AMFPlugin
 
+import java.io.InputStream
 import scala.concurrent.Future
 
 case class ValidatePayloadRequest(shape: Shape, mediaType: String, config: ShapeValidationConfiguration)
@@ -31,6 +32,7 @@ trait AMFShapePayloadValidator {
   def validate(payload: String): Future[AMFValidationReport]
   def validate(payloadFragment: PayloadFragment): Future[AMFValidationReport]
   def syncValidate(payload: String): AMFValidationReport
+  def syncValidate(stream: InputStream): AMFValidationReport
 }
 
 case class PayloadParsingResult(fragment: PayloadFragment, results: List[AMFValidationResult]) {

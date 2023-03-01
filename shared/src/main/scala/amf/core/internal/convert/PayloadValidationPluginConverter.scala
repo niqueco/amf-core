@@ -19,6 +19,7 @@ import amf.core.client.scala.validation.payload.{
 import amf.core.internal.convert.CoreClientConverters._
 import amf.core.client.platform.model.document.{PayloadFragment => ClientPayloadFragment}
 
+import java.io.InputStream
 import scala.concurrent.{ExecutionContext, Future}
 
 object PayloadValidationPluginConverter {
@@ -53,6 +54,9 @@ object PayloadValidationPluginConverter {
 
             override def syncValidate(payload: String): AMFValidationReport =
               ValidationReportMatcher.asInternal(clientValidator.syncValidate(payload))
+
+            override def syncValidate(stream: InputStream): AMFValidationReport =
+              ValidationReportMatcher.asInternal(clientValidator.syncValidate(stream))
           }
         }
 
@@ -84,6 +88,9 @@ object PayloadValidationPluginConverter {
 
             override def syncValidate(payload: String): ClientValidationReport =
               ValidationReportMatcher.asClient(validator.syncValidate(payload))
+
+            override def syncValidate(stream: InputStream): ClientValidationReport =
+              ValidationReportMatcher.asClient(validator.syncValidate(stream))
           }
         }
 
@@ -109,6 +116,9 @@ object PayloadValidatorConverter {
 
         override def syncValidate(payload: String): ClientValidationReport =
           ValidationReportMatcher.asClient(from.syncValidate(payload))
+
+        override def syncValidate(stream: InputStream): ClientValidationReport =
+          ValidationReportMatcher.asClient(from.syncValidate(stream))
       }
     }
 
@@ -123,6 +133,9 @@ object PayloadValidatorConverter {
 
         override def syncValidate(payload: String): AMFValidationReport =
           ValidationReportMatcher.asInternal(from.syncValidate(payload))
+
+        override def syncValidate(stream: InputStream): AMFValidationReport =
+          ValidationReportMatcher.asInternal(from.syncValidate(stream))
       }
     }
   }

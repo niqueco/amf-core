@@ -8,6 +8,7 @@ import amf.core.client.platform.validation.AMFValidationReport
 import amf.core.internal.convert.CoreClientConverters
 import amf.core.internal.convert.CoreClientConverters._
 
+import java.io.InputStream
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
@@ -34,6 +35,8 @@ trait JsPayloadValidator extends js.Object {
   def validate(payloadFragment: PayloadFragment): ClientFuture[AMFValidationReport] = js.native
 
   def syncValidate(payload: String): AMFValidationReport = js.native
+
+  def syncValidate(stream: InputStream): AMFValidationReport = js.native
 }
 
 @JSExportAll
@@ -64,6 +67,8 @@ object AMFPayloadValidationPluginConverter {
         validator.validate(payloadFragment)
 
       override def syncValidate(payload: String): AMFValidationReport = validator.syncValidate(payload)
+
+      override def syncValidate(stream: InputStream): AMFValidationReport = validator.syncValidate(stream)
     }
   }
 }
