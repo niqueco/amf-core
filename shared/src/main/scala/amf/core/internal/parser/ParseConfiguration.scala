@@ -47,12 +47,12 @@ case class LimitedParseConfig(eh: AMFErrorHandler, registry: AMFRegistry = AMFRe
 object ParseConfigOverride {
   def apply(errorHandler: AMFErrorHandler, parseConfig: ParseConfiguration): ParseConfigOverride = {
     new ParseConfigOverride(
-        errorHandler,
-        parseConfig.sortedRootParsePlugins,
-        parseConfig.sortedReferenceParsePlugins,
-        parseConfig.parsingOptions,
-        parseConfig.registryContext,
-        parseConfig.serializableAnnotationsFacade
+      errorHandler,
+      parseConfig.sortedRootParsePlugins,
+      parseConfig.sortedReferenceParsePlugins,
+      parseConfig.parsingOptions,
+      parseConfig.registryContext,
+      parseConfig.serializableAnnotationsFacade
     )
   }
 }

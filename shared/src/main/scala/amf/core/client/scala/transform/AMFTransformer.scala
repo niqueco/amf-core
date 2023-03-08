@@ -39,12 +39,12 @@ object AMFTransformer {
         runner.run(unit, pipeline)
       case None =>
         handler.violation(
-            TransformationValidation,
-            unit.id,
-            None,
-            s"Cannot find transformation pipeline with name $pipelineName",
-            unit.position(),
-            unit.location()
+          TransformationValidation,
+          unit.id,
+          None,
+          s"Cannot find transformation pipeline with name $pipelineName",
+          unit.position(),
+          unit.location()
         )
         unit
     }

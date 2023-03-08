@@ -69,14 +69,14 @@ class ContextTest extends AnyFunSuite with Matchers with PlatformSecrets {
     val c3ToParent = c2.update("relative-to-parent.raml")
 
     c3ToParent.history should contain theSameElementsInOrderAs List(
-        "http://localhost:3000/some/input.yaml",
-        "http://localhost:3000/some/intermediate/inter.raml",
-        "http://localhost:3000/some/intermediate/relative-to-parent.raml"
+      "http://localhost:3000/some/input.yaml",
+      "http://localhost:3000/some/intermediate/inter.raml",
+      "http://localhost:3000/some/intermediate/relative-to-parent.raml"
     )
     c3ToRoot.history should contain theSameElementsInOrderAs List(
-        "http://localhost:3000/some/input.yaml",
-        "http://localhost:3000/some/intermediate/inter.raml",
-        "http://localhost:3000/some/relative-to-root.raml"
+      "http://localhost:3000/some/input.yaml",
+      "http://localhost:3000/some/intermediate/inter.raml",
+      "http://localhost:3000/some/relative-to-root.raml"
     )
   }
 

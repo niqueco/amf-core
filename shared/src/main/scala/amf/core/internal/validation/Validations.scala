@@ -12,11 +12,11 @@ trait Validations {
       oasMessage: Option[String] = None
   ): ValidationSpecification =
     ValidationSpecification(
-        name = (namespace + id).iri(),
-        message = message,
-        ramlMessage = ramlMessage,
-        oasMessage = oasMessage,
-        targetInstance = Set(specification)
+      name = (namespace + id).iri(),
+      message = message,
+      ramlMessage = ramlMessage,
+      oasMessage = oasMessage,
+      targetInstance = Set(specification)
     )
 
   protected def all(lvl: String): Map[ProfileName, String] =

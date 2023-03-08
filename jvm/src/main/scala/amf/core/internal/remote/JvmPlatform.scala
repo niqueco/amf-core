@@ -19,8 +19,8 @@ class JvmPlatform extends Platform {
   /** Platform out of the box [ResourceLoader]s */
   override def loaders()(implicit executionContext: ExecutionContext): Seq[ResourceLoader] = {
     Seq(
-        InternalResourceLoaderAdapter(FileResourceLoader(executionContext)),
-        InternalResourceLoaderAdapter(HttpResourceLoader(executionContext))
+      InternalResourceLoaderAdapter(FileResourceLoader(executionContext)),
+      InternalResourceLoaderAdapter(HttpResourceLoader(executionContext))
     )
   }
 

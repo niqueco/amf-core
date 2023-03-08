@@ -131,13 +131,13 @@ class GraphEmitterContext(
   def emitContext[T](b: Entry[T]): Unit = {
     if (shouldCompact)
       b.entry(
-          JsonLdKeywords.Context,
-          _.obj { b =>
-            b.entry(JsonLdKeywords.Base, base)
-            prefixes.foreach { case (p, v) =>
-              b.entry(p, v)
-            }
+        JsonLdKeywords.Context,
+        _.obj { b =>
+          b.entry(JsonLdKeywords.Base, base)
+          prefixes.foreach { case (p, v) =>
+            b.entry(p, v)
           }
+        }
       )
   }
 }

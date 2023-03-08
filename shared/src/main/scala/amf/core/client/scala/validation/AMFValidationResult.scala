@@ -127,14 +127,14 @@ object AMFValidationResult {
       lexical: LexicalInformation
   ): AMFValidationResult = {
     AMFValidationResult(
-        message = validation.message.getOrElse(""),
-        level = validation.severity,
-        targetNode = model,
-        targetProperty = Option(validation.path),
-        validation.sourceShape,
-        position = Some(lexical),
-        location = location,
-        source = validation
+      message = validation.message.getOrElse(""),
+      level = validation.severity,
+      targetNode = model,
+      targetProperty = Option(validation.path),
+      validation.sourceShape,
+      position = Some(lexical),
+      location = location,
+      source = validation
     )
   }
 
@@ -147,41 +147,41 @@ object AMFValidationResult {
     model.findById(validation.focusNode) match {
       case None if validation.focusNode == model.id =>
         AMFValidationResult(
-            message = message,
-            level = level,
-            targetNode = model.id,
-            targetProperty = Option(validation.path),
-            validation.sourceShape,
-            position = Some(LexicalInformation.apply(PositionRange.NONE)),
-            location = model.location(),
-            source = validation
+          message = message,
+          level = level,
+          targetNode = model.id,
+          targetProperty = Option(validation.path),
+          validation.sourceShape,
+          position = Some(LexicalInformation.apply(PositionRange.NONE)),
+          location = model.location(),
+          source = validation
         )
       case None => throw new Exception(s"Cannot find node with validation error ${validation.focusNode}")
       case Some(node) =>
         val (pos, location) = findPositionAndLocation(node, validation)
         AMFValidationResult(
-            message = message,
-            level = level,
-            targetNode = node.id,
-            targetProperty = Option(validation.path),
-            validation.sourceShape,
-            position = validation.position.orElse(pos),
-            location = validation.location.orElse(location),
-            source = validation
+          message = message,
+          level = level,
+          targetNode = node.id,
+          targetProperty = Option(validation.path),
+          validation.sourceShape,
+          position = validation.position.orElse(pos),
+          location = validation.location.orElse(location),
+          source = validation
         )
     }
   }
 
   def withShapeId(shapeId: String, validation: AMFValidationResult): AMFValidationResult =
     AMFValidationResult(
-        validation.message,
-        validation.severityLevel,
-        validation.targetNode,
-        validation.targetProperty,
-        shapeId,
-        validation.position,
-        validation.location,
-        validation.source
+      validation.message,
+      validation.severityLevel,
+      validation.targetNode,
+      validation.targetProperty,
+      shapeId,
+      validation.position,
+      validation.location,
+      validation.source
     )
 
   private def findPositionAndLocation(

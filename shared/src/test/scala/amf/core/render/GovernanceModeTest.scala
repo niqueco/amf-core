@@ -38,11 +38,11 @@ class GovernanceModeTest extends AsyncFunSuite with FileAssertionTest {
 
     for {
       rendered <- Future.successful(
-          AMFGraphConfiguration
-            .predefined()
-            .withRenderOptions(RenderOptions().withPrettyPrint.withGovernanceMode)
-            .baseUnitClient()
-            .render(documentWithNodeWithAnnotations, AMF.mediaType)
+        AMFGraphConfiguration
+          .predefined()
+          .withRenderOptions(RenderOptions().withPrettyPrint.withGovernanceMode)
+          .baseUnitClient()
+          .render(documentWithNodeWithAnnotations, AMF.mediaType)
       )
       file   <- writeTemporaryFile(golden)(rendered)
       result <- assertDifferences(file, golden)
@@ -59,11 +59,11 @@ class GovernanceModeTest extends AsyncFunSuite with FileAssertionTest {
 
     for {
       rendered <- Future.successful(
-          AMFGraphConfiguration
-            .predefined()
-            .withRenderOptions(RenderOptions().withPrettyPrint.withGovernanceMode.withoutFlattenedJsonLd)
-            .baseUnitClient()
-            .render(documentWithNodeWithAnnotations, AMF.mediaType)
+        AMFGraphConfiguration
+          .predefined()
+          .withRenderOptions(RenderOptions().withPrettyPrint.withGovernanceMode.withoutFlattenedJsonLd)
+          .baseUnitClient()
+          .render(documentWithNodeWithAnnotations, AMF.mediaType)
       )
       file   <- writeTemporaryFile(golden)(rendered)
       result <- assertDifferences(file, golden)

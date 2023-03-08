@@ -12,13 +12,13 @@ object RenderSideValidations extends Validations {
   override val namespace: Namespace  = AmfRender
 
   val RenderValidation = validation(
-      "render-validation",
-      "Default render validation"
+    "render-validation",
+    "Default render validation"
   )
 
   val UnknownVendor = validation(
-      "unknown-spec",
-      "Unknown spec provided"
+    "unknown-spec",
+    "Unknown spec provided"
   )
 
   override val levels: Map[String, Map[ProfileName, String]] = Map()

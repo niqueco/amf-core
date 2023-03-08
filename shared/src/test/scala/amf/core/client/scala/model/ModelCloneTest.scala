@@ -55,7 +55,7 @@ class ModelCloneTest extends AnyFunSuite with ElementsFixture with Matchers {
       .allProperties()
       .head should be(cloned)
     cloned.allProperties().head.asInstanceOf[ArrayNode].members.head.asInstanceOf[ObjectNode].id should be(
-        recursiveObj.allProperties().head.asInstanceOf[ArrayNode].members.head.asInstanceOf[ObjectNode].id
+      recursiveObj.allProperties().head.asInstanceOf[ArrayNode].members.head.asInstanceOf[ObjectNode].id
     )
     succeed
   }
@@ -71,8 +71,8 @@ class ModelCloneTest extends AnyFunSuite with ElementsFixture with Matchers {
     val localNode = ObjectNode()
       .withId(objectNode.id)
       .addProperty(
-          "localProp",
-          ScalarNode().withId("amf://localId").withDataType(XsdTypes.xsdString.iri()).withValue("aValue")
+        "localProp",
+        ScalarNode().withId("amf://localId").withDataType(XsdTypes.xsdString.iri()).withValue("aValue")
       )
     val doc              = Document().withId("amf://localDoc").withDeclares(Seq(objectNode, localNode))
     val cloned: Document = doc.cloneUnit().asInstanceOf[Document]

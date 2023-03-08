@@ -24,16 +24,19 @@ class SYamlRefContainer(override val linkType: ReferenceKind, val node: YPart, o
             val range = node.location.range
             range
               .copy(
-                  end = range.end.copy(line = node.location.range.lineFrom + lines.indexOf(line),
-                                       column = line.indexOf('#') - 1))
+                end = range.end
+                  .copy(line = node.location.range.lineFrom + lines.indexOf(line), column = line.indexOf('#') - 1)
+              )
           case _ => node.location.range
         }
       } else {
         val range = getRefValue.location.range
         range.copy(end = range.end.copy(column = node.location.range.columnTo - fragmentLenght))
       }
-    PositionRange((inputRange.lineFrom, inputRange.columnFrom + markSize),
-                  (inputRange.lineTo, inputRange.columnTo - markSize))
+    PositionRange(
+      (inputRange.lineFrom, inputRange.columnFrom + markSize),
+      (inputRange.lineTo, inputRange.columnTo - markSize)
+    )
   }
 
   private def getRefValue: YPart = node match {

@@ -55,12 +55,12 @@ case class DataNodeEmitter(
 
   private def raiseRenderViolation(emitter: Emitter): Unit = {
     eh.violation(
-        RenderValidation,
-        dataNode.id,
-        None,
-        s"Unsupported seq of emitter type in data node emitters $emitter",
-        dataNode.position(),
-        dataNode.location()
+      RenderValidation,
+      dataNode.id,
+      None,
+      s"Unsupported seq of emitter type in data node emitters $emitter",
+      dataNode.position(),
+      dataNode.location()
     )
   }
 
@@ -80,11 +80,11 @@ case class DataNodeEmitter(
       .map { f =>
         val value = objectNode.fields.getValue(f)
         DataPropertyEmitter(
-            f.value.name.urlComponentDecoded,
-            value.value.asInstanceOf[DataNode],
-            ordering,
-            referencesCollector,
-            value.annotations
+          f.value.name.urlComponentDecoded,
+          value.value.asInstanceOf[DataNode],
+          ordering,
+          referencesCollector,
+          value.annotations
         )(eh, nodeRefIds)
       }
       .toSeq
@@ -156,9 +156,9 @@ private[datanode] case class DataPropertyEmitter(
   override def emit(b: EntryBuilder): Unit = {
     val keyAnnotations = getAstFrom(propertyAnnotations).getOrElse(propertyAnnotations)
     b.entry(
-        YNode(YScalar.withLocation(key.urlComponentDecoded, YType.Str, keyAnnotations.sourceLocation), YType.Str),
-        // In the current implementation there can only be one value, we are NOT flattening arrays
-        DataNodeEmitter(value, ordering, referencesCollector).emit(_)
+      YNode(YScalar.withLocation(key.urlComponentDecoded, YType.Str, keyAnnotations.sourceLocation), YType.Str),
+      // In the current implementation there can only be one value, we are NOT flattening arrays
+      DataNodeEmitter(value, ordering, referencesCollector).emit(_)
     )
   }
 

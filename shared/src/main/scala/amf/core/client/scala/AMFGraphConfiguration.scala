@@ -32,11 +32,11 @@ object AMFGraphConfiguration {
 
   def empty(): AMFGraphConfiguration = {
     new AMFGraphConfiguration(
-        AMFResolvers.predefined(),
-        DefaultErrorHandlerProvider,
-        AMFRegistry.empty,
-        Set.empty,
-        AMFOptions.default()
+      AMFResolvers.predefined(),
+      DefaultErrorHandlerProvider,
+      AMFRegistry.empty,
+      Set.empty,
+      AMFOptions.default()
     )
   }
 
@@ -49,14 +49,15 @@ object AMFGraphConfiguration {
   def predefined(): AMFGraphConfiguration = {
     CoreRegister.register() // TODO ARM remove when APIMF-3000 is done
     new AMFGraphConfiguration(
-        AMFResolvers.predefined(),
-        DefaultErrorHandlerProvider,
-        AMFRegistry.empty
-          .withEntities(CoreEntities.entities ++ DataNodeEntities.entities)
-          .withAnnotations(CoreSerializableAnnotations.annotations),
-        Set.empty,
-        AMFOptions.default()
-    ).withPlugins(List(AMFGraphParsePlugin(), AMFGraphRenderPlugin, SyamlSyntaxParsePlugin, SyamlSyntaxRenderPlugin))
+      AMFResolvers.predefined(),
+      DefaultErrorHandlerProvider,
+      AMFRegistry.empty
+        .withEntities(CoreEntities.entities ++ DataNodeEntities.entities)
+        .withAnnotations(CoreSerializableAnnotations.annotations),
+      Set.empty,
+      AMFOptions.default()
+    ).withRootParsePlugin(AMFGraphParsePlugin())
+      .withPlugins(List(AMFGraphRenderPlugin, SyamlSyntaxParsePlugin, SyamlSyntaxRenderPlugin))
       .withTransformationPipeline(BasicTransformationPipeline())
   }
 

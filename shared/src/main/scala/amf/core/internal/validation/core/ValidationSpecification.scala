@@ -146,9 +146,9 @@ case class ValidationSpecification(
 
   def withTargets(other: ValidationSpecification): ValidationSpecification =
     copy(
-        targetInstance = (this.targetInstance ++ other.targetInstance),
-        targetClass = (this.targetClass ++ other.targetClass),
-        targetObject = (this.targetObject ++ other.targetObject)
+      targetInstance = (this.targetInstance ++ other.targetInstance),
+      targetClass = (this.targetClass ++ other.targetClass),
+      targetObject = (this.targetObject ++ other.targetObject)
     )
 
   /** Add a Target instance */
@@ -172,15 +172,15 @@ object ShaclSeverityUris {
   private val SHACL_INFO: String      = Namespace.defaultAliases.expand("sh:Info").iri()
 
   private lazy val shaclSeverities = Map(
-      VIOLATION              -> SHACL_VIOLATION,
-      SeverityLevels.WARNING -> SHACL_WARNING,
-      SeverityLevels.INFO    -> SHACL_INFO
+    VIOLATION              -> SHACL_VIOLATION,
+    SeverityLevels.WARNING -> SHACL_WARNING,
+    SeverityLevels.INFO    -> SHACL_INFO
   )
 
   private lazy val shaclToAmf = Map(
-      SHACL_VIOLATION -> VIOLATION,
-      SHACL_WARNING   -> SeverityLevels.WARNING,
-      SHACL_INFO      -> SeverityLevels.INFO
+    SHACL_VIOLATION -> VIOLATION,
+    SHACL_WARNING   -> SeverityLevels.WARNING,
+    SHACL_INFO      -> SeverityLevels.INFO
   )
 
   def amfToShaclSeverity(severity: String): String = shaclSeverities.getOrElse(severity, SHACL_VIOLATION)

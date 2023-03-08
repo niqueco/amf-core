@@ -7,9 +7,9 @@ import amf.core.internal.metamodel.domain._
 private[amf] object DataNodeEntities extends Entities {
 
   override protected val innerEntities: Seq[ModelDefaultBuilder] = Seq(
-      ObjectNodeModel,
-      ScalarNodeModel,
-      ArrayNodeModel,
-      LinkNodeModel
+    ObjectNodeModel,
+    ScalarNodeModel,
+    ArrayNodeModel,
+    LinkNodeModel
   )
 }

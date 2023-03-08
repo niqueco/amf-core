@@ -90,12 +90,12 @@ trait AMFErrorHandler {
       annotations: Annotations
   ): Unit = {
     violation(
-        specification,
-        node,
-        None,
-        message,
-        annotations.find(classOf[LexicalInformation]),
-        annotations.find(classOf[AmfSourceLocation]).map(_.location)
+      specification,
+      node,
+      None,
+      message,
+      annotations.find(classOf[LexicalInformation]),
+      annotations.find(classOf[AmfSourceLocation]).map(_.location)
     )
   }
 
@@ -106,12 +106,12 @@ trait AMFErrorHandler {
       annotations: Annotations
   ): Unit = {
     violation(
-        specification,
-        node,
-        None,
-        message,
-        annotations.find(classOf[LexicalInformation]),
-        annotations.find(classOf[AmfSourceLocation]).map(_.location)
+      specification,
+      node,
+      None,
+      message,
+      annotations.find(classOf[LexicalInformation]),
+      annotations.find(classOf[AmfSourceLocation]).map(_.location)
     )
   }
 
@@ -216,12 +216,12 @@ trait AMFErrorHandler {
   /** Report constraint failure of severity warning. */
   def warning(specification: ValidationSpecification, node: String, message: String, annotations: Annotations): Unit =
     warning(
-        specification,
-        node,
-        None,
-        message,
-        annotations.find(classOf[LexicalInformation]),
-        annotations.find(classOf[AmfSourceLocation]).map(_.location)
+      specification,
+      node,
+      None,
+      message,
+      annotations.find(classOf[LexicalInformation]),
+      annotations.find(classOf[AmfSourceLocation]).map(_.location)
     )
 
   private def lexical(loc: SourceLocation): Option[LexicalInformation] = {

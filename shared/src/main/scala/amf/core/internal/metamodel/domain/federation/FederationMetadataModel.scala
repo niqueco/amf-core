@@ -54,7 +54,8 @@ trait FederationMetadataModel extends DomainElementModel {
 
   override val `type`: List[ValueType] = Federation + "FederationMetadata" :: DomainElementModel.`type`
 
-  override val fields: List[Field] = Name :: Tags :: Shareable :: Inaccessible :: OverrideFrom :: DomainElementModel.fields
+  override val fields: List[Field] =
+    Name :: Tags :: Shareable :: Inaccessible :: OverrideFrom :: DomainElementModel.fields
 
   override val doc: ModelDoc = ModelDoc(
     ModelVocabularies.Federation,
@@ -66,7 +67,3 @@ trait FederationMetadataModel extends DomainElementModel {
 object FederationMetadataModel extends FederationMetadataModel {
   override def modelInstance: FederationMetadata = throw new Exception("FederationMetadataModel is an abstract class")
 }
-
-
-
-

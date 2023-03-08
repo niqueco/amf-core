@@ -58,11 +58,11 @@ case class SeverityMapping private (
 
   def concat(mapping: SeverityMapping): SeverityMapping = {
     copy(
-        violation ++ mapping.violation,
-        warning ++ mapping.warning,
-        info ++ mapping.info,
-        disabled ++ mapping.disabled,
-        default
+      violation ++ mapping.violation,
+      warning ++ mapping.warning,
+      info ++ mapping.info,
+      disabled ++ mapping.disabled,
+      default
     )
   }
 }

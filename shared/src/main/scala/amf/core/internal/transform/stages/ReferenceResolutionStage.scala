@@ -54,8 +54,8 @@ class ReferenceResolutionStage(keepEditingInfo: Boolean) extends TransformationS
       this.modelResolver = Some(new ModelReferenceResolver(model))
       model
         .transform(
-            LinkSelector || LinkNodeSelector,
-            (element: DomainElement, isCycle: Boolean) => transformation(element, isCycle, configuration)
+          LinkSelector || LinkNodeSelector,
+          (element: DomainElement, isCycle: Boolean) => transformation(element, isCycle, configuration)
         )
         .asInstanceOf[T]
     }
@@ -69,11 +69,11 @@ class ReferenceResolutionStage(keepEditingInfo: Boolean) extends TransformationS
 
     override def transformer: ElementStageTransformer[DomainElement] =
       new ReferenceResolution(
-          cache = cache,
-          keepEditingInfo = keepEditingInfo,
-          modelResolver = modelResolver,
-          errorHandler = errorHandler,
-          customDomainElementTransformation = customDomainElementTransformation
+        cache = cache,
+        keepEditingInfo = keepEditingInfo,
+        modelResolver = modelResolver,
+        errorHandler = errorHandler,
+        customDomainElementTransformation = customDomainElementTransformation
       )
   }
 }

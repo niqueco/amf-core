@@ -50,9 +50,9 @@ package object BaseEmitters {
   case class ScalarEmitter(v: AmfScalar, tag: YType = YType.Str) extends PartEmitter {
     override def emit(b: PartBuilder): Unit =
       sourceOr(
-          v.annotations, {
-            b += YNode(YScalar(v.value), tag)
-          }
+        v.annotations, {
+          b += YNode(YScalar(v.value), tag)
+        }
       )
 
     override def position(): Position = pos(v.annotations)
@@ -70,11 +70,11 @@ package object BaseEmitters {
   ) extends PartEmitter {
     override def emit(b: PartBuilder): Unit = {
       sourceOr(
-          annotations, {
-            val node = YNode(YScalar.withLocation(value, tag, annotations.sourceLocation), tag)
-            annotations.find(classOf[ReferenceId]).map(refId => nodeRefIds.put(node, refId.url))
-            b += node
-          }
+        annotations, {
+          val node = YNode(YScalar.withLocation(value, tag, annotations.sourceLocation), tag)
+          annotations.find(classOf[ReferenceId]).map(refId => nodeRefIds.put(node, refId.url))
+          b += node
+        }
       )
 
     }
@@ -85,12 +85,12 @@ package object BaseEmitters {
   case class LinkScalaEmitter(alias: String, annotations: Annotations) extends PartEmitter {
     override def emit(b: PartBuilder): Unit =
       sourceOr(
-          annotations, {
-            b += YNode(
-                YScalar.withLocation(alias, YType.Include, annotations.sourceLocation),
-                YType.Include
-            ) // YNode(YScalar(alias), YType.Include)
-          }
+        annotations, {
+          b += YNode(
+            YScalar.withLocation(alias, YType.Include, annotations.sourceLocation),
+            YType.Include
+          ) // YNode(YScalar(alias), YType.Include)
+        }
       )
 
     override def position(): Position = pos(annotations)
@@ -128,8 +128,8 @@ package object BaseEmitters {
       }
 
       b.entry(
-          key,
-          YNode(YScalar(value), finalTag)
+        key,
+        YNode(YScalar(value), finalTag)
       )
     }
 
@@ -161,8 +161,8 @@ package object BaseEmitters {
 
   object RawValueEmitter {
     def apply(key: String, f: Field, value: Any, annotations: Annotations = Annotations()) = ValueEmitter(
-        key,
-        FieldEntry(f, Value(AmfScalar(value, Annotations()), annotations))
+      key,
+      FieldEntry(f, Value(AmfScalar(value, Annotations()), annotations))
     )
   }
 
@@ -180,8 +180,8 @@ package object BaseEmitters {
 
     override def emit(b: EntryBuilder): Unit = {
       b.entry(
-          key,
-          raw(_, value, tag)
+        key,
+        raw(_, value, tag)
       )
     }
   }
@@ -234,8 +234,8 @@ package object BaseEmitters {
 
     override def emit(b: EntryBuilder): Unit = {
       sourceOr(
-          f.value,
-          emitSingle(b)
+        f.value,
+        emitSingle(b)
       )
     }
 
@@ -255,25 +255,25 @@ package object BaseEmitters {
   ) extends EntryEmitter {
 
     override def emit(b: EntryBuilder): Unit = sourceOr(
-        f.value,
-        emitValues(b)
+      f.value,
+      emitValues(b)
     )
 
     private def emitValues(b: EntryBuilder): Unit = {
       b.entry(
-          key,
-          b => {
-            val result = mutable.ListBuffer[PartEmitter]()
+        key,
+        b => {
+          val result = mutable.ListBuffer[PartEmitter]()
 
-            f.array.scalars
-              .foreach(v => {
-                result += ScalarEmitter(v, valuesTag)
-              })
-
-            b.list(b => {
-              traverse(ordering.sorted(result), b)
+          f.array.scalars
+            .foreach(v => {
+              result += ScalarEmitter(v, valuesTag)
             })
-          }
+
+          b.list(b => {
+            traverse(ordering.sorted(result), b)
+          })
+        }
       )
     }
 

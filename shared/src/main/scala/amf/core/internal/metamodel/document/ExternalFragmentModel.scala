@@ -18,8 +18,8 @@ object ExternalFragmentModel extends FragmentModel {
   override def modelInstance: AmfObject = ExternalFragment()
 
   override val doc: ModelDoc = ModelDoc(
-      ModelVocabularies.AmlDoc,
-      "ExternalFragment",
-      "Fragment encoding an external entity"
+    ModelVocabularies.AmlDoc,
+    "ExternalFragment",
+    "Fragment encoding an external entity"
   )
 }

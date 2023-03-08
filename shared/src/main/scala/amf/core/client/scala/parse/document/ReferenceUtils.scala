@@ -14,10 +14,11 @@ trait RefContainer {
   def reduceToLocation(): PositionRange
 }
 
-class ASTRefContainer(override val linkType: ReferenceKind,
-                      val pos: SourceLocation,
-                      override val uriFragment: Option[String])
-    extends RefContainer {
+class ASTRefContainer(
+    override val linkType: ReferenceKind,
+    val pos: SourceLocation,
+    override val uriFragment: Option[String]
+) extends RefContainer {
   override def reduceToLocation(): PositionRange =
     PositionRange((pos.lineFrom, pos.columnFrom), (pos.lineTo, pos.columnTo))
 }

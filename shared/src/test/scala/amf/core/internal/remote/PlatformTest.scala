@@ -29,7 +29,7 @@ class PlatformTest extends AsyncFunSuite with Matchers with ListAssertions with 
                      |d: !include includes/include2.yaml""".stripMargin
 
         content.sourceName.replace(platform.fs.separatorChar.toString, "/") should be(
-            "shared/src/test/resources/input.yaml"
+          "shared/src/test/resources/input.yaml"
         )
     }
   }
@@ -44,8 +44,8 @@ class PlatformTest extends AsyncFunSuite with Matchers with ListAssertions with 
         val content = stream.toString
 
         assert(
-            content equals
-              """|a: 1
+          content equals
+            """|a: 1
                  |b: !include http://amf.us-2.evennode.com/include1.yaml/4000
                  |c:
                  |  - 2

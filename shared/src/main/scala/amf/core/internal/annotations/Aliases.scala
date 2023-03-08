@@ -47,17 +47,17 @@ object Aliases extends AnnotationGraphLoader {
 
   override def unparse(annotatedValue: String, objects: Map[String, AmfElement]): Option[Annotation] =
     Some(
-        Aliases(
-            annotatedValue
-              .split(",")
-              .map(_.split("->") match {
-                case Array(alias, urls) =>
-                  urls.split("::") match {
-                    case Array(id, fullUrl, relativeUrl) =>
-                      alias -> ReferencedInfo(id, fullUrl, relativeUrl)
-                  }
-              })
-              .toSet
-        )
+      Aliases(
+        annotatedValue
+          .split(",")
+          .map(_.split("->") match {
+            case Array(alias, urls) =>
+              urls.split("::") match {
+                case Array(id, fullUrl, relativeUrl) =>
+                  alias -> ReferencedInfo(id, fullUrl, relativeUrl)
+              }
+          })
+          .toSet
+      )
     )
 }

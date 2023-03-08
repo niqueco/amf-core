@@ -15,9 +15,9 @@ class RegistryContextTest extends AnyFunSuite with Matchers {
 
   test("Test types without blocklist") {
     val ctx = RegistryContext(
-        AMFRegistry.empty
-          .withEntities(CoreEntities.entities ++ DataNodeEntities.entities)
-          .withAnnotations(CoreSerializableAnnotations.annotations)
+      AMFRegistry.empty
+        .withEntities(CoreEntities.entities ++ DataNodeEntities.entities)
+        .withAnnotations(CoreSerializableAnnotations.annotations)
     )
 
     CoreEntities.entities.values.foreach { `type` =>
@@ -33,9 +33,9 @@ class RegistryContextTest extends AnyFunSuite with Matchers {
 
   test("Test types without Core") {
     val ctx = RegistryContext(
-        AMFRegistry.empty
-          .withEntities(DataNodeEntities.entities)
-          .withAnnotations(CoreSerializableAnnotations.annotations)
+      AMFRegistry.empty
+        .withEntities(DataNodeEntities.entities)
+        .withAnnotations(CoreSerializableAnnotations.annotations)
     )
 
     CoreEntities.entities.values.foreach { `type` =>

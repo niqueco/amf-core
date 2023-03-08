@@ -150,6 +150,5 @@ trait Shape extends DomainElement with Linkable with NamedDomainElement {
     this
   }
 
-
   def hasExplicitName: Boolean = _internal.hasExplicitName
 }

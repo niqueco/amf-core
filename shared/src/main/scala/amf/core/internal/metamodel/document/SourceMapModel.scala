@@ -14,9 +14,9 @@ import amf.core.client.scala.vocabulary.ValueType
 object SourceMapModel extends Obj {
 
   val Element: Field = Field(
-      Str,
-      SourceMaps + "element",
-      ModelDoc(ModelVocabularies.AmlDoc, "element", "Label indicating the type of source map information")
+    Str,
+    SourceMaps + "element",
+    ModelDoc(ModelVocabularies.AmlDoc, "element", "Label indicating the type of source map information")
   )
 
   val Value: Field =
@@ -27,8 +27,8 @@ object SourceMapModel extends Obj {
   override val `type`: List[ValueType] = List(SourceMaps + "SourceMap")
 
   override val doc: ModelDoc = ModelDoc(
-      ModelVocabularies.AmlDoc,
-      "SourceMap",
-      "SourceMaps include tags with syntax specific information obtained when parsing a particular specification syntax like RAML or OpenAPI.\nIt can be used to re-generate the document from the RDF model with a similar syntax"
+    ModelVocabularies.AmlDoc,
+    "SourceMap",
+    "SourceMaps include tags with syntax specific information obtained when parsing a particular specification syntax like RAML or OpenAPI.\nIt can be used to re-generate the document from the RDF model with a similar syntax"
   )
 }
