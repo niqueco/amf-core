@@ -19,9 +19,10 @@ class UrlShortenerStage() extends TransformationStep {
       errorHandler: AMFErrorHandler,
       configuration: AMFGraphConfiguration
   ): BaseUnit = {
-    val ids: Set[String] = Set(model.id) ++ obtainNestedReferenceIds(model)
-    shorten(model, ids)
-    model.withId(base)
+//    val ids: Set[String] = Set(model.id) ++ obtainNestedReferenceIds(model)
+//    shorten(model, ids)
+//    model.withId(base)
+    model
   }
 
   private def obtainNestedReferenceIds[T <: BaseUnit](model: T): Seq[String] = {
