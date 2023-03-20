@@ -8,7 +8,7 @@ def PRODUCT_NAME = "amf-core"
 def lastStage = ""
 def color = '#FF8C00'
 def headerFlavour = "WARNING"
-@Field AMF_AML_JOB = "application/AMF/amf-aml/develop"
+@Field AMF_AML_JOB = "application/AMF/amf-aml/shape-normalization-publish"
 
 pipeline {
     options {
@@ -62,6 +62,7 @@ pipeline {
                 anyOf {
                     branch 'master'
                     branch 'develop'
+		            branch 'shape-normalization-publish'
                 }
             }
             steps {
@@ -74,7 +75,7 @@ pipeline {
         stage('Triggers') {
             when {
                 anyOf {
-                    branch 'develop'
+                    branch 'shape-normalization-publish'
                 }
             }
             steps {
