@@ -41,8 +41,8 @@ class ReferenceResolutionStage(keepEditingInfo: Boolean) extends TransformationS
     doc.encodes.asInstanceOf[T]
   }
 
-  protected def customDomainElementTransformation: (DomainElement, Linkable) => DomainElement =
-    (d: DomainElement, _: Linkable) => d
+  protected def customDomainElementTransformation: (DomainElement, Linkable) => (DomainElement, Boolean) =
+    (d: DomainElement, _: Linkable) => (d, false)
 
   private class ReferenceResolutionInnerClass(implicit val errorHandler: AMFErrorHandler)
       extends ElementResolutionStage[DomainElement] {

@@ -32,7 +32,8 @@ class ReferenceResolution(
     keepEditingInfo: Boolean = false,
     modelResolver: Option[ModelReferenceResolver] = None,
     cache: mutable.Map[String, DomainElement] = mutable.Map(),
-    customDomainElementTransformation: (DomainElement, Linkable) => DomainElement = (d: DomainElement, _: Linkable) => d
+    customDomainElementTransformation: (DomainElement, Linkable) => (DomainElement, Boolean) =
+      (d: DomainElement, _: Linkable) => (d, false)
 ) extends ElementStageTransformer[DomainElement] {
 
   private var isCyclicRefElement: Boolean = false
@@ -53,30 +54,45 @@ class ReferenceResolution(
     }
 
     element match {
-      case l: Linkable if l.isLink =>
-        if (cache.contains(l.linkTarget.get.id)) Some(cache(l.linkTarget.get.id))
-        else if (cache.contains(element.id) && shouldCopyElement(conditions, l, cache(element.id))) {
+      case link: Linkable if link.isLink =>
+        if (linkTargetIsCached(link)) lookupLinkTargetInCache(link)
+        else if (linkIsInCache(element) && shouldCopyElement(conditions, link, cache(element.id))) {
           val cached = cache(element.id)
           Some(copyEffectiveLinkTarget(element, cached.asInstanceOf[DomainElement with Linkable]))
         } else {
-          val target   = resolveLinkTarget(element, conditions, l)
+          val target   = resolveLinkTarget(element, conditions, link)
           var resolved = innerLinkNodeResolution(target, configuration)
           resolved match {
-            case linkable: Linkable if l.supportsRecursion.option().getOrElse(false) =>
+            case linkable: Linkable if link.supportsRecursion.option().getOrElse(false) =>
               linkable.withSupportsRecursion(true)
             case _ => // ignore
           }
-          resolved = customDomainElementTransformation(withName(resolved, l), l)
+          val tuple = customDomainElementTransformation(withName(resolved, link), link)
+          resolved = tuple._1
+          val copied = tuple._2
           resolved.annotations += ResolvedInheritance()
-          if (keepEditingInfo) addResolvedLinkAnnotations(l, resolved)
+          if (keepEditingInfo) addResolvedLinkAnnotations(link, resolved)
           addIntermediateLinkTargetsToCache(element, resolved)
-          resolved = traverseNestedLinksIfCopy(element, conditions, l, resolved, configuration)
+          cache.put(element.id, resolved)
+          resolved = traverseNestedLinksIfCopy(element, conditions, link, resolved, configuration, copied)
           Some(resolved)
         }
       case ln: LinkNode            => LinkNodeResolver.resolveDynamicLink(ln, modelResolver, keepEditingInfo)
       case _ if isCyclicRefElement => Some(element) // If element is self recursive it has the links already removed
       case _                       => None
     }
+  }
+
+  private def linkIsInCache(element: DomainElement) = {
+    cache.contains(element.id)
+  }
+
+  private def lookupLinkTargetInCache(link: DomainElement with Linkable) = {
+    cache.get(link.linkTarget.get.id)
+  }
+
+  private def linkTargetIsCached(l: DomainElement with Linkable) = {
+    cache.contains(l.linkTarget.get.id)
   }
 
   @tailrec
@@ -118,13 +134,14 @@ class ReferenceResolution(
   private def traverseNestedLinksIfCopy(
       element: DomainElement,
       conditions: Seq[Condition],
-      l: DomainElement with Linkable,
+      link: DomainElement with Linkable,
       resolved: DomainElement,
-      configuration: AMFGraphConfiguration
+      configuration: AMFGraphConfiguration,
+      isCopy: Boolean
   ) = {
-    l.effectiveLinkTarget() match {
-      case t: DomainElement with Linkable if shouldCopyElement(conditions, l, t) =>
-        cache.put(element.id, resolved)
+    val target = link.effectiveLinkTarget()
+    target match {
+      case target: DomainElement with Linkable if isCopy || shouldCopyElement(conditions, link, target) =>
         resolveNestedLinks(resolved, configuration)
       case _ => resolved
     }
