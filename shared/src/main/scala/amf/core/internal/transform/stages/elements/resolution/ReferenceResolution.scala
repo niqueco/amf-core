@@ -1,4 +1,5 @@
 package amf.core.internal.transform.stages.elements.resolution
+
 import amf.core.client.scala.AMFGraphConfiguration
 import amf.core.client.scala.errorhandling.AMFErrorHandler
 import amf.core.client.scala.model.document.Document
@@ -34,6 +35,8 @@ class ReferenceResolution(
     customDomainElementTransformation: (DomainElement, Linkable) => DomainElement = (d: DomainElement, _: Linkable) => d
 ) extends ElementStageTransformer[DomainElement] {
 
+  private var isCyclicRefElement: Boolean = false
+
   override def transform(element: DomainElement, configuration: AMFGraphConfiguration): Option[DomainElement] =
     transform(element, Seq(VALID_DECLARATION_CONDITION), configuration)
 
@@ -42,6 +45,7 @@ class ReferenceResolution(
       conditions: Seq[Condition],
       configuration: AMFGraphConfiguration
   ): Option[DomainElement] = {
+
     // First check cyclic links
     element match {
       case l: Linkable => checkCyclicLinks(l)
@@ -69,8 +73,9 @@ class ReferenceResolution(
           resolved = traverseNestedLinksIfCopy(element, conditions, l, resolved, configuration)
           Some(resolved)
         }
-      case ln: LinkNode => LinkNodeResolver.resolveDynamicLink(ln, modelResolver, keepEditingInfo)
-      case _            => None
+      case ln: LinkNode            => LinkNodeResolver.resolveDynamicLink(ln, modelResolver, keepEditingInfo)
+      case _ if isCyclicRefElement => Some(element) // If element is self recursive it has the links already removed
+      case _                       => None
     }
   }
 
@@ -83,6 +88,7 @@ class ReferenceResolution(
       // found a cycle
       val chain = (stack :+ next).map(displayNameForError).mkString(" -> ")
       errorHandler.violation(RecursiveShapeSpecification, next, s"Invalid cyclic references: $chain", next.annotations)
+      isCyclicRefElement = true
 
       // we do not resolve the cycle, just remove link fields, much like cyclic inheritance
       stack.foreach { e =>
@@ -98,11 +104,10 @@ class ReferenceResolution(
     }
   }
 
-  /**
-   * Link labels are confusing, that's why we prefer using names when possible
-   * For example in amf-cli/shared/src/test/resources/validations/oas-definition-self-chained-ref.yaml link labels are
-   * shifted a's link label is "b", b's link label is "c" and c's link label is "a"
-   */
+  /** Link labels are confusing, that's why we prefer using names when possible For example in
+    * amf-cli/shared/src/test/resources/validations/oas-definition-self-chained-ref.yaml link labels are shifted a's
+    * link label is "b", b's link label is "c" and c's link label is "a"
+    */
   def displayNameForError(l: Linkable): String = {
     l match {
       case n: NamedAmfObject => n.name.value()
