@@ -5,8 +5,8 @@ import sbtsonar.SonarPlugin.autoImport.sonarProperties
 val ivyLocal = Resolver.file("ivy", file(Path.userHome.absolutePath + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 
 name                     := "amf-core"
-ThisBuild / scalaVersion := "2.12.13"
-ThisBuild / version      := "5.2.4-SCALAJS1.6-SNAPSHOT"
+ThisBuild / scalaVersion := "2.12.15"
+ThisBuild / version      := "5.2.4-SCALAJS1.6-21215-SNAPSHOT"
 
 publish := {}
 
@@ -17,7 +17,7 @@ val settings = Common.settings ++ Common.publish ++ Seq(
     resolvers ++= List(ivyLocal, Common.releases, Common.snapshots, Resolver.mavenLocal, Resolver.mavenCentral),
     credentials ++= Common.credentials(),
     libraryDependencies ++= Seq(
-        "org.mule.common" %%% "scala-common-test" % "0.1.12-SCALAJS1.6-SNAPSHOT" % Test
+        "org.mule.common" %%% "scala-common-test" % "0.1.12-SCALAJS1.6-21215-SNAPSHOT" % Test
     )
 )
 
@@ -29,7 +29,7 @@ lazy val workspaceDirectory: File =
     case _       => Path.userHome / "mulesoft"
   }
 
-val syamlVersion = "1.2.327-SCALAJS1.6-SNAPSHOT"
+val syamlVersion = "1.2.327-SCALAJS1.6-21215-SNAPSHOT"
 
 lazy val syamlJVMRef = ProjectRef(workspaceDirectory / "syaml", "syamlJVM")
 lazy val syamlJSRef  = ProjectRef(workspaceDirectory / "syaml", "syamlJS")
