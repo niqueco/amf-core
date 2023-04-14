@@ -23,10 +23,11 @@ case class DefaultShapePayloadValidatorFactory private[amf] (config: AMFGraphCon
           .map(target => createFor(target, mediaType, mode))
           .getOrElse(throw new Exception("Can't validate RecursiveShape with no fixpointTarget"))
       case _ =>
-        plugins
-          .find(_.applies(ValidatePayloadRequest(shape, mediaType, validationConfig)))
+        val payloadRequest = ValidatePayloadRequest(shape, mediaType, validationConfig)
+        val plugin = plugins
+          .find(_.applies(payloadRequest))
           .getOrElse(ErrorFallbackValidationPlugin(SeverityLevels.VIOLATION))
-          .validator(shape, mediaType, validationConfig, mode)
+        plugin.validator(shape, mediaType, validationConfig, mode)
     }
   }
 
