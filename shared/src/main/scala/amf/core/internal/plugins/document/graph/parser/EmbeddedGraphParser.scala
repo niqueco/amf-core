@@ -95,7 +95,7 @@ class EmbeddedGraphParser(private val aliases: Map[String, String])(implicit val
             case _: Exception => None
           }
       }
-    }
+    }.toSeq
   }
 
   override protected def parseLinkableProperties(map: YMap, instance: DomainElement with Linkable): Unit = {

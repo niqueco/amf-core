@@ -105,7 +105,7 @@ object InflectorBase {
         irregulars
           .find(i => i.rule.equalsIgnoreCase(word))
           .map(_.replacement)
-          .orElse(findGSubInList(plurals, word))
+          .orElse(findGSubInList(plurals.toSeq, word))
           .getOrElse(word)
       }
     }
@@ -117,7 +117,7 @@ object InflectorBase {
         irregulars
           .find(i => i.replacement.equalsIgnoreCase(word))
           .map(_.rule)
-          .orElse(findGSubInList(singulars, word))
+          .orElse(findGSubInList(singulars.toSeq, word))
           .getOrElse(word)
       }
     }
@@ -150,15 +150,15 @@ object InflectorBase {
 
       val split = word.split("(_|-|\\s)+")
       val tail = split.tail.map { x =>
-        x.head.toUpper + x.tail
+        s"${x.head.toUpper}${x.tail}"
       }
-      if (capitalizeFirstChar) split.head.capitalize + tail.mkString else split.head + tail.mkString
+      if (capitalizeFirstChar) s"${split.head.capitalize}${tail.mkString}" else s"${split.head}${tail.mkString}"
     }
 
     def decapitalize: String = {
       if (word.nonEmpty) {
         val c = word.toCharArray
-        c.head.toLower + c.tail.mkString
+        s"${c.head.toLower}${c.tail.mkString}"
       } else word
     }
 

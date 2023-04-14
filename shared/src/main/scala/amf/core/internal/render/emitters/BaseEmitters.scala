@@ -271,7 +271,7 @@ package object BaseEmitters {
             })
 
           b.list(b => {
-            traverse(ordering.sorted(result), b)
+            traverse(ordering.sorted(result.toSeq), b)
           })
         }
       )

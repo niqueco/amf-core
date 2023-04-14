@@ -5,9 +5,8 @@ import java.util.concurrent.CompletableFuture
 import amf.core.client.platform.execution.BaseExecutionEnvironment
 import amf.core.client.common.remote.Content
 import amf.core.client.scala.lexer.CharArraySequence
-import amf.core.internal.remote.FutureConverter._
 import amf.core.internal.remote.{JvmPlatform, NetworkError, SocketTimeout, UnexpectedStatusCode}
-
+import scala.jdk.FutureConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
 case class HttpResourceLoader(executionContext: ExecutionContext)
@@ -38,10 +37,10 @@ case class HttpResourceLoader(executionContext: ExecutionContext)
             throw UnexpectedStatusCode(resource, s)
         }
       } catch {
-        case ex: Exception             => throw NetworkError(ex)
-        case e: SocketTimeoutException => throw SocketTimeout(e)
+        case ex: Exception => throw NetworkError(ex)
+//        case e: SocketTimeoutException => throw SocketTimeout(e)
       }
-    }.asJava
+    }.asJava.toCompletableFuture
   }
 
   private def createContent(connection: HttpURLConnection, url: String): Content = {

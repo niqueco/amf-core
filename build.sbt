@@ -5,8 +5,8 @@ import sbtsonar.SonarPlugin.autoImport.sonarProperties
 val ivyLocal = Resolver.file("ivy", file(Path.userHome.absolutePath + "/.ivy2/local"))(Resolver.ivyStylePatterns)
 
 name                     := "amf-core"
-ThisBuild / scalaVersion := "2.12.15"
-ThisBuild / version      := "5.2.4-SCALAJS1.6-21215-SNAPSHOT"
+ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / version      := "5.2.4-213-SNAPSHOT"
 
 publish := {}
 
@@ -17,7 +17,7 @@ val settings = Common.settings ++ Common.publish ++ Seq(
     resolvers ++= List(ivyLocal, Common.releases, Common.snapshots, Resolver.mavenLocal, Resolver.mavenCentral),
     credentials ++= Common.credentials(),
     libraryDependencies ++= Seq(
-        "org.mule.common" %%% "scala-common-test" % "0.1.12-SCALAJS1.6-21215-SNAPSHOT" % Test
+        "org.mule.common" %%% "scala-common-test" % "0.1.12-213-SNAPSHOT" % Test
     )
 )
 
@@ -29,7 +29,7 @@ lazy val workspaceDirectory: File =
     case _       => Path.userHome / "mulesoft"
   }
 
-val syamlVersion = "1.2.327-SCALAJS1.6-21215-SNAPSHOT"
+val syamlVersion = "1.2.327-213-SNAPSHOT"
 
 lazy val syamlJVMRef = ProjectRef(workspaceDirectory / "syaml", "syamlJVM")
 lazy val syamlJSRef  = ProjectRef(workspaceDirectory / "syaml", "syamlJS")
@@ -51,7 +51,6 @@ lazy val core = crossProject(JSPlatform, JVMPlatform)
   .settings(settings)
   .jvmSettings(
       libraryDependencies += "org.scala-js"          %% "scalajs-stubs"           % "1.1.0" % "provided",
-      libraryDependencies += "org.scala-lang.modules" % "scala-java8-compat_2.12" % "0.8.0",
       Compile / packageDoc / artifactPath := baseDirectory.value / "target" / "artifact" / "amf-core-javadoc.jar"
   )
   .jsSettings(
@@ -71,11 +70,6 @@ lazy val coreJS = core.js
   .in(file("./js"))
   .sourceDependency(syamlJSRef, syamlLibJS)
   .disablePlugins(SonarPlugin, ScoverageSbtPlugin)
-
-ThisBuild / libraryDependencies ++= Seq(
-    compilerPlugin("com.github.ghik" % "silencer-plugin" % "1.7.1" cross CrossVersion.constant("2.12.13")),
-    "com.github.ghik" % "silencer-lib" % "1.7.1" % Provided cross CrossVersion.constant("2.12.13")
-)
 
 lazy val sonarUrl   = sys.env.getOrElse("SONAR_SERVER_URL", "Not found url.")
 lazy val sonarToken = sys.env.getOrElse("SONAR_SERVER_TOKEN", "Not found token.")

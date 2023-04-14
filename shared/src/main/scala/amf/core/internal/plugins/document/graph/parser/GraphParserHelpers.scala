@@ -111,10 +111,10 @@ trait GraphParserHelpers extends GraphContextHelper {
       case YType.Map =>
         node.as[YMap].entries.find(_.key.as[String] == JsonLdKeywords.Value) match {
           case Some(entry) =>
-            SimpleDateTime.parse(entry.value.as[YScalar].text).right.get
-          case _ => SimpleDateTime.parse(node.as[YScalar].text).right.get
+            SimpleDateTime.parse(entry.value.as[YScalar].text).toOption.get
+          case _ => SimpleDateTime.parse(node.as[YScalar].text).toOption.get
         }
-      case _ => SimpleDateTime.parse(node.as[YScalar].text).right.get
+      case _ => SimpleDateTime.parse(node.as[YScalar].text).toOption.get
     }
     AmfScalar(value)
   }
@@ -138,9 +138,9 @@ trait GraphParserHelpers extends GraphContextHelper {
               case s: String if s == DataType.Float   => AmfScalar(nodeValue.toFloat)
               case s: String if s == DataType.Double  => AmfScalar(nodeValue.toDouble)
               case s: String if s == DataType.DateTime =>
-                AmfScalar(SimpleDateTime.parse(nodeValue).right.get)
+                AmfScalar(SimpleDateTime.parse(nodeValue).toOption.get)
               case s: String if s == DataType.Date =>
-                AmfScalar(SimpleDateTime.parse(nodeValue).right.get)
+                AmfScalar(SimpleDateTime.parse(nodeValue).toOption.get)
               case _ => AmfScalar(nodeValue)
             }
           case _ => AmfScalar(nodeValue)

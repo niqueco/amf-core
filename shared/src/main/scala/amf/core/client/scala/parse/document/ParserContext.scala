@@ -25,9 +25,9 @@ trait ErrorHandlingContext {
 
   implicit def eh: AMFErrorHandler
 
-  def violation(violationId: ValidationSpecification, node: String, message: String)
+  def violation(violationId: ValidationSpecification, node: String, message: String): Unit
 
-  def violation(violationId: ValidationSpecification, node: AmfObject, message: String)
+  def violation(violationId: ValidationSpecification, node: AmfObject, message: String): Unit
 
   def violation(specification: ValidationSpecification, node: String, message: String, loc: SourceLocation): Unit
 }

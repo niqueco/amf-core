@@ -87,7 +87,7 @@ abstract class CommonGraphParser(implicit ctx: GraphParserContext) extends Graph
 
     instance match {
       case ref: ExternalSourceElement =>
-        unresolvedExtReferencesMap += (ref.referenceId.value -> ref) // process when parse the references node
+        unresolvedExtReferencesMap += (ref.referenceId.value() -> ref) // process when parse the references node
       case _ => // ignore
     }
   }

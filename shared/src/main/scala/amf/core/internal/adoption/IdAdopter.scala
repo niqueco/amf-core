@@ -41,18 +41,24 @@ class IdAdopter(
 
   private def adoptQueue(queue: mutable.Queue[PendingAdoption]): Unit = {
     while (queue.nonEmpty) {
-      val dequeued = queue.dequeue
+      val dequeued = queue.dequeue()
       dequeued.element match {
         case obj: AmfObject =>
           if (!adopted.contains(obj.id)) {
             obj.withId(dequeued.elementId)
             adopted += obj.id -> obj
-            traverseObjFields(obj, dequeued.isRoot).foreach(queue.enqueue(_))
+            traverseObjFields(obj, dequeued.isRoot).foreach { elem =>
+              queue.enqueue(elem)
+            }
           }
         case array: AmfArray =>
-          traverseArrayValues(array, dequeued.elementId).foreach(queue.enqueue(_))
+          traverseArrayValues(array, dequeued.elementId).foreach { elem =>
+            queue.enqueue(elem)
+          }
         case scalar: AmfScalar if scalar.annotations.contains(classOf[DomainExtensionAnnotation]) =>
-          traverseDomainExtensionAnnotation(scalar, dequeued.elementId).foreach(queue.enqueue(_))
+          traverseDomainExtensionAnnotation(scalar, dequeued.elementId).foreach { elem =>
+            queue.enqueue(elem)
+          }
         case _ => // Nothing to do
       }
     }

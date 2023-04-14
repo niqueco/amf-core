@@ -100,7 +100,7 @@ trait Linkable extends AmfObject with AdoptionDependantCalls { this: DomainEleme
 
   protected val shouldLink: Boolean = true
 
-  private[amf] def afterResolve(fatherSyntaxKey: Option[String], resolvedId: String): Unit = Unit
+  private[amf] def afterResolve(fatherSyntaxKey: Option[String], resolvedId: String): Unit = ()
 
   // Unresolved references to things that can be linked
   // TODO: another trait?

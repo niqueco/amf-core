@@ -6,7 +6,7 @@ import amf.core.client.platform.execution.BaseExecutionEnvironment
 import amf.core.client.common.remote.Content
 import amf.core.client.scala.lexer.FileStream
 import amf.core.internal.remote.FileMediaType._
-import amf.core.internal.remote.FutureConverter._
+import scala.jdk.FutureConverters._
 import amf.core.internal.remote.{FileNotFound, JvmPlatform}
 import amf.core.internal.utils.AmfStrings
 
@@ -43,7 +43,7 @@ case class FileResourceLoader(executionContext: ExecutionContext)
     }
   }
   def fetchFile(resource: String): CompletableFuture[Content] = {
-    Future(baseFetchFile(resource)).asJava
+    Future(baseFetchFile(resource)).asJava.toCompletableFuture
   }
 
   def ensureFileAuthority(str: String): String = if (str.startsWith("file:")) str else s"file://$str"

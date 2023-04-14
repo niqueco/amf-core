@@ -10,7 +10,7 @@ abstract class CharStream extends CharSequence {
   def column: Int
 
   /** Consume and advance to the next character. */
-  def consume()
+  def consume(): Unit
 
   /** The current character in the input stream. */
   def currentChar(): Int

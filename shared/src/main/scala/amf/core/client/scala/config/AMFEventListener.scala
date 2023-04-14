@@ -17,7 +17,7 @@ import amf.core.internal.plugins.validation.AMFValidatePlugin
 /** Defines an event listener linked to a specific [[AMFEvent]]
   */
 trait AMFEventListener {
-  def notifyEvent(event: AMFEvent)
+  def notifyEvent(event: AMFEvent): Unit
 }
 
 trait AMFEvent {

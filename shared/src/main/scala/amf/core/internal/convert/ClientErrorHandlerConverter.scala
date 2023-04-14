@@ -25,7 +25,7 @@ object ClientErrorHandlerConverter {
     new AMFErrorHandler {
 
       override def report(result: AMFValidationResult): Unit = clientErrorHandler.report(result)
-      override def getResults(): List[AMFValidationResult]   = clientErrorHandler.getResults.asInternal.toList
+      override def getResults: List[AMFValidationResult]     = clientErrorHandler.getResults.asInternal.toList
     }
 
   def convertToClient(errorHandler: AMFErrorHandler): ClientErrorHandler =

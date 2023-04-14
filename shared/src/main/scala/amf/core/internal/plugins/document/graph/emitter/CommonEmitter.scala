@@ -20,6 +20,7 @@ import org.mulesoft.common.collections._
 import org.mulesoft.common.time.SimpleDateTime
 import org.yaml.builder.DocBuilder.{Entry, Part, SType, Scalar}
 
+import scala.collection.immutable.ListMap
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
@@ -84,7 +85,7 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
   protected def createAnnotationNodes(
       id: String,
       b: Entry[T],
-      annotations: mutable.ListMap[String, mutable.ListMap[String, String]]
+      annotations: ListMap[String, ListMap[String, String]]
   ): Unit = {
     annotations.foreach({ case (a, values) =>
       if (ctx.options.isWithRawSourceMaps) {
@@ -518,8 +519,12 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
         b.entry(
           "smaps",
           _.obj { b =>
-            createAnnotationNodes(id, b, filteredSources.annotations)
-            createAnnotationNodes(id, b, filteredSources.eternals)
+            createAnnotationNodes(
+              id,
+              b,
+              filteredSources.annotations.to(ListMap).view.mapValues(_.to(ListMap)).to(ListMap)
+            )
+            createAnnotationNodes(id, b, filteredSources.eternals.to(ListMap).view.mapValues(_.to(ListMap)).to(ListMap))
           }
         )
       } else {
@@ -550,7 +555,7 @@ abstract class CommonEmitter[T, C <: GraphEmitterContext](options: RenderOptions
         b.entry(
           "smaps",
           _.obj { b =>
-            createAnnotationNodes(id, b, sources.eternals)
+            createAnnotationNodes(id, b, sources.eternals.to(ListMap).view.mapValues(_.to(ListMap)).to(ListMap))
           }
         )
       } else {

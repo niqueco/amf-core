@@ -39,7 +39,7 @@ class Annotations() {
 
   def find[T <: Annotation](clazz: Class[T]): Option[T] = find(clazz.isInstance(_))
 
-  def collect[T](pf: PartialFunction[Annotation, T]): Seq[T] = annotations.collect(pf)
+  def collect[T](pf: PartialFunction[Annotation, T]): Seq[T] = annotations.collect(pf).toSeq
 
   def contains[T <: Annotation](clazz: Class[T]): Boolean = annotations.exists(clazz.isInstance(_))
 
@@ -60,7 +60,7 @@ class Annotations() {
 
   def ++=(other: Annotations): this.type = this ++= other.annotations
 
-  def ++=(other: TraversableOnce[Annotation]): this.type = {
+  def ++=(other: IterableOnce[Annotation]): this.type = {
     annotations ++= other
     this
   }
@@ -160,9 +160,9 @@ object Annotations {
   def apply(annotations: Seq[Annotation]): Annotations = new Annotations() ++= annotations
 
   val empty: Annotations = new Annotations() {
-    override def +=(annotation: Annotation): this.type              = this
-    override def ++=(other: Annotations): this.type                 = this
-    override def ++=(other: TraversableOnce[Annotation]): this.type = this
+    override def +=(annotation: Annotation): this.type           = this
+    override def ++=(other: Annotations): this.type              = this
+    override def ++=(other: IterableOnce[Annotation]): this.type = this
   }
 
   def inferred(): Annotations = apply(Inferred())

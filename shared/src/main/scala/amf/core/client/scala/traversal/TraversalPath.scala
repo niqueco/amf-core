@@ -6,7 +6,7 @@ import scala.collection.mutable
 
 trait TraversalPath {
   def hasVisited(element: AmfObject): Boolean
-  def traversed(element: AmfObject)
+  def traversed(element: AmfObject): Unit
 }
 
 case class ObjectIdTraversalPath(traversed: mutable.Set[String] = mutable.Set()) extends TraversalPath {

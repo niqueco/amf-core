@@ -7,10 +7,10 @@ import java.util.concurrent.CompletableFuture
 import amf.core.client.platform.reference.{UnitCache => ClientUnitCache}
 import amf.core.client.platform.resource.{ResourceLoader => ClientResourceLoader}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
+import scala.jdk.OptionConverters._
+import scala.jdk.FutureConverters._
 import scala.collection.mutable
-import scala.compat.java8.FutureConverters
-import scala.compat.java8.OptionConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
 trait CoreBaseClientConverter extends CoreBaseConverter {
@@ -29,13 +29,13 @@ trait CoreBaseClientConverter extends CoreBaseConverter {
       from: Option[Internal],
       matcher: InternalClientMatcher[Internal, Client]
   ): Optional[Client] =
-    from.map(matcher.asClient).asJava
+    from.map(matcher.asClient).toJava
 
   override protected def asClientOptionWithEC[Internal, Client](
       from: Option[Internal],
       matcher: InternalClientMatcherWithEC[Internal, Client]
   )(implicit executionContext: ExecutionContext): ClientOption[Client] =
-    from.map(matcher.asClient).asJava
+    from.map(matcher.asClient).toJava
 
   override protected def asClientList[A, B](from: Seq[A], matcher: InternalClientMatcher[A, B]): util.List[B] =
     from.map(matcher.asClient).asJava
@@ -70,31 +70,32 @@ trait CoreBaseClientConverter extends CoreBaseConverter {
   override protected def asInternalSeq[Client, Internal](
       from: util.List[Client],
       matcher: ClientInternalMatcher[Client, Internal]
-  ): mutable.Buffer[Internal] =
-    from.asScala.map(matcher.asInternal)
+  ): Seq[Internal] =
+    from.asScala.map(matcher.asInternal).toSeq
 
   override protected def asInternalSeqWithEC[Client, Internal](
       from: util.List[Client],
       matcher: ClientInternalMatcherWithEC[Client, Internal]
-  )(implicit executionContext: ExecutionContext): mutable.Buffer[Internal] = from.asScala.map(matcher.asInternal)
+  )(implicit executionContext: ExecutionContext): Seq[Internal] = from.asScala.map(matcher.asInternal).toSeq
 
   override protected def asClientFuture[T](from: Future[T])(implicit
       executionContext: ExecutionContext
   ): ClientFuture[T] =
-    FutureConverters.toJava(from).toCompletableFuture
+    from.asJava.toCompletableFuture
 
   override protected def asInternalFuture[Client, Internal](
       from: CompletableFuture[Client],
       matcher: ClientInternalMatcher[Client, Internal]
-  )(implicit executionContext: ExecutionContext): Future[Internal] =
-    FutureConverters.toScala(from).map(matcher.asInternal)
+  )(implicit executionContext: ExecutionContext): Future[Internal] = {
+    from.asScala.map(matcher.asInternal)
+  }
 
-  override protected def toScalaOption[E](from: Optional[E]): Option[E] = from.asScala
+  override protected def toScalaOption[E](from: Optional[E]): Option[E] = RichOptional(from).toScala
 
 //  override protected def toScalaOptionWithEC[E](from: Optional[E])(
 //      implicit executionContext: ExecutionContext): Option[E] = from.asScala
 
-  override protected def toClientOption[E](from: Option[E]): ClientOption[E] = from.asJava
+  override protected def toClientOption[E](from: Option[E]): ClientOption[E] = from.toJava
 
 //  override protected def toClientOptionWithEC[E](from: Option[E])(
 //      implicit executionContext: ExecutionContext): ClientOption[E] = from.asJava

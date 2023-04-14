@@ -14,6 +14,7 @@ import amf.core.internal.plugins.document.graph.JsonLdKeywords
 import org.yaml.builder.DocBuilder
 import org.yaml.builder.DocBuilder.{Entry, Part, SType, Scalar}
 
+import scala.collection.immutable.ListMap
 import scala.collection.mutable
 
 // TODO: Should be erased. Left for backwards compatibility in AMF Tests
@@ -162,14 +163,14 @@ private[amf] class EmbeddedJsonLdEmitter[T] private (
   override protected def emitAnnotations(id: String, filteredSources: SourceMap, b: Entry[T]): Unit = {
     createIdNode(b, id)
     createTypeNode(b, SourceMapModel)
-    createAnnotationNodes(id, b, filteredSources.annotations)
-    createAnnotationNodes(id, b, filteredSources.eternals)
+    createAnnotationNodes(id, b, filteredSources.annotations.to(ListMap).view.mapValues(_.to(ListMap)).to(ListMap))
+    createAnnotationNodes(id, b, filteredSources.eternals.to(ListMap).view.mapValues(_.to(ListMap)).to(ListMap))
   }
 
   override protected def emitEternalsNode(id: String, sources: SourceMap, b: Entry[T]): Unit = {
     createIdNode(b, id)
     createTypeNode(b, SourceMapModel)
-    createAnnotationNodes(id, b, sources.eternals)
+    createAnnotationNodes(id, b, sources.eternals.to(ListMap).view.mapValues(_.to(ListMap)).to(ListMap))
   }
 
   override protected def createAnnotationValueNode(id: String, b: Part[T], annotationEntry: (String, String)): Unit =

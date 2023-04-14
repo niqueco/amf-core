@@ -93,7 +93,7 @@ class ObjectNode(override val fields: Fields, val annotations: Annotations)
                 decodedKey
                   .endsWith("?") && maybeTree.isEmpty
               ) // TODO review this logic
-                (_: String) => Unit
+                (_: String) => ()
               else reportError
             ) // if its an optional node, ignore the violation of the var not implement
           fields.removeField(field)

@@ -3,9 +3,9 @@ package amf.core.internal.convert
 import java.util
 import java.util.concurrent.CompletableFuture
 
-import scala.collection.JavaConverters._
-import scala.compat.java8.FutureConverters._
-import scala.compat.java8.OptionConverters._
+import scala.jdk.FutureConverters._
+import scala.jdk.CollectionConverters._
+import scala.jdk.OptionConverters._
 import scala.concurrent.Future
 import amf.core.internal.convert.CoreClientConverters.{ClientFuture, ClientList, ClientOption}
 
@@ -19,16 +19,16 @@ private[amf] trait NativeOpsFromJvm extends NativeOps {
 
   protected class JvmNativeOption[E](list: ClientOption[E]) extends NativeOption[E] {
     override val native: util.Optional[E] = list.asInstanceOf[util.Optional[E]]
-    override def asOption: Option[E]      = native.asScala
+    override def asOption: Option[E]      = native.toScala
   }
 
   protected class JvmNativeList[E](list: ClientList[E]) extends NativeList[E] {
     override val native: util.List[E] = list.asInstanceOf[util.List[E]]
-    override def asSeq: Seq[E]        = native.asScala
+    override def asSeq: Seq[E]        = native.asScala.toSeq
   }
 
   protected class JvmNativeFuture[T](future: ClientFuture[T]) extends NativeFuture[T] {
     override val native: CompletableFuture[T] = future.asInstanceOf[CompletableFuture[T]]
-    override def asFuture: Future[T]          = native.toScala
+    override def asFuture: Future[T]          = native.asScala
   }
 }

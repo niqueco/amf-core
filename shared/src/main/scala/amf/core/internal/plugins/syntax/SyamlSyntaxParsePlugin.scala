@@ -68,7 +68,7 @@ class SyamlSyntaxParsePlugin extends AMFSyntaxParsePlugin with SyamlSyntaxBasePl
       val (document, comment) = document1 match {
         case d if d.isNull =>
           (
-            YDocument(Array(YNode(YMap.empty)), ctx.rootContextDocument),
+            YDocument(Array(YNode(YMap.empty)).toIndexedSeq, ctx.rootContextDocument),
             d.children collectFirst { case c: YComment =>
               c.metaText
             }

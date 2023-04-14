@@ -35,7 +35,7 @@ case class InheritedShapes(baseIds: Seq[String])
 
 object InheritedShapes extends AnnotationGraphLoader {
   override def unparse(value: String, objects: Map[String, AmfElement]): Option[Annotation] =
-    Some(InheritedShapes(value.split(",")))
+    Some(InheritedShapes(value.split(",").toSeq))
 }
 
 case class NilUnion(position: String) extends SerializableAnnotation {

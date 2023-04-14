@@ -6,7 +6,7 @@ import scala.annotation.tailrec
   */
 object TSort {
 
-  def tsort[A](edges: Traversable[(A, A)]): Either[Iterable[A], Iterable[A]] = {
+  def tsort[A](edges: Iterable[(A, A)]): Either[Iterable[A], Iterable[A]] = {
 
     val preds = edges.foldLeft(Map[A, Set[A]]()) { case (acc, (from, to)) =>
       acc + (from -> acc.getOrElse(from, Set())) + (to -> (acc.getOrElse(to, Set()) + from))
@@ -25,7 +25,7 @@ object TSort {
       }
     } else {
       val found = noPreds.keys
-      tsort(hasPreds.mapValues { _ -- found }, done ++ found)
+      tsort(hasPreds.view.mapValues { _ -- found }.toMap, done ++ found)
     }
   }
 }

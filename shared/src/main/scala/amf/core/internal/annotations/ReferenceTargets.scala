@@ -16,5 +16,5 @@ case class ReferenceTargets(targets: Map[String, Seq[PositionRange]]) extends An
     )
 
   def ++(t: Map[String, Seq[PositionRange]]): ReferenceTargets =
-    copy((targets.toSeq ++ t.toSeq).legacyGroupBy(_._1).mapValues(_.flatMap(_._2).distinct))
+    copy((targets.toSeq ++ t.toSeq).legacyGroupBy(_._1).view.mapValues(_.flatMap(_._2).distinct).toMap)
 }

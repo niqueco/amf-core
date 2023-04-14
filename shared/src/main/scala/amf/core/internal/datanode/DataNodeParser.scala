@@ -93,7 +93,7 @@ class DataNodeParser private (
     for { v <- seq } yield {
       members += new DataNodeParser(v, refsCounter, hook, idCounter).parse().forceAdopted(node.id)
     }
-    node.withMembers(members)
+    node.withMembers(members.toSeq)
     node
   }
 

@@ -168,12 +168,12 @@ class ModelCloneTest extends AnyFunSuite with ElementsFixture with Matchers {
     cloned.id = "http://cloned#id"
     val maybeElement = scalarNode2.annotations.find(classOf[TrackedElement])
     maybeElement.isDefined shouldBe (true)
-    maybeElement.get.elements.left.get.head.id shouldBe ("amf://id2")
+    maybeElement.get.elements.left.toOption.get.head.id shouldBe ("amf://id2")
 
     val clonedTrackedElement =
       cloned.allProperties().head.asInstanceOf[ArrayNode].members.head.annotations.find(classOf[TrackedElement])
     clonedTrackedElement.isDefined shouldBe (true)
-    clonedTrackedElement.get.elements.left.get.head.id shouldBe ("http://cloned#id")
+    clonedTrackedElement.get.elements.left.toOption.get.head.id shouldBe ("http://cloned#id")
   }
 
   test("Test clone object with TrackedElement Id out of branch") {
@@ -182,11 +182,11 @@ class ModelCloneTest extends AnyFunSuite with ElementsFixture with Matchers {
     val cloned: ObjectNode = objectNode.cloneElement(mutable.Map.empty).asInstanceOf[ObjectNode]
     val maybeElement       = scalarNode2.annotations.find(classOf[TrackedElement])
     maybeElement.isDefined shouldBe (true)
-    maybeElement.get.elements.right.get.head shouldBe ("amf://idMissed")
+    maybeElement.get.elements.toOption.get.head shouldBe ("amf://idMissed")
 
     val clonedTrackedElement =
       cloned.allProperties().head.asInstanceOf[ArrayNode].members.head.annotations.find(classOf[TrackedElement])
     clonedTrackedElement.isDefined shouldBe (true)
-    clonedTrackedElement.get.elements.right.get.head shouldBe ("amf://idMissed")
+    clonedTrackedElement.get.elements.toOption.get.head shouldBe ("amf://idMissed")
   }
 }

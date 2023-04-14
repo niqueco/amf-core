@@ -12,8 +12,8 @@ object ErrorHandler {
 
   def handler(obj: JsErrorHandler): ClientErrorHandler =
     new ClientErrorHandler {
-      override def report(result: AMFValidationResult): Unit     = obj.report(result)
-      override def getResults(): ClientList[AMFValidationResult] = obj.getResults()
+      override def report(result: AMFValidationResult): Unit   = obj.report(result)
+      override def getResults: ClientList[AMFValidationResult] = obj.getResults()
     }
 
   def provider(obj: JsErrorHandler): ErrorHandlerProvider = () => handler(obj)

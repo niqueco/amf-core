@@ -26,7 +26,10 @@ trait IteratorTest extends AnyFunSuite with Matchers {
 
   test("Domain element iterator (recursive fragment) collect") {
     val ids =
-      DataNodes.fragment.iterator(strategy = DomainElementStrategy).collect { case e: DomainElement => e.id }.toStream
+      DataNodes.fragment
+        .iterator(strategy = DomainElementStrategy)
+        .collect { case e: DomainElement => e.id }
+        .to(LazyList)
 
     ids should contain inOrderOnly ("amf://recursive", "amf://name", "amf://age")
   }
@@ -45,7 +48,7 @@ trait IteratorTest extends AnyFunSuite with Matchers {
     val ids = complex
       .iterator(strategy = DomainElementStrategy, fieldsFilter = Local)
       .collect { case e: DomainElement => e.id }
-      .toStream
+      .to(LazyList)
     ids should contain inOrderOnly ("amf://name", "amf://age", "amf://happy")
   }
 

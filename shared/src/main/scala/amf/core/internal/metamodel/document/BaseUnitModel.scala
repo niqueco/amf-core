@@ -5,7 +5,8 @@ import amf.core.client.scala.vocabulary.{Namespace, ValueType}
 import amf.core.internal.metamodel.Type.{Array, Bool, Iri, Str}
 import amf.core.internal.metamodel.domain.{ModelDoc, ModelVocabularies}
 import amf.core.internal.metamodel.{Field, ModelDefaultBuilder}
-import com.github.ghik.silencer.silent
+
+import scala.annotation.nowarn
 
 /** BaseUnit metamodel
   *
@@ -106,7 +107,7 @@ object BaseUnitModel extends BaseUnitModel {
 
   override val `type`: List[ValueType] = List(Document + "Unit")
 
-  @silent("deprecated")
+  @nowarn
   override val fields: List[Field] =
     List(ModelVersion, References, Usage, DescribedBy, Root, Package, ProcessingData, SourceInformation)
 

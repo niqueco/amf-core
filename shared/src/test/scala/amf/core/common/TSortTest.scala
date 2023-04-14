@@ -19,7 +19,7 @@ class TSortTest extends AnyFunSuite with Matchers {
       ("b3", "c3"),
       ("b3", "c4")
     )
-    tsort(edges) should be(Right(List("a0", "a1", "b2", "b3", "b1", "c3", "c4", "c2", "c1")))
+    tsort(edges) should be(Right(List("a0", "a1", "b2", "b3", "b1", "c2", "c1", "c3", "c4")))
   }
 
   test("Topological sort with map") {
@@ -34,7 +34,7 @@ class TSortTest extends AnyFunSuite with Matchers {
       ("c3", Set("b3")),
       ("c4", Set("b3"))
     )
-    tsort(graph, Seq()) should be(Right(List("a0", "a1", "b2", "b3", "b1", "c3", "c4", "c2", "c1")))
+    tsort(graph, Seq()) should be(Right(List("a0", "a1", "b2", "b3", "b1", "c2", "c1", "c3", "c4")))
   }
 
   test("Topological sort with cycles") {

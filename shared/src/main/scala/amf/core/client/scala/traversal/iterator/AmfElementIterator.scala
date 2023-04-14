@@ -7,7 +7,7 @@ case class AmfElementIterator private (var buffer: List[AmfElement], visited: Vi
 
   override def hasNext: Boolean = buffer.nonEmpty
 
-  override def next: AmfElement = {
+  override def next(): AmfElement = {
     val current = buffer.head
     buffer = buffer.tail
     advance()

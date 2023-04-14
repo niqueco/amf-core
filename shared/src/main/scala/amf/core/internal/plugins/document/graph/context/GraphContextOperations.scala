@@ -34,7 +34,7 @@ trait GraphContextOperations {
 
   def aliasFor(iri: String)(context: GraphContext): Option[String] = {
     implicit val ordering: Ordering[TermDefinition] = ExpandedTermDefinitionsFirst
-    val definitions = context.definitions().toStream.sortBy { case (_, definition) => definition }
+    val definitions = context.definitions().to(LazyList).sortBy { case (_, definition) => definition }
 
     definitions.collectFirst {
       case (alias, term: ExpandedTermDefinition) if term.id.exists(id => equal(iri, id)(context))               => alias

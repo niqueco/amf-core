@@ -15,7 +15,7 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
   */
 @JSExportAll
 trait AMFEventListener {
-  def notifyEvent(event: AMFEvent)
+  def notifyEvent(event: AMFEvent): Unit
 }
 
 @JSExportAll

@@ -16,6 +16,7 @@ import amf.core.internal.plugins.document.graph.emitter.flattened.utils.{Emissio
 import org.yaml.builder.DocBuilder
 import org.yaml.builder.DocBuilder.{Entry, Part, SType, Scalar}
 
+import scala.collection.immutable.ListMap
 import scala.language.implicitConversions
 
 object FlattenedJsonLdEmitter {
@@ -335,8 +336,8 @@ class FlattenedJsonLdEmitter[T](
       part.obj { rb =>
         createIdNode(rb, id)
         createTypeNode(rb, SourceMapModel)
-        createAnnotationNodes(id, rb, filteredSources.annotations)
-        createAnnotationNodes(id, rb, filteredSources.eternals)
+        createAnnotationNodes(id, rb, filteredSources.annotations.to(ListMap).view.mapValues(_.to(ListMap)).to(ListMap))
+        createAnnotationNodes(id, rb, filteredSources.eternals.to(ListMap).view.mapValues(_.to(ListMap)).to(ListMap))
       }
     }) with Metadata
     e.id = Some(id)
@@ -351,7 +352,7 @@ class FlattenedJsonLdEmitter[T](
       part.obj { rb =>
         createIdNode(rb, id)
         createTypeNode(rb, SourceMapModel)
-        createAnnotationNodes(id, rb, sources.eternals)
+        createAnnotationNodes(id, rb, sources.eternals.to(ListMap).view.mapValues(_.to(ListMap)).to(ListMap))
       }
     }) with Metadata
 

@@ -78,7 +78,8 @@ case class NestedToParentIndex(profile: ValidationProfile) {
 
   val nestedToParentMap: Map[ValidationName, Seq[ValidationSpecification]] = {
     case class ParentChildPair(parent: ValidationSpecification, child: ValidationName)
-    val grouped = profile.validations.toStream
+    val grouped = profile.validations
+      .to(LazyList)
       .filter(_.nested.isDefined)
       .map { parent =>
         val child = parent.nested.get
@@ -86,8 +87,8 @@ case class NestedToParentIndex(profile: ValidationProfile) {
       }
       .legacyGroupBy(_.child)
 
-    grouped.mapValues { pairs =>
+    grouped.view.mapValues { pairs =>
       pairs.map(_.parent)
-    }
+    }.toMap
   }
 }

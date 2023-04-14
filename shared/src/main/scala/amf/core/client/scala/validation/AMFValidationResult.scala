@@ -86,7 +86,7 @@ case class AMFValidationResult private[amf] (
   }
 
   val completeMessage: String = {
-    val str = StringBuilder.newBuilder
+    val str = new StringBuilder()
     str.append(s"\n- Source: $validationId\n")
     str.append(s"  Message: $message\n")
     str.append(s"  Property: ${targetProperty.getOrElse("")}\n")
