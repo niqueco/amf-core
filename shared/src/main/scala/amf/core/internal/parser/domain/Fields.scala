@@ -186,6 +186,8 @@ class Fields {
     this
   }
 
+  def fieldsValues(): Iterable[Value] = fs.values
+
   def adopt(id: String, value: AmfElement): Unit = value match {
     case obj: AmfObject => obj.adopted(id)
     case seq: AmfArray  => seq.values.foreach(adopt(id, _))
