@@ -4,9 +4,8 @@ import amf.core.client.scala.model.document.BaseUnit
 import amf.core.client.scala.model.domain.{AmfArray, AmfElement, AmfObject, AmfScalar}
 import amf.core.internal.annotations.DomainExtensionAnnotation
 import amf.core.internal.metamodel.Field
-import amf.core.internal.utils.AmfStrings
 import amf.core.internal.parser.domain.FieldEntry
-import amf.core.internal.utils.IdCounter
+import amf.core.internal.utils.{AmfStrings, IdCounter}
 import org.mulesoft.common.collections.FilterType
 import org.mulesoft.common.core.CachedFunction
 import org.mulesoft.common.functional.MonadInstances.{Identity, identityMonad}
@@ -60,7 +59,8 @@ class IdAdopter(
 
   private def traverseArrayValues(array: AmfArray, id: String): Seq[PendingAdoption] = {
     array.values.zipWithIndex.map { case (item, i) =>
-      val generatedId = makeId(id, componentId(item).getOrElse(i.toString))
+      val element     = componentId(item).getOrElse(i.toString)
+      val generatedId = makeId(id, element)
       PendingAdoption(item, generatedId)
     }
   }
@@ -102,11 +102,10 @@ class IdAdopter(
 
   private def makeId(parent: String, element: String): String = {
     val newId = parent + "/" + element
-    val result =
-      if (createdIds.contains(newId)) idGenerator.genId(newId) // ensures no duplicate ids will be created
-      else newId
-    createdIds.add(newId)
-    result
+    val finalId =
+      if (createdIds.contains(newId)) idGenerator.genId(newId) else newId // ensures no duplicate ids will be created
+    createdIds.add(finalId)
+    finalId
   }
 
   private def getOrderedFields(obj: AmfObject): Iterable[FieldEntry] = {

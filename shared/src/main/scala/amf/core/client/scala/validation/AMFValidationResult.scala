@@ -189,21 +189,30 @@ object AMFValidationResult {
       validation: ValidationResult
   ): (Option[LexicalInformation], Option[String]) = {
 
-    val annotations: Annotations = if (Option(validation.path).isDefined && validation.path != "") {
-      node.fields.fields().find(f => f.field.value.iri() == validation.path) match {
-        case Some(f) if f.element.annotations.contains(classOf[LexicalInformation]) => f.element.annotations
-        case Some(f) if f.value.annotations.contains(classOf[LexicalInformation])   => f.value.annotations
-        case Some(f) =>
-          f.element match {
-            case arr: AmfArray if arr.values.nonEmpty =>
-              arr.values.head.annotations
-            case _ => node.annotations
-          }
-        case _ => node.annotations
-      }
+    val validationPathIsDefined = Option(validation.path).isDefined && validation.path != ""
+    val annotations: Annotations = if (validationPathIsDefined) {
+      retrieveAnnotationsFromField(node, validation)
     } else {
       node.annotations
     }
     (annotations.find(classOf[LexicalInformation]), annotations.find(classOf[SourceLocation]).map(_.location))
+  }
+
+  private def retrieveAnnotationsFromField(node: DomainElement, validation: ValidationResult) = {
+    val targetedField = node.fields.fields().find(f => f.field.value.iri() == validation.path)
+    targetedField match {
+      case Some(f) if f.element.annotations.contains(classOf[LexicalInformation]) =>
+        f.element.annotations
+      case Some(f) if f.value.annotations.contains(classOf[LexicalInformation]) =>
+        f.value.annotations
+      case Some(f) =>
+        f.element match {
+          case arr: AmfArray if arr.values.nonEmpty =>
+            arr.values.head.annotations
+          case _ => node.annotations
+        }
+      case _ =>
+        node.annotations
+    }
   }
 }
